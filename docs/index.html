@@ -1,1528 +1,182 @@
 ﻿<!doctype html>
-<html lang="de">
+<html lang='en'>
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kret&#39;s EU Dota League - Uebersicht (30)</title>
-<meta property="og:title" content="Kret&#39;s EU Dota League - Uebersicht (30)">
-<meta property="og:description" content="Summary, Spieler, Teams & Helden - Zeitraum: 30">
-<meta property="og:image" content="https://courier.spectral.gg/images/dota/leagues/18438_banner.png">
-<meta property="og:type" content="website">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>:root { --bg:#0b1020; --card:#121832; --muted:#9aa3b2; --text:#eef1f7; --accent:#6da6ff; --ok:#7be495; --bad:#ff8b8b; --chip:#1a2142; --grid:#1a2244; --shadow:0 10px 30px rgba(0,0,0,.35) }
-*{box-sizing:border-box} body{margin:0;padding:24px;background:radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2{font-size:20px;margin:24px 0 12px}
-.container{max-width:1200px;margin:0 auto} .header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
-.header img{height:44px;border-radius:8px} .sub{color:var(--muted);font-size:14px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:16px;box-shadow:var(--shadow);padding:16px}
-.table{width:100%;border-collapse:collapse} .table th,.table td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.06)}
-.table th{text-align:left;color:var(--muted);font-weight:600;font-size:13px} .table td{font-size:14px}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--text);font-size:12px}
-.winrate{font-weight:600} .win{color:var(--ok)} .loss{color:var(--bad)}
-.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
-.summary-card h3{margin:0 0 8px;font-size:16px}
-.summary-card ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.summary-card li{display:flex;align-items:center;gap:8px}
-.summary-card img{width:24px;height:24px;border-radius:6px;object-fit:cover;border:1px solid rgba(255,255,255,.1)}
-.player-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.player{display:grid;grid-template-columns:1fr;gap:10px}
-.player h3{margin:0;font-size:16px}
-.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.role{background:#19224a;color:#cfe1ff;padding:4px 8px;border-radius:8px;font-size:12px}
-.heroes{display:flex;gap:8px}
-.hero{display:inline-flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;width:64px}
-.hero img{width:64px;height:36px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
-.logo{width:20px;height:20px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.1)}
-.teamcell{display:flex;align-items:center;gap:8px}
-.calendar{display:grid;gap:16px}
-.month{border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden}
-.month h3{margin:0;padding:12px 16px;background:#0e1533;border-bottom:1px solid rgba(255,255,255,.08);font-size:16px}
-.days{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--grid)}
-.day{background:rgba(255,255,255,.03);min-height:120px;padding:8px;display:flex;flex-direction:column;gap:6px}
-.day .date{color:var(--muted);font-size:12px;margin-bottom:4px}
-.match{background:rgba(255,255,255,.04);padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:4px}
-.match .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
-.teams{font-size:13px}</style>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Kret&#39;s EU Dota League - Reports</title>
+<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
+<style>
+:root{--bg:#0b1020;--panel:#121832;--muted:#9aa3b2;--text:#eef1f7;--accent:#6da6ff;--chip:#1a2142;--border:rgba(255,255,255,.08)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;height:100vh;display:flex}
+.sidebar{width:360px;min-width:280px;max-width:420px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border-right:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:12px}
+.brand h1{font-size:20px;margin:0}
+.sub{color:var(--muted);font-size:13px}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.btn{padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#0e1533;color:var(--text);cursor:pointer;font-size:12px}
+.btn.active{outline:2px solid rgba(109,166,255,.6)}
+.search{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);outline:none}
+.list{margin:0;padding:0;list-style:none;overflow:auto;border:1px solid var(--border);border-radius:12px;flex:1;background:rgba(255,255,255,.02)}
+.item a{display:block;padding:10px 12px;color:var(--text);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.06)}
+.item a:hover{background:rgba(255,255,255,.06)}
+.item.active a{background:rgba(109,166,255,.18)}
+.viewer{flex:1;display:flex;flex-direction:column}
+.viewerbar{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.03)}
+.viewerbar .title{font-weight:600}
+.viewerbar .nav{display:flex;gap:8px}
+.nav .btn{padding:6px 10px}
+iframe{border:0;flex:1;width:100%}
+a{color:var(--accent)}
+</style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <img src="https://courier.spectral.gg/images/dota/leagues/18438_banner.png" alt="League">
-    <div>
-      <h1>Kret&#39;s EU Dota League - Uebersicht</h1>
-      <div class="sub">Zeitraum: 30 - Datenquelle: Steam + OpenDota - Uhrzeiten in Europe/Berlin</div>
+  <aside class='sidebar'>
+    <div class='brand'>
+      <h1>Reports - Kret&#39;s EU Dota League</h1>
+      <div class='sub'>Pick a run or filter by range.</div>
     </div>
-  </div>
+    <div class='filters'>
+      <button class='btn' data-f='all'>All entries</button>
+      <button class='btn' data-f='30-days'>30 days</button>
+      <button class='btn' data-f='60-days'>60 days</button>
+      <button class='btn' data-f='120-days'>120 days</button>
+      <button class='btn' data-f='last-patch'>Last patch</button>
+      <button class='btn' data-f='all-games'>All games</button>
+    </div>
+    <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
+    <ul id='list' class='list'>
+<li class="item" data-range="2025-08-30" data-time="638921226972624780"><a href="./kret-s-eu-dota-league_30-days_2025-08-30_0351.html">2025-08-30 03:51 - 2025-08-30</a></li>
+    </ul>
+  </aside>
 
-  <section class="card">
-    <div class="summary-grid">
-      <div class="summary-card">
-        <h3>Erfolgreichste Helden (min 10 Picks)</h3>
-        <ul>
-
-        </ul>
-      </div>
-      <div class="summary-card">
-        <h3>Meist gebannte Helden</h3>
-        <ul>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/silencer.png' alt=''><span>Silencer</span><span class='badge'>Bans: 17</span><span class='badge'>Picks: 0</span></li>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/obsidian_destroyer.png' alt=''><span>Outworld Devourer</span><span class='badge'>Bans: 15</span><span class='badge'>Picks: 2</span></li>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' alt=''><span>Axe</span><span class='badge'>Bans: 14</span><span class='badge'>Picks: 3</span></li>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' alt=''><span>Ursa</span><span class='badge'>Bans: 13</span><span class='badge'>Picks: 2</span></li>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/undying.png' alt=''><span>Undying</span><span class='badge'>Bans: 12</span><span class='badge'>Picks: 3</span></li>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' alt=''><span>Shadow Shaman</span><span class='badge'>Bans: 10</span><span class='badge'>Picks: 3</span></li>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' alt=''><span>Queen of Pain</span><span class='badge'>Bans: 8</span><span class='badge'>Picks: 8</span></li>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt=''><span>Earthshaker</span><span class='badge'>Bans: 8</span><span class='badge'>Picks: 6</span></li>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' alt=''><span>Nature&#39;s Prophet</span><span class='badge'>Bans: 8</span><span class='badge'>Picks: 4</span></li>
-<li><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' alt=''><span>Disruptor</span><span class='badge'>Bans: 7</span><span class='badge'>Picks: 7</span></li>
-
-        </ul>
-      </div>
-      <div class="summary-card">
-        <h3>Erfolgreichste Spieler (min 5 Spiele)</h3>
-        <ul>
-<li><span><a href='https://www.opendota.com/players/35804562' target='_blank'>A Tired Parent</a></span><span class='badge'>7 Spiele</span><span class='badge'>WR: <strong>71,4 %</strong></span></li>
-<li><span><a href='https://www.opendota.com/players/106623037' target='_blank'>UNDEFEATED Muerta</a></span><span class='badge'>7 Spiele</span><span class='badge'>WR: <strong>71,4 %</strong></span></li>
-<li><span><a href='https://www.opendota.com/players/188889560' target='_blank'>HUNDSCHeiSSE</a></span><span class='badge'>15 Spiele</span><span class='badge'>WR: <strong>66,7 %</strong></span></li>
-<li><span><a href='https://www.opendota.com/players/226354794' target='_blank'>Kret</a></span><span class='badge'>16 Spiele</span><span class='badge'>WR: <strong>62,5 %</strong></span></li>
-<li><span><a href='https://www.opendota.com/players/1803122431' target='_blank'>Gary the Carry</a></span><span class='badge'>14 Spiele</span><span class='badge'>WR: <strong>57,1 %</strong></span></li>
-<li><span><a href='https://www.opendota.com/players/164067051' target='_blank'>Moox</a></span><span class='badge'>12 Spiele</span><span class='badge'>WR: <strong>50,0 %</strong></span></li>
-<li><span><a href='https://www.opendota.com/players/57839727' target='_blank'>Great Love</a></span><span class='badge'>12 Spiele</span><span class='badge'>WR: <strong>50,0 %</strong></span></li>
-<li><span><a href='https://www.opendota.com/players/1877912379' target='_blank'>流</a></span><span class='badge'>8 Spiele</span><span class='badge'>WR: <strong>50,0 %</strong></span></li>
-<li><span><a href='https://www.opendota.com/players/992361072' target='_blank'>Grunt</a></span><span class='badge'>5 Spiele</span><span class='badge'>WR: <strong>40,0 %</strong></span></li>
-<li><span><a href='https://www.opendota.com/players/374810707' target='_blank'>Barpor the barbarian</a></span><span class='badge'>5 Spiele</span><span class='badge'>WR: <strong>40,0 %</strong></span></li>
-
-        </ul>
-      </div>
-      <div class="summary-card">
-        <h3>Erfolgreichste Teams (min 3 Spiele)</h3>
-        <ul>
-<li><img class='logo' src='https://courier.spectral.gg/images/dota/teams/square_9833697.png'><span>Kret Dire</span><span class='badge'>3 Spiele</span><span class='badge'>WR: <strong>66,7 %</strong></span></li>
-<li><img class='logo' src='https://courier.spectral.gg/images/dota/teams/square_9833690.png'><span>Kret Radiant</span><span class='badge'>5 Spiele</span><span class='badge'>WR: <strong>60,0 %</strong></span></li>
-<li><img class='logo' src='https://courier.spectral.gg/images/dota/teams/square_9833687.png'><span>Zelenskyy&#39;s Boys</span><span class='badge'>13 Spiele</span><span class='badge'>WR: <strong>53,8 %</strong></span></li>
-
-        </ul>
+  <main class='viewer'>
+    <div class='viewerbar'>
+      <div class='title' id='viewerTitle'>-</div>
+      <div class='nav'>
+        <button class='btn' id='prevBtn' title='Previous (ArrowUp)'><- Previous</button>
+        <button class='btn' id='nextBtn' title='Next (ArrowDown)'>Next -></button>
+        <a class='btn' id='openNew' target='_blank' rel='noopener'>Open in new tab</a>
       </div>
     </div>
-  </section>
+    <iframe id='frame' src='about:blank' loading='eager' referrerpolicy='no-referrer'></iframe>
+  </main>
 
-  <section class="card">
-    <h2>Spieler - Zeitraum 30</h2>
-    <div class="player-grid">
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/44505340" target="_blank" rel="noopener">.:Azure&lt;&gt;Fire.Ice:.</a></h3>
-            <span class="badge">2 Spiele</span>
-            <span class="badge">WR: <strong>100,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Tidehunter'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' alt='Tidehunter'><div>Tidehunter<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Dragon Knight'><img src='https://courier.spectral.gg/images/dota/portraits/dragon_knight.png' alt='Dragon Knight'><div>Dragon Knight<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/402197430" target="_blank" rel="noopener">jackH07</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>100,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Disruptor'><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' alt='Disruptor'><div>Disruptor<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/401356923" target="_blank" rel="noopener">TRADE CM</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>100,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Invoker'><img src='https://courier.spectral.gg/images/dota/portraits/invoker.png' alt='Invoker'><div>Invoker<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/281526650" target="_blank" rel="noopener">Aquatech</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>100,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Dazzle'><img src='https://courier.spectral.gg/images/dota/portraits/dazzle.png' alt='Dazzle'><div>Dazzle<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/111098380" target="_blank" rel="noopener">monkee</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>100,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Axe'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' alt='Axe'><div>Axe<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/190115398" target="_blank" rel="noopener">M1xed</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>100,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Riki'><img src='https://courier.spectral.gg/images/dota/portraits/riki.png' alt='Riki'><div>Riki<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/1802720915" target="_blank" rel="noopener">Worry is a misuse of imagination</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>100,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Shadow Demon'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_demon.png' alt='Shadow Demon'><div>Shadow Demon<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/387026803" target="_blank" rel="noopener">Jedleo</a></h3>
-            <span class="badge">4 Spiele</span>
-            <span class="badge">WR: <strong>75,0 %</strong></span>
-            <span class="role">Off</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Mars'><img src='https://courier.spectral.gg/images/dota/portraits/mars.png' alt='Mars'><div>Mars<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Magnus'><img src='https://courier.spectral.gg/images/dota/portraits/magnataur.png' alt='Magnus'><div>Magnus<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Tidehunter'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' alt='Tidehunter'><div>Tidehunter<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/106623037" target="_blank" rel="noopener">UNDEFEATED Muerta</a></h3>
-            <span class="badge">7 Spiele</span>
-            <span class="badge">WR: <strong>71,4 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Disruptor'><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' alt='Disruptor'><div>Disruptor<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Phoenix'><img src='https://courier.spectral.gg/images/dota/portraits/phoenix.png' alt='Phoenix'><div>Phoenix<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Weaver'><img src='https://courier.spectral.gg/images/dota/portraits/weaver.png' alt='Weaver'><div>Weaver<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/35804562" target="_blank" rel="noopener">A Tired Parent</a></h3>
-            <span class="badge">7 Spiele</span>
-            <span class="badge">WR: <strong>71,4 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Shadow Shaman'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' alt='Shadow Shaman'><div>Shadow Shaman<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Crystal Maiden'><img src='https://courier.spectral.gg/images/dota/portraits/crystal_maiden.png' alt='Crystal Maiden'><div>Crystal Maiden<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/188889560" target="_blank" rel="noopener">HUNDSCHeiSSE</a></h3>
-            <span class="badge">15 Spiele</span>
-            <span class="badge">WR: <strong>66,7 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Snapfire'><img src='https://courier.spectral.gg/images/dota/portraits/snapfire.png' alt='Snapfire'><div>Snapfire<br><span class='sub'>x4</span></div></div>
-<div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Sand King'><img src='https://courier.spectral.gg/images/dota/portraits/sand_king.png' alt='Sand King'><div>Sand King<br><span class='sub'>x2</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/183063377" target="_blank" rel="noopener">Zero</a></h3>
-            <span class="badge">3 Spiele</span>
-            <span class="badge">WR: <strong>66,7 %</strong></span>
-            <span class="role">Safe</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Slardar'><img src='https://courier.spectral.gg/images/dota/portraits/slardar.png' alt='Slardar'><div>Slardar<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Witch Doctor'><img src='https://courier.spectral.gg/images/dota/portraits/witch_doctor.png' alt='Witch Doctor'><div>Witch Doctor<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Pugna'><img src='https://courier.spectral.gg/images/dota/portraits/pugna.png' alt='Pugna'><div>Pugna<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/226354794" target="_blank" rel="noopener">Kret</a></h3>
-            <span class="badge">16 Spiele</span>
-            <span class="badge">WR: <strong>62,5 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Tiny'><img src='https://courier.spectral.gg/images/dota/portraits/tiny.png' alt='Tiny'><div>Tiny<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Storm Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/storm_spirit.png' alt='Storm Spirit'><div>Storm Spirit<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Death Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/death_prophet.png' alt='Death Prophet'><div>Death Prophet<br><span class='sub'>x2</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/1803122431" target="_blank" rel="noopener">Gary the Carry</a></h3>
-            <span class="badge">14 Spiele</span>
-            <span class="badge">WR: <strong>57,1 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Queen of Pain'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' alt='Queen of Pain'><div>Queen of Pain<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Dawnbreaker'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' alt='Dawnbreaker'><div>Dawnbreaker<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Slark'><img src='https://courier.spectral.gg/images/dota/portraits/slark.png' alt='Slark'><div>Slark<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/57839727" target="_blank" rel="noopener">Great Love</a></h3>
-            <span class="badge">12 Spiele</span>
-            <span class="badge">WR: <strong>50,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Abaddon'><img src='https://courier.spectral.gg/images/dota/portraits/abaddon.png' alt='Abaddon'><div>Abaddon<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Rubick'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' alt='Rubick'><div>Rubick<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Night Stalker'><img src='https://courier.spectral.gg/images/dota/portraits/night_stalker.png' alt='Night Stalker'><div>Night Stalker<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/164067051" target="_blank" rel="noopener">Moox</a></h3>
-            <span class="badge">12 Spiele</span>
-            <span class="badge">WR: <strong>50,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Mars'><img src='https://courier.spectral.gg/images/dota/portraits/mars.png' alt='Mars'><div>Mars<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Undying'><img src='https://courier.spectral.gg/images/dota/portraits/undying.png' alt='Undying'><div>Undying<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Medusa'><img src='https://courier.spectral.gg/images/dota/portraits/medusa.png' alt='Medusa'><div>Medusa<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/1877912379" target="_blank" rel="noopener">流</a></h3>
-            <span class="badge">8 Spiele</span>
-            <span class="badge">WR: <strong>50,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Slardar'><img src='https://courier.spectral.gg/images/dota/portraits/slardar.png' alt='Slardar'><div>Slardar<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Marci'><img src='https://courier.spectral.gg/images/dota/portraits/marci.png' alt='Marci'><div>Marci<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Void Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/void_spirit.png' alt='Void Spirit'><div>Void Spirit<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/297477613" target="_blank" rel="noopener">abo</a></h3>
-            <span class="badge">4 Spiele</span>
-            <span class="badge">WR: <strong>50,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Sven'><img src='https://courier.spectral.gg/images/dota/portraits/sven.png' alt='Sven'><div>Sven<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Axe'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' alt='Axe'><div>Axe<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/107968204" target="_blank" rel="noopener">e-snok</a></h3>
-            <span class="badge">2 Spiele</span>
-            <span class="badge">WR: <strong>50,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Warlock'><img src='https://courier.spectral.gg/images/dota/portraits/warlock.png' alt='Warlock'><div>Warlock<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Undying'><img src='https://courier.spectral.gg/images/dota/portraits/undying.png' alt='Undying'><div>Undying<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/1523553613" target="_blank" rel="noopener">kytoro999</a></h3>
-            <span class="badge">2 Spiele</span>
-            <span class="badge">WR: <strong>50,0 %</strong></span>
-            <span class="role">Safe</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Nature&#39;s Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' alt='Nature&#39;s Prophet'><div>Nature&#39;s Prophet<br><span class='sub'>x2</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/374810707" target="_blank" rel="noopener">Barpor the barbarian</a></h3>
-            <span class="badge">5 Spiele</span>
-            <span class="badge">WR: <strong>40,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Bristleback'><img src='https://courier.spectral.gg/images/dota/portraits/bristleback.png' alt='Bristleback'><div>Bristleback<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Legion Commander'><img src='https://courier.spectral.gg/images/dota/portraits/legion_commander.png' alt='Legion Commander'><div>Legion Commander<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Tidehunter'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' alt='Tidehunter'><div>Tidehunter<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/992361072" target="_blank" rel="noopener">Grunt</a></h3>
-            <span class="badge">5 Spiele</span>
-            <span class="badge">WR: <strong>40,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Vengeful Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png' alt='Vengeful Spirit'><div>Vengeful Spirit<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Dawnbreaker'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' alt='Dawnbreaker'><div>Dawnbreaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lifestealer'><img src='https://courier.spectral.gg/images/dota/portraits/life_stealer.png' alt='Lifestealer'><div>Lifestealer<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/1127238076" target="_blank" rel="noopener">Virvacus</a></h3>
-            <span class="badge">12 Spiele</span>
-            <span class="badge">WR: <strong>33,3 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Elder Titan'><img src='https://courier.spectral.gg/images/dota/portraits/elder_titan.png' alt='Elder Titan'><div>Elder Titan<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Phoenix'><img src='https://courier.spectral.gg/images/dota/portraits/phoenix.png' alt='Phoenix'><div>Phoenix<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Razor'><img src='https://courier.spectral.gg/images/dota/portraits/razor.png' alt='Razor'><div>Razor<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/78489654" target="_blank" rel="noopener">\[T]/.Dr.Kunzel</a></h3>
-            <span class="badge">6 Spiele</span>
-            <span class="badge">WR: <strong>33,3 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Disruptor'><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' alt='Disruptor'><div>Disruptor<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Warlock'><img src='https://courier.spectral.gg/images/dota/portraits/warlock.png' alt='Warlock'><div>Warlock<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Dazzle'><img src='https://courier.spectral.gg/images/dota/portraits/dazzle.png' alt='Dazzle'><div>Dazzle<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/1002536896" target="_blank" rel="noopener">jarjeer</a></h3>
-            <span class="badge">10 Spiele</span>
-            <span class="badge">WR: <strong>30,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Rubick'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' alt='Rubick'><div>Rubick<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Ursa'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' alt='Ursa'><div>Ursa<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Tinker'><img src='https://courier.spectral.gg/images/dota/portraits/tinker.png' alt='Tinker'><div>Tinker<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/178768308" target="_blank" rel="noopener">bash_crazy</a></h3>
-            <span class="badge">4 Spiele</span>
-            <span class="badge">WR: <strong>25,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Shadow Demon'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_demon.png' alt='Shadow Demon'><div>Shadow Demon<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Shadow Shaman'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' alt='Shadow Shaman'><div>Shadow Shaman<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Rubick'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' alt='Rubick'><div>Rubick<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/56352644" target="_blank" rel="noopener">StolteSomFaa</a></h3>
-            <span class="badge">2 Spiele</span>
-            <span class="badge">WR: <strong>0,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Ancient Apparition'><img src='https://courier.spectral.gg/images/dota/portraits/ancient_apparition.png' alt='Ancient Apparition'><div>Ancient Apparition<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/185681464" target="_blank" rel="noopener">Tommy</a></h3>
-            <span class="badge">2 Spiele</span>
-            <span class="badge">WR: <strong>0,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Dawnbreaker'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' alt='Dawnbreaker'><div>Dawnbreaker<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/122918915" target="_blank" rel="noopener">LipNeX</a></h3>
-            <span class="badge">2 Spiele</span>
-            <span class="badge">WR: <strong>0,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Windranger'><img src='https://courier.spectral.gg/images/dota/portraits/windrunner.png' alt='Windranger'><div>Windranger<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/1110210197" target="_blank" rel="noopener">Sven</a></h3>
-            <span class="badge">2 Spiele</span>
-            <span class="badge">WR: <strong>0,0 %</strong></span>
-            <span class="role">Safe</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Shadow Shaman'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' alt='Shadow Shaman'><div>Shadow Shaman<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/199627625" target="_blank" rel="noopener">✪ Captain Vodka</a></h3>
-            <span class="badge">2 Spiele</span>
-            <span class="badge">WR: <strong>0,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Death Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/death_prophet.png' alt='Death Prophet'><div>Death Prophet<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Omniknight'><img src='https://courier.spectral.gg/images/dota/portraits/omniknight.png' alt='Omniknight'><div>Omniknight<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/23817378" target="_blank" rel="noopener">sense</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>0,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Dark Willow'><img src='https://courier.spectral.gg/images/dota/portraits/dark_willow.png' alt='Dark Willow'><div>Dark Willow<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/194252150" target="_blank" rel="noopener">Fat and happy</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>0,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Storm Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/storm_spirit.png' alt='Storm Spirit'><div>Storm Spirit<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/431599342" target="_blank" rel="noopener">T&#39;erreL</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>0,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Sven'><img src='https://courier.spectral.gg/images/dota/portraits/sven.png' alt='Sven'><div>Sven<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-        <div class="player card">
-          <div class="row">
-            <h3><a href="https://www.opendota.com/players/84835" target="_blank" rel="noopener">aZ_Shen-Zhen</a></h3>
-            <span class="badge">1 Spiele</span>
-            <span class="badge">WR: <strong>0,0 %</strong></span>
-            <span class="role">Unbekannt</span>
-          </div>
-          <div class="heroes">
-<div class='hero' title='Wraith King'><img src='https://courier.spectral.gg/images/dota/portraits/skeleton_king.png' alt='Wraith King'><div>Wraith King<br><span class='sub'>x1</span></div></div>
-          </div>
-        </div>
-    </div>
-  </section>
+<script>
+(function(){
+  const list = document.getElementById('list');
+  const items = Array.from(list.querySelectorAll('.item'));
+  const q = document.getElementById('q');
+  const btns = Array.from(document.querySelectorAll('.filters .btn'));
+  const frame = document.getElementById('frame');
+  const title = document.getElementById('viewerTitle');
+  const openNew = document.getElementById('openNew');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
 
-  <section class="card">
-    <h2>Teams - mit Top-Performer</h2>
-      <table class="table">
-        <thead><tr><th>#</th><th>Team</th><th>Spiele</th><th>W-L</th><th>Winrate</th><th>Top-Performer</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_2211498.png" alt=""><span>Nicholas Cage and the Bees</span></td>
-            <td>1</td>
-            <td><span class="win">1</span>-<span class="loss">0</span></td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_2202377.png" alt=""><span>Fight Mongooses</span></td>
-            <td>1</td>
-            <td><span class="win">1</span>-<span class="loss">0</span></td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9833697.png" alt=""><span>Kret Dire</span></td>
-            <td>3</td>
-            <td><span class="win">2</span>-<span class="loss">1</span></td>
-            <td class="winrate">66,7 %</td>
-            <td><a href='https://www.opendota.com/players/164067051' target='_blank'>Moox</a> - 66,7 % (2/3)</td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9833690.png" alt=""><span>Kret Radiant</span></td>
-            <td>5</td>
-            <td><span class="win">3</span>-<span class="loss">2</span></td>
-            <td class="winrate">60,0 %</td>
-            <td><a href='https://www.opendota.com/players/188889560' target='_blank'>HUNDSCHeiSSE</a> - 75,0 % (3/4)</td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9833687.png" alt=""><span>Zelenskyy&#39;s Boys</span></td>
-            <td>13</td>
-            <td><span class="win">7</span>-<span class="loss">6</span></td>
-            <td class="winrate">53,8 %</td>
-            <td><a href='https://www.opendota.com/players/106623037' target='_blank'>UNDEFEATED Muerta</a> - 100,0 % (3/3)</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_2028767.png" alt=""><span>Yash baswant</span></td>
-            <td>2</td>
-            <td><span class="win">1</span>-<span class="loss">1</span></td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_362098.png" alt=""><span>Team Pipsi</span></td>
-            <td>2</td>
-            <td><span class="win">1</span>-<span class="loss">1</span></td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_8328373.png" alt=""><span>Symphony of Skills</span></td>
-            <td>2</td>
-            <td><span class="win">1</span>-<span class="loss">1</span></td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_4326965.png" alt=""><span>SY dota </span></td>
-            <td>2</td>
-            <td><span class="win">0</span>-<span class="loss">2</span></td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>10</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_1642081.png" alt=""><span>I will kill you over time</span></td>
-            <td>1</td>
-            <td><span class="win">0</span>-<span class="loss">1</span></td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>11</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_1998165.png" alt=""><span>some germans and a dutch guy</span></td>
-            <td>1</td>
-            <td><span class="win">0</span>-<span class="loss">1</span></td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>12</td>
-            <td class="teamcell"><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9834594.png" alt=""><span>Pleb Gods</span></td>
-            <td>1</td>
-            <td><span class="win">0</span>-<span class="loss">1</span></td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
+  let filter = 'all';
+  let selIndex = -1;
 
-        </tbody>
-      </table>
-  </section>
+  function visibleItems(){ return items.filter(li => li.style.display !== 'none'); }
+  function humanize(li){
+    const a = li.querySelector('a');
+    return a ? a.textContent.trim() : li.getAttribute('data-range');
+  }
 
-  <section class="card">
-    <h2>Alle Helden - Picks/Bans/Wins & bester Spieler</h2>
-      <table class="table">
-        <thead><tr><th>#</th><th>Held</th><th>Picks</th><th>Bans</th><th>Wins</th><th>Hero-WR</th><th>Bester Spieler</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/queenofpain.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Queen of Pain</span></div></td>
-            <td>8</td>
-            <td>8</td>
-            <td>6</td>
-            <td class="winrate">75,0 %</td>
-            <td><a href='https://www.opendota.com/players/1803122431' target='_blank'>Gary the Carry</a> - 66,7 % (2/3)</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/disruptor.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Disruptor</span></div></td>
-            <td>7</td>
-            <td>7</td>
-            <td>4</td>
-            <td class="winrate">57,1 %</td>
-            <td><a href='https://www.opendota.com/players/78489654' target='_blank'>\[T]/.Dr.Kunzel</a> - 33,3 % (1/3)</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/lion.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Lion</span></div></td>
-            <td>6</td>
-            <td>4</td>
-            <td>3</td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/earthshaker.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Earthshaker</span></div></td>
-            <td>6</td>
-            <td>8</td>
-            <td>1</td>
-            <td class="winrate">16,7 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/tiny.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Tiny</span></div></td>
-            <td>5</td>
-            <td>2</td>
-            <td>2</td>
-            <td class="winrate">40,0 %</td>
-            <td><a href='https://www.opendota.com/players/226354794' target='_blank'>Kret</a> - 66,7 % (2/3)</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/mars.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Mars</span></div></td>
-            <td>5</td>
-            <td>5</td>
-            <td>4</td>
-            <td class="winrate">80,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/slardar.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Slardar</span></div></td>
-            <td>4</td>
-            <td>2</td>
-            <td>2</td>
-            <td class="winrate">50,0 %</td>
-            <td><a href='https://www.opendota.com/players/1877912379' target='_blank'>流</a> - 33,3 % (1/3)</td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/storm_spirit.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Storm Spirit</span></div></td>
-            <td>4</td>
-            <td>6</td>
-            <td>1</td>
-            <td class="winrate">25,0 %</td>
-            <td><a href='https://www.opendota.com/players/226354794' target='_blank'>Kret</a> - 33,3 % (1/3)</td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/rubick.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Rubick</span></div></td>
-            <td>4</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>10</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Vengeful Spirit</span></div></td>
-            <td>4</td>
-            <td>2</td>
-            <td>2</td>
-            <td class="winrate">50,0 %</td>
-            <td><a href='https://www.opendota.com/players/992361072' target='_blank'>Grunt</a> - 66,7 % (2/3)</td>
-          </tr>
-          <tr>
-            <td>11</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/furion.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Nature&#39;s Prophet</span></div></td>
-            <td>4</td>
-            <td>8</td>
-            <td>1</td>
-            <td class="winrate">25,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>12</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/snapfire.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Snapfire</span></div></td>
-            <td>4</td>
-            <td>0</td>
-            <td>3</td>
-            <td class="winrate">75,0 %</td>
-            <td><a href='https://www.opendota.com/players/188889560' target='_blank'>HUNDSCHeiSSE</a> - 75,0 % (3/4)</td>
-          </tr>
-          <tr>
-            <td>13</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Dawnbreaker</span></div></td>
-            <td>4</td>
-            <td>6</td>
-            <td>1</td>
-            <td class="winrate">25,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>14</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/tidehunter.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Tidehunter</span></div></td>
-            <td>4</td>
-            <td>0</td>
-            <td>4</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>15</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/warlock.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Warlock</span></div></td>
-            <td>3</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">33,3 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>16</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/ancient_apparition.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Ancient Apparition</span></div></td>
-            <td>3</td>
-            <td>2</td>
-            <td>1</td>
-            <td class="winrate">33,3 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>17</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/death_prophet.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Death Prophet</span></div></td>
-            <td>3</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>18</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/undying.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Undying</span></div></td>
-            <td>3</td>
-            <td>12</td>
-            <td>3</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>19</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/windrunner.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Windranger</span></div></td>
-            <td>3</td>
-            <td>1</td>
-            <td>2</td>
-            <td class="winrate">66,7 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>20</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/life_stealer.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Lifestealer</span></div></td>
-            <td>3</td>
-            <td>7</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>21</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/shadow_demon.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Shadow Demon</span></div></td>
-            <td>3</td>
-            <td>1</td>
-            <td>2</td>
-            <td class="winrate">66,7 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>22</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Shadow Shaman</span></div></td>
-            <td>3</td>
-            <td>10</td>
-            <td>2</td>
-            <td class="winrate">66,7 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>23</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/axe.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Axe</span></div></td>
-            <td>3</td>
-            <td>14</td>
-            <td>2</td>
-            <td class="winrate">66,7 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>24</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/medusa.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Medusa</span></div></td>
-            <td>3</td>
-            <td>7</td>
-            <td>1</td>
-            <td class="winrate">33,3 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>25</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/sven.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Sven</span></div></td>
-            <td>3</td>
-            <td>3</td>
-            <td>2</td>
-            <td class="winrate">66,7 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>26</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/oracle.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Oracle</span></div></td>
-            <td>2</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>27</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/venomancer.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Venomancer</span></div></td>
-            <td>2</td>
-            <td>1</td>
-            <td>1</td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>28</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/phantom_lancer.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Phantom Lancer</span></div></td>
-            <td>2</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>29</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/phoenix.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Phoenix</span></div></td>
-            <td>2</td>
-            <td>2</td>
-            <td>2</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>30</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/witch_doctor.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Witch Doctor</span></div></td>
-            <td>2</td>
-            <td>1</td>
-            <td>1</td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>31</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/dazzle.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Dazzle</span></div></td>
-            <td>2</td>
-            <td>1</td>
-            <td>1</td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>32</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/dragon_knight.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Dragon Knight</span></div></td>
-            <td>2</td>
-            <td>0</td>
-            <td>2</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>33</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/jakiro.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Jakiro</span></div></td>
-            <td>2</td>
-            <td>0</td>
-            <td>2</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>34</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/clinkz.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Clinkz</span></div></td>
-            <td>2</td>
-            <td>0</td>
-            <td>2</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>35</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/sand_king.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Sand King</span></div></td>
-            <td>2</td>
-            <td>6</td>
-            <td>1</td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>36</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/legion_commander.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Legion Commander</span></div></td>
-            <td>2</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>37</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/elder_titan.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Elder Titan</span></div></td>
-            <td>2</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>38</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/abaddon.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Abaddon</span></div></td>
-            <td>2</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>39</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/obsidian_destroyer.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Outworld Devourer</span></div></td>
-            <td>2</td>
-            <td>15</td>
-            <td>2</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>40</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/kunkka.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Kunkka</span></div></td>
-            <td>2</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>41</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/ursa.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Ursa</span></div></td>
-            <td>2</td>
-            <td>13</td>
-            <td>2</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>42</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/magnataur.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Magnus</span></div></td>
-            <td>2</td>
-            <td>4</td>
-            <td>1</td>
-            <td class="winrate">50,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>43</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/drow_ranger.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Drow Ranger</span></div></td>
-            <td>1</td>
-            <td>1</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>44</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/crystal_maiden.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Crystal Maiden</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>45</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/bane.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Bane</span></div></td>
-            <td>1</td>
-            <td>3</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>46</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/nevermore.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Shadow Fiend</span></div></td>
-            <td>1</td>
-            <td>6</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>47</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/juggernaut.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Juggernaut</span></div></td>
-            <td>1</td>
-            <td>2</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>48</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/lich.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Lich</span></div></td>
-            <td>1</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>49</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/zuus.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Zeus</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>50</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/razor.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Razor</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>51</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/riki.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Riki</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>52</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/necrolyte.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Necrophos</span></div></td>
-            <td>1</td>
-            <td>2</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>53</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/sniper.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Sniper</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>54</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/tinker.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Tinker</span></div></td>
-            <td>1</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>55</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/slark.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Slark</span></div></td>
-            <td>1</td>
-            <td>1</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>56</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/bristleback.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Bristleback</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>57</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/ember_spirit.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Ember Spirit</span></div></td>
-            <td>1</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>58</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/keeper_of_the_light.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Keeper of the Light</span></div></td>
-            <td>1</td>
-            <td>2</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>59</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/invoker.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Invoker</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>60</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/lycan.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Lycan</span></div></td>
-            <td>1</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>61</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/brewmaster.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Brewmaster</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>62</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/void_spirit.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Void Spirit</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>63</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/marci.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Marci</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>64</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/muerta.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Muerta</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>65</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/dark_willow.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Dark Willow</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>66</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/terrorblade.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Terrorblade</span></div></td>
-            <td>1</td>
-            <td>3</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>67</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/winter_wyvern.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Winter Wyvern</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>68</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/monkey_king.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Monkey King</span></div></td>
-            <td>1</td>
-            <td>2</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>69</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/batrider.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Batrider</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>70</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/bounty_hunter.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Bounty Hunter</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>71</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/weaver.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Weaver</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>72</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/omniknight.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Omniknight</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>73</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/spirit_breaker.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Spirit Breaker</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>74</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/night_stalker.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Night Stalker</span></div></td>
-            <td>1</td>
-            <td>5</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>75</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/skeleton_king.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Wraith King</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>76</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/pugna.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Pugna</span></div></td>
-            <td>1</td>
-            <td>0</td>
-            <td>1</td>
-            <td class="winrate">100,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>77</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/antimage.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Anti-Mage</span></div></td>
-            <td>0</td>
-            <td>6</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>78</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/huskar.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Huskar</span></div></td>
-            <td>0</td>
-            <td>3</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>79</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/templar_assassin.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Templar Assassin</span></div></td>
-            <td>0</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>80</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/grimstroke.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Grimstroke</span></div></td>
-            <td>0</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>81</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/enigma.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Enigma</span></div></td>
-            <td>0</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>82</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/doom_bringer.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Doom</span></div></td>
-            <td>0</td>
-            <td>2</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>83</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/spectre.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Spectre</span></div></td>
-            <td>0</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>84</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/lina.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Lina</span></div></td>
-            <td>0</td>
-            <td>3</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>85</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/silencer.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Silencer</span></div></td>
-            <td>0</td>
-            <td>17</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>86</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/pudge.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Pudge</span></div></td>
-            <td>0</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>87</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/puck.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Puck</span></div></td>
-            <td>0</td>
-            <td>5</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>88</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/chen.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Chen</span></div></td>
-            <td>0</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
-          <tr>
-            <td>89</td>
-            <td><div style="display:flex;align-items:center;gap:8px"><img src="https://courier.spectral.gg/images/dota/portraits/centaur.png" style="width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)"><span>Centaur Warrunner</span></div></td>
-            <td>0</td>
-            <td>1</td>
-            <td>0</td>
-            <td class="winrate">0,0 %</td>
-            <td><span class='sub'>keine Daten</span></td>
-          </tr>
+  function applyFilter(){
+    const term = q.value.trim().toLowerCase();
+    let visible = 0;
+    items.forEach(li=>{
+      const rg = li.getAttribute('data-range');
+      const text = humanize(li).toLowerCase();
+      const okRange = (filter === 'all' || rg === filter);
+      const okText  = (!term || text.includes(term));
+      li.style.display = (okRange && okText) ? '' : 'none';
+      if (li.style.display !== 'none') visible++;
+    });
+    if (visible === 0){
+      selIndex = -1; frame.src='about:blank'; title.textContent='No results'; openNew.removeAttribute('href');
+    } else if (selIndex < 0){
+      selectIndex(0);
+    }
+    syncButtons();
+  }
 
-        </tbody>
-      </table>
-  </section>
+  function selectIndex(i){
+    const vis = visibleItems(); if (!vis.length) return;
+    if (i < 0) i = 0; if (i >= vis.length) i = vis.length - 1;
+    vis.forEach(li => li.classList.remove('active'));
+    const li = vis[i]; li.classList.add('active');
+    const a = li.querySelector('a');
+    if (a){
+      const href = a.getAttribute('href');
+      frame.src = href;
+      title.textContent = a.textContent.trim();
+      openNew.setAttribute('href', href);
+      history.replaceState(null,'','#file='+encodeURIComponent(href));
+    }
+    selIndex = i;
+    li.scrollIntoView({block:'nearest'});
+    syncButtons();
+  }
 
-  <section class="card">
-    <h2>Kalender - Spiele im Zeitraum</h2>
-    <div class="calendar">
-        <div class="month">
-          <h3>August 2025</h3>
-          <div class="days">
-            <div class="day" style="background:transparent; min-height:auto; padding:6px; color:var(--muted); font-weight:600">Mo</div>
-            <div class="day" style="background:transparent; min-height:auto; padding:6px; color:var(--muted); font-weight:600">Di</div>
-            <div class="day" style="background:transparent; min-height:auto; padding:6px; color:var(--muted); font-weight:600">Mi</div>
-            <div class="day" style="background:transparent; min-height:auto; padding:6px; color:var(--muted); font-weight:600">Do</div>
-            <div class="day" style="background:transparent; min-height:auto; padding:6px; color:var(--muted); font-weight:600">Fr</div>
-            <div class="day" style="background:transparent; min-height:auto; padding:6px; color:var(--muted); font-weight:600">Sa</div>
-            <div class="day" style="background:transparent; min-height:auto; padding:6px; color:var(--muted); font-weight:600">So</div>
-            <div class="day"></div>
-<div class="day"></div>
-<div class="day"></div>
-<div class="day"></div>
-<div class='day'><div class='date'>01.08.</div></div>
-<div class='day'><div class='date'>02.08.</div></div>
-<div class='day'><div class='date'>03.08.</div><div class='match'><div class='meta'><span>19:19</span><a href='https://www.opendota.com/matches/8401390341' target='_blank'>Match</a></div></div>
-<div class='match'><div class='meta'><span>20:29</span><a href='https://www.opendota.com/matches/8401479084' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>04.08.</div></div>
-<div class='day'><div class='date'>05.08.</div></div>
-<div class='day'><div class='date'>06.08.</div><div class='match'><div class='meta'><span>19:01</span><a href='https://www.opendota.com/matches/8405465970' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>07.08.</div></div>
-<div class='day'><div class='date'>08.08.</div><div class='match'><div class='meta'><span>19:24</span><a href='https://www.opendota.com/matches/8408363519' target='_blank'>Match</a></div></div>
-<div class='match'><div class='meta'><span>20:58</span><a href='https://www.opendota.com/matches/8408487266' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>09.08.</div></div>
-<div class='day'><div class='date'>10.08.</div></div>
-<div class='day'><div class='date'>11.08.</div></div>
-<div class='day'><div class='date'>12.08.</div></div>
-<div class='day'><div class='date'>13.08.</div></div>
-<div class='day'><div class='date'>14.08.</div><div class='match'><div class='meta'><span>13:58</span><a href='https://www.opendota.com/matches/8416558744' target='_blank'>Match</a></div></div>
-<div class='match'><div class='meta'><span>15:23</span><a href='https://www.opendota.com/matches/8416673196' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>15.08.</div></div>
-<div class='day'><div class='date'>16.08.</div><div class='match'><div class='meta'><span>18:19</span><a href='https://www.opendota.com/matches/8419783325' target='_blank'>Match</a></div></div>
-<div class='match'><div class='meta'><span>19:36</span><a href='https://www.opendota.com/matches/8419897121' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>17.08.</div></div>
-<div class='day'><div class='date'>18.08.</div><div class='match'><div class='meta'><span>16:04</span><a href='https://www.opendota.com/matches/8422534127' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>19.08.</div></div>
-<div class='day'><div class='date'>20.08.</div></div>
-<div class='day'><div class='date'>21.08.</div></div>
-<div class='day'><div class='date'>22.08.</div><div class='match'><div class='meta'><span>18:38</span><a href='https://www.opendota.com/matches/8428275868' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>23.08.</div></div>
-<div class='day'><div class='date'>24.08.</div><div class='match'><div class='meta'><span>17:13</span><a href='https://www.opendota.com/matches/8431384209' target='_blank'>Match</a></div></div>
-<div class='match'><div class='meta'><span>18:32</span><a href='https://www.opendota.com/matches/8431514456' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>25.08.</div></div>
-<div class='day'><div class='date'>26.08.</div></div>
-<div class='day'><div class='date'>27.08.</div><div class='match'><div class='meta'><span>20:16</span><a href='https://www.opendota.com/matches/8435945969' target='_blank'>Match</a></div></div>
-<div class='match'><div class='meta'><span>21:05</span><a href='https://www.opendota.com/matches/8436006553' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>28.08.</div></div>
-<div class='day'><div class='date'>29.08.</div><div class='match'><div class='meta'><span>20:43</span><a href='https://www.opendota.com/matches/8438774684' target='_blank'>Match</a></div></div>
-<div class='match'><div class='meta'><span>22:10</span><a href='https://www.opendota.com/matches/8438882765' target='_blank'>Match</a></div></div>
-</div>
-<div class='day'><div class='date'>30.08.</div></div>
-<div class='day'><div class='date'>31.08.</div></div>
-          </div>
-        </div>
-    </div>
-  </section>
-</div>
+  function syncButtons(){
+    const vis = visibleItems();
+    prevBtn.disabled = (selIndex <= 0 || vis.length === 0);
+    nextBtn.disabled = (selIndex >= vis.length - 1 || vis.length === 0);
+  }
+
+  items.forEach(li=>{
+    li.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const vis = visibleItems();
+      const idx = vis.indexOf(li);
+      if (idx >= 0) selectIndex(idx);
+    });
+  });
+
+  btns.forEach(b=>{
+    b.addEventListener('click', ()=>{
+      btns.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      filter = b.getAttribute('data-f');
+      applyFilter();
+    });
+  });
+
+  q.addEventListener('input', applyFilter);
+  prevBtn.addEventListener('click', ()=> selectIndex(selIndex - 1));
+  nextBtn.addEventListener('click', ()=> selectIndex(selIndex + 1));
+  document.addEventListener('keydown', (ev)=>{
+    if (ev.key === 'ArrowUp'){ ev.preventDefault(); selectIndex(selIndex - 1); }
+    if (ev.key === 'ArrowDown'){ ev.preventDefault(); selectIndex(selIndex + 1); }
+  });
+
+  // Init
+  function initSelect(){
+    const params = new URLSearchParams(location.search);
+    const rangeQ = params.get('range');
+    const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const file = hash.get('file');
+
+    if (rangeQ){
+      const btn = btns.find(b=>b.getAttribute('data-f') === rangeQ);
+      if (btn) { btn.click(); }
+    } else {
+      btns[0].classList.add('active'); // All entries
+    }
+
+    if (file){
+      const target = items.find(li => li.querySelector('a')?.getAttribute('href') === file);
+      if (target && target.style.display !== 'none'){
+        const vis = visibleItems(); const idx = vis.indexOf(target);
+        if (idx >= 0) { selectIndex(idx); return; }
+      }
+    }
+    applyFilter();
+  }
+
+  initSelect();
+})();
+</script>
 </body>
 </html>
