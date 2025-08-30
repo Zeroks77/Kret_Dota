@@ -17,16 +17,7 @@ body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, tran
 .btn.active{outline:2px solid rgba(109,166,255,.6)}
 .search{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);outline:none}
 .list{margin:0;padding:0;list-style:none;overflow:auto;border:1px solid var(--border);border-radius:12px;flex:1;background:rgba(255,255,255,.02)}
-/* Treeview styles */
-.tree .group{border-bottom:1px solid rgba(255,255,255,.06)}
-.tree .group:last-child{border-bottom:none}
-.tree .head{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;user-select:none}
-.tree .head:hover{background:rgba(255,255,255,.06)}
-.tree .caret{display:inline-block;transition:transform .15s ease;opacity:.8}
-.tree .group[data-open="true"] .caret{transform:rotate(90deg)}
-.tree .group > ul{margin:0;padding:0 0 6px 18px;list-style:none;display:none}
-.tree .group[data-open="true"] > ul{display:block}
-.item a{display:block;padding:8px 12px;color:var(--text);text-decoration:none;border-radius:8px;margin:2px 8px}
+.item a{display:block;padding:10px 12px;color:var(--text);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.06)}
 .item a:hover{background:rgba(255,255,255,.06)}
 .item.active a{background:rgba(109,166,255,.18)}
 .viewer{flex:1;display:flex;flex-direction:column}
@@ -46,25 +37,12 @@ a{color:var(--accent)}
     </div>
   <!-- Filters removed; Dynamic view is available as a pinned list entry below -->
     <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
-    <ul id='list' class='list tree'>
-      <li class='group' data-open='true'>
-        <div class='head' role='button' tabindex='0'><span class='caret'>▶</span><span>Alltime</span></div>
-        <ul>
-          <li class="item leaf" data-range="all-games" data-time="638921514347223757"><a href="./kret-s-eu-dota-league_all-games_latest.html">All games (latest)</a></li>
-        </ul>
-      </li>
-      <li class='group' data-open='true'>
-        <div class='head' role='button' tabindex='0'><span class='caret'>▶</span><span>Dynamic</span></div>
-        <ul>
-          <li class="item leaf" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html">Dynamic view (custom timeframe)</a></li>
-        </ul>
-      </li>
-  <li class='group' data-open='true'>
-        <div class='head' role='button' tabindex='0'><span class='caret'>▶</span><span>2025-08</span></div>
-        <ul>
-          <li class="item leaf" data-range="30-days" data-time="638921514431305181"><a href="./kret-s-eu-dota-league_30-days_2025-08-30_1150.html">2025-08-30 11:50 - 30 days</a></li>
-        </ul>
-      </li>
+    <ul id='list' class='list'>
+<li class="item" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html">Dynamic view (custom timeframe)</a></li>
+<li class="item" data-range="all-games" data-time="638921913722581489"><a href="./kret-s-eu-dota-league_all-games_latest.html">2025-08-30 22:56 - All games</a></li>
+<li class="item" data-range="unknown" data-time="638921908411164430"><a href="./preview_30days.html">2025-08-30 22:47 - unknown</a></li>
+<li class="item" data-range="2025-08-30" data-time="638921905541000358"><a href="./kret-s-eu-dota-league_30-days_2025-08-30_2242.html">2025-08-30 22:42 - 2025-08-30</a></li>
+<li class="item" data-range="unknown" data-time="638921584087594438"><a href="./dynamic.html">2025-08-30 13:46 - unknown</a></li>
     </ul>
   </aside>
 
@@ -83,9 +61,7 @@ a{color:var(--accent)}
 <script>
 (function(){
   const list = document.getElementById('list');
-  const groups = Array.from(list.querySelectorAll('.group'));
-  const heads = Array.from(list.querySelectorAll('.group > .head'));
-  const leaves = Array.from(list.querySelectorAll('.leaf'));
+  const items = Array.from(list.querySelectorAll('.item'));
   const q = document.getElementById('q');
   const frame = document.getElementById('frame');
   const title = document.getElementById('viewerTitle');
@@ -94,27 +70,15 @@ a{color:var(--accent)}
   const nextBtn = document.getElementById('nextBtn');
   let selIndex = -1;
 
-  function leafVisible(li){
-    // visible if displayed, and not inside a collapsed group
-    if (li.style.display === 'none') return false;
-    const grp = li.closest('.group');
-    if (grp && grp.getAttribute('data-open') !== 'true') return false;
-    return true;
-  }
-  function vis(){ return leaves.filter(li => leafVisible(li)); }
+  function vis(){ return items.filter(li => li.style.display !== 'none'); }
   function txt(li){ const a=li.querySelector('a'); return a ? a.textContent.trim() : li.getAttribute('data-range'); }
 
   function apply(){
     const term = q.value.trim().toLowerCase(); let n=0;
-    leaves.forEach(li=>{
+    items.forEach(li=>{
       const t = txt(li).toLowerCase();
       const ok = (!term || t.includes(term));
       li.style.display = ok ? '' : 'none'; if (ok) n++;
-    });
-    // hide groups with no visible children
-    groups.forEach(g=>{
-      const hasVisible = Array.from(g.querySelectorAll('.leaf')).some(leaf=>leafVisible(leaf));
-      g.style.display = hasVisible ? '' : 'none';
     });
     if (n===0){ selIndex=-1; frame.src='about:blank'; title.textContent='No results'; openNew.removeAttribute('href'); }
     else if (selIndex<0){ select(0); }
@@ -123,7 +87,7 @@ a{color:var(--accent)}
   function select(i){
     const v = vis(); if (!v.length) return;
     if (i<0) i=0; if (i>=v.length) i=v.length-1;
-    leaves.forEach(li => li.classList.remove('active'));
+    v.forEach(li => li.classList.remove('active'));
     const li=v[i]; li.classList.add('active');
     const a=li.querySelector('a');
     if (a){ const href=a.getAttribute('href'); frame.src=href; title.textContent=a.textContent.trim(); openNew.setAttribute('href',href); history.replaceState(null,'','#file='+encodeURIComponent(href)); }
@@ -131,16 +95,7 @@ a{color:var(--accent)}
   }
   function sync(){ const v=vis(); prevBtn.disabled = (selIndex<=0 || !v.length); nextBtn.disabled = (selIndex>=v.length-1 || !v.length); }
 
-  // toggle groups
-  heads.forEach(h=>{
-    const grp = h.parentElement;
-    function toggle(){ grp.setAttribute('data-open', grp.getAttribute('data-open')==='true' ? 'false' : 'true'); sync(); }
-    h.addEventListener('click', toggle);
-    h.addEventListener('keydown', ev=>{ if (ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); toggle(); }});
-  });
-
-  // leaf click
-  leaves.forEach(li=>li.addEventListener('click', e=>{e.preventDefault(); const v=vis(); const idx=v.indexOf(li); if (idx>=0) select(idx);}));
+  items.forEach(li=>li.addEventListener('click', e=>{e.preventDefault(); const v=vis(); const idx=v.indexOf(li); if (idx>=0) select(idx);}));
   q.addEventListener('input', apply);
   prevBtn.addEventListener('click', ()=> select(selIndex-1));
   nextBtn.addEventListener('click', ()=> select(selIndex+1));
@@ -148,10 +103,7 @@ a{color:var(--accent)}
 
   function init(){
     const file = new URLSearchParams(location.hash.replace(/^#/, '')).get('file');
-    if (file){
-      const t=leaves.find(li => li.querySelector('a')?.getAttribute('href')===file);
-      if (t){ const grp=t.closest('.group'); if (grp) grp.setAttribute('data-open','true'); const v=vis(); const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } }
-    }
+    if (file){ const t=items.find(li => li.querySelector('a')?.getAttribute('href')===file); if (t){ const v=items; const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } } }
     apply();
   }
   init();
