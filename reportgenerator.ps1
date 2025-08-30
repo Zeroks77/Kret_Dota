@@ -99,6 +99,14 @@ function FmtPct([double]$x){ "{0:P1}" -f $x }
 function Inc-Map([hashtable]$map, [string]$key) { if ($map.ContainsKey($key)) { $map[$key] = [int]$map[$key] + 1 } else { $map[$key] = 1 } }
 function Slugify([string]$s){ if (-not $s) { return "" }; $t=$s.ToLowerInvariant(); $t=$t -replace "[^a-z0-9]+","-"; $t=$t.Trim("-"); return $t }
 
+# Safely enumerate maps that may be Hashtable or PSCustomObject from JSON
+function Get-MapEnumerator($map){
+  if ($null -eq $map) { return @() }
+  if ($map -is [System.Collections.IDictionary]) { return $map.GetEnumerator() }
+  if ($map -is [psobject]) { return ($map.PSObject.Properties | ForEach-Object { [pscustomobject]@{ Key=$_.Name; Value=$_.Value } }) }
+  return @()
+}
+
 function Select-TopCandidate {
   param([System.Collections.Generic.List[object]]$Candidates,[int]$MinGames=1)
   $cand = $Candidates | Where-Object { $_.games -ge $MinGames } |
@@ -478,9 +486,9 @@ function Aggregate-FromMatches {
 
     if ($m.picks_bans) {
       foreach ($pb in $m.picks_bans) {
-        $hid = [int]$pb.hero_id
-        if (-not $heroStats.ContainsKey($hid)) { $heroStats[$hid] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
-        if (-not $pb.is_pick) { $heroStats[$hid].bans++ }
+        $hid = [int]$pb.hero_id; $hidKey = [string]$hid
+        if (-not $heroStats.ContainsKey($hidKey)) { $heroStats[$hidKey] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
+        if (-not $pb.is_pick) { $heroStats[$hidKey].bans++ }
       }
     }
 
@@ -498,15 +506,16 @@ function Aggregate-FromMatches {
 
       $hid = [int]$p.hero_id
       if ($hid -gt 0) {
-        Inc-Map $ps.heroes ([string]$hid)
-        if (-not $heroStats.ContainsKey($hid)) { $heroStats[$hid] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
-        $heroStats[$hid].picks++; if ($won) { $heroStats[$hid].wins++ }
+        $hidKey = [string]$hid
+        Inc-Map $ps.heroes $hidKey
+        if (-not $heroStats.ContainsKey($hidKey)) { $heroStats[$hidKey] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
+        $heroStats[$hidKey].picks++; if ($won) { $heroStats[$hidKey].wins++ }
 
-        if (-not $heroPlayerAgg.ContainsKey($hid)) { $heroPlayerAgg[$hid] = @{} }
-        if (-not $heroPlayerAgg[$hid].ContainsKey($id)) {
-          $heroPlayerAgg[$hid][$id] = [pscustomobject]@{ account_id=$id; name=$ps.name; games=0; wins=0; profile=$ps.profile }
+        if (-not $heroPlayerAgg.ContainsKey($hidKey)) { $heroPlayerAgg[$hidKey] = @{} }
+        if (-not $heroPlayerAgg[$hidKey].ContainsKey($id)) {
+          $heroPlayerAgg[$hidKey][$id] = [pscustomobject]@{ account_id=$id; name=$ps.name; games=0; wins=0; profile=$ps.profile }
         }
-        $hp = $heroPlayerAgg[$hid][$id]; $hp.games++; if ($won) { $hp.wins++ }
+        $hp = $heroPlayerAgg[$hidKey][$id]; $hp.games++; if ($won) { $hp.wins++ }
       }
 
       $teamId = if ($p.is_radiant) { $radTeamId } else { $dirTeamId }
@@ -577,6 +586,8 @@ function Save-ReportToRepo {
   }
 
   $entryRows = New-Object System.Collections.Generic.List[string]
+  # Pinned dynamic viewer entry at the top
+  $entryRows.Add('<li class="item" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html">Dynamic view (custom timeframe)</a></li>') | Out-Null
   foreach($it in $items){
     $nm = $it.Name
     $href = "./$nm"
@@ -923,9 +934,9 @@ try {
 
       if ($rec.picks_bans) {
         foreach ($pb in $rec.picks_bans) {
-          $hid = [int]$pb.hero_id
-          if (-not $heroStats.ContainsKey($hid)) { $heroStats[$hid] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
-          if (-not $pb.is_pick) { $heroStats[$hid].bans++ }
+          $hid = [int]$pb.hero_id; $hidKey=[string]$hid
+          if (-not $heroStats.ContainsKey($hidKey)) { $heroStats[$hidKey] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
+          if (-not $pb.is_pick) { $heroStats[$hidKey].bans++ }
         }
       }
 
@@ -942,15 +953,16 @@ try {
         Inc-Map $ps.roles "Unknown"
         $hid = [int]$p.hero_id
         if ($hid -gt 0) {
-          Inc-Map $ps.heroes ([string]$hid)
-          if (-not $heroStats.ContainsKey($hid)) { $heroStats[$hid] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
-          $heroStats[$hid].picks++; if ($won) { $heroStats[$hid].wins++ }
+          $hidKey=[string]$hid
+          Inc-Map $ps.heroes $hidKey
+          if (-not $heroStats.ContainsKey($hidKey)) { $heroStats[$hidKey] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
+          $heroStats[$hidKey].picks++; if ($won) { $heroStats[$hidKey].wins++ }
 
-          if (-not $heroPlayerAgg.ContainsKey($hid)) { $heroPlayerAgg[$hid] = @{} }
-          if (-not $heroPlayerAgg[$hid].ContainsKey($id)) {
-            $heroPlayerAgg[$hid][$id] = [pscustomobject]@{ account_id=$id; name=$ps.name; games=0; wins=0; profile=$ps.profile }
+          if (-not $heroPlayerAgg.ContainsKey($hidKey)) { $heroPlayerAgg[$hidKey] = @{} }
+          if (-not $heroPlayerAgg[$hidKey].ContainsKey($id)) {
+            $heroPlayerAgg[$hidKey][$id] = [pscustomobject]@{ account_id=$id; name=$ps.name; games=0; wins=0; profile=$ps.profile }
           }
-          $hp = $heroPlayerAgg[$hid][$id]; $hp.games++; if ($won) { $hp.wins++ }
+          $hp = $heroPlayerAgg[$hidKey][$id]; $hp.games++; if ($won) { $hp.wins++ }
         }
 
         $teamId = if ($p.is_radiant) { $radTeamId } else { $dirTeamId }
@@ -1035,20 +1047,22 @@ try {
           }
           # HeroStats
           foreach ($hk in $agg2.heroStats.Keys) {
-            if (-not $heroStats.ContainsKey($hk)) { $heroStats[$hk] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
-            $heroStats[$hk].picks += $agg2.heroStats[$hk].picks
-            $heroStats[$hk].wins  += $agg2.heroStats[$hk].wins
-            $heroStats[$hk].bans  += $agg2.heroStats[$hk].bans
+            $hkStr = [string]$hk
+            if (-not $heroStats.ContainsKey($hkStr)) { $heroStats[$hkStr] = [pscustomobject]@{ picks=0; wins=0; bans=0 } }
+            $heroStats[$hkStr].picks += $agg2.heroStats[$hk].picks
+            $heroStats[$hkStr].wins  += $agg2.heroStats[$hk].wins
+            $heroStats[$hkStr].bans  += $agg2.heroStats[$hk].bans
           }
           # HeroPlayerAgg
           foreach ($hk in $agg2.heroPlayerAgg.Keys) {
-            if (-not $heroPlayerAgg.ContainsKey($hk)) { $heroPlayerAgg[$hk] = @{} }
+            $hkStr = [string]$hk
+            if (-not $heroPlayerAgg.ContainsKey($hkStr)) { $heroPlayerAgg[$hkStr] = @{} }
             foreach ($pp in $agg2.heroPlayerAgg[$hk].Values) {
-              if (-not $heroPlayerAgg[$hk].ContainsKey($pp.account_id)) {
-                $heroPlayerAgg[$hk][$pp.account_id] = [pscustomobject]@{ account_id=$pp.account_id; name=$pp.name; games=0; wins=0; profile=$pp.profile }
+              if (-not $heroPlayerAgg[$hkStr].ContainsKey($pp.account_id)) {
+                $heroPlayerAgg[$hkStr][$pp.account_id] = [pscustomobject]@{ account_id=$pp.account_id; name=$pp.name; games=0; wins=0; profile=$pp.profile }
               }
-              $heroPlayerAgg[$hk][$pp.account_id].games += $pp.games
-              $heroPlayerAgg[$hk][$pp.account_id].wins  += $pp.wins
+              $heroPlayerAgg[$hkStr][$pp.account_id].games += $pp.games
+              $heroPlayerAgg[$hkStr][$pp.account_id].wins  += $pp.wins
             }
           }
         }
@@ -1066,7 +1080,7 @@ try {
     $wr = if ($_.games -gt 0) { [double]$_.wins / $_.games } else { 0 }
     $topHeroes=@()
     if ($_.heroes.Count -gt 0) {
-      $heroCounts = $_.heroes.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 3
+  $heroCounts = (Get-MapEnumerator $_.heroes) | Sort-Object Value -Descending | Select-Object -First 3
       foreach ($hc in $heroCounts) {
         $hid=[int]$hc.Key; $cnt=$hc.Value
         $meta=$heroMap[$hid]; $hName= if($meta -and $meta.name){$meta.name}else{"Hero $hid"}
@@ -1077,8 +1091,8 @@ try {
     [pscustomobject]@{ account_id=$_.account_id; name=$_.name; games=$_.games; wins=$_.wins; winrate=$wr; topHeroes=$topHeroes; profile=$_.profile }
   }) | Sort-Object @{e='winrate';Descending=$true}, @{e='games';Descending=$true}
 
-  $heroSummary = ($heroStats.Keys | ForEach-Object {
-    $hid=[int]$_; $hs=$heroStats[$hid]
+  $heroSummary = (Get-MapEnumerator $heroStats | ForEach-Object {
+    $hid = [int]$_.Key; $hs=$_.Value
     $picks=[int]$hs.picks; $wins=[int]$hs.wins; $bans=[int]$hs.bans
     $wr = if ($picks -gt 0) { [double]$wins / $picks } else { 0 }
     $meta=$heroMap[$hid]; $name= if($meta -and $meta.name){$meta.name}else{"Hero $hid"}
@@ -1114,9 +1128,10 @@ try {
   }
   # best player per hero
   $heroBestPlayer=@{}
-  foreach ($hid in $heroPlayerAgg.Keys) {
+  foreach ($kv in (Get-MapEnumerator $heroPlayerAgg)) {
+    $hid = [int]$kv.Key
     $candArr = New-Object System.Collections.Generic.List[object]
-    foreach ($pp in $heroPlayerAgg[$hid].Values) {
+    foreach ($pp in ($kv.Value).Values) {
       $wrp = if ($pp.games -gt 0) { [double]$pp.wins / $pp.games } else { 0 }
       $candArr.Add([pscustomobject]@{ name=$pp.name; account_id=$pp.account_id; games=$pp.games; wins=$pp.wins; winrate=$wrp; profile=$pp.profile }) | Out-Null
     }
@@ -1416,7 +1431,7 @@ if(heroInput){
   $published = Save-ReportToRepo -RepoPath $RepoPath -Html $html -LeagueName $LEAGUE_NAME -Range $Range `
          -IndexMax $IndexMax -GitAutoPush:$GitAutoPush -StableAll:$StableAll -ExtraCommitPaths $extraCommit
     Write-Host "Published: $published" -ForegroundColor Green
-    if ($OutFile) { $html | Set-Content -Path $OutFile -Encoding UTF8 }
+  if ($OutFile) { Write-Host "Note: -OutFile is ignored when -PublishToRepo is used to avoid duplicates." -ForegroundColor Yellow }
   } else {
     $html | Set-Content -Path $OutFile -Encoding UTF8
     Write-Host "OK: $OutFile" -ForegroundColor Green

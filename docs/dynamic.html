@@ -31,7 +31,7 @@ button{cursor:pointer}
 <div class="wrapper">
   <div class="header">
     <h1 style="margin:0;font-size:22px">Dynamic viewer</h1>
-    <div class="badge">Client-side, using docs/data/*.json</div>
+    <div class="badge">Client-side, using data/*.json</div>
   </div>
   <div class="card controls">
     <div class="field">
@@ -62,22 +62,22 @@ button{cursor:pointer}
   <div class="grid" style="margin-top:12px">
     <div class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Players</h2>
-      <table class="table" id="playersTable"><thead><tr>
-        <th>Name</th><th>Games</th><th>W-L</th><th>WR</th><th>Top 3 heroes</th>
+      <table class="table sortable" id="playersTable"><thead><tr>
+        <th data-type="text">Name</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th><th data-type="text">Top 3 heroes</th>
       </tr></thead><tbody></tbody></table>
     </div>
     <div class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Teams</h2>
-      <table class="table" id="teamsTable"><thead><tr>
-        <th>Team</th><th>Games</th><th>W-L</th><th>WR</th>
+      <table class="table sortable" id="teamsTable"><thead><tr>
+        <th data-type="text">Team</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th>
       </tr></thead><tbody></tbody></table>
     </div>
   </div>
 
   <div class="card" style="margin-top:12px">
     <h2 style="margin:0 0 8px;font-size:18px">Heroes</h2>
-    <table class="table" id="heroesTable"><thead><tr>
-      <th>Hero</th><th>Picks</th><th>Bans</th><th>Wins</th><th>WR</th><th>Best player</th>
+    <table class="table sortable" id="heroesTable"><thead><tr>
+      <th data-type="text">Hero</th><th data-type="num">Picks</th><th data-type="num">Bans</th><th data-type="num">Wins</th><th data-type="num">WR</th><th data-type="text">Best player</th>
     </tr></thead><tbody></tbody></table>
   </div>
 </div>
@@ -91,6 +91,39 @@ async function loadJsonWithFallback(rel, raw){
 }
 function unix(dt){ return Math.floor(dt.getTime()/1000); }
 function toUTCInput(unixSec){ if(!unixSec) return ''; const d=new Date(unixSec*1000); const pad=n=>String(n).padStart(2,'0'); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`; }
+
+// Sorting helpers
+function val(td){
+  const ds = td.dataset && td.dataset.sort !== undefined ? td.dataset.sort : null;
+  if(ds!==null){ const n=parseFloat(String(ds).replace('%','').replace(',','.')); return isNaN(n)?String(ds).toLowerCase():n; }
+  const t = td.textContent.trim().replace('%','').replace(',','.');
+  const n = parseFloat(t);
+  return isNaN(n) ? t.toLowerCase() : n;
+}
+function sortTable(table, col, type, asc){
+  const tbody = table.tBodies[0]; if(!tbody) return;
+  const rows = Array.from(tbody.rows);
+  rows.sort((a,b)=>{
+    let va=val(a.cells[col]), vb=val(b.cells[col]);
+    if(type==='text'){ return asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va)); }
+    va = parseFloat(va)||0; vb = parseFloat(vb)||0; return asc ? va - vb : vb - va;
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+  table.querySelectorAll('th').forEach(th=>th.classList.remove('sorted-asc','sorted-desc'));
+  const th=table.querySelectorAll('th')[col]; if(th) th.classList.add(asc?'sorted-asc':'sorted-desc');
+}
+function enableSorting(){
+  document.querySelectorAll('table.sortable').forEach(table=>{
+    table.querySelectorAll('th').forEach((th,i)=>{
+      th.style.cursor='pointer';
+      th.addEventListener('click', ()=>{
+        const type = th.dataset.type || 'text';
+        const asc = !th.classList.contains('sorted-asc');
+        sortTable(table,i,type,asc);
+      });
+    });
+  });
+}
 
 function aggregate(matches, playerNames, teamNames){
   const teams=new Map(), players=new Map(), teamPlayers=new Map(), heroStats=new Map(), heroPlayerAgg=new Map();
@@ -141,10 +174,13 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
       const meta=heroMap[hid]||{name:`Hero ${hid}`,img:''};
       return `<div class='hero' title='${meta.name}'><img src='${meta.img}' alt='${meta.name}'><div>${meta.name}<br><span class='badge'>x${cnt}</span></div></div>`;
     }).join('');
-    return `<tr><td><a href='${p.profile}' target='_blank' rel='noopener'>${p.name}</a></td><td>${p.games}</td><td><span class='win'>${p.wins}</span>-<span class='loss'>${p.games-p.wins}</span></td><td>${fmtPct(wr)}</td><td><div class='heroes'>${heroes||'<span class="badge">-</span>'}</div></td></tr>`;
-  }).sort((a,b)=>{
-    // sort by WR desc then games desc using data-extraction
-    return 0;
+    return `<tr>
+      <td data-sort="${p.name.toLowerCase()}"><a href='${p.profile}' target='_blank' rel='noopener'>${p.name}</a></td>
+      <td data-sort="${p.games}">${p.games}</td>
+      <td data-sort="${p.wins/(p.games||1)}"><span class='win'>${p.wins}</span>-<span class='loss'>${p.games-p.wins}</span></td>
+      <td data-sort="${wr}">${fmtPct(wr)}</td>
+      <td>${`<div class='heroes'>${heroes||'<span class="badge">-</span>'}</div>`}</td>
+    </tr>`;
   }).join('');
   document.querySelector('#playersTable tbody').innerHTML = playerRows;
 
@@ -152,7 +188,12 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
   const teamRows = Array.from(teams.values()).map(t=>{
     const wr = t.games>0 ? t.wins/t.games : 0;
     const nm = t.name || `Team ${t.team_id}`;
-    return `<tr><td>${nm}</td><td>${t.games}</td><td><span class='win'>${t.wins}</span>-<span class='loss'>${t.losses}</span></td><td>${fmtPct(wr)}</td></tr>`;
+    return `<tr>
+      <td data-sort="${nm.toLowerCase()}">${nm}</td>
+      <td data-sort="${t.games}">${t.games}</td>
+      <td data-sort="${t.wins/(t.games||1)}"><span class='win'>${t.wins}</span>-<span class='loss'>${t.losses}</span></td>
+      <td data-sort="${wr}">${fmtPct(wr)}</td>
+    </tr>`;
   }).join('');
   document.querySelector('#teamsTable tbody').innerHTML = teamRows;
 
@@ -165,9 +206,27 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
     if(hpa){ const arr=Array.from(hpa.values()).filter(x=>x.games>0).map(x=>({...x,wr:x.wins/x.games})).sort((a,b)=> b.wr - a.wr || b.games - a.games || b.wins - a.wins );
       if(arr.length){ const b=arr[0]; bestLabel = `<a href='${b.profile}' target='_blank'>${b.name}</a> - ${fmtPct(b.wr)} (${b.wins}/${b.games})`; bestWr=b.wr; }
     }
-    return `<tr><td><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td><td>${picks}</td><td>${bans}</td><td>${wins}</td><td>${fmtPct(wr)}</td><td>${bestLabel}</td></tr>`;
+    return `<tr>
+      <td data-sort="${meta.name.toLowerCase()}"><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td>
+      <td data-sort="${picks}">${picks}</td>
+      <td data-sort="${bans}">${bans}</td>
+      <td data-sort="${wins}">${wins}</td>
+      <td data-sort="${wr}">${fmtPct(wr)}</td>
+      <td data-sort="${bestWr}">${bestLabel}</td>
+    </tr>`;
   }).join('');
   document.querySelector('#heroesTable tbody').innerHTML = heroRows;
+
+  // Initial default sorts (desc): Players by WR, Teams by WR, Heroes by Picks
+  if(!window.__dvSortedOnce){
+    const pt = document.getElementById('playersTable');
+    const tt = document.getElementById('teamsTable');
+    const ht = document.getElementById('heroesTable');
+    sortTable(pt, 3, 'num', false);
+    sortTable(tt, 3, 'num', false);
+    sortTable(ht, 1, 'num', false);
+    window.__dvSortedOnce = true;
+  }
 }
 
 async function main(){
@@ -222,6 +281,7 @@ async function main(){
   to.value   = toUTCInput(now);
   apply();
 }
+enableSorting();
 main().catch(e=>{
   document.body.innerHTML = `<div style='padding:24px;color:#fff'>Failed to load data. ${e}</div>`;
   console.error(e);
