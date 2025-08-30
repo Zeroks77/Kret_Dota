@@ -638,15 +638,7 @@ a{color:var(--accent)}
       <h1>Reports - $(HtmlEscape $LeagueName)</h1>
       <div class='sub'>Pick a run or filter by range.</div>
     </div>
-    <div class='filters'>
-  <a class='btn' href='./dynamic.html' target='_blank' rel='noopener' title='Interactive page with custom timeframe'>Dynamic view</a>
-      <button class='btn' data-f='all'>All entries</button>
-      <button class='btn' data-f='30-days'>30 days</button>
-      <button class='btn' data-f='60-days'>60 days</button>
-      <button class='btn' data-f='120-days'>120 days</button>
-      <button class='btn' data-f='last-patch'>Last patch</button>
-      <button class='btn' data-f='all-games'>All games</button>
-    </div>
+  <!-- Filters removed; Dynamic view is available as a pinned list entry below -->
     <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
     <ul id='list' class='list'>
 $listHtml
@@ -670,13 +662,12 @@ $listHtml
   const list = document.getElementById('list');
   const items = Array.from(list.querySelectorAll('.item'));
   const q = document.getElementById('q');
-  const btns = Array.from(document.querySelectorAll('.filters .btn'));
   const frame = document.getElementById('frame');
   const title = document.getElementById('viewerTitle');
   const openNew = document.getElementById('openNew');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
-  let filter = 'all'; let selIndex = -1;
+  let selIndex = -1;
 
   function vis(){ return items.filter(li => li.style.display !== 'none'); }
   function txt(li){ const a=li.querySelector('a'); return a ? a.textContent.trim() : li.getAttribute('data-range'); }
@@ -684,8 +675,8 @@ $listHtml
   function apply(){
     const term = q.value.trim().toLowerCase(); let n=0;
     items.forEach(li=>{
-      const rg = li.getAttribute('data-range'), t = txt(li).toLowerCase();
-      const ok = (filter==='all' || rg===filter) && (!term || t.includes(term));
+      const t = txt(li).toLowerCase();
+      const ok = (!term || t.includes(term));
       li.style.display = ok ? '' : 'none'; if (ok) n++;
     });
     if (n===0){ selIndex=-1; frame.src='about:blank'; title.textContent='No results'; openNew.removeAttribute('href'); }
@@ -704,18 +695,14 @@ $listHtml
   function sync(){ const v=vis(); prevBtn.disabled = (selIndex<=0 || !v.length); nextBtn.disabled = (selIndex>=v.length-1 || !v.length); }
 
   items.forEach(li=>li.addEventListener('click', e=>{e.preventDefault(); const v=vis(); const idx=v.indexOf(li); if (idx>=0) select(idx);}));
-  btns.forEach(b=>b.addEventListener('click', ()=>{ btns.forEach(x=>x.classList.remove('active')); b.classList.add('active'); filter=b.getAttribute('data-f'); apply(); }));
   q.addEventListener('input', apply);
   prevBtn.addEventListener('click', ()=> select(selIndex-1));
   nextBtn.addEventListener('click', ()=> select(selIndex+1));
   document.addEventListener('keydown', ev=>{ if (ev.key==='ArrowUp'){ev.preventDefault(); select(selIndex-1);} if (ev.key==='ArrowDown'){ev.preventDefault(); select(selIndex+1);} });
 
   function init(){
-    const params = new URLSearchParams(location.search);
-    const rangeQ = params.get('range');
     const file = new URLSearchParams(location.hash.replace(/^#/, '')).get('file');
-    if (rangeQ){ const btn=btns.find(b=>b.getAttribute('data-f')===rangeQ); if (btn) btn.click(); } else { btns[0].classList.add('active'); }
-    if (file){ const t=items.find(li => li.querySelector('a')?.getAttribute('href')===file); if (t && t.style.display!=='none'){ const v=vis(); const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } } }
+    if (file){ const t=items.find(li => li.querySelector('a')?.getAttribute('href')===file); if (t){ const v=items; const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } } }
     apply();
   }
   init();
