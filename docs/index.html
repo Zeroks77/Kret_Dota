@@ -1,182 +1,86 @@
 ﻿<!doctype html>
-<html lang='en'>
+<html lang="en">
 <head>
-<meta charset='utf-8'>
-<meta name='viewport' content='width=device-width,initial-scale=1'>
-<title>Kret&#39;s EU Dota League - Reports</title>
-<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
+<meta charset="utf-8">
+<title>Kret's EU Dota League — Stats</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Auto-redirect to the latest stats overviews for Kret's EU Dota League.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<meta http-equiv="refresh" content="3; url=https://zeroks77.github.io/Kret_Dota/">
 <style>
-:root{--bg:#0b1020;--panel:#121832;--muted:#9aa3b2;--text:#eef1f7;--accent:#6da6ff;--chip:#1a2142;--border:rgba(255,255,255,.08)}
+:root{
+  --bg:#0b1020; --card:#121832; --muted:#9aa3b2; --text:#eef1f7; --accent:#6da6ff;
+  --border:rgba(255,255,255,.12); --glow:0 20px 60px rgba(0,0,0,.4);
+}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;height:100vh;display:flex}
-.sidebar{width:360px;min-width:280px;max-width:420px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border-right:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:12px}
-.brand h1{font-size:20px;margin:0}
-.sub{color:var(--muted);font-size:13px}
-.filters{display:flex;flex-wrap:wrap;gap:6px}
-.btn{padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#0e1533;color:var(--text);cursor:pointer;font-size:12px}
-.btn.active{outline:2px solid rgba(109,166,255,.6)}
-.search{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);outline:none}
-.list{margin:0;padding:0;list-style:none;overflow:auto;border:1px solid var(--border);border-radius:12px;flex:1;background:rgba(255,255,255,.02)}
-.item a{display:block;padding:10px 12px;color:var(--text);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.06)}
-.item a:hover{background:rgba(255,255,255,.06)}
-.item.active a{background:rgba(109,166,255,.18)}
-.viewer{flex:1;display:flex;flex-direction:column}
-.viewerbar{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.03)}
-.viewerbar .title{font-weight:600}
-.viewerbar .nav{display:flex;gap:8px}
-.nav .btn{padding:6px 10px}
-iframe{border:0;flex:1;width:100%}
-a{color:var(--accent)}
+html,body{height:100%}
+body{
+  margin:0; display:grid; place-items:center; background:
+  radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);
+  color:var(--text); font-family:Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+}
+.card{
+  width:min(720px, 92vw); padding:28px; border-radius:20px;
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border:1px solid var(--border); box-shadow:var(--glow);
+}
+.header{display:flex; align-items:center; gap:16px; margin-bottom:14px}
+.logo{
+  width:56px;height:56px;border-radius:12px;flex:0 0 auto;
+  background:linear-gradient(135deg,#6da6ff 0%,#a0c2ff 100%); display:grid; place-items:center;
+  color:#0b1020; font-weight:800; font-size:22px; letter-spacing:.5px;
+}
+h1{font-size:26px; margin:0}
+.sub{color:var(--muted); font-size:14px; margin-top:4px}
+.row{display:flex; gap:16px; align-items:center; margin-top:18px; flex-wrap:wrap}
+.btn{
+  appearance:none; border:1px solid var(--border); background:#0e1533; color:var(--text);
+  padding:10px 14px; border-radius:12px; font-weight:600; cursor:pointer; text-decoration:none;
+}
+.btn.primary{background:#17306b;border-color:rgba(109,166,255,.5)}
+.btn:hover{filter:brightness(1.08)}
+.note{color:var(--muted); font-size:12px; margin-top:10px}
+.spinner{
+  width:22px; height:22px; border-radius:50%; border:3px solid rgba(255,255,255,.25);
+  border-top-color:var(--accent); animation:spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg) } }
+.small{font-size:12px; color:var(--muted)}
 </style>
-</head>
-<body>
-  <aside class='sidebar'>
-    <div class='brand'>
-      <h1>Reports - Kret&#39;s EU Dota League</h1>
-      <div class='sub'>Pick a run or filter by range.</div>
-    </div>
-    <div class='filters'>
-      <button class='btn' data-f='all'>All entries</button>
-      <button class='btn' data-f='30-days'>30 days</button>
-      <button class='btn' data-f='60-days'>60 days</button>
-      <button class='btn' data-f='120-days'>120 days</button>
-      <button class='btn' data-f='last-patch'>Last patch</button>
-      <button class='btn' data-f='all-games'>All games</button>
-    </div>
-    <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
-    <ul id='list' class='list'>
-<li class="item" data-range="2025-08-30" data-time="638921226972624780"><a href="./kret-s-eu-dota-league_30-days_2025-08-30_0351.html">2025-08-30 03:51 - 2025-08-30</a></li>
-    </ul>
-  </aside>
-
-  <main class='viewer'>
-    <div class='viewerbar'>
-      <div class='title' id='viewerTitle'>-</div>
-      <div class='nav'>
-        <button class='btn' id='prevBtn' title='Previous (ArrowUp)'><- Previous</button>
-        <button class='btn' id='nextBtn' title='Next (ArrowDown)'>Next -></button>
-        <a class='btn' id='openNew' target='_blank' rel='noopener'>Open in new tab</a>
-      </div>
-    </div>
-    <iframe id='frame' src='about:blank' loading='eager' referrerpolicy='no-referrer'></iframe>
-  </main>
-
 <script>
 (function(){
-  const list = document.getElementById('list');
-  const items = Array.from(list.querySelectorAll('.item'));
-  const q = document.getElementById('q');
-  const btns = Array.from(document.querySelectorAll('.filters .btn'));
-  const frame = document.getElementById('frame');
-  const title = document.getElementById('viewerTitle');
-  const openNew = document.getElementById('openNew');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-
-  let filter = 'all';
-  let selIndex = -1;
-
-  function visibleItems(){ return items.filter(li => li.style.display !== 'none'); }
-  function humanize(li){
-    const a = li.querySelector('a');
-    return a ? a.textContent.trim() : li.getAttribute('data-range');
+  // Hard target for your GitHub Pages (docs/ as source)
+  var target = "https://zeroks77.github.io/Kret_Dota/";
+  // If running locally (e.g., file:// or localhost), try relative path
+  if (location.protocol === "file:" || /localhost|127\.0\.0\.1/.test(location.host)) {
+    target = "./docs/index.html";
   }
-
-  function applyFilter(){
-    const term = q.value.trim().toLowerCase();
-    let visible = 0;
-    items.forEach(li=>{
-      const rg = li.getAttribute('data-range');
-      const text = humanize(li).toLowerCase();
-      const okRange = (filter === 'all' || rg === filter);
-      const okText  = (!term || text.includes(term));
-      li.style.display = (okRange && okText) ? '' : 'none';
-      if (li.style.display !== 'none') visible++;
-    });
-    if (visible === 0){
-      selIndex = -1; frame.src='about:blank'; title.textContent='No results'; openNew.removeAttribute('href');
-    } else if (selIndex < 0){
-      selectIndex(0);
-    }
-    syncButtons();
-  }
-
-  function selectIndex(i){
-    const vis = visibleItems(); if (!vis.length) return;
-    if (i < 0) i = 0; if (i >= vis.length) i = vis.length - 1;
-    vis.forEach(li => li.classList.remove('active'));
-    const li = vis[i]; li.classList.add('active');
-    const a = li.querySelector('a');
-    if (a){
-      const href = a.getAttribute('href');
-      frame.src = href;
-      title.textContent = a.textContent.trim();
-      openNew.setAttribute('href', href);
-      history.replaceState(null,'','#file='+encodeURIComponent(href));
-    }
-    selIndex = i;
-    li.scrollIntoView({block:'nearest'});
-    syncButtons();
-  }
-
-  function syncButtons(){
-    const vis = visibleItems();
-    prevBtn.disabled = (selIndex <= 0 || vis.length === 0);
-    nextBtn.disabled = (selIndex >= vis.length - 1 || vis.length === 0);
-  }
-
-  items.forEach(li=>{
-    li.addEventListener('click', (e)=>{
-      e.preventDefault();
-      const vis = visibleItems();
-      const idx = vis.indexOf(li);
-      if (idx >= 0) selectIndex(idx);
-    });
-  });
-
-  btns.forEach(b=>{
-    b.addEventListener('click', ()=>{
-      btns.forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      filter = b.getAttribute('data-f');
-      applyFilter();
-    });
-  });
-
-  q.addEventListener('input', applyFilter);
-  prevBtn.addEventListener('click', ()=> selectIndex(selIndex - 1));
-  nextBtn.addEventListener('click', ()=> selectIndex(selIndex + 1));
-  document.addEventListener('keydown', (ev)=>{
-    if (ev.key === 'ArrowUp'){ ev.preventDefault(); selectIndex(selIndex - 1); }
-    if (ev.key === 'ArrowDown'){ ev.preventDefault(); selectIndex(selIndex + 1); }
-  });
-
-  // Init
-  function initSelect(){
-    const params = new URLSearchParams(location.search);
-    const rangeQ = params.get('range');
-    const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
-    const file = hash.get('file');
-
-    if (rangeQ){
-      const btn = btns.find(b=>b.getAttribute('data-f') === rangeQ);
-      if (btn) { btn.click(); }
-    } else {
-      btns[0].classList.add('active'); // All entries
-    }
-
-    if (file){
-      const target = items.find(li => li.querySelector('a')?.getAttribute('href') === file);
-      if (target && target.style.display !== 'none'){
-        const vis = visibleItems(); const idx = vis.indexOf(target);
-        if (idx >= 0) { selectIndex(idx); return; }
-      }
-    }
-    applyFilter();
-  }
-
-  initSelect();
+  // Try a fast redirect
+  setTimeout(function(){ window.location.replace(target); }, 1200);
 })();
 </script>
+</head>
+<body>
+  <main class="card" role="main">
+    <div class="header">
+      <div class="logo">KD</div>
+      <div>
+        <h1>Kret's EU Dota League — Stats</h1>
+        <div class="sub">Forwarding you to the live overviews (reports) on GitHub Pages.</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="spinner" aria-hidden="true"></div>
+      <div>Redirecting…</div>
+      <a class="btn primary" href="https://zeroks77.github.io/Kret_Dota/">Open reports now</a>
+      <a class="btn" href="https://github.com/Zeroks77/Kret_Dota">Open repository</a>
+    </div>
+
+    <div class="note">
+      If nothing happens, click “Open reports now”.  
+      <div class="small">Tip: In your repository settings, set GitHub Pages Source to <strong>main</strong>, Folder <strong>/docs</strong>.</div>
+    </div>
+  </main>
 </body>
 </html>
