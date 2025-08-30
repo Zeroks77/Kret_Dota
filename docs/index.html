@@ -3,47 +3,29 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kret's EU Dota League — Übersicht & Viewer</title>
-<meta name="description" content="Sidebar mit allen Reports aus docs/ und Viewer rechts." />
+<title>Kret's EU Dota League — Reports (Fullscreen)</title>
+<meta name="description" content="Links: Reports, rechts: Viewer. Nutzung des gesamten Browserfensters." />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
 <style>
-:root{
-  --bg:#0b1020; --card:#121832; --muted:#9aa3b2; --text:#eef1f7; --accent:#6da6ff;
-  --border:rgba(255,255,255,.12); --glow:0 20px 60px rgba(0,0,0,.4);
-}
+:root{ --bg:#0b1020; --muted:#9aa3b2; --text:#eef1f7; --accent:#6da6ff; --border:rgba(255,255,255,.12); }
 *{box-sizing:border-box}
-html,body{height:100%}
+html,body{height:100%; width:100%}
 body{
   margin:0; background: radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);
   color:var(--text); font-family:Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-  padding:24px 16px 24px 16px;
+  overflow:hidden;
 }
-.card{ width:min(1400px, 98vw); margin:0 auto; padding:18px; border-radius:20px;
-  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-  border:1px solid var(--border); box-shadow:var(--glow);
-}
-.header{display:flex; align-items:center; gap:12px; margin-bottom:12px}
-.logo{ width:48px;height:48px;border-radius:12px;flex:0 0 auto;
-  background:linear-gradient(135deg,#6da6ff 0%,#a0c2ff 100%); display:grid; place-items:center;
-  color:#0b1020; font-weight:800; font-size:20px; letter-spacing:.5px;}
-h1{font-size:22px; margin:0}
-.sub{color:var(--muted); font-size:13px; margin-top:3px}
+.app{ display:grid; grid-template-columns: 300px 1fr; height:100vh; width:100vw }
+@media (max-width: 880px){ .app{ grid-template-columns: 1fr } .viewer iframe{ height: calc(100vh - 56px) } }
 
-.layout{display:grid; grid-template-columns: 300px 1fr; gap:14px; min-height:70vh}
-@media (max-width: 900px){ .layout{ grid-template-columns: 1fr; } .sidebar{ position:relative; height:auto; }
-  .viewer{ height:70vh; } }
-
-.sidebar{ border:1px solid var(--border); background:#0f1534; border-radius:16px; padding:12px; overflow:auto;
-  position:sticky; top:16px; height:calc(100vh - 120px);
-}
-.controls{display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap}
-.input{background:#0e1533; border:1px solid var(--border); color:var(--text); border-radius:12px; padding:9px 12px; width:100%}
+.sidebar{ border-right:1px solid var(--border); background:#0f1534; padding:10px; overflow:auto }
+.controls{display:flex; gap:8px; align-items:center; margin-bottom:8px}
+.input{background:#0e1533; border:1px solid var(--border); color:var(--text); border-radius:10px; padding:9px 11px; width:100%}
 .small{font-size:12px; color:var(--muted)}
-.spinner{ width:16px; height:16px; border-radius:50%; border:3px solid rgba(255,255,255,.25); border-top-color:var(--accent); animation:spin .9s linear infinite; }
+.spinner{ width:16px; height:16px; border-radius:50%; border:3px solid rgba(255,255,255,.25); border-top-color:var(--accent); animation:spin .9s linear infinite }
 @keyframes spin { to { transform: rotate(360deg) } }
-
 .group{margin-top:8px}
-.group h3{font-size:12px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:#cfd6e6; margin:10px 6px 6px}
+.group h3{font-size:11px; font-weight:700; letter-spacing:.35px; text-transform:uppercase; color:#cfd6e6; margin:10px 6px 6px}
 .list{display:flex; flex-direction:column; gap:4px}
 .item{display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; cursor:pointer; text-decoration:none; color:var(--text); border:1px solid transparent}
 .item:hover{ background:#111a3f; border-color:var(--border) }
@@ -51,48 +33,26 @@ h1{font-size:22px; margin:0}
 .item .label{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; font-size:13px}
 .item .badge{font-size:10px; padding:2px 6px; border-radius:999px; background:#19224a; color:#c7d3f5; border:1px solid rgba(109,166,255,.35)}
 
-.viewer{ border:1px solid var(--border); background:#0e1533; border-radius:16px; overflow:hidden; min-height:60vh }
-.viewer iframe{ width:100%; height:calc(100vh - 120px); border:0; background:#0e1533 }
-
-.footer{margin-top:12px; color:var(--muted); font-size:12px}
+.viewer{ background:#0e1533 }
+.viewer iframe{ width:100%; height:100vh; border:0; display:block; background:#0e1533 }
 .err{color:#ff9aa2}
-.links{display:flex; gap:8px; margin-top:8px}
-.btn{appearance:none; border:1px solid var(--border); background:#0e1533; color:var(--text);
-  padding:8px 12px; border-radius:12px; font-weight:600; cursor:pointer; text-decoration:none}
-.btn.primary{background:#17306b;border-color:rgba(109,166,255,.5)}
-.btn:hover{filter:brightness(1.08)}
 </style>
 </head>
 <body>
-  <main class="card" role="main">
-    <div class="header">
-      <div class="logo">KD</div>
-      <div>
-        <h1>Kret's EU Dota League — Reports</h1>
-        <div class="sub">Links links, Report-Ansicht rechts. Quelle: <strong>docs/</strong>-Ordner.</div>
+  <div class="app">
+    <aside class="sidebar" aria-label="Reports">
+      <div class="controls">
+        <div class="spinner" id="loading" aria-hidden="true"></div>
+        <div id="status" class="small">Lade…</div>
       </div>
-    </div>
+      <input id="search" class="input" type="search" placeholder="Suchen (Dateinamen / Ordner)…" aria-label="Suchen" />
+      <div id="nav"></div>
+    </aside>
 
-    <div class="layout">
-      <aside class="sidebar" aria-label="Reports">
-        <div class="controls">
-          <div class="spinner" id="loading" aria-hidden="true"></div>
-          <div id="status" class="small">Lade…</div>
-        </div>
-        <input id="search" class="input" type="search" placeholder="Suchen (Dateinamen / Ordner)…" aria-label="Suchen" />
-        <div class="links">
-          <a id="repoLink" class="btn" target="_blank" rel="noopener">Repo</a>
-          <a id="siteLink" class="btn primary" target="_blank" rel="noopener">Seite</a>
-        </div>
-        <div id="nav"></div>
-        <div class="footer">Tipp: Settings → Pages → <strong>main</strong> / <strong>docs</strong></div>
-      </aside>
-
-      <section class="viewer" aria-label="Report Viewer">
-        <iframe id="viewer" title="Report Viewer" src="about:blank"></iframe>
-      </section>
-    </div>
-  </main>
+    <section class="viewer" aria-label="Report Viewer">
+      <iframe id="viewer" title="Report Viewer" src="about:blank"></iframe>
+    </section>
+  </div>
 
 <script>
 (async function(){
@@ -107,15 +67,12 @@ h1{font-size:22px; margin:0}
     }catch(e){ return `https://${CONFIG.owner}.github.io/${CONFIG.repo}/`; }
   })();
 
-  const repoUrl = `https://github.com/${CONFIG.owner}/${CONFIG.repo}`;
   const $ = sel => document.querySelector(sel);
   const nav = $('#nav');
   const viewer = $('#viewer');
   const status = $('#status');
   const loading = $('#loading');
   const search = $('#search');
-  const repoLink = $('#repoLink'); repoLink.href = repoUrl;
-  const siteLink = $('#siteLink'); siteLink.href = siteUrl;
 
   // GitHub API Helper
   async function fetchJSON(url){
@@ -166,7 +123,6 @@ h1{font-size:22px; margin:0}
     return new Map([...groups.entries()].sort((a,b)=> a[0].localeCompare(b[0],'de')));
   }
 
-  // Render Sidebar
   function render(items){
     const groups = groupAndSort(items);
     nav.innerHTML = '';
@@ -188,17 +144,14 @@ h1{font-size:22px; margin:0}
     updateActiveFromHash();
   }
 
-  // Filter
   function attachFilter(all){
     search.addEventListener('input', ()=>{
       const q = search.value.trim().toLowerCase();
-      if(!q){ render(all); return; }
-      const filtered = all.filter(it => it.label.toLowerCase().includes(q) || (it.folder && it.folder.toLowerCase().includes(q)) );
+      const filtered = q ? all.filter(it => it.label.toLowerCase().includes(q) || (it.folder && it.folder.toLowerCase().includes(q))) : all;
       render(filtered);
     });
   }
 
-  // Viewer
   function openHref(href){
     viewer.src = href;
     try{ localStorage.setItem('kd_selected', href); }catch(_){}
@@ -209,12 +162,10 @@ h1{font-size:22px; margin:0}
     let link = null;
     if(key){ link = nav.querySelector(`.item[href="#${CSS.escape(encodeURIComponent(key))}"]`); }
     if(!link){
-      // Kein Hash: versuche zuletzt angesehen oder erstes Item
       const last = (()=>{ try{ return localStorage.getItem('kd_selected'); }catch(_){ return null; }})();
       if(last){ link = [...nav.querySelectorAll('.item')].find(a=> a.dataset.href===last); }
       if(!link){ link = nav.querySelector('.item'); }
     }
-    // Highlight
     nav.querySelectorAll('.item').forEach(a=> a.classList.remove('active'));
     if(link){ link.classList.add('active'); openHref(link.dataset.href); if(!location.hash){ location.replace('#'+encodeURIComponent(link.dataset.key)); } }
   }
