@@ -1,190 +1,124 @@
 ﻿<!doctype html>
-<html lang="de">
+<html lang='en'>
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kret's EU Dota League — Reports (Fullscreen)</title>
-<meta name="description" content="Links: Reports, rechts: Viewer. Nutzung des gesamten Browserfensters." />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Kret&#39;s EU Dota League - Reports</title>
+<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
 <style>
-:root{ --bg:#0b1020; --muted:#9aa3b2; --text:#eef1f7; --accent:#6da6ff; --border:rgba(255,255,255,.12); }
+:root{--bg:#0b1020;--panel:#121832;--muted:#9aa3b2;--text:#eef1f7;--accent:#6da6ff;--chip:#1a2142;--border:rgba(255,255,255,.08)}
 *{box-sizing:border-box}
-html,body{height:100%; width:100%}
-body{
-  margin:0; background: radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);
-  color:var(--text); font-family:Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-  overflow:hidden;
-}
-.app{ display:grid; grid-template-columns: 300px 1fr; height:100vh; width:100vw }
-@media (max-width: 880px){ .app{ grid-template-columns: 1fr } .viewer iframe{ height: calc(100vh - 56px) } }
-
-.sidebar{ border-right:1px solid var(--border); background:#0f1534; padding:10px; overflow:auto }
-.controls{display:flex; gap:8px; align-items:center; margin-bottom:8px}
-.input{background:#0e1533; border:1px solid var(--border); color:var(--text); border-radius:10px; padding:9px 11px; width:100%}
-.small{font-size:12px; color:var(--muted)}
-.spinner{ width:16px; height:16px; border-radius:50%; border:3px solid rgba(255,255,255,.25); border-top-color:var(--accent); animation:spin .9s linear infinite }
-@keyframes spin { to { transform: rotate(360deg) } }
-.group{margin-top:8px}
-.group h3{font-size:11px; font-weight:700; letter-spacing:.35px; text-transform:uppercase; color:#cfd6e6; margin:10px 6px 6px}
-.list{display:flex; flex-direction:column; gap:4px}
-.item{display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; cursor:pointer; text-decoration:none; color:var(--text); border:1px solid transparent}
-.item:hover{ background:#111a3f; border-color:var(--border) }
-.item.active{ background:#1a2b62; border-color:rgba(109,166,255,.5) }
-.item .label{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; font-size:13px}
-.item .badge{font-size:10px; padding:2px 6px; border-radius:999px; background:#19224a; color:#c7d3f5; border:1px solid rgba(109,166,255,.35)}
-
-.viewer{ background:#0e1533 }
-.viewer iframe{ width:100%; height:100vh; border:0; display:block; background:#0e1533 }
-.err{color:#ff9aa2}
+body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;height:100vh;display:flex}
+.sidebar{width:360px;min-width:280px;max-width:420px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border-right:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:12px}
+.brand h1{font-size:20px;margin:0}
+.sub{color:var(--muted);font-size:13px}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.btn{padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#0e1533;color:var(--text);cursor:pointer;font-size:12px}
+.btn.active{outline:2px solid rgba(109,166,255,.6)}
+.search{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);outline:none}
+.list{margin:0;padding:0;list-style:none;overflow:auto;border:1px solid var(--border);border-radius:12px;flex:1;background:rgba(255,255,255,.02)}
+.item a{display:block;padding:10px 12px;color:var(--text);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.06)}
+.item a:hover{background:rgba(255,255,255,.06)}
+.item.active a{background:rgba(109,166,255,.18)}
+.viewer{flex:1;display:flex;flex-direction:column}
+.viewerbar{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.03)}
+.viewerbar .title{font-weight:600}
+.viewerbar .nav{display:flex;gap:8px}
+.nav .btn{padding:6px 10px}
+iframe{border:0;flex:1;width:100%}
+a{color:var(--accent)}
 </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar" aria-label="Reports">
-      <div class="controls">
-        <div class="spinner" id="loading" aria-hidden="true"></div>
-        <div id="status" class="small">Lade…</div>
-      </div>
-      <input id="search" class="input" type="search" placeholder="Suchen (Dateinamen / Ordner)…" aria-label="Suchen" />
-      <div id="nav"></div>
-    </aside>
+  <aside class='sidebar'>
+    <div class='brand'>
+      <h1>Reports - Kret&#39;s EU Dota League</h1>
+      <div class='sub'>Pick a run or filter by range.</div>
+    </div>
+    <div class='filters'>
+  <a class='btn' href='./dynamic.html' target='_blank' rel='noopener' title='Interactive page with custom timeframe'>Dynamic view</a>
+      <button class='btn' data-f='all'>All entries</button>
+      <button class='btn' data-f='30-days'>30 days</button>
+      <button class='btn' data-f='60-days'>60 days</button>
+      <button class='btn' data-f='120-days'>120 days</button>
+      <button class='btn' data-f='last-patch'>Last patch</button>
+      <button class='btn' data-f='all-games'>All games</button>
+    </div>
+    <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
+    <ul id='list' class='list'>
+<li class="item" data-range="all-games" data-time="638921573974551000"><a href="./kret-s-eu-dota-league_all-games_latest.html">2025-08-30 13:29 - All games</a></li>
+<li class="item" data-range="unknown" data-time="638921572182506062"><a href="./dynamic.html">2025-08-30 13:26 - unknown</a></li>
+<li class="item" data-range="unknown" data-time="638921569566871713"><a href="./alltime-latest.html">2025-08-30 13:22 - unknown</a></li>
+<li class="item" data-range="2025-08-30" data-time="638921226972624780"><a href="./kret-s-eu-dota-league_30-days_2025-08-30_0351.html">2025-08-30 03:51 - 2025-08-30</a></li>
+    </ul>
+  </aside>
 
-    <section class="viewer" aria-label="Report Viewer">
-      <iframe id="viewer" title="Report Viewer" src="about:blank"></iframe>
-    </section>
-  </div>
+  <main class='viewer'>
+    <div class='viewerbar'>
+      <div class='title' id='viewerTitle'>-</div>
+      <div class='nav'>
+        <button class='btn' id='prevBtn' title='Previous (ArrowUp)'><- Previous</button>
+        <button class='btn' id='nextBtn' title='Next (ArrowDown)'>Next -></button>
+        <a class='btn' id='openNew' target='_blank' rel='noopener'>Open in new tab</a>
+      </div>
+    </div>
+    <iframe id='frame' src='about:blank' loading='eager' referrerpolicy='no-referrer'></iframe>
+  </main>
 
 <script>
-(async function(){
-  const CONFIG = { owner:'Zeroks77', repo:'Kret_Dota', branch:'main', root:'docs' };
+(function(){
+  const list = document.getElementById('list');
+  const items = Array.from(list.querySelectorAll('.item'));
+  const q = document.getElementById('q');
+  const btns = Array.from(document.querySelectorAll('.filters .btn'));
+  const frame = document.getElementById('frame');
+  const title = document.getElementById('viewerTitle');
+  const openNew = document.getElementById('openNew');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let filter = 'all'; let selIndex = -1;
 
-  // Basis-URL der Site (funktioniert auch mit Custom Domain)
-  const siteUrl = (()=>{
-    try{
-      let path = location.pathname.replace(/index\.html?$/i,'');
-      let url  = location.origin + path; if(!/\/$/.test(url)) url += '/';
-      return url;
-    }catch(e){ return `https://${CONFIG.owner}.github.io/${CONFIG.repo}/`; }
-  })();
+  function vis(){ return items.filter(li => li.style.display !== 'none'); }
+  function txt(li){ const a=li.querySelector('a'); return a ? a.textContent.trim() : li.getAttribute('data-range'); }
 
-  const $ = sel => document.querySelector(sel);
-  const nav = $('#nav');
-  const viewer = $('#viewer');
-  const status = $('#status');
-  const loading = $('#loading');
-  const search = $('#search');
-
-  // GitHub API Helper
-  async function fetchJSON(url){
-    const r = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
-    if(!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-    return r.json();
-  }
-  async function listPath(path){
-    const api = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(CONFIG.branch)}`;
-    return fetchJSON(api);
-  }
-
-  // Recurse docs/ sammeln
-  async function walk(dir){
-    const entries = await listPath(dir);
-    const out = [];
-    const hasIndex = entries.some(e => e.type==='file' && /^index\.html?$/i.test(e.name));
-    if(hasIndex){
-      const rel = dir.replace(/^\/*?docs\/?/i,'').replace(/\/$/,'');
-      const href = siteUrl + (rel ? rel + '/' : '');
-      const folder = rel.split('/')[0] || 'root';
-      out.push({ href, label: (rel? rel+'/':'/'), folder, isFolder:true, key:(rel? rel+'/':'/') });
-    }
-    for(const e of entries){
-      if(e.type==='dir'){
-        const sub = await walk(e.path); out.push(...sub);
-      } else if(e.type==='file' && /\.html?$/i.test(e.name)){
-        if(/^index\.html?$/i.test(e.name)) continue;
-        const rel = e.path.replace(/^\/*?docs\/?/i,'');
-        const href = siteUrl + rel;
-        const folder = rel.includes('/') ? rel.split('/')[0] : 'root';
-        out.push({ href, label: rel, folder, isFolder:false, key: rel });
-      }
-    }
-    return out;
-  }
-
-  function groupAndSort(items){
-    const groups = new Map();
-    for(const it of items){
-      const key = it.folder || 'root';
-      if(!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(it);
-    }
-    for(const [,arr] of groups){
-      arr.sort((a,b)=> (Number(b.isFolder)-Number(a.isFolder)) || a.label.localeCompare(b.label,'de'));
-    }
-    return new Map([...groups.entries()].sort((a,b)=> a[0].localeCompare(b[0],'de')));
-  }
-
-  function render(items){
-    const groups = groupAndSort(items);
-    nav.innerHTML = '';
-    for(const [g, arr] of groups){
-      const sec = document.createElement('div'); sec.className='group';
-      const h = document.createElement('h3'); h.textContent = g;
-      const list = document.createElement('div'); list.className='list';
-      for(const it of arr){
-        const a = document.createElement('a'); a.href = '#'+encodeURIComponent(it.key); a.className='item';
-        const lab = document.createElement('div'); lab.className='label'; lab.textContent = it.label;
-        const badge = document.createElement('div'); badge.className='badge'; badge.textContent = it.isFolder? 'Index' : 'HTML';
-        a.appendChild(lab); a.appendChild(badge);
-        a.dataset.href = it.href; a.dataset.key = it.key;
-        list.appendChild(a);
-      }
-      sec.appendChild(h); sec.appendChild(list); nav.appendChild(sec);
-    }
-    status.textContent = `${items.length} Einträge`;
-    updateActiveFromHash();
-  }
-
-  function attachFilter(all){
-    search.addEventListener('input', ()=>{
-      const q = search.value.trim().toLowerCase();
-      const filtered = q ? all.filter(it => it.label.toLowerCase().includes(q) || (it.folder && it.folder.toLowerCase().includes(q))) : all;
-      render(filtered);
+  function apply(){
+    const term = q.value.trim().toLowerCase(); let n=0;
+    items.forEach(li=>{
+      const rg = li.getAttribute('data-range'), t = txt(li).toLowerCase();
+      const ok = (filter==='all' || rg===filter) && (!term || t.includes(term));
+      li.style.display = ok ? '' : 'none'; if (ok) n++;
     });
+    if (n===0){ selIndex=-1; frame.src='about:blank'; title.textContent='No results'; openNew.removeAttribute('href'); }
+    else if (selIndex<0){ select(0); }
+    sync();
   }
-
-  function openHref(href){
-    viewer.src = href;
-    try{ localStorage.setItem('kd_selected', href); }catch(_){}
+  function select(i){
+    const v = vis(); if (!v.length) return;
+    if (i<0) i=0; if (i>=v.length) i=v.length-1;
+    v.forEach(li => li.classList.remove('active'));
+    const li=v[i]; li.classList.add('active');
+    const a=li.querySelector('a');
+    if (a){ const href=a.getAttribute('href'); frame.src=href; title.textContent=a.textContent.trim(); openNew.setAttribute('href',href); history.replaceState(null,'','#file='+encodeURIComponent(href)); }
+    selIndex=i; li.scrollIntoView({block:'nearest'}); sync();
   }
+  function sync(){ const v=vis(); prevBtn.disabled = (selIndex<=0 || !v.length); nextBtn.disabled = (selIndex>=v.length-1 || !v.length); }
 
-  function updateActiveFromHash(){
-    const key = decodeURIComponent((location.hash||'').slice(1));
-    let link = null;
-    if(key){ link = nav.querySelector(`.item[href="#${CSS.escape(encodeURIComponent(key))}"]`); }
-    if(!link){
-      const last = (()=>{ try{ return localStorage.getItem('kd_selected'); }catch(_){ return null; }})();
-      if(last){ link = [...nav.querySelectorAll('.item')].find(a=> a.dataset.href===last); }
-      if(!link){ link = nav.querySelector('.item'); }
-    }
-    nav.querySelectorAll('.item').forEach(a=> a.classList.remove('active'));
-    if(link){ link.classList.add('active'); openHref(link.dataset.href); if(!location.hash){ location.replace('#'+encodeURIComponent(link.dataset.key)); } }
+  items.forEach(li=>li.addEventListener('click', e=>{e.preventDefault(); const v=vis(); const idx=v.indexOf(li); if (idx>=0) select(idx);}));
+  btns.forEach(b=>b.addEventListener('click', ()=>{ btns.forEach(x=>x.classList.remove('active')); b.classList.add('active'); filter=b.getAttribute('data-f'); apply(); }));
+  q.addEventListener('input', apply);
+  prevBtn.addEventListener('click', ()=> select(selIndex-1));
+  nextBtn.addEventListener('click', ()=> select(selIndex+1));
+  document.addEventListener('keydown', ev=>{ if (ev.key==='ArrowUp'){ev.preventDefault(); select(selIndex-1);} if (ev.key==='ArrowDown'){ev.preventDefault(); select(selIndex+1);} });
+
+  function init(){
+    const params = new URLSearchParams(location.search);
+    const rangeQ = params.get('range');
+    const file = new URLSearchParams(location.hash.replace(/^#/, '')).get('file');
+    if (rangeQ){ const btn=btns.find(b=>b.getAttribute('data-f')===rangeQ); if (btn) btn.click(); } else { btns[0].classList.add('active'); }
+    if (file){ const t=items.find(li => li.querySelector('a')?.getAttribute('href')===file); if (t && t.style.display!=='none'){ const v=vis(); const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } } }
+    apply();
   }
-
-  window.addEventListener('hashchange', ()=>{
-    const key = decodeURIComponent((location.hash||'').slice(1));
-    const link = key ? nav.querySelector(`.item[href="#${CSS.escape(encodeURIComponent(key))}"]`) : null;
-    if(link){ nav.querySelectorAll('.item').forEach(a=> a.classList.remove('active')); link.classList.add('active'); openHref(link.dataset.href); }
-  });
-
-  try{
-    const all = await walk(CONFIG.root);
-    loading.style.display='none';
-    render(all);
-    attachFilter(all);
-  } catch(err){
-    loading.style.display='none';
-    status.innerHTML = `<span class="err">Fehler:</span> ${err.message}`;
-  }
+  init();
 })();
 </script>
 </body>

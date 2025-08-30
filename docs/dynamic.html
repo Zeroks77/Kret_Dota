@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kret's EU Dota League – Dynamic Viewer</title>
+<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
+<style>
+:root{--bg:#0b1020;--panel:#121832;--muted:#9aa3b2;--text:#eef1f7;--accent:#6da6ff;--chip:#1a2142;--border:rgba(255,255,255,.08)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+.wrapper{max-width:1180px;margin:0 auto;padding:16px}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:12px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.controls .field{display:flex;flex-direction:column;gap:6px}
+input,select,button{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)}
+button{cursor:pointer}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+.table th{text-align:left;color:var(--muted);font-weight:600}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--text);font-size:12px}
+.win{color:#7be495} .loss{color:#ff8b8b}
+.logo{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.1);margin-right:6px}
+.heroes{display:flex;gap:8px;flex-wrap:wrap}
+.hero{display:inline-flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;width:64px}
+.hero img{width:64px;height:36px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <h1 style="margin:0;font-size:22px">Dynamic viewer</h1>
+    <div class="badge">Client-side, using docs/data/*.json</div>
+  </div>
+  <div class="card controls">
+    <div class="field">
+      <label for="from">From (UTC)</label>
+      <input type="datetime-local" id="from">
+    </div>
+    <div class="field">
+      <label for="to">To (UTC)</label>
+      <input type="datetime-local" id="to">
+    </div>
+    <div class="field">
+      <label for="quick">Quick range</label>
+      <select id="quick">
+        <option value="">-- pick --</option>
+        <option value="30">Last 30 days</option>
+        <option value="60">Last 60 days</option>
+        <option value="120">Last 120 days</option>
+        <option value="patch">Last patch</option>
+        <option value="all">All time</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <button id="apply">Apply</button>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:12px">
+    <div class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Players</h2>
+      <table class="table" id="playersTable"><thead><tr>
+        <th>Name</th><th>Games</th><th>W-L</th><th>WR</th><th>Top 3 heroes</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Teams</h2>
+      <table class="table" id="teamsTable"><thead><tr>
+        <th>Team</th><th>Games</th><th>W-L</th><th>WR</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h2 style="margin:0 0 8px;font-size:18px">Heroes</h2>
+    <table class="table" id="heroesTable"><thead><tr>
+      <th>Hero</th><th>Picks</th><th>Bans</th><th>Wins</th><th>WR</th><th>Best player</th>
+    </tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<script>
+const OD_PLAYER_URL = id => `https://www.opendota.com/players/${id}`;
+function fmtPct(x){ return (x*100).toFixed(1)+'%'; }
+async function loadJson(url){ const r=await fetch(url,{cache:'no-store'}); if(!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }
+async function loadJsonWithFallback(rel, raw){
+  try { return await loadJson(rel); } catch(e){ return await loadJson(raw); }
+}
+function unix(dt){ return Math.floor(dt.getTime()/1000); }
+function toUTCInput(unixSec){ if(!unixSec) return ''; const d=new Date(unixSec*1000); const pad=n=>String(n).padStart(2,'0'); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`; }
+
+function aggregate(matches, playerNames, teamNames){
+  const teams=new Map(), players=new Map(), teamPlayers=new Map(), heroStats=new Map(), heroPlayerAgg=new Map();
+  for(const m of matches){
+    const radWin=!!m.radiant_win, radTeamId=m.radiant_team_id|0, dirTeamId=m.dire_team_id|0;
+    const radName = teamNames[String(radTeamId)] || m.radiant_name || 'Radiant';
+    const dirName = teamNames[String(dirTeamId)] || m.dire_name    || 'Dire';
+    function ensureTeam(id,name){ if(!id) return; if(!teams.has(id)) teams.set(id,{team_id:id,name,games:0,wins:0,losses:0}); }
+    ensureTeam(radTeamId,radName); ensureTeam(dirTeamId,dirName);
+    if(radTeamId){ const t=teams.get(radTeamId); t.games++; if(radWin) t.wins++; else t.losses++; if(radName && radName!=='Radiant') t.name=radName; }
+    if(dirTeamId){ const t=teams.get(dirTeamId); t.games++; if(radWin) t.losses++; else t.wins++; if(dirName && dirName!=='Dire') t.name=dirName; }
+
+    if(Array.isArray(m.picks_bans)){
+      for(const pb of m.picks_bans){ const hid=pb.hero_id|0; let hs=heroStats.get(hid); if(!hs){ hs={picks:0,wins:0,bans:0}; heroStats.set(hid,hs);} if(!pb.is_pick) hs.bans++; }
+    }
+
+    for(const p of m.players||[]){
+      const id=Number(p.account_id||0); if(!(id>0)) continue;
+      if(!players.has(id)){
+        const nm = p.personaname || playerNames[String(id)] || `Player ${id}`;
+        players.set(id,{account_id:id,name:nm,games:0,wins:0,roles:{},heroes:{},profile:OD_PLAYER_URL(id)});
+      }
+      const ps=players.get(id); ps.games++;
+      const won = p.is_radiant ? radWin : !radWin; if(won) ps.wins++;
+      ps.roles['Unknown'] = (ps.roles['Unknown']||0)+1;
+      const hid = p.hero_id|0; if(hid>0){
+        ps.heroes[String(hid)] = (ps.heroes[String(hid)]||0)+1;
+        let hs=heroStats.get(hid); if(!hs){ hs={picks:0,wins:0,bans:0}; heroStats.set(hid,hs);} hs.picks++; if(won) hs.wins++;
+        if(!heroPlayerAgg.has(hid)) heroPlayerAgg.set(hid,new Map());
+        if(!heroPlayerAgg.get(hid).has(id)) heroPlayerAgg.get(hid).set(id,{account_id:id,name:ps.name,games:0,wins:0,profile:ps.profile});
+        const hp=heroPlayerAgg.get(hid).get(id); hp.games++; if(won) hp.wins++;
+      }
+      const teamId = p.is_radiant ? radTeamId : dirTeamId; if(teamId){
+        if(!teamPlayers.has(teamId)) teamPlayers.set(teamId,new Map());
+        if(!teamPlayers.get(teamId).has(id)) teamPlayers.get(teamId).set(id,{account_id:id,name:ps.name,games:0,wins:0,profile:ps.profile});
+        const tp=teamPlayers.get(teamId).get(id); tp.games++; if(won) tp.wins++;
+      }
+    }
+  }
+  return {teams,players,teamPlayers,heroStats,heroPlayerAgg};
+}
+
+function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
+  // Players
+  const playerRows = Array.from(players.values()).map(p=>{
+    const wr = p.games>0 ? p.wins/p.games : 0;
+    const heroes = Object.entries(p.heroes).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([hid,cnt])=>{
+      const meta=heroMap[hid]||{name:`Hero ${hid}`,img:''};
+      return `<div class='hero' title='${meta.name}'><img src='${meta.img}' alt='${meta.name}'><div>${meta.name}<br><span class='badge'>x${cnt}</span></div></div>`;
+    }).join('');
+    return `<tr><td><a href='${p.profile}' target='_blank' rel='noopener'>${p.name}</a></td><td>${p.games}</td><td><span class='win'>${p.wins}</span>-<span class='loss'>${p.games-p.wins}</span></td><td>${fmtPct(wr)}</td><td><div class='heroes'>${heroes||'<span class="badge">-</span>'}</div></td></tr>`;
+  }).sort((a,b)=>{
+    // sort by WR desc then games desc using data-extraction
+    return 0;
+  }).join('');
+  document.querySelector('#playersTable tbody').innerHTML = playerRows;
+
+  // Teams
+  const teamRows = Array.from(teams.values()).map(t=>{
+    const wr = t.games>0 ? t.wins/t.games : 0;
+    const nm = t.name || `Team ${t.team_id}`;
+    return `<tr><td>${nm}</td><td>${t.games}</td><td><span class='win'>${t.wins}</span>-<span class='loss'>${t.losses}</span></td><td>${fmtPct(wr)}</td></tr>`;
+  }).join('');
+  document.querySelector('#teamsTable tbody').innerHTML = teamRows;
+
+  // Heroes
+  const heroRows = Array.from(heroStats.keys()).map(hid=>{
+    const hs=heroStats.get(hid), picks=hs.picks|0, wins=hs.wins|0, bans=hs.bans|0, wr = picks>0 ? wins/picks : 0;
+    const meta = heroMap[String(hid)] || {name:`Hero ${hid}`,img:''};
+    // best player
+    let bestLabel='<span class="badge">no data</span>', bestWr=0; const hpa=heroPlayerAgg.get(hid);
+    if(hpa){ const arr=Array.from(hpa.values()).filter(x=>x.games>0).map(x=>({...x,wr:x.wins/x.games})).sort((a,b)=> b.wr - a.wr || b.games - a.games || b.wins - a.wins );
+      if(arr.length){ const b=arr[0]; bestLabel = `<a href='${b.profile}' target='_blank'>${b.name}</a> - ${fmtPct(b.wr)} (${b.wins}/${b.games})`; bestWr=b.wr; }
+    }
+    return `<tr><td><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td><td>${picks}</td><td>${bans}</td><td>${wins}</td><td>${fmtPct(wr)}</td><td>${bestLabel}</td></tr>`;
+  }).join('');
+  document.querySelector('#heroesTable tbody').innerHTML = heroRows;
+}
+
+async function main(){
+  // Load from root-level data/ via relative path (local) or raw.githubusercontent.com (GitHub Pages)
+  const REPO='Zeroks77/Kret_Dota'; const BRANCH='main';
+  const relBase='../data'; const rawBase=`https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
+  const [manifest, heroes, info] = await Promise.all([
+    loadJsonWithFallback(`${relBase}/manifest.json`, `${rawBase}/manifest.json`),
+    loadJsonWithFallback(`${relBase}/heroes.json`, `${rawBase}/heroes.json`),
+    loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({}))
+  ]);
+  // Fetch all month shards listed in manifest
+  const months = (manifest && Array.isArray(manifest.months)) ? manifest.months : [];
+  const files = months.map(m => ({rel: `${relBase}/${m.file}`, raw: `${rawBase}/${m.file}`}));
+  const shards = await Promise.all(files.map(p => loadJsonWithFallback(p.rel, p.raw).catch(()=>[])));
+  let allMatches = shards.flat();
+  // Names aren’t shipped separately in shards; derive names from matches where available
+  const playerNames = {}; const teamNames = {};
+  for(const m of allMatches){
+    if(Array.isArray(m.players)){
+      for(const p of m.players){ if(p && p.account_id>0 && p.personaname){ playerNames[String(p.account_id)] = p.personaname; } }
+    }
+    if(m.radiant_team_id && m.radiant_name) teamNames[String(m.radiant_team_id)] = m.radiant_name;
+    if(m.dire_team_id && m.dire_name)       teamNames[String(m.dire_team_id)]    = m.dire_name;
+  }
+
+  const from = document.getElementById('from'), to = document.getElementById('to'), quick = document.getElementById('quick');
+  function apply(){
+    let f=from.valueAsDate? unix(new Date(from.value)) : 0;
+    let t=to.valueAsDate? unix(new Date(to.value)) : Number.MAX_SAFE_INTEGER;
+    const subset = allMatches.filter(m=> (m.start_time>=f) && (m.start_time<=t) );
+    const agg = aggregate(subset, playerNames, teamNames);
+    render(agg, heroes);
+  }
+  document.getElementById('apply').addEventListener('click', apply);
+  quick.addEventListener('change', async ()=>{
+    const v=quick.value;
+    const now = Math.floor(Date.now()/1000);
+    let fromUnix=0;
+    if(v==='30') fromUnix = now - 30*86400; else if(v==='60') fromUnix = now - 60*86400; else if(v==='120') fromUnix = now - 120*86400; else if(v==='patch'){
+      try{ const patch=await fetch('https://api.opendota.com/api/constants/patch',{cache:'force-cache'}).then(r=>r.json());
+        let latest=0; for(const k in patch){ const it=patch[k]; const d = typeof it.date==='number' ? it.date : Date.parse(it.date)/1000; if(!isNaN(d) && d>latest) latest=d; }
+        fromUnix = latest||0;
+      }catch{ fromUnix=0; }
+    } else if(v==='all'){ fromUnix = 0; }
+    from.value = toUTCInput(fromUnix); to.value = toUTCInput(now);
+  });
+
+  // Initialize inputs to last 30 days
+  const now = Math.floor(Date.now()/1000);
+  from.value = toUTCInput(now - 30*86400);
+  to.value   = toUTCInput(now);
+  apply();
+}
+main().catch(e=>{
+  document.body.innerHTML = `<div style='padding:24px;color:#fff'>Failed to load data. ${e}</div>`;
+  console.error(e);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# PowerShell / temp
+*.ps1.tmp
+*.log
+
+# Node or other caches (just in case)
+node_modules/
+
+# Local data caches (not for repo)
+/data/cache/
+/data/*.bak
+
+# Python caches, if any
+__pycache__/
+*.pyc
+
+# Avoid committing large raw JSON except the whitelisted ones
+# We intentionally allow data/alltime-state.json and docs/data/*.json via workflows

@@ -1,0 +1,29 @@
+name: Monthly 30-day report (from cache)
+
+on:
+  schedule:
+    - cron: '5 3 1 * *' # 03:05 UTC on the 1st of each month, after daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-report:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate 30-day report from cache
+        shell: pwsh
+        run: |
+          ./reportgenerator.ps1 -Range 30 -PreferShards -PublishToRepo -RepoPath . -OutFile docs/last-30-days.html -VerboseLog
+      - name: Commit and push
+        if: ${{ success() }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+            git add -- docs/
+            git add -- data/heroes.json data/manifest.json data/info.json || true
+            git add -- data/matches/*.json || true
+            git commit -m "chore(ci): monthly 30-day report from shards" || echo "no changes"
+          git push

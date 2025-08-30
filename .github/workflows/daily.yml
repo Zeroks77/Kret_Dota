@@ -1,0 +1,32 @@
+name: Daily all-time ingest
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # daily at 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run all-time ingest
+        shell: pwsh
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+        run: |
+          ./reportgenerator.ps1 -Range All -StableAll -PublishToRepo -RepoPath . -OutFile docs/alltime-latest.html -VerboseLog
+      - name: Commit and push
+        if: ${{ success() }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add -- docs/
+          git add -- data/alltime-state.json || true
+          git add -- data/heroes.json data/manifest.json data/info.json || true
+          git add -- data/matches/*.json || true
+          git commit -m "chore(ci): daily ingest" || echo "no changes"
+          git push
