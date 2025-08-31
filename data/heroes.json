@@ -1,758 +1,758 @@
-﻿{
-    "78":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/brewmaster.png",
-               "name":  "Brewmaster",
-               "id":  78,
-               "tag":  "brewmaster"
-           },
-    "119":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/dark_willow.png",
-                "name":  "Dark Willow",
-                "id":  119,
-                "tag":  "dark_willow"
-            },
-    "15":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/razor.png",
-               "name":  "Razor",
-               "id":  15,
-               "tag":  "razor"
-           },
-    "63":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/weaver.png",
-               "name":  "Weaver",
-               "id":  63,
-               "tag":  "weaver"
-           },
-    "58":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/enchantress.png",
-               "name":  "Enchantress",
-               "id":  58,
-               "tag":  "enchantress"
-           },
-    "123":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/hoodwink.png",
-                "name":  "Hoodwink",
-                "id":  123,
-                "tag":  "hoodwink"
-            },
-    "104":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/legion_commander.png",
-                "name":  "Legion Commander",
-                "id":  104,
-                "tag":  "legion_commander"
-            },
-    "49":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/dragon_knight.png",
-               "name":  "Dragon Knight",
-               "id":  49,
-               "tag":  "dragon_knight"
-           },
-    "109":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/terrorblade.png",
-                "name":  "Terrorblade",
-                "id":  109,
-                "tag":  "terrorblade"
-            },
-    "121":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/grimstroke.png",
-                "name":  "Grimstroke",
-                "id":  121,
-                "tag":  "grimstroke"
-            },
-    "22":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/zuus.png",
-               "name":  "Zeus",
-               "id":  22,
-               "tag":  "zuus"
-           },
-    "17":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/storm_spirit.png",
-               "name":  "Storm Spirit",
-               "id":  17,
-               "tag":  "storm_spirit"
-           },
-    "47":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/viper.png",
-               "name":  "Viper",
-               "id":  47,
-               "tag":  "viper"
-           },
-    "77":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/lycan.png",
-               "name":  "Lycan",
-               "id":  77,
-               "tag":  "lycan"
-           },
-    "73":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/alchemist.png",
-               "name":  "Alchemist",
-               "id":  73,
-               "tag":  "alchemist"
-           },
-    "136":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/marci.png",
-                "name":  "Marci",
-                "id":  136,
-                "tag":  "marci"
-            },
-    "25":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/lina.png",
-               "name":  "Lina",
-               "id":  25,
-               "tag":  "lina"
-           },
-    "59":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/huskar.png",
-               "name":  "Huskar",
-               "id":  59,
-               "tag":  "huskar"
-           },
-    "113":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/arc_warden.png",
-                "name":  "Arc Warden",
-                "id":  113,
-                "tag":  "arc_warden"
-            },
-    "68":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/ancient_apparition.png",
-               "name":  "Ancient Apparition",
-               "id":  68,
-               "tag":  "ancient_apparition"
-           },
-    "28":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/slardar.png",
-               "name":  "Slardar",
-               "id":  28,
-               "tag":  "slardar"
-           },
-    "65":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/batrider.png",
-               "name":  "Batrider",
-               "id":  65,
-               "tag":  "batrider"
-           },
-    "40":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/venomancer.png",
-               "name":  "Venomancer",
-               "id":  40,
-               "tag":  "venomancer"
-           },
-    "126":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/void_spirit.png",
-                "name":  "Void Spirit",
-                "id":  126,
-                "tag":  "void_spirit"
-            },
-    "14":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/pudge.png",
-               "name":  "Pudge",
-               "id":  14,
-               "tag":  "pudge"
-           },
-    "101":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/skywrath_mage.png",
-                "name":  "Skywrath Mage",
-                "id":  101,
-                "tag":  "skywrath_mage"
-            },
-    "26":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/lion.png",
-               "name":  "Lion",
-               "id":  26,
-               "tag":  "lion"
-           },
-    "35":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/sniper.png",
-               "name":  "Sniper",
-               "id":  35,
-               "tag":  "sniper"
-           },
-    "102":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/abaddon.png",
-                "name":  "Abaddon",
-                "id":  102,
-                "tag":  "abaddon"
-            },
-    "96":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/centaur.png",
-               "name":  "Centaur Warrunner",
-               "id":  96,
-               "tag":  "centaur"
-           },
-    "3":  {
-              "img":  "https://courier.spectral.gg/images/dota/portraits/bane.png",
-              "name":  "Bane",
-              "id":  3,
-              "tag":  "bane"
-          },
-    "99":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/bristleback.png",
-               "name":  "Bristleback",
-               "id":  99,
-               "tag":  "bristleback"
-           },
-    "76":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/obsidian_destroyer.png",
-               "name":  "Outworld Devourer",
-               "id":  76,
-               "tag":  "obsidian_destroyer"
-           },
-    "36":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/necrolyte.png",
-               "name":  "Necrophos",
-               "id":  36,
-               "tag":  "necrolyte"
-           },
-    "13":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/puck.png",
-               "name":  "Puck",
-               "id":  13,
-               "tag":  "puck"
-           },
-    "75":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/silencer.png",
-               "name":  "Silencer",
-               "id":  75,
-               "tag":  "silencer"
-           },
-    "51":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/rattletrap.png",
-               "name":  "Clockwerk",
-               "id":  51,
-               "tag":  "rattletrap"
-           },
-    "45":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/pugna.png",
-               "name":  "Pugna",
-               "id":  45,
-               "tag":  "pugna"
-           },
-    "114":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/monkey_king.png",
-                "name":  "Monkey King",
-                "id":  114,
-                "tag":  "monkey_king"
-            },
-    "38":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/beastmaster.png",
-               "name":  "Beastmaster",
-               "id":  38,
-               "tag":  "beastmaster"
-           },
-    "83":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/treant.png",
-               "name":  "Treant Protector",
-               "id":  83,
-               "tag":  "treant"
-           },
-    "85":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/undying.png",
-               "name":  "Undying",
-               "id":  85,
-               "tag":  "undying"
-           },
-    "105":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/techies.png",
-                "name":  "Techies",
-                "id":  105,
-                "tag":  "techies"
-            },
-    "6":  {
-              "img":  "https://courier.spectral.gg/images/dota/portraits/drow_ranger.png",
-              "name":  "Drow Ranger",
-              "id":  6,
-              "tag":  "drow_ranger"
-          },
-    "106":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/ember_spirit.png",
-                "name":  "Ember Spirit",
-                "id":  106,
-                "tag":  "ember_spirit"
-            },
-    "23":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/kunkka.png",
-               "name":  "Kunkka",
-               "id":  23,
-               "tag":  "kunkka"
-           },
-    "12":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/phantom_lancer.png",
-               "name":  "Phantom Lancer",
-               "id":  12,
-               "tag":  "phantom_lancer"
-           },
-    "27":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png",
-               "name":  "Shadow Shaman",
-               "id":  27,
-               "tag":  "shadow_shaman"
-           },
-    "8":  {
-              "img":  "https://courier.spectral.gg/images/dota/portraits/juggernaut.png",
-              "name":  "Juggernaut",
-              "id":  8,
-              "tag":  "juggernaut"
-          },
-    "71":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/spirit_breaker.png",
-               "name":  "Spirit Breaker",
-               "id":  71,
-               "tag":  "spirit_breaker"
-           },
-    "30":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/witch_doctor.png",
-               "name":  "Witch Doctor",
-               "id":  30,
-               "tag":  "witch_doctor"
-           },
-    "93":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/slark.png",
-               "name":  "Slark",
-               "id":  93,
-               "tag":  "slark"
-           },
-    "86":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/rubick.png",
-               "name":  "Rubick",
-               "id":  86,
-               "tag":  "rubick"
-           },
-    "69":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/doom_bringer.png",
-               "name":  "Doom",
-               "id":  69,
-               "tag":  "doom_bringer"
-           },
-    "54":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/life_stealer.png",
-               "name":  "Lifestealer",
-               "id":  54,
-               "tag":  "life_stealer"
-           },
-    "48":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/luna.png",
-               "name":  "Luna",
-               "id":  48,
-               "tag":  "luna"
-           },
-    "66":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/chen.png",
-               "name":  "Chen",
-               "id":  66,
-               "tag":  "chen"
-           },
-    "57":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/omniknight.png",
-               "name":  "Omniknight",
-               "id":  57,
-               "tag":  "omniknight"
-           },
-    "129":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/mars.png",
-                "name":  "Mars",
-                "id":  129,
-                "tag":  "mars"
-            },
-    "43":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/death_prophet.png",
-               "name":  "Death Prophet",
-               "id":  43,
-               "tag":  "death_prophet"
-           },
-    "5":  {
-              "img":  "https://courier.spectral.gg/images/dota/portraits/crystal_maiden.png",
-              "name":  "Crystal Maiden",
-              "id":  5,
-              "tag":  "crystal_maiden"
-          },
-    "103":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/elder_titan.png",
-                "name":  "Elder Titan",
-                "id":  103,
-                "tag":  "elder_titan"
-            },
-    "60":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/night_stalker.png",
-               "name":  "Night Stalker",
-               "id":  60,
-               "tag":  "night_stalker"
-           },
-    "95":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/troll_warlord.png",
-               "name":  "Troll Warlord",
-               "id":  95,
-               "tag":  "troll_warlord"
-           },
-    "111":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/oracle.png",
-                "name":  "Oracle",
-                "id":  111,
-                "tag":  "oracle"
-            },
-    "98":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/shredder.png",
-               "name":  "Timbersaw",
-               "id":  98,
-               "tag":  "shredder"
-           },
-    "79":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/shadow_demon.png",
-               "name":  "Shadow Demon",
-               "id":  79,
-               "tag":  "shadow_demon"
-           },
-    "74":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/invoker.png",
-               "name":  "Invoker",
-               "id":  74,
-               "tag":  "invoker"
-           },
-    "34":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/tinker.png",
-               "name":  "Tinker",
-               "id":  34,
-               "tag":  "tinker"
-           },
-    "120":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/pangolier.png",
-                "name":  "Pangolier",
-                "id":  120,
-                "tag":  "pangolier"
-            },
-    "53":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/furion.png",
-               "name":  "Nature\u0027s Prophet",
-               "id":  53,
-               "tag":  "furion"
-           },
-    "2":  {
-              "img":  "https://courier.spectral.gg/images/dota/portraits/axe.png",
-              "name":  "Axe",
-              "id":  2,
-              "tag":  "axe"
-          },
-    "4":  {
-              "img":  "https://courier.spectral.gg/images/dota/portraits/bloodseeker.png",
-              "name":  "Bloodseeker",
-              "id":  4,
-              "tag":  "bloodseeker"
-          },
-    "44":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/phantom_assassin.png",
-               "name":  "Phantom Assassin",
-               "id":  44,
-               "tag":  "phantom_assassin"
-           },
-    "46":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/templar_assassin.png",
-               "name":  "Templar Assassin",
-               "id":  46,
-               "tag":  "templar_assassin"
-           },
-    "64":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/jakiro.png",
-               "name":  "Jakiro",
-               "id":  64,
-               "tag":  "jakiro"
-           },
-    "11":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/nevermore.png",
-               "name":  "Shadow Fiend",
-               "id":  11,
-               "tag":  "nevermore"
-           },
-    "137":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/primal_beast.png",
-                "name":  "Primal Beast",
-                "id":  137,
-                "tag":  "primal_beast"
-            },
-    "70":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/ursa.png",
-               "name":  "Ursa",
-               "id":  70,
-               "tag":  "ursa"
-           },
-    "62":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/bounty_hunter.png",
-               "name":  "Bounty Hunter",
-               "id":  62,
-               "tag":  "bounty_hunter"
-           },
-    "50":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/dazzle.png",
-               "name":  "Dazzle",
-               "id":  50,
-               "tag":  "dazzle"
-           },
-    "1":  {
-              "img":  "https://courier.spectral.gg/images/dota/portraits/antimage.png",
-              "name":  "Anti-Mage",
-              "id":  1,
-              "tag":  "antimage"
-          },
-    "145":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/kez.png",
-                "name":  "Kez",
-                "id":  145,
-                "tag":  "kez"
-            },
-    "92":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/visage.png",
-               "name":  "Visage",
-               "id":  92,
-               "tag":  "visage"
-           },
-    "87":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/disruptor.png",
-               "name":  "Disruptor",
-               "id":  87,
-               "tag":  "disruptor"
-           },
-    "33":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/enigma.png",
-               "name":  "Enigma",
-               "id":  33,
-               "tag":  "enigma"
-           },
-    "88":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/nyx_assassin.png",
-               "name":  "Nyx Assassin",
-               "id":  88,
-               "tag":  "nyx_assassin"
-           },
-    "67":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/spectre.png",
-               "name":  "Spectre",
-               "id":  67,
-               "tag":  "spectre"
-           },
-    "56":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/clinkz.png",
-               "name":  "Clinkz",
-               "id":  56,
-               "tag":  "clinkz"
-           },
-    "16":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/sand_king.png",
-               "name":  "Sand King",
-               "id":  16,
-               "tag":  "sand_king"
-           },
-    "128":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/snapfire.png",
-                "name":  "Snapfire",
-                "id":  128,
-                "tag":  "snapfire"
-            },
-    "72":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/gyrocopter.png",
-               "name":  "Gyrocopter",
-               "id":  72,
-               "tag":  "gyrocopter"
-           },
-    "19":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/tiny.png",
-               "name":  "Tiny",
-               "id":  19,
-               "tag":  "tiny"
-           },
-    "131":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/ringmaster.png",
-                "name":  "Ring Master",
-                "id":  131,
-                "tag":  "ringmaster"
-            },
-    "29":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/tidehunter.png",
-               "name":  "Tidehunter",
-               "id":  29,
-               "tag":  "tidehunter"
-           },
-    "61":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/broodmother.png",
-               "name":  "Broodmother",
-               "id":  61,
-               "tag":  "broodmother"
-           },
-    "20":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png",
-               "name":  "Vengeful Spirit",
-               "id":  20,
-               "tag":  "vengefulspirit"
-           },
-    "94":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/medusa.png",
-               "name":  "Medusa",
-               "id":  94,
-               "tag":  "medusa"
-           },
-    "97":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/magnataur.png",
-               "name":  "Magnus",
-               "id":  97,
-               "tag":  "magnataur"
-           },
-    "9":  {
-              "img":  "https://courier.spectral.gg/images/dota/portraits/mirana.png",
-              "name":  "Mirana",
-              "id":  9,
-              "tag":  "mirana"
-          },
-    "37":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/warlock.png",
-               "name":  "Warlock",
-               "id":  37,
-               "tag":  "warlock"
-           },
-    "7":  {
-              "img":  "https://courier.spectral.gg/images/dota/portraits/earthshaker.png",
-              "name":  "Earthshaker",
-              "id":  7,
-              "tag":  "earthshaker"
-          },
-    "52":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/leshrac.png",
-               "name":  "Leshrac",
-               "id":  52,
-               "tag":  "leshrac"
-           },
-    "81":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/chaos_knight.png",
-               "name":  "Chaos Knight",
-               "id":  81,
-               "tag":  "chaos_knight"
-           },
-    "107":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/earth_spirit.png",
-                "name":  "Earth Spirit",
-                "id":  107,
-                "tag":  "earth_spirit"
-            },
-    "39":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/queenofpain.png",
-               "name":  "Queen of Pain",
-               "id":  39,
-               "tag":  "queenofpain"
-           },
-    "82":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/meepo.png",
-               "name":  "Meepo",
-               "id":  82,
-               "tag":  "meepo"
-           },
-    "108":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/abyssal_underlord.png",
-                "name":  "Underlord",
-                "id":  108,
-                "tag":  "abyssal_underlord"
-            },
-    "90":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/keeper_of_the_light.png",
-               "name":  "Keeper of the Light",
-               "id":  90,
-               "tag":  "keeper_of_the_light"
-           },
-    "80":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/lone_druid.png",
-               "name":  "Lone Druid",
-               "id":  80,
-               "tag":  "lone_druid"
-           },
-    "91":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/wisp.png",
-               "name":  "Io",
-               "id":  91,
-               "tag":  "wisp"
-           },
-    "138":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/muerta.png",
-                "name":  "Muerta",
-                "id":  138,
-                "tag":  "muerta"
-            },
-    "135":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png",
-                "name":  "Dawnbreaker",
-                "id":  135,
-                "tag":  "dawnbreaker"
-            },
-    "110":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/phoenix.png",
-                "name":  "Phoenix",
-                "id":  110,
-                "tag":  "phoenix"
-            },
-    "112":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/winter_wyvern.png",
-                "name":  "Winter Wyvern",
-                "id":  112,
-                "tag":  "winter_wyvern"
-            },
-    "10":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/morphling.png",
-               "name":  "Morphling",
-               "id":  10,
-               "tag":  "morphling"
-           },
-    "18":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/sven.png",
-               "name":  "Sven",
-               "id":  18,
-               "tag":  "sven"
-           },
-    "84":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/ogre_magi.png",
-               "name":  "Ogre Magi",
-               "id":  84,
-               "tag":  "ogre_magi"
-           },
-    "32":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/riki.png",
-               "name":  "Riki",
-               "id":  32,
-               "tag":  "riki"
-           },
-    "89":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/naga_siren.png",
-               "name":  "Naga Siren",
-               "id":  89,
-               "tag":  "naga_siren"
-           },
-    "55":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/dark_seer.png",
-               "name":  "Dark Seer",
-               "id":  55,
-               "tag":  "dark_seer"
-           },
-    "31":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/lich.png",
-               "name":  "Lich",
-               "id":  31,
-               "tag":  "lich"
-           },
-    "41":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/faceless_void.png",
-               "name":  "Faceless Void",
-               "id":  41,
-               "tag":  "faceless_void"
-           },
-    "21":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/windrunner.png",
-               "name":  "Windranger",
-               "id":  21,
-               "tag":  "windrunner"
-           },
-    "42":  {
-               "img":  "https://courier.spectral.gg/images/dota/portraits/skeleton_king.png",
-               "name":  "Wraith King",
-               "id":  42,
-               "tag":  "skeleton_king"
-           },
-    "100":  {
-                "img":  "https://courier.spectral.gg/images/dota/portraits/tusk.png",
-                "name":  "Tusk",
-                "id":  100,
-                "tag":  "tusk"
-            }
+{
+  "93": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/slark.png",
+    "tag": "slark",
+    "id": 93,
+    "name": "Slark"
+  },
+  "26": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/lion.png",
+    "tag": "lion",
+    "id": 26,
+    "name": "Lion"
+  },
+  "51": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/rattletrap.png",
+    "tag": "rattletrap",
+    "id": 51,
+    "name": "Clockwerk"
+  },
+  "94": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/medusa.png",
+    "tag": "medusa",
+    "id": 94,
+    "name": "Medusa"
+  },
+  "34": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/tinker.png",
+    "tag": "tinker",
+    "id": 34,
+    "name": "Tinker"
+  },
+  "109": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/terrorblade.png",
+    "tag": "terrorblade",
+    "id": 109,
+    "name": "Terrorblade"
+  },
+  "123": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/hoodwink.png",
+    "tag": "hoodwink",
+    "id": 123,
+    "name": "Hoodwink"
+  },
+  "88": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/nyx_assassin.png",
+    "tag": "nyx_assassin",
+    "id": 88,
+    "name": "Nyx Assassin"
+  },
+  "42": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/skeleton_king.png",
+    "tag": "skeleton_king",
+    "id": 42,
+    "name": "Wraith King"
+  },
+  "128": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/snapfire.png",
+    "tag": "snapfire",
+    "id": 128,
+    "name": "Snapfire"
+  },
+  "112": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/winter_wyvern.png",
+    "tag": "winter_wyvern",
+    "id": 112,
+    "name": "Winter Wyvern"
+  },
+  "20": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png",
+    "tag": "vengefulspirit",
+    "id": 20,
+    "name": "Vengeful Spirit"
+  },
+  "85": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/undying.png",
+    "tag": "undying",
+    "id": 85,
+    "name": "Undying"
+  },
+  "99": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/bristleback.png",
+    "tag": "bristleback",
+    "id": 99,
+    "name": "Bristleback"
+  },
+  "102": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/abaddon.png",
+    "tag": "abaddon",
+    "id": 102,
+    "name": "Abaddon"
+  },
+  "82": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/meepo.png",
+    "tag": "meepo",
+    "id": 82,
+    "name": "Meepo"
+  },
+  "105": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/techies.png",
+    "tag": "techies",
+    "id": 105,
+    "name": "Techies"
+  },
+  "32": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/riki.png",
+    "tag": "riki",
+    "id": 32,
+    "name": "Riki"
+  },
+  "22": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/zuus.png",
+    "tag": "zuus",
+    "id": 22,
+    "name": "Zeus"
+  },
+  "7": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/earthshaker.png",
+    "tag": "earthshaker",
+    "id": 7,
+    "name": "Earthshaker"
+  },
+  "106": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/ember_spirit.png",
+    "tag": "ember_spirit",
+    "id": 106,
+    "name": "Ember Spirit"
+  },
+  "78": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/brewmaster.png",
+    "tag": "brewmaster",
+    "id": 78,
+    "name": "Brewmaster"
+  },
+  "84": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/ogre_magi.png",
+    "tag": "ogre_magi",
+    "id": 84,
+    "name": "Ogre Magi"
+  },
+  "89": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/naga_siren.png",
+    "tag": "naga_siren",
+    "id": 89,
+    "name": "Naga Siren"
+  },
+  "21": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/windrunner.png",
+    "tag": "windrunner",
+    "id": 21,
+    "name": "Windranger"
+  },
+  "119": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/dark_willow.png",
+    "tag": "dark_willow",
+    "id": 119,
+    "name": "Dark Willow"
+  },
+  "129": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/mars.png",
+    "tag": "mars",
+    "id": 129,
+    "name": "Mars"
+  },
+  "121": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/grimstroke.png",
+    "tag": "grimstroke",
+    "id": 121,
+    "name": "Grimstroke"
+  },
+  "5": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/crystal_maiden.png",
+    "tag": "crystal_maiden",
+    "id": 5,
+    "name": "Crystal Maiden"
+  },
+  "92": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/visage.png",
+    "tag": "visage",
+    "id": 92,
+    "name": "Visage"
+  },
+  "135": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png",
+    "tag": "dawnbreaker",
+    "id": 135,
+    "name": "Dawnbreaker"
+  },
+  "9": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/mirana.png",
+    "tag": "mirana",
+    "id": 9,
+    "name": "Mirana"
+  },
+  "58": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/enchantress.png",
+    "tag": "enchantress",
+    "id": 58,
+    "name": "Enchantress"
+  },
+  "40": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/venomancer.png",
+    "tag": "venomancer",
+    "id": 40,
+    "name": "Venomancer"
+  },
+  "80": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/lone_druid.png",
+    "tag": "lone_druid",
+    "id": 80,
+    "name": "Lone Druid"
+  },
+  "64": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/jakiro.png",
+    "tag": "jakiro",
+    "id": 64,
+    "name": "Jakiro"
+  },
+  "31": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/lich.png",
+    "tag": "lich",
+    "id": 31,
+    "name": "Lich"
+  },
+  "49": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/dragon_knight.png",
+    "tag": "dragon_knight",
+    "id": 49,
+    "name": "Dragon Knight"
+  },
+  "53": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/furion.png",
+    "tag": "furion",
+    "id": 53,
+    "name": "Nature's Prophet"
+  },
+  "46": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/templar_assassin.png",
+    "tag": "templar_assassin",
+    "id": 46,
+    "name": "Templar Assassin"
+  },
+  "57": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/omniknight.png",
+    "tag": "omniknight",
+    "id": 57,
+    "name": "Omniknight"
+  },
+  "52": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/leshrac.png",
+    "tag": "leshrac",
+    "id": 52,
+    "name": "Leshrac"
+  },
+  "110": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/phoenix.png",
+    "tag": "phoenix",
+    "id": 110,
+    "name": "Phoenix"
+  },
+  "113": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/arc_warden.png",
+    "tag": "arc_warden",
+    "id": 113,
+    "name": "Arc Warden"
+  },
+  "13": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/puck.png",
+    "tag": "puck",
+    "id": 13,
+    "name": "Puck"
+  },
+  "72": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/gyrocopter.png",
+    "tag": "gyrocopter",
+    "id": 72,
+    "name": "Gyrocopter"
+  },
+  "50": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/dazzle.png",
+    "tag": "dazzle",
+    "id": 50,
+    "name": "Dazzle"
+  },
+  "101": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/skywrath_mage.png",
+    "tag": "skywrath_mage",
+    "id": 101,
+    "name": "Skywrath Mage"
+  },
+  "70": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/ursa.png",
+    "tag": "ursa",
+    "id": 70,
+    "name": "Ursa"
+  },
+  "23": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/kunkka.png",
+    "tag": "kunkka",
+    "id": 23,
+    "name": "Kunkka"
+  },
+  "111": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/oracle.png",
+    "tag": "oracle",
+    "id": 111,
+    "name": "Oracle"
+  },
+  "90": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/keeper_of_the_light.png",
+    "tag": "keeper_of_the_light",
+    "id": 90,
+    "name": "Keeper of the Light"
+  },
+  "1": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/antimage.png",
+    "tag": "antimage",
+    "id": 1,
+    "name": "Anti-Mage"
+  },
+  "75": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/silencer.png",
+    "tag": "silencer",
+    "id": 75,
+    "name": "Silencer"
+  },
+  "136": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/marci.png",
+    "tag": "marci",
+    "id": 136,
+    "name": "Marci"
+  },
+  "3": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/bane.png",
+    "tag": "bane",
+    "id": 3,
+    "name": "Bane"
+  },
+  "55": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/dark_seer.png",
+    "tag": "dark_seer",
+    "id": 55,
+    "name": "Dark Seer"
+  },
+  "103": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/elder_titan.png",
+    "tag": "elder_titan",
+    "id": 103,
+    "name": "Elder Titan"
+  },
+  "145": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/kez.png",
+    "tag": "kez",
+    "id": 145,
+    "name": "Kez"
+  },
+  "25": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/lina.png",
+    "tag": "lina",
+    "id": 25,
+    "name": "Lina"
+  },
+  "6": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/drow_ranger.png",
+    "tag": "drow_ranger",
+    "id": 6,
+    "name": "Drow Ranger"
+  },
+  "18": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/sven.png",
+    "tag": "sven",
+    "id": 18,
+    "name": "Sven"
+  },
+  "38": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/beastmaster.png",
+    "tag": "beastmaster",
+    "id": 38,
+    "name": "Beastmaster"
+  },
+  "77": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/lycan.png",
+    "tag": "lycan",
+    "id": 77,
+    "name": "Lycan"
+  },
+  "39": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/queenofpain.png",
+    "tag": "queenofpain",
+    "id": 39,
+    "name": "Queen of Pain"
+  },
+  "60": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/night_stalker.png",
+    "tag": "night_stalker",
+    "id": 60,
+    "name": "Night Stalker"
+  },
+  "100": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/tusk.png",
+    "tag": "tusk",
+    "id": 100,
+    "name": "Tusk"
+  },
+  "91": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/wisp.png",
+    "tag": "wisp",
+    "id": 91,
+    "name": "Io"
+  },
+  "45": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/pugna.png",
+    "tag": "pugna",
+    "id": 45,
+    "name": "Pugna"
+  },
+  "4": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/bloodseeker.png",
+    "tag": "bloodseeker",
+    "id": 4,
+    "name": "Bloodseeker"
+  },
+  "67": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/spectre.png",
+    "tag": "spectre",
+    "id": 67,
+    "name": "Spectre"
+  },
+  "73": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/alchemist.png",
+    "tag": "alchemist",
+    "id": 73,
+    "name": "Alchemist"
+  },
+  "114": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/monkey_king.png",
+    "tag": "monkey_king",
+    "id": 114,
+    "name": "Monkey King"
+  },
+  "68": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/ancient_apparition.png",
+    "tag": "ancient_apparition",
+    "id": 68,
+    "name": "Ancient Apparition"
+  },
+  "29": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/tidehunter.png",
+    "tag": "tidehunter",
+    "id": 29,
+    "name": "Tidehunter"
+  },
+  "2": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/axe.png",
+    "tag": "axe",
+    "id": 2,
+    "name": "Axe"
+  },
+  "17": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/storm_spirit.png",
+    "tag": "storm_spirit",
+    "id": 17,
+    "name": "Storm Spirit"
+  },
+  "79": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/shadow_demon.png",
+    "tag": "shadow_demon",
+    "id": 79,
+    "name": "Shadow Demon"
+  },
+  "66": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/chen.png",
+    "tag": "chen",
+    "id": 66,
+    "name": "Chen"
+  },
+  "126": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/void_spirit.png",
+    "tag": "void_spirit",
+    "id": 126,
+    "name": "Void Spirit"
+  },
+  "138": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/muerta.png",
+    "tag": "muerta",
+    "id": 138,
+    "name": "Muerta"
+  },
+  "81": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/chaos_knight.png",
+    "tag": "chaos_knight",
+    "id": 81,
+    "name": "Chaos Knight"
+  },
+  "35": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/sniper.png",
+    "tag": "sniper",
+    "id": 35,
+    "name": "Sniper"
+  },
+  "27": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png",
+    "tag": "shadow_shaman",
+    "id": 27,
+    "name": "Shadow Shaman"
+  },
+  "12": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/phantom_lancer.png",
+    "tag": "phantom_lancer",
+    "id": 12,
+    "name": "Phantom Lancer"
+  },
+  "104": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/legion_commander.png",
+    "tag": "legion_commander",
+    "id": 104,
+    "name": "Legion Commander"
+  },
+  "59": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/huskar.png",
+    "tag": "huskar",
+    "id": 59,
+    "name": "Huskar"
+  },
+  "108": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/abyssal_underlord.png",
+    "tag": "abyssal_underlord",
+    "id": 108,
+    "name": "Underlord"
+  },
+  "131": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/ringmaster.png",
+    "tag": "ringmaster",
+    "id": 131,
+    "name": "Ring Master"
+  },
+  "44": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/phantom_assassin.png",
+    "tag": "phantom_assassin",
+    "id": 44,
+    "name": "Phantom Assassin"
+  },
+  "62": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/bounty_hunter.png",
+    "tag": "bounty_hunter",
+    "id": 62,
+    "name": "Bounty Hunter"
+  },
+  "47": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/viper.png",
+    "tag": "viper",
+    "id": 47,
+    "name": "Viper"
+  },
+  "107": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/earth_spirit.png",
+    "tag": "earth_spirit",
+    "id": 107,
+    "name": "Earth Spirit"
+  },
+  "48": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/luna.png",
+    "tag": "luna",
+    "id": 48,
+    "name": "Luna"
+  },
+  "19": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/tiny.png",
+    "tag": "tiny",
+    "id": 19,
+    "name": "Tiny"
+  },
+  "33": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/enigma.png",
+    "tag": "enigma",
+    "id": 33,
+    "name": "Enigma"
+  },
+  "28": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/slardar.png",
+    "tag": "slardar",
+    "id": 28,
+    "name": "Slardar"
+  },
+  "65": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/batrider.png",
+    "tag": "batrider",
+    "id": 65,
+    "name": "Batrider"
+  },
+  "11": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/nevermore.png",
+    "tag": "nevermore",
+    "id": 11,
+    "name": "Shadow Fiend"
+  },
+  "96": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/centaur.png",
+    "tag": "centaur",
+    "id": 96,
+    "name": "Centaur Warrunner"
+  },
+  "95": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/troll_warlord.png",
+    "tag": "troll_warlord",
+    "id": 95,
+    "name": "Troll Warlord"
+  },
+  "87": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/disruptor.png",
+    "tag": "disruptor",
+    "id": 87,
+    "name": "Disruptor"
+  },
+  "63": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/weaver.png",
+    "tag": "weaver",
+    "id": 63,
+    "name": "Weaver"
+  },
+  "14": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/pudge.png",
+    "tag": "pudge",
+    "id": 14,
+    "name": "Pudge"
+  },
+  "120": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/pangolier.png",
+    "tag": "pangolier",
+    "id": 120,
+    "name": "Pangolier"
+  },
+  "86": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/rubick.png",
+    "tag": "rubick",
+    "id": 86,
+    "name": "Rubick"
+  },
+  "71": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/spirit_breaker.png",
+    "tag": "spirit_breaker",
+    "id": 71,
+    "name": "Spirit Breaker"
+  },
+  "37": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/warlock.png",
+    "tag": "warlock",
+    "id": 37,
+    "name": "Warlock"
+  },
+  "10": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/morphling.png",
+    "tag": "morphling",
+    "id": 10,
+    "name": "Morphling"
+  },
+  "74": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/invoker.png",
+    "tag": "invoker",
+    "id": 74,
+    "name": "Invoker"
+  },
+  "56": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/clinkz.png",
+    "tag": "clinkz",
+    "id": 56,
+    "name": "Clinkz"
+  },
+  "61": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/broodmother.png",
+    "tag": "broodmother",
+    "id": 61,
+    "name": "Broodmother"
+  },
+  "8": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/juggernaut.png",
+    "tag": "juggernaut",
+    "id": 8,
+    "name": "Juggernaut"
+  },
+  "97": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/magnataur.png",
+    "tag": "magnataur",
+    "id": 97,
+    "name": "Magnus"
+  },
+  "15": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/razor.png",
+    "tag": "razor",
+    "id": 15,
+    "name": "Razor"
+  },
+  "83": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/treant.png",
+    "tag": "treant",
+    "id": 83,
+    "name": "Treant Protector"
+  },
+  "98": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/shredder.png",
+    "tag": "shredder",
+    "id": 98,
+    "name": "Timbersaw"
+  },
+  "137": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/primal_beast.png",
+    "tag": "primal_beast",
+    "id": 137,
+    "name": "Primal Beast"
+  },
+  "43": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/death_prophet.png",
+    "tag": "death_prophet",
+    "id": 43,
+    "name": "Death Prophet"
+  },
+  "36": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/necrolyte.png",
+    "tag": "necrolyte",
+    "id": 36,
+    "name": "Necrophos"
+  },
+  "30": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/witch_doctor.png",
+    "tag": "witch_doctor",
+    "id": 30,
+    "name": "Witch Doctor"
+  },
+  "16": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/sand_king.png",
+    "tag": "sand_king",
+    "id": 16,
+    "name": "Sand King"
+  },
+  "69": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/doom_bringer.png",
+    "tag": "doom_bringer",
+    "id": 69,
+    "name": "Doom"
+  },
+  "54": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/life_stealer.png",
+    "tag": "life_stealer",
+    "id": 54,
+    "name": "Lifestealer"
+  },
+  "41": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/faceless_void.png",
+    "tag": "faceless_void",
+    "id": 41,
+    "name": "Faceless Void"
+  },
+  "76": {
+    "img": "https://courier.spectral.gg/images/dota/portraits/obsidian_destroyer.png",
+    "tag": "obsidian_destroyer",
+    "id": 76,
+    "name": "Outworld Devourer"
+  }
 }

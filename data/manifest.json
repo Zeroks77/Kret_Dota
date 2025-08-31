@@ -1,15 +1,15 @@
-﻿{
-    "updated":  1756669171,
-    "months":  [
-                   {
-                       "month":  "2025-07",
-                       "file":  "matches/2025-07.json",
-                       "count":  8
-                   },
-                   {
-                       "month":  "2025-08",
-                       "file":  "matches/2025-08.json",
-                       "count":  17
-                   }
-               ]
+{
+  "updated": 1756679679,
+  "months": [
+    {
+      "month": "2025-07",
+      "file": "matches/2025-07.json",
+      "count": 8
+    },
+    {
+      "month": "2025-08",
+      "file": "matches/2025-08.json",
+      "count": 19
+    }
+  ]
 }
