@@ -28,7 +28,6 @@ body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, tran
 iframe{border:0;flex:1;width:100%}
 a{color:var(--accent)}
 </style>
-<style>
 .has-hover{position:relative}
 .hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:5;min-width:260px;max-width:420px;padding:10px;border-radius:10px;background:rgba(15,20,40,.96);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .hovercard .title{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:6px}
@@ -36,7 +35,6 @@ a{color:var(--accent)}
 .has-hover:hover > .hovercard{display:block}
 /* Hero gallery inside hovercard */
 .hovercard .heroes{max-width:520px}
-</style>
 </head>
 <body>
   <aside class='sidebar'>
@@ -48,8 +46,8 @@ a{color:var(--accent)}
     <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
     <ul id='list' class='list'>
 <li class="item" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html">Dynamic view (custom timeframe)</a></li>
-<li class="item" data-range="all-games" data-time="638922764799016217"><a href="./kret-s-eu-dota-league_all-games_latest.html">2025-08-31 22:34 - All games</a></li>
-<li class="item" data-range="unknown" data-time="638922763852567000"><a href="./dynamic.html">2025-08-31 22:33 - unknown</a></li>
+<li class="item" data-range="all-games" data-time="638922791775753538"><a href="./kret-s-eu-dota-league_all-games_latest.html">2025-08-31 23:19 - All games</a></li>
+<li class="item" data-range="unknown" data-time="638922791210386196"><a href="./dynamic.html">2025-08-31 23:18 - unknown</a></li>
     </ul>
   </aside>
 
@@ -60,6 +58,26 @@ a{color:var(--accent)}
         <button class='btn' id='prevBtn' title='Previous (ArrowUp)'><- Previous</button>
         <button class='btn' id='nextBtn' title='Next (ArrowDown)'>Next -></button>
         <a class='btn' id='openNew' target='_blank' rel='noopener'>Open in new tab</a>
+      </div>
+    </div>
+    <div class="grid3">
+      <div>
+        <h3>Most common teammates</h3>
+        <ul class="simple">
+<li><span class='sub'>no games</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Most courier kills</h3>
+        <ul class="simple">
+<li><span class='sub'>no data</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Most camps stacked</h3>
+        <ul class="simple">
+<li><span class='sub'>no data</span></li>
+        </ul>
       </div>
     </div>
     <iframe id='frame' src='about:blank' loading='eager' referrerpolicy='no-referrer'></iframe>
@@ -112,11 +130,6 @@ a{color:var(--accent)}
     const file = new URLSearchParams(location.hash.replace(/^#/, '')).get('file');
     if (file){ const t=items.find(li => li.querySelector('a')?.getAttribute('href')===file); if (t){ const v=items; const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } } }
     apply();
-    // If nothing selected yet, default to the Dynamic view entry if present
-    if (selIndex<0){
-      const dyn = items.find(li => li.getAttribute('data-range')==='dynamic');
-      if (dyn){ const v=vis(); const idx=v.indexOf(dyn); if (idx>=0) select(idx); }
-    }
   }
   init();
 })();
