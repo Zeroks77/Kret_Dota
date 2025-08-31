@@ -1612,7 +1612,6 @@ body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, tran
 .nav .btn{padding:6px 10px}
 iframe{border:0;flex:1;width:100%}
 a{color:var(--accent)}
-</style>
 .has-hover{position:relative}
 .hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:5;min-width:260px;max-width:420px;padding:10px;border-radius:10px;background:rgba(15,20,40,.96);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .hovercard .title{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:6px}
@@ -1620,6 +1619,7 @@ a{color:var(--accent)}
 .has-hover:hover > .hovercard{display:block}
 /* Hero gallery inside hovercard */
 .hovercard .heroes{max-width:520px}
+</style>
 </head>
 <body>
   <aside class='sidebar'>
