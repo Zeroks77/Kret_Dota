@@ -4850,108 +4850,73 @@
     }
   ],
   "playerNames": {
-    "401356923": "TRADE CM",
-    "194252150": "Fat and happy",
-    "78489654": "\\[T]/.Dr.Kunzel",
-    "183063377": "Zero",
-    "1110210197": "Sven",
-    "185681464": "Tommy",
-    "149970209": "sputn1k",
-    "387026803": "Jedleo",
-    "431599342": "T'erreL",
-    "297477613": "abo",
-    "219481866": "POKLESS PUNK",
-    "281526650": "Aquatech",
-    "164067051": "Moox",
-    "56352644": "StolteSomFaa",
-    "44505340": ".:Azure<>Fire.Ice:.",
-    "1127238076": "Virvacus",
-    "35804562": "A Tired Parent",
     "992361072": "Grunt",
-    "1803122431": "Gary the Carry",
-    "106623037": "UNDEFEATED Muerta",
-    "121905961": "Fiend",
+    "114003462": "MooMoo",
+    "23817378": "sense",
+    "922645723": "what is a clit?(visual learner)",
+    "194252150": "Fat and happy",
+    "183063377": "Zero",
     "57839727": "Great Love",
-    "111098380": "monkee",
+    "1110210197": "Sven",
+    "401356923": "TRADE CM",
     "1877912379": "流",
     "122918915": "LipNeX",
-    "190115398": "M1xed",
-    "107968204": "e-snok",
-    "199627625": "✪ Captain Vodka",
-    "61566555": "Nelow",
-    "188889560": "HUNDSCHeiSSE",
     "236584942": "Booz",
-    "84835": "aZ_Shen-Zhen",
-    "1802720915": "Worry is a misuse of imagination",
-    "343877559": "Should I Call You Mista?",
+    "387026803": "Jedleo",
+    "149970209": "sputn1k",
+    "1127238076": "Virvacus",
+    "56352644": "StolteSomFaa",
+    "61566555": "Nelow",
     "374810707": "Barpor the barbarian",
+    "106623037": "UNDEFEATED Muerta",
+    "343877559": "Should I Call You Mista?",
+    "121905961": "Fiend",
     "226354794": "Kret",
-    "178768308": "bash_crazy",
-    "1002536896": "jarjeer",
-    "114003462": "MooMoo",
-    "1523553613": "kytoro999",
-    "922645723": "what is a clit?(visual learner)",
+    "1802720915": "Worry is a misuse of imagination",
+    "84835": "aZ_Shen-Zhen",
     "402197430": "jackH07",
-    "23817378": "sense"
+    "1803122431": "Gary the Carry",
+    "185681464": "Tommy",
+    "297477613": "abo",
+    "111098380": "monkee",
+    "431599342": "T'erreL",
+    "219481866": "POKLESS PUNK",
+    "44505340": ".:Azure<>Fire.Ice:.",
+    "107968204": "e-snok",
+    "35804562": "A Tired Parent",
+    "281526650": "Aquatech",
+    "1523553613": "kytoro999",
+    "188889560": "HUNDSCHeiSSE",
+    "178768308": "bash_crazy",
+    "164067051": "Moox",
+    "190115398": "M1xed",
+    "78489654": "\\[T]/.Dr.Kunzel",
+    "199627625": "✪ Captain Vodka",
+    "1002536896": "jarjeer"
   },
   "teamNames": {
+    "2028767": "Yash baswant",
+    "9834572": "Fairbrandt",
+    "9833687": "Zelenskyy's Boys",
+    "4326965": "SY dota ",
+    "1998165": "some germans and a dutch guy",
+    "2202377": "Fight Mongooses",
     "2211498": "Nicholas Cage and the Bees",
+    "7980509": "GeT//e\\\\Rektm8",
+    "1642081": "I will kill you over time",
+    "9833697": "Kret Dire",
+    "9833690": "Kret Radiant",
+    "935859": "0PlanGamers",
     "9834594": "Pleb Gods",
     "8328373": "Symphony of Skills",
-    "9833690": "Kret Radiant",
-    "2028767": "Yash baswant",
-    "1998165": "some germans and a dutch guy",
-    "9834572": "Fairbrandt",
-    "4326965": "SY dota ",
-    "362098": "Team Pipsi",
-    "9833687": "Zelenskyy's Boys",
-    "9833697": "Kret Dire",
-    "1642081": "I will kill you over time",
-    "2202377": "Fight Mongooses",
-    "935859": "0PlanGamers",
-    "7980509": "GeT//e\\\\Rektm8"
+    "362098": "Team Pipsi"
   },
   "teams": {
-    "2211498": {
-      "team_id": 2211498,
-      "name": "Nicholas Cage and the Bees",
-      "games": 1,
-      "wins": 1,
-      "losses": 0
-    },
-    "9834594": {
-      "team_id": 9834594,
-      "name": "Pleb Gods",
-      "games": 3,
-      "wins": 1,
-      "losses": 2
-    },
-    "8328373": {
-      "team_id": 8328373,
-      "name": "Symphony of Skills",
-      "games": 2,
-      "wins": 1,
-      "losses": 1
-    },
-    "9833690": {
-      "team_id": 9833690,
-      "name": "Kret Radiant",
-      "games": 1,
-      "wins": 1,
-      "losses": 0
-    },
     "2028767": {
       "team_id": 2028767,
       "name": "Yash baswant",
       "games": 2,
       "wins": 1,
-      "losses": 1
-    },
-    "1998165": {
-      "team_id": 1998165,
-      "name": "some germans and a dutch guy",
-      "games": 1,
-      "wins": 0,
       "losses": 1
     },
     "9834572": {
@@ -4968,30 +4933,9 @@
       "wins": 0,
       "losses": 2
     },
-    "362098": {
-      "team_id": 362098,
-      "name": "Team Pipsi",
-      "games": 3,
-      "wins": 1,
-      "losses": 2
-    },
-    "9833687": {
-      "team_id": 9833687,
-      "name": "Zelenskyy's Boys",
-      "games": 1,
-      "wins": 0,
-      "losses": 1
-    },
-    "9833697": {
-      "team_id": 9833697,
-      "name": "Kret Dire",
-      "games": 8,
-      "wins": 6,
-      "losses": 2
-    },
-    "1642081": {
-      "team_id": 1642081,
-      "name": "I will kill you over time",
+    "1998165": {
+      "team_id": 1998165,
+      "name": "some germans and a dutch guy",
       "games": 1,
       "wins": 0,
       "losses": 1
@@ -5003,6 +4947,48 @@
       "wins": 1,
       "losses": 0
     },
+    "7980509": {
+      "team_id": 7980509,
+      "name": "GeT//e\\\\Rektm8",
+      "games": 1,
+      "wins": 1,
+      "losses": 0
+    },
+    "1642081": {
+      "team_id": 1642081,
+      "name": "I will kill you over time",
+      "games": 1,
+      "wins": 0,
+      "losses": 1
+    },
+    "362098": {
+      "team_id": 362098,
+      "name": "Team Pipsi",
+      "games": 3,
+      "wins": 1,
+      "losses": 2
+    },
+    "9833690": {
+      "team_id": 9833690,
+      "name": "Kret Radiant",
+      "games": 1,
+      "wins": 1,
+      "losses": 0
+    },
+    "9834594": {
+      "team_id": 9834594,
+      "name": "Pleb Gods",
+      "games": 3,
+      "wins": 1,
+      "losses": 2
+    },
+    "2211498": {
+      "team_id": 2211498,
+      "name": "Nicholas Cage and the Bees",
+      "games": 1,
+      "wins": 1,
+      "losses": 0
+    },
     "935859": {
       "team_id": 935859,
       "name": "0PlanGamers",
@@ -5010,72 +4996,159 @@
       "wins": 1,
       "losses": 0
     },
-    "7980509": {
-      "team_id": 7980509,
-      "name": "GeT//e\\\\Rektm8",
+    "9833687": {
+      "team_id": 9833687,
+      "name": "Zelenskyy's Boys",
       "games": 1,
+      "wins": 0,
+      "losses": 1
+    },
+    "8328373": {
+      "team_id": 8328373,
+      "name": "Symphony of Skills",
+      "games": 2,
       "wins": 1,
-      "losses": 0
+      "losses": 1
+    },
+    "9833697": {
+      "team_id": 9833697,
+      "name": "Kret Dire",
+      "games": 8,
+      "wins": 6,
+      "losses": 2
     }
   },
   "players": {
-    "401356923": {
-      "account_id": 401356923,
-      "name": "TRADE CM",
+    "1802720915": {
+      "account_id": 1802720915,
+      "name": "Worry is a misuse of imagination",
       "games": 1,
       "wins": 1,
       "roles": {
         "Unknown": 1
       },
       "heroes": {
-        "74": 1
+        "79": 1
       },
-      "profile": "https://www.opendota.com/players/401356923"
+      "profile": "https://www.opendota.com/players/1802720915"
     },
-    "78489654": {
-      "account_id": 78489654,
-      "name": "\\[T]/.Dr.Kunzel",
+    "922645723": {
+      "account_id": 922645723,
+      "name": "what is a clit?(visual learner)",
+      "games": 1,
+      "wins": 0,
+      "roles": {
+        "Unknown": 1
+      },
+      "heroes": {
+        "98": 1
+      },
+      "profile": "https://www.opendota.com/players/922645723"
+    },
+    "194252150": {
+      "account_id": 194252150,
+      "name": "Fat and happy",
+      "games": 2,
+      "wins": 1,
+      "roles": {
+        "Unknown": 2
+      },
+      "heroes": {
+        "48": 1,
+        "11": 1
+      },
+      "profile": "https://www.opendota.com/players/194252150"
+    },
+    "183063377": {
+      "account_id": 183063377,
+      "name": "Zero",
       "games": 9,
-      "wins": 4,
+      "wins": 5,
       "roles": {
         "Unknown": 9
       },
       "heroes": {
-        "75": 1,
+        "28": 1,
         "50": 1,
-        "40": 1,
-        "37": 1,
-        "87": 4,
-        "12": 1
+        "26": 2,
+        "20": 1,
+        "30": 1,
+        "45": 1,
+        "135": 1,
+        "86": 1
       },
-      "profile": "https://www.opendota.com/players/78489654"
+      "profile": "https://www.opendota.com/players/183063377"
     },
-    "107968204": {
-      "account_id": 107968204,
-      "name": "e-snok",
+    "226354794": {
+      "account_id": 226354794,
+      "name": "Kret",
+      "games": 23,
+      "wins": 15,
+      "roles": {
+        "Unknown": 23
+      },
+      "heroes": {
+        "53": 1,
+        "76": 2,
+        "56": 1,
+        "36": 2,
+        "19": 4,
+        "39": 3,
+        "64": 1,
+        "17": 6,
+        "43": 2,
+        "25": 1
+      },
+      "profile": "https://www.opendota.com/players/226354794"
+    },
+    "1110210197": {
+      "account_id": 1110210197,
+      "name": "Sven",
       "games": 2,
-      "wins": 1,
+      "wins": 0,
       "roles": {
         "Unknown": 2
       },
       "heroes": {
-        "85": 1,
-        "37": 1
+        "7": 1,
+        "27": 1
       },
-      "profile": "https://www.opendota.com/players/107968204"
+      "profile": "https://www.opendota.com/players/1110210197"
     },
-    "1523553613": {
-      "account_id": 1523553613,
-      "name": "kytoro999",
+    "114003462": {
+      "account_id": 114003462,
+      "name": "MooMoo",
       "games": 2,
-      "wins": 1,
+      "wins": 2,
       "roles": {
         "Unknown": 2
       },
       "heroes": {
-        "53": 2
+        "77": 1,
+        "26": 1
       },
-      "profile": "https://www.opendota.com/players/1523553613"
+      "profile": "https://www.opendota.com/players/114003462"
+    },
+    "1877912379": {
+      "account_id": 1877912379,
+      "name": "流",
+      "games": 14,
+      "wins": 8,
+      "roles": {
+        "Unknown": 14
+      },
+      "heroes": {
+        "28": 3,
+        "56": 1,
+        "90": 1,
+        "39": 2,
+        "123": 1,
+        "136": 1,
+        "63": 1,
+        "19": 1,
+        "126": 3
+      },
+      "profile": "https://www.opendota.com/players/1877912379"
     },
     "122918915": {
       "account_id": 122918915,
@@ -5090,36 +5163,6 @@
         "21": 1
       },
       "profile": "https://www.opendota.com/players/122918915"
-    },
-    "185681464": {
-      "account_id": 185681464,
-      "name": "Tommy",
-      "games": 2,
-      "wins": 0,
-      "roles": {
-        "Unknown": 2
-      },
-      "heroes": {
-        "135": 1,
-        "26": 1
-      },
-      "profile": "https://www.opendota.com/players/185681464"
-    },
-    "149970209": {
-      "account_id": 149970209,
-      "name": "sputn1k",
-      "games": 4,
-      "wins": 2,
-      "roles": {
-        "Unknown": 4
-      },
-      "heroes": {
-        "53": 1,
-        "2": 1,
-        "70": 1,
-        "69": 1
-      },
-      "profile": "https://www.opendota.com/players/149970209"
     },
     "387026803": {
       "account_id": 387026803,
@@ -5136,139 +5179,33 @@
       },
       "profile": "https://www.opendota.com/players/387026803"
     },
-    "431599342": {
-      "account_id": 431599342,
-      "name": "T'erreL",
-      "games": 9,
-      "wins": 2,
-      "roles": {
-        "Unknown": 9
-      },
-      "heroes": {
-        "59": 1,
-        "26": 1,
-        "3": 1,
-        "18": 1,
-        "46": 1,
-        "15": 1,
-        "135": 1,
-        "70": 1,
-        "13": 1
-      },
-      "profile": "https://www.opendota.com/players/431599342"
-    },
-    "297477613": {
-      "account_id": 297477613,
-      "name": "abo",
-      "games": 4,
-      "wins": 2,
-      "roles": {
-        "Unknown": 4
-      },
-      "heroes": {
-        "2": 1,
-        "129": 1,
-        "18": 1,
-        "7": 1
-      },
-      "profile": "https://www.opendota.com/players/297477613"
-    },
-    "219481866": {
-      "account_id": 219481866,
-      "name": "POKLESS PUNK",
-      "games": 2,
-      "wins": 1,
-      "roles": {
-        "Unknown": 2
-      },
-      "heroes": {
-        "105": 1,
-        "26": 1
-      },
-      "profile": "https://www.opendota.com/players/219481866"
-    },
-    "281526650": {
-      "account_id": 281526650,
-      "name": "Aquatech",
+    "401356923": {
+      "account_id": 401356923,
+      "name": "TRADE CM",
       "games": 1,
       "wins": 1,
       "roles": {
         "Unknown": 1
       },
       "heroes": {
-        "50": 1
+        "74": 1
       },
-      "profile": "https://www.opendota.com/players/281526650"
+      "profile": "https://www.opendota.com/players/401356923"
     },
-    "164067051": {
-      "account_id": 164067051,
-      "name": "Moox",
-      "games": 16,
-      "wins": 9,
-      "roles": {
-        "Unknown": 16
-      },
-      "heroes": {
-        "54": 1,
-        "12": 1,
-        "97": 2,
-        "129": 3,
-        "1": 1,
-        "94": 1,
-        "20": 1,
-        "87": 1,
-        "85": 1,
-        "23": 1,
-        "6": 1,
-        "70": 1,
-        "22": 1
-      },
-      "profile": "https://www.opendota.com/players/164067051"
-    },
-    "1110210197": {
-      "account_id": 1110210197,
-      "name": "Sven",
-      "games": 2,
-      "wins": 0,
-      "roles": {
-        "Unknown": 2
-      },
-      "heroes": {
-        "7": 1,
-        "27": 1
-      },
-      "profile": "https://www.opendota.com/players/1110210197"
-    },
-    "56352644": {
-      "account_id": 56352644,
-      "name": "StolteSomFaa",
-      "games": 4,
-      "wins": 0,
-      "roles": {
-        "Unknown": 4
-      },
-      "heroes": {
-        "53": 1,
-        "68": 1,
-        "26": 1,
-        "30": 1
-      },
-      "profile": "https://www.opendota.com/players/56352644"
-    },
-    "44505340": {
-      "account_id": 44505340,
-      "name": ".:Azure<>Fire.Ice:.",
+    "992361072": {
+      "account_id": 992361072,
+      "name": "Grunt",
       "games": 5,
-      "wins": 3,
+      "wins": 2,
       "roles": {
         "Unknown": 5
       },
       "heroes": {
-        "2": 1,
-        "49": 2,
-        "29": 2
+        "54": 1,
+        "20": 3,
+        "135": 1
       },
-      "profile": "https://www.opendota.com/players/44505340"
+      "profile": "https://www.opendota.com/players/992361072"
     },
     "1127238076": {
       "account_id": 1127238076,
@@ -5296,53 +5233,36 @@
       },
       "profile": "https://www.opendota.com/players/1127238076"
     },
-    "35804562": {
-      "account_id": 35804562,
-      "name": "A Tired Parent",
-      "games": 8,
-      "wins": 5,
+    "56352644": {
+      "account_id": 56352644,
+      "name": "StolteSomFaa",
+      "games": 4,
+      "wins": 0,
       "roles": {
-        "Unknown": 8
+        "Unknown": 4
       },
       "heroes": {
-        "112": 1,
-        "26": 2,
+        "53": 1,
         "68": 1,
-        "64": 1,
+        "26": 1,
+        "30": 1
+      },
+      "profile": "https://www.opendota.com/players/56352644"
+    },
+    "61566555": {
+      "account_id": 61566555,
+      "name": "Nelow",
+      "games": 3,
+      "wins": 0,
+      "roles": {
+        "Unknown": 3
+      },
+      "heroes": {
         "37": 1,
-        "27": 1,
-        "5": 1
+        "131": 1,
+        "30": 1
       },
-      "profile": "https://www.opendota.com/players/35804562"
-    },
-    "992361072": {
-      "account_id": 992361072,
-      "name": "Grunt",
-      "games": 5,
-      "wins": 2,
-      "roles": {
-        "Unknown": 5
-      },
-      "heroes": {
-        "54": 1,
-        "20": 3,
-        "135": 1
-      },
-      "profile": "https://www.opendota.com/players/992361072"
-    },
-    "1803122431": {
-      "account_id": 1803122431,
-      "name": "Gary the Carry",
-      "games": 2,
-      "wins": 1,
-      "roles": {
-        "Unknown": 2
-      },
-      "heroes": {
-        "7": 1,
-        "14": 1
-      },
-      "profile": "https://www.opendota.com/players/1803122431"
+      "profile": "https://www.opendota.com/players/61566555"
     },
     "106623037": {
       "account_id": 106623037,
@@ -5362,18 +5282,18 @@
       },
       "profile": "https://www.opendota.com/players/106623037"
     },
-    "402197430": {
-      "account_id": 402197430,
-      "name": "jackH07",
+    "343877559": {
+      "account_id": 343877559,
+      "name": "Should I Call You Mista?",
       "games": 1,
       "wins": 1,
       "roles": {
         "Unknown": 1
       },
       "heroes": {
-        "87": 1
+        "25": 1
       },
-      "profile": "https://www.opendota.com/players/402197430"
+      "profile": "https://www.opendota.com/players/343877559"
     },
     "121905961": {
       "account_id": 121905961,
@@ -5389,6 +5309,90 @@
       },
       "profile": "https://www.opendota.com/players/121905961"
     },
+    "84835": {
+      "account_id": 84835,
+      "name": "aZ_Shen-Zhen",
+      "games": 1,
+      "wins": 0,
+      "roles": {
+        "Unknown": 1
+      },
+      "heroes": {
+        "42": 1
+      },
+      "profile": "https://www.opendota.com/players/84835"
+    },
+    "402197430": {
+      "account_id": 402197430,
+      "name": "jackH07",
+      "games": 1,
+      "wins": 1,
+      "roles": {
+        "Unknown": 1
+      },
+      "heroes": {
+        "87": 1
+      },
+      "profile": "https://www.opendota.com/players/402197430"
+    },
+    "1803122431": {
+      "account_id": 1803122431,
+      "name": "Gary the Carry",
+      "games": 2,
+      "wins": 1,
+      "roles": {
+        "Unknown": 2
+      },
+      "heroes": {
+        "7": 1,
+        "14": 1
+      },
+      "profile": "https://www.opendota.com/players/1803122431"
+    },
+    "185681464": {
+      "account_id": 185681464,
+      "name": "Tommy",
+      "games": 2,
+      "wins": 0,
+      "roles": {
+        "Unknown": 2
+      },
+      "heroes": {
+        "135": 1,
+        "26": 1
+      },
+      "profile": "https://www.opendota.com/players/185681464"
+    },
+    "297477613": {
+      "account_id": 297477613,
+      "name": "abo",
+      "games": 4,
+      "wins": 2,
+      "roles": {
+        "Unknown": 4
+      },
+      "heroes": {
+        "2": 1,
+        "129": 1,
+        "18": 1,
+        "7": 1
+      },
+      "profile": "https://www.opendota.com/players/297477613"
+    },
+    "107968204": {
+      "account_id": 107968204,
+      "name": "e-snok",
+      "games": 2,
+      "wins": 1,
+      "roles": {
+        "Unknown": 2
+      },
+      "heroes": {
+        "85": 1,
+        "37": 1
+      },
+      "profile": "https://www.opendota.com/players/107968204"
+    },
     "111098380": {
       "account_id": 111098380,
       "name": "monkee",
@@ -5402,78 +5406,26 @@
       },
       "profile": "https://www.opendota.com/players/111098380"
     },
-    "1877912379": {
-      "account_id": 1877912379,
-      "name": "流",
-      "games": 14,
-      "wins": 8,
+    "431599342": {
+      "account_id": 431599342,
+      "name": "T'erreL",
+      "games": 9,
+      "wins": 2,
       "roles": {
-        "Unknown": 14
+        "Unknown": 9
       },
       "heroes": {
-        "28": 3,
-        "56": 1,
-        "90": 1,
-        "39": 2,
-        "123": 1,
-        "136": 1,
-        "63": 1,
-        "19": 1,
-        "126": 3
+        "59": 1,
+        "26": 1,
+        "3": 1,
+        "18": 1,
+        "46": 1,
+        "15": 1,
+        "135": 1,
+        "70": 1,
+        "13": 1
       },
-      "profile": "https://www.opendota.com/players/1877912379"
-    },
-    "194252150": {
-      "account_id": 194252150,
-      "name": "Fat and happy",
-      "games": 2,
-      "wins": 1,
-      "roles": {
-        "Unknown": 2
-      },
-      "heroes": {
-        "48": 1,
-        "11": 1
-      },
-      "profile": "https://www.opendota.com/players/194252150"
-    },
-    "61566555": {
-      "account_id": 61566555,
-      "name": "Nelow",
-      "games": 3,
-      "wins": 0,
-      "roles": {
-        "Unknown": 3
-      },
-      "heroes": {
-        "37": 1,
-        "131": 1,
-        "30": 1
-      },
-      "profile": "https://www.opendota.com/players/61566555"
-    },
-    "188889560": {
-      "account_id": 188889560,
-      "name": "HUNDSCHeiSSE",
-      "games": 19,
-      "wins": 13,
-      "roles": {
-        "Unknown": 19
-      },
-      "heroes": {
-        "7": 3,
-        "62": 1,
-        "21": 1,
-        "128": 5,
-        "16": 3,
-        "94": 1,
-        "39": 1,
-        "2": 1,
-        "23": 1,
-        "14": 1,
-        "26": 1
-      },
-      "profile": "https://www.opendota.com/players/188889560"
+      "profile": "https://www.opendota.com/players/431599342"
     },
     "199627625": {
       "account_id": 199627625,
@@ -5492,45 +5444,6 @@
       },
       "profile": "https://www.opendota.com/players/199627625"
     },
-    "84835": {
-      "account_id": 84835,
-      "name": "aZ_Shen-Zhen",
-      "games": 1,
-      "wins": 0,
-      "roles": {
-        "Unknown": 1
-      },
-      "heroes": {
-        "42": 1
-      },
-      "profile": "https://www.opendota.com/players/84835"
-    },
-    "1802720915": {
-      "account_id": 1802720915,
-      "name": "Worry is a misuse of imagination",
-      "games": 1,
-      "wins": 1,
-      "roles": {
-        "Unknown": 1
-      },
-      "heroes": {
-        "79": 1
-      },
-      "profile": "https://www.opendota.com/players/1802720915"
-    },
-    "343877559": {
-      "account_id": 343877559,
-      "name": "Should I Call You Mista?",
-      "games": 1,
-      "wins": 1,
-      "roles": {
-        "Unknown": 1
-      },
-      "heroes": {
-        "25": 1
-      },
-      "profile": "https://www.opendota.com/players/343877559"
-    },
     "236584942": {
       "account_id": 236584942,
       "name": "Booz",
@@ -5545,80 +5458,103 @@
       },
       "profile": "https://www.opendota.com/players/236584942"
     },
-    "178768308": {
-      "account_id": 178768308,
-      "name": "bash_crazy",
-      "games": 4,
-      "wins": 1,
-      "roles": {
-        "Unknown": 4
-      },
-      "heroes": {
-        "86": 1,
-        "78": 1,
-        "79": 1,
-        "27": 1
-      },
-      "profile": "https://www.opendota.com/players/178768308"
-    },
-    "183063377": {
-      "account_id": 183063377,
-      "name": "Zero",
-      "games": 9,
-      "wins": 5,
-      "roles": {
-        "Unknown": 9
-      },
-      "heroes": {
-        "28": 1,
-        "50": 1,
-        "26": 2,
-        "20": 1,
-        "30": 1,
-        "45": 1,
-        "135": 1,
-        "86": 1
-      },
-      "profile": "https://www.opendota.com/players/183063377"
-    },
-    "374810707": {
-      "account_id": 374810707,
-      "name": "Barpor the barbarian",
+    "44505340": {
+      "account_id": 44505340,
+      "name": ".:Azure<>Fire.Ice:.",
       "games": 5,
-      "wins": 2,
+      "wins": 3,
       "roles": {
         "Unknown": 5
       },
       "heroes": {
-        "35": 1,
-        "94": 1,
-        "99": 1,
-        "104": 1,
-        "29": 1
+        "2": 1,
+        "49": 2,
+        "29": 2
       },
-      "profile": "https://www.opendota.com/players/374810707"
+      "profile": "https://www.opendota.com/players/44505340"
     },
-    "226354794": {
-      "account_id": 226354794,
-      "name": "Kret",
-      "games": 23,
-      "wins": 15,
+    "164067051": {
+      "account_id": 164067051,
+      "name": "Moox",
+      "games": 16,
+      "wins": 9,
       "roles": {
-        "Unknown": 23
+        "Unknown": 16
       },
       "heroes": {
-        "53": 1,
-        "76": 2,
-        "56": 1,
-        "36": 2,
-        "19": 4,
-        "39": 3,
-        "64": 1,
-        "17": 6,
-        "43": 2,
-        "25": 1
+        "54": 1,
+        "12": 1,
+        "97": 2,
+        "129": 3,
+        "1": 1,
+        "94": 1,
+        "20": 1,
+        "87": 1,
+        "85": 1,
+        "23": 1,
+        "6": 1,
+        "70": 1,
+        "22": 1
       },
-      "profile": "https://www.opendota.com/players/226354794"
+      "profile": "https://www.opendota.com/players/164067051"
+    },
+    "23817378": {
+      "account_id": 23817378,
+      "name": "sense",
+      "games": 1,
+      "wins": 0,
+      "roles": {
+        "Unknown": 1
+      },
+      "heroes": {
+        "119": 1
+      },
+      "profile": "https://www.opendota.com/players/23817378"
+    },
+    "35804562": {
+      "account_id": 35804562,
+      "name": "A Tired Parent",
+      "games": 8,
+      "wins": 5,
+      "roles": {
+        "Unknown": 8
+      },
+      "heroes": {
+        "112": 1,
+        "26": 2,
+        "68": 1,
+        "64": 1,
+        "37": 1,
+        "27": 1,
+        "5": 1
+      },
+      "profile": "https://www.opendota.com/players/35804562"
+    },
+    "281526650": {
+      "account_id": 281526650,
+      "name": "Aquatech",
+      "games": 1,
+      "wins": 1,
+      "roles": {
+        "Unknown": 1
+      },
+      "heroes": {
+        "50": 1
+      },
+      "profile": "https://www.opendota.com/players/281526650"
+    },
+    "1523553613": {
+      "account_id": 1523553613,
+      "name": "kytoro999",
+      "games": 2,
+      "wins": 1,
+      "roles": {
+        "Unknown": 2
+      },
+      "heroes": {
+        "53": 2
+      },
+      "profile": "https://www.opendota.com/players/1523553613"
     },
     "57839727": {
       "account_id": 57839727,
@@ -5645,6 +5581,125 @@
       },
       "profile": "https://www.opendota.com/players/57839727"
     },
+    "188889560": {
+      "account_id": 188889560,
+      "name": "HUNDSCHeiSSE",
+      "games": 19,
+      "wins": 13,
+      "roles": {
+        "Unknown": 19
+      },
+      "heroes": {
+        "7": 3,
+        "62": 1,
+        "21": 1,
+        "128": 5,
+        "16": 3,
+        "94": 1,
+        "39": 1,
+        "2": 1,
+        "23": 1,
+        "14": 1,
+        "26": 1
+      },
+      "profile": "https://www.opendota.com/players/188889560"
+    },
+    "219481866": {
+      "account_id": 219481866,
+      "name": "POKLESS PUNK",
+      "games": 2,
+      "wins": 1,
+      "roles": {
+        "Unknown": 2
+      },
+      "heroes": {
+        "105": 1,
+        "26": 1
+      },
+      "profile": "https://www.opendota.com/players/219481866"
+    },
+    "178768308": {
+      "account_id": 178768308,
+      "name": "bash_crazy",
+      "games": 4,
+      "wins": 1,
+      "roles": {
+        "Unknown": 4
+      },
+      "heroes": {
+        "86": 1,
+        "78": 1,
+        "79": 1,
+        "27": 1
+      },
+      "profile": "https://www.opendota.com/players/178768308"
+    },
+    "149970209": {
+      "account_id": 149970209,
+      "name": "sputn1k",
+      "games": 4,
+      "wins": 2,
+      "roles": {
+        "Unknown": 4
+      },
+      "heroes": {
+        "53": 1,
+        "2": 1,
+        "70": 1,
+        "69": 1
+      },
+      "profile": "https://www.opendota.com/players/149970209"
+    },
+    "190115398": {
+      "account_id": 190115398,
+      "name": "M1xed",
+      "games": 3,
+      "wins": 2,
+      "roles": {
+        "Unknown": 3
+      },
+      "heroes": {
+        "107": 1,
+        "104": 1,
+        "32": 1
+      },
+      "profile": "https://www.opendota.com/players/190115398"
+    },
+    "78489654": {
+      "account_id": 78489654,
+      "name": "\\[T]/.Dr.Kunzel",
+      "games": 9,
+      "wins": 4,
+      "roles": {
+        "Unknown": 9
+      },
+      "heroes": {
+        "75": 1,
+        "50": 1,
+        "40": 1,
+        "37": 1,
+        "87": 4,
+        "12": 1
+      },
+      "profile": "https://www.opendota.com/players/78489654"
+    },
+    "374810707": {
+      "account_id": 374810707,
+      "name": "Barpor the barbarian",
+      "games": 5,
+      "wins": 2,
+      "roles": {
+        "Unknown": 5
+      },
+      "heroes": {
+        "35": 1,
+        "94": 1,
+        "99": 1,
+        "104": 1,
+        "29": 1
+      },
+      "profile": "https://www.opendota.com/players/374810707"
+    },
     "1002536896": {
       "account_id": 1002536896,
       "name": "jarjeer",
@@ -5665,317 +5720,16 @@
         "70": 1
       },
       "profile": "https://www.opendota.com/players/1002536896"
-    },
-    "114003462": {
-      "account_id": 114003462,
-      "name": "MooMoo",
-      "games": 2,
-      "wins": 2,
-      "roles": {
-        "Unknown": 2
-      },
-      "heroes": {
-        "77": 1,
-        "26": 1
-      },
-      "profile": "https://www.opendota.com/players/114003462"
-    },
-    "190115398": {
-      "account_id": 190115398,
-      "name": "M1xed",
-      "games": 3,
-      "wins": 2,
-      "roles": {
-        "Unknown": 3
-      },
-      "heroes": {
-        "107": 1,
-        "104": 1,
-        "32": 1
-      },
-      "profile": "https://www.opendota.com/players/190115398"
-    },
-    "922645723": {
-      "account_id": 922645723,
-      "name": "what is a clit?(visual learner)",
-      "games": 1,
-      "wins": 0,
-      "roles": {
-        "Unknown": 1
-      },
-      "heroes": {
-        "98": 1
-      },
-      "profile": "https://www.opendota.com/players/922645723"
-    },
-    "23817378": {
-      "account_id": 23817378,
-      "name": "sense",
-      "games": 1,
-      "wins": 0,
-      "roles": {
-        "Unknown": 1
-      },
-      "heroes": {
-        "119": 1
-      },
-      "profile": "https://www.opendota.com/players/23817378"
     }
   },
   "teamPlayers": {
-    "2211498": {
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/226354794"
-      },
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "387026803": {
-        "account_id": 387026803,
-        "name": "Jedleo",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/387026803"
-      },
-      "106623037": {
-        "account_id": 106623037,
-        "name": "UNDEFEATED Muerta",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/106623037"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/183063377"
-      }
-    },
-    "9834594": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
-      "56352644": {
-        "account_id": 56352644,
-        "name": "StolteSomFaa",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/56352644"
-      },
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 3,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/183063377"
-      },
-      "199627625": {
-        "account_id": 199627625,
-        "name": "✪ Captain Vodka",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/199627625"
-      },
-      "78489654": {
-        "account_id": 78489654,
-        "name": "\\[T]/.Dr.Kunzel",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/78489654"
-      },
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1877912379"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/188889560"
-      },
-      "1002536896": {
-        "account_id": 1002536896,
-        "name": "jarjeer",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1002536896"
-      },
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/226354794"
-      }
-    },
-    "8328373": {
-      "178768308": {
-        "account_id": 178768308,
-        "name": "bash_crazy",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/178768308"
-      },
-      "297477613": {
-        "account_id": 297477613,
-        "name": "abo",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/297477613"
-      },
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "199627625": {
-        "account_id": 199627625,
-        "name": "✪ Captain Vodka",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/199627625"
-      },
-      "78489654": {
-        "account_id": 78489654,
-        "name": "\\[T]/.Dr.Kunzel",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/78489654"
-      },
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1877912379"
-      }
-    },
-    "9833690": {
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/226354794"
-      },
-      "236584942": {
-        "account_id": 236584942,
-        "name": "Booz",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/236584942"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/188889560"
-      },
-      "281526650": {
-        "account_id": 281526650,
-        "name": "Aquatech",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/281526650"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/183063377"
-      }
-    },
     "2028767": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
-      "56352644": {
-        "account_id": 56352644,
-        "name": "StolteSomFaa",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/56352644"
-      },
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/226354794"
-      },
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
         "games": 1,
         "wins": 0,
         "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
       },
       "35804562": {
         "account_id": 35804562,
@@ -5984,12 +5738,33 @@
         "wins": 1,
         "profile": "https://www.opendota.com/players/35804562"
       },
-      "78489654": {
-        "account_id": 78489654,
-        "name": "\\[T]/.Dr.Kunzel",
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/78489654"
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "56352644": {
+        "account_id": 56352644,
+        "name": "StolteSomFaa",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/56352644"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/431599342"
       },
       "1877912379": {
         "account_id": 1877912379,
@@ -5998,59 +5773,22 @@
         "wins": 1,
         "profile": "https://www.opendota.com/players/1877912379"
       },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/188889560"
-      }
-    },
-    "1998165": {
-      "106623037": {
-        "account_id": 106623037,
-        "name": "UNDEFEATED Muerta",
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/106623037"
-      },
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "199627625": {
-        "account_id": 199627625,
-        "name": "✪ Captain Vodka",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/199627625"
+        "profile": "https://www.opendota.com/players/226354794"
       },
       "78489654": {
         "account_id": 78489654,
         "name": "\\[T]/.Dr.Kunzel",
         "games": 1,
-        "wins": 0,
+        "wins": 1,
         "profile": "https://www.opendota.com/players/78489654"
-      },
-      "178768308": {
-        "account_id": 178768308,
-        "name": "bash_crazy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/178768308"
       }
     },
     "9834572": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
@@ -6058,12 +5796,12 @@
         "wins": 0,
         "profile": "https://www.opendota.com/players/1127238076"
       },
-      "121905961": {
-        "account_id": 121905961,
-        "name": "Fiend",
+      "56352644": {
+        "account_id": 56352644,
+        "name": "StolteSomFaa",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/121905961"
+        "profile": "https://www.opendota.com/players/56352644"
       },
       "183063377": {
         "account_id": 183063377,
@@ -6072,36 +5810,22 @@
         "wins": 0,
         "profile": "https://www.opendota.com/players/183063377"
       },
-      "56352644": {
-        "account_id": 56352644,
-        "name": "StolteSomFaa",
+      "121905961": {
+        "account_id": 121905961,
+        "name": "Fiend",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/56352644"
+        "profile": "https://www.opendota.com/players/121905961"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/431599342"
       }
     },
     "4326965": {
-      "194252150": {
-        "account_id": 194252150,
-        "name": "Fat and happy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/194252150"
-      },
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "992361072": {
-        "account_id": 992361072,
-        "name": "Grunt",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/992361072"
-      },
       "374810707": {
         "account_id": 374810707,
         "name": "Barpor the barbarian",
@@ -6109,6 +5833,13 @@
         "wins": 0,
         "profile": "https://www.opendota.com/players/374810707"
       },
+      "194252150": {
+        "account_id": 194252150,
+        "name": "Fat and happy",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/194252150"
+      },
       "57839727": {
         "account_id": 57839727,
         "name": "Great Love",
@@ -6136,29 +5867,6 @@
         "games": 1,
         "wins": 0,
         "profile": "https://www.opendota.com/players/1002536896"
-      }
-    },
-    "362098": {
-      "35804562": {
-        "account_id": 35804562,
-        "name": "A Tired Parent",
-        "games": 3,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/35804562"
-      },
-      "107968204": {
-        "account_id": 107968204,
-        "name": "e-snok",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/107968204"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1803122431"
       },
       "164067051": {
         "account_id": 164067051,
@@ -6171,67 +5879,11 @@
         "account_id": 992361072,
         "name": "Grunt",
         "games": 1,
-        "wins": 1,
+        "wins": 0,
         "profile": "https://www.opendota.com/players/992361072"
-      },
-      "922645723": {
-        "account_id": 922645723,
-        "name": "what is a clit?(visual learner)",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/922645723"
-      },
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "1802720915": {
-        "account_id": 1802720915,
-        "name": "Worry is a misuse of imagination",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1802720915"
-      },
-      "185681464": {
-        "account_id": 185681464,
-        "name": "Tommy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/185681464"
-      },
-      "61566555": {
-        "account_id": 61566555,
-        "name": "Nelow",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/61566555"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/188889560"
-      },
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/226354794"
       }
     },
-    "9833687": {
-      "194252150": {
-        "account_id": 194252150,
-        "name": "Fat and happy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/194252150"
-      },
+    "1998165": {
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
@@ -6239,119 +5891,19 @@
         "wins": 0,
         "profile": "https://www.opendota.com/players/1127238076"
       },
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
+      "178768308": {
+        "account_id": 178768308,
+        "name": "bash_crazy",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1803122431"
-      },
-      "35804562": {
-        "account_id": 35804562,
-        "name": "A Tired Parent",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/35804562"
-      }
-    },
-    "9833697": {
-      "149970209": {
-        "account_id": 149970209,
-        "name": "sputn1k",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/149970209"
-      },
-      "1002536896": {
-        "account_id": 1002536896,
-        "name": "jarjeer",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1002536896"
-      },
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 2,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "387026803": {
-        "account_id": 387026803,
-        "name": "Jedleo",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/387026803"
-      },
-      "107968204": {
-        "account_id": 107968204,
-        "name": "e-snok",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/107968204"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 3,
-        "wins": 3,
-        "profile": "https://www.opendota.com/players/188889560"
-      },
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 2,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/1877912379"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/183063377"
-      },
-      "121905961": {
-        "account_id": 121905961,
-        "name": "Fiend",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/121905961"
-      },
-      "297477613": {
-        "account_id": 297477613,
-        "name": "abo",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/297477613"
+        "profile": "https://www.opendota.com/players/178768308"
       },
       "106623037": {
         "account_id": 106623037,
         "name": "UNDEFEATED Muerta",
         "games": 1,
-        "wins": 1,
+        "wins": 0,
         "profile": "https://www.opendota.com/players/106623037"
-      },
-      "44505340": {
-        "account_id": 44505340,
-        "name": ".:Azure<>Fire.Ice:.",
-        "games": 2,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/44505340"
       },
       "78489654": {
         "account_id": 78489654,
@@ -6364,97 +5916,18 @@
         "account_id": 199627625,
         "name": "✪ Captain Vodka",
         "games": 1,
-        "wins": 1,
+        "wins": 0,
         "profile": "https://www.opendota.com/players/199627625"
-      },
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 8,
-        "wins": 6,
-        "profile": "https://www.opendota.com/players/226354794"
-      },
-      "114003462": {
-        "account_id": 114003462,
-        "name": "MooMoo",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/114003462"
-      },
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
-      "190115398": {
-        "account_id": 190115398,
-        "name": "M1xed",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/190115398"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 2,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/1803122431"
-      },
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 5,
-        "wins": 3,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "61566555": {
-        "account_id": 61566555,
-        "name": "Nelow",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/61566555"
-      }
-    },
-    "1642081": {
-      "1110210197": {
-        "account_id": 1110210197,
-        "name": "Sven",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1110210197"
-      },
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "106623037": {
-        "account_id": 106623037,
-        "name": "UNDEFEATED Muerta",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/106623037"
-      },
-      "387026803": {
-        "account_id": 387026803,
-        "name": "Jedleo",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/387026803"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/188889560"
       }
     },
     "2202377": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
       "57839727": {
         "account_id": 57839727,
         "name": "Great Love",
@@ -6469,12 +5942,12 @@
         "wins": 1,
         "profile": "https://www.opendota.com/players/1877912379"
       },
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
+      "35804562": {
+        "account_id": 35804562,
+        "name": "A Tired Parent",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
+        "profile": "https://www.opendota.com/players/35804562"
       },
       "111098380": {
         "account_id": 111098380,
@@ -6482,73 +5955,15 @@
         "games": 1,
         "wins": 1,
         "profile": "https://www.opendota.com/players/111098380"
-      },
-      "35804562": {
-        "account_id": 35804562,
-        "name": "A Tired Parent",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/35804562"
-      }
-    },
-    "935859": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1877912379"
-      },
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
-      "78489654": {
-        "account_id": 78489654,
-        "name": "\\[T]/.Dr.Kunzel",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/78489654"
       }
     },
     "7980509": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
         "games": 1,
         "wins": 1,
         "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "199627625": {
-        "account_id": 199627625,
-        "name": "✪ Captain Vodka",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/199627625"
       },
       "343877559": {
         "account_id": 343877559,
@@ -6563,98 +5978,688 @@
         "games": 1,
         "wins": 1,
         "profile": "https://www.opendota.com/players/183063377"
+      },
+      "199627625": {
+        "account_id": 199627625,
+        "name": "✪ Captain Vodka",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/199627625"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/431599342"
+      }
+    },
+    "1642081": {
+      "106623037": {
+        "account_id": 106623037,
+        "name": "UNDEFEATED Muerta",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/106623037"
+      },
+      "1110210197": {
+        "account_id": 1110210197,
+        "name": "Sven",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1110210197"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "387026803": {
+        "account_id": 387026803,
+        "name": "Jedleo",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/387026803"
+      }
+    },
+    "362098": {
+      "61566555": {
+        "account_id": 61566555,
+        "name": "Nelow",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/61566555"
+      },
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "35804562": {
+        "account_id": 35804562,
+        "name": "A Tired Parent",
+        "games": 3,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/35804562"
+      },
+      "107968204": {
+        "account_id": 107968204,
+        "name": "e-snok",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/107968204"
+      },
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/226354794"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "1802720915": {
+        "account_id": 1802720915,
+        "name": "Worry is a misuse of imagination",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1802720915"
+      },
+      "922645723": {
+        "account_id": 922645723,
+        "name": "what is a clit?(visual learner)",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/922645723"
+      },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "185681464": {
+        "account_id": 185681464,
+        "name": "Tommy",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/185681464"
+      },
+      "992361072": {
+        "account_id": 992361072,
+        "name": "Grunt",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/992361072"
+      }
+    },
+    "9833690": {
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/226354794"
+      },
+      "281526650": {
+        "account_id": 281526650,
+        "name": "Aquatech",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/281526650"
+      },
+      "236584942": {
+        "account_id": 236584942,
+        "name": "Booz",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/236584942"
+      },
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/183063377"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/188889560"
+      }
+    },
+    "9834594": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/431599342"
+      },
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1127238076"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "199627625": {
+        "account_id": 199627625,
+        "name": "✪ Captain Vodka",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/199627625"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "56352644": {
+        "account_id": 56352644,
+        "name": "StolteSomFaa",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/56352644"
+      },
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
+        "games": 3,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/183063377"
+      },
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1877912379"
+      },
+      "1002536896": {
+        "account_id": 1002536896,
+        "name": "jarjeer",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1002536896"
+      },
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/226354794"
+      },
+      "78489654": {
+        "account_id": 78489654,
+        "name": "\\[T]/.Dr.Kunzel",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/78489654"
+      }
+    },
+    "2211498": {
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1127238076"
+      },
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/226354794"
+      },
+      "106623037": {
+        "account_id": 106623037,
+        "name": "UNDEFEATED Muerta",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/106623037"
+      },
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/183063377"
+      },
+      "387026803": {
+        "account_id": 387026803,
+        "name": "Jedleo",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/387026803"
+      }
+    },
+    "935859": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "78489654": {
+        "account_id": 78489654,
+        "name": "\\[T]/.Dr.Kunzel",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/78489654"
+      },
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1877912379"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/431599342"
+      }
+    },
+    "9833687": {
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1127238076"
+      },
+      "194252150": {
+        "account_id": 194252150,
+        "name": "Fat and happy",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/194252150"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "35804562": {
+        "account_id": 35804562,
+        "name": "A Tired Parent",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/35804562"
+      }
+    },
+    "8328373": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1127238076"
+      },
+      "297477613": {
+        "account_id": 297477613,
+        "name": "abo",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/297477613"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "199627625": {
+        "account_id": 199627625,
+        "name": "✪ Captain Vodka",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/199627625"
+      },
+      "178768308": {
+        "account_id": 178768308,
+        "name": "bash_crazy",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/178768308"
+      },
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1877912379"
+      },
+      "78489654": {
+        "account_id": 78489654,
+        "name": "\\[T]/.Dr.Kunzel",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/78489654"
+      }
+    },
+    "9833697": {
+      "1002536896": {
+        "account_id": 1002536896,
+        "name": "jarjeer",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1002536896"
+      },
+      "44505340": {
+        "account_id": 44505340,
+        "name": ".:Azure<>Fire.Ice:.",
+        "games": 2,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/44505340"
+      },
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 8,
+        "wins": 6,
+        "profile": "https://www.opendota.com/players/226354794"
+      },
+      "149970209": {
+        "account_id": 149970209,
+        "name": "sputn1k",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/149970209"
+      },
+      "106623037": {
+        "account_id": 106623037,
+        "name": "UNDEFEATED Muerta",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/106623037"
+      },
+      "121905961": {
+        "account_id": 121905961,
+        "name": "Fiend",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/121905961"
+      },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 2,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "190115398": {
+        "account_id": 190115398,
+        "name": "M1xed",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/190115398"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 3,
+        "wins": 3,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "107968204": {
+        "account_id": 107968204,
+        "name": "e-snok",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/107968204"
+      },
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1127238076"
+      },
+      "387026803": {
+        "account_id": 387026803,
+        "name": "Jedleo",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/387026803"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 2,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "297477613": {
+        "account_id": 297477613,
+        "name": "abo",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/297477613"
+      },
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 2,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/1877912379"
+      },
+      "61566555": {
+        "account_id": 61566555,
+        "name": "Nelow",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/61566555"
+      },
+      "114003462": {
+        "account_id": 114003462,
+        "name": "MooMoo",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/114003462"
+      },
+      "78489654": {
+        "account_id": 78489654,
+        "name": "\\[T]/.Dr.Kunzel",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/78489654"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/431599342"
+      },
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 5,
+        "wins": 3,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/183063377"
+      },
+      "199627625": {
+        "account_id": 199627625,
+        "name": "✪ Captain Vodka",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/199627625"
       }
     }
   },
   "heroStats": {
-    "105": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
+    "29": {
+      "picks": 5,
+      "wins": 4,
+      "bans": 1
     },
-    "109": {
-      "picks": 1,
+    "93": {
+      "picks": 2,
       "wins": 1,
-      "bans": 3
-    },
-    "70": {
-      "picks": 6,
-      "wins": 5,
-      "bans": 18
-    },
-    "79": {
-      "picks": 3,
-      "wins": 2,
       "bans": 2
     },
-    "36": {
-      "picks": 3,
-      "wins": 3,
-      "bans": 3
-    },
-    "74": {
-      "picks": 1,
-      "wins": 1,
-      "bans": 0
-    },
-    "138": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
+    "28": {
+      "picks": 4,
+      "wins": 2,
+      "bans": 2
     },
     "15": {
       "picks": 2,
       "wins": 0,
       "bans": 0
     },
-    "32": {
+    "5": {
       "picks": 1,
       "wins": 1,
       "bans": 0
     },
-    "50": {
-      "picks": 5,
+    "59": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 3
+    },
+    "131": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "69": {
+      "picks": 2,
+      "wins": 1,
+      "bans": 5
+    },
+    "121": {
+      "picks": 0,
+      "wins": 0,
+      "bans": 1
+    },
+    "7": {
+      "picks": 9,
       "wins": 3,
-      "bans": 2
+      "bans": 12
     },
-    "65": {
+    "35": {
       "picks": 1,
       "wins": 1,
-      "bans": 0
-    },
-    "112": {
-      "picks": 2,
-      "wins": 2,
       "bans": 1
     },
-    "51": {
-      "picks": 3,
-      "wins": 0,
-      "bans": 0
+    "18": {
+      "picks": 4,
+      "wins": 3,
+      "bans": 10
     },
-    "110": {
+    "90": {
       "picks": 2,
       "wins": 2,
       "bans": 2
-    },
-    "60": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 7
-    },
-    "77": {
-      "picks": 3,
-      "wins": 1,
-      "bans": 1
     },
     "102": {
       "picks": 2,
       "wins": 1,
       "bans": 1
     },
-    "71": {
-      "picks": 2,
+    "128": {
+      "picks": 5,
+      "wins": 4,
+      "bans": 0
+    },
+    "57": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "62": {
+      "picks": 1,
       "wins": 1,
+      "bans": 0
+    },
+    "77": {
+      "picks": 3,
+      "wins": 1,
+      "bans": 1
+    },
+    "103": {
+      "picks": 2,
+      "wins": 0,
       "bans": 0
     },
     "53": {
@@ -6662,233 +6667,48 @@
       "wins": 2,
       "bans": 13
     },
-    "28": {
-      "picks": 4,
-      "wins": 2,
-      "bans": 2
-    },
-    "34": {
+    "99": {
       "picks": 1,
       "wins": 0,
-      "bans": 1
-    },
-    "62": {
-      "picks": 1,
-      "wins": 1,
       "bans": 0
-    },
-    "18": {
-      "picks": 4,
-      "wins": 3,
-      "bans": 10
-    },
-    "135": {
-      "picks": 6,
-      "wins": 1,
-      "bans": 11
     },
     "64": {
       "picks": 3,
       "wins": 2,
       "bans": 0
     },
-    "12": {
-      "picks": 2,
-      "wins": 1,
-      "bans": 1
-    },
-    "67": {
-      "picks": 0,
-      "wins": 0,
-      "bans": 3
-    },
-    "136": {
-      "picks": 2,
-      "wins": 0,
-      "bans": 0
-    },
-    "16": {
-      "picks": 4,
-      "wins": 3,
-      "bans": 8
-    },
-    "11": {
-      "picks": 5,
-      "wins": 2,
-      "bans": 11
-    },
-    "6": {
-      "picks": 1,
-      "wins": 1,
-      "bans": 1
-    },
-    "59": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 3
-    },
-    "7": {
-      "picks": 9,
-      "wins": 3,
-      "bans": 12
-    },
-    "75": {
-      "picks": 1,
-      "wins": 1,
-      "bans": 26
-    },
-    "42": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
-    },
-    "25": {
-      "picks": 2,
-      "wins": 1,
-      "bans": 5
-    },
-    "85": {
-      "picks": 3,
-      "wins": 3,
-      "bans": 19
-    },
-    "87": {
-      "picks": 8,
-      "wins": 5,
-      "bans": 7
-    },
-    "90": {
+    "112": {
       "picks": 2,
       "wins": 2,
-      "bans": 2
-    },
-    "69": {
-      "picks": 2,
-      "wins": 1,
-      "bans": 5
-    },
-    "96": {
-      "picks": 1,
-      "wins": 1,
       "bans": 1
     },
-    "22": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
-    },
-    "46": {
-      "picks": 1,
-      "wins": 1,
-      "bans": 6
-    },
-    "48": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
-    },
-    "119": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
-    },
-    "13": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 7
-    },
-    "106": {
+    "34": {
       "picks": 1,
       "wins": 0,
       "bans": 1
-    },
-    "33": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 1
-    },
-    "40": {
-      "picks": 3,
-      "wins": 1,
-      "bans": 2
-    },
-    "114": {
-      "picks": 2,
-      "wins": 1,
-      "bans": 5
-    },
-    "2": {
-      "picks": 6,
-      "wins": 2,
-      "bans": 21
-    },
-    "99": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
     },
     "129": {
       "picks": 7,
       "wins": 6,
       "bans": 8
     },
-    "20": {
-      "picks": 5,
-      "wins": 3,
-      "bans": 2
-    },
-    "103": {
-      "picks": 2,
-      "wins": 0,
-      "bans": 0
-    },
-    "23": {
+    "27": {
       "picks": 3,
       "wins": 2,
-      "bans": 0
+      "bans": 20
     },
-    "78": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
-    },
-    "29": {
-      "picks": 5,
-      "wins": 4,
-      "bans": 1
-    },
-    "94": {
-      "picks": 3,
-      "wins": 1,
-      "bans": 12
-    },
-    "93": {
+    "71": {
       "picks": 2,
+      "wins": 1,
+      "bans": 0
+    },
+    "30": {
+      "picks": 4,
       "wins": 1,
       "bans": 2
     },
-    "68": {
-      "picks": 3,
-      "wins": 1,
-      "bans": 3
-    },
-    "5": {
-      "picks": 1,
-      "wins": 1,
-      "bans": 0
-    },
-    "131": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
-    },
-    "3": {
-      "picks": 4,
-      "wins": 3,
-      "bans": 4
-    },
-    "121": {
-      "picks": 0,
+    "86": {
+      "picks": 6,
       "wins": 0,
       "bans": 1
     },
@@ -6902,142 +6722,17 @@
       "wins": 1,
       "bans": 0
     },
-    "30": {
-      "picks": 4,
-      "wins": 1,
-      "bans": 2
-    },
     "54": {
       "picks": 4,
       "wins": 0,
       "bans": 12
     },
-    "35": {
-      "picks": 1,
-      "wins": 1,
-      "bans": 1
-    },
-    "86": {
-      "picks": 6,
-      "wins": 0,
-      "bans": 1
-    },
-    "43": {
-      "picks": 3,
-      "wins": 0,
-      "bans": 2
-    },
-    "17": {
-      "picks": 7,
-      "wins": 4,
-      "bans": 11
-    },
-    "128": {
-      "picks": 5,
-      "wins": 4,
-      "bans": 0
-    },
-    "137": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
-    },
-    "66": {
-      "picks": 0,
-      "wins": 0,
-      "bans": 1
-    },
-    "126": {
-      "picks": 3,
-      "wins": 2,
-      "bans": 0
-    },
-    "26": {
-      "picks": 12,
-      "wins": 7,
-      "bans": 7
-    },
-    "63": {
-      "picks": 2,
-      "wins": 1,
-      "bans": 0
-    },
-    "39": {
-      "picks": 10,
-      "wins": 6,
-      "bans": 16
-    },
-    "56": {
-      "picks": 2,
-      "wins": 2,
-      "bans": 0
-    },
-    "14": {
-      "picks": 2,
-      "wins": 1,
-      "bans": 1
-    },
-    "27": {
-      "picks": 3,
-      "wins": 2,
-      "bans": 20
-    },
-    "49": {
-      "picks": 4,
-      "wins": 3,
-      "bans": 0
-    },
-    "21": {
-      "picks": 3,
-      "wins": 2,
-      "bans": 1
-    },
-    "97": {
-      "picks": 3,
-      "wins": 1,
-      "bans": 6
-    },
-    "104": {
-      "picks": 3,
-      "wins": 1,
-      "bans": 0
-    },
-    "19": {
-      "picks": 6,
-      "wins": 3,
-      "bans": 3
-    },
-    "8": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 3
-    },
-    "31": {
+    "33": {
       "picks": 1,
       "wins": 0,
       "bans": 1
     },
-    "111": {
-      "picks": 2,
-      "wins": 0,
-      "bans": 0
-    },
-    "98": {
-      "picks": 1,
-      "wins": 0,
-      "bans": 0
-    },
-    "107": {
-      "picks": 2,
-      "wins": 1,
-      "bans": 0
-    },
-    "76": {
-      "picks": 2,
-      "wins": 2,
-      "bans": 23
-    },
-    "57": {
+    "100": {
       "picks": 1,
       "wins": 0,
       "bans": 0
@@ -7047,112 +6742,376 @@
       "wins": 2,
       "bans": 0
     },
+    "11": {
+      "picks": 5,
+      "wins": 2,
+      "bans": 11
+    },
+    "23": {
+      "picks": 3,
+      "wins": 2,
+      "bans": 0
+    },
+    "42": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "60": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 7
+    },
+    "104": {
+      "picks": 3,
+      "wins": 1,
+      "bans": 0
+    },
+    "51": {
+      "picks": 3,
+      "wins": 0,
+      "bans": 0
+    },
+    "105": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "56": {
+      "picks": 2,
+      "wins": 2,
+      "bans": 0
+    },
+    "32": {
+      "picks": 1,
+      "wins": 1,
+      "bans": 0
+    },
+    "31": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 1
+    },
+    "66": {
+      "picks": 0,
+      "wins": 0,
+      "bans": 1
+    },
+    "138": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "135": {
+      "picks": 6,
+      "wins": 1,
+      "bans": 11
+    },
+    "67": {
+      "picks": 0,
+      "wins": 0,
+      "bans": 3
+    },
+    "17": {
+      "picks": 7,
+      "wins": 4,
+      "bans": 11
+    },
+    "78": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "87": {
+      "picks": 8,
+      "wins": 5,
+      "bans": 7
+    },
+    "136": {
+      "picks": 2,
+      "wins": 0,
+      "bans": 0
+    },
+    "39": {
+      "picks": 10,
+      "wins": 6,
+      "bans": 16
+    },
+    "22": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "20": {
+      "picks": 5,
+      "wins": 3,
+      "bans": 2
+    },
+    "13": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 7
+    },
+    "25": {
+      "picks": 2,
+      "wins": 1,
+      "bans": 5
+    },
+    "98": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "74": {
+      "picks": 1,
+      "wins": 1,
+      "bans": 0
+    },
+    "50": {
+      "picks": 5,
+      "wins": 3,
+      "bans": 2
+    },
+    "110": {
+      "picks": 2,
+      "wins": 2,
+      "bans": 2
+    },
+    "109": {
+      "picks": 1,
+      "wins": 1,
+      "bans": 3
+    },
+    "48": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "111": {
+      "picks": 2,
+      "wins": 0,
+      "bans": 0
+    },
+    "36": {
+      "picks": 3,
+      "wins": 3,
+      "bans": 3
+    },
+    "75": {
+      "picks": 1,
+      "wins": 1,
+      "bans": 26
+    },
+    "6": {
+      "picks": 1,
+      "wins": 1,
+      "bans": 1
+    },
+    "68": {
+      "picks": 3,
+      "wins": 1,
+      "bans": 3
+    },
+    "65": {
+      "picks": 1,
+      "wins": 1,
+      "bans": 0
+    },
+    "21": {
+      "picks": 3,
+      "wins": 2,
+      "bans": 1
+    },
+    "43": {
+      "picks": 3,
+      "wins": 0,
+      "bans": 2
+    },
+    "14": {
+      "picks": 2,
+      "wins": 1,
+      "bans": 1
+    },
+    "46": {
+      "picks": 1,
+      "wins": 1,
+      "bans": 6
+    },
+    "137": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "114": {
+      "picks": 2,
+      "wins": 1,
+      "bans": 5
+    },
+    "76": {
+      "picks": 2,
+      "wins": 2,
+      "bans": 23
+    },
+    "97": {
+      "picks": 3,
+      "wins": 1,
+      "bans": 6
+    },
+    "12": {
+      "picks": 2,
+      "wins": 1,
+      "bans": 1
+    },
+    "8": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 3
+    },
+    "16": {
+      "picks": 4,
+      "wins": 3,
+      "bans": 8
+    },
+    "19": {
+      "picks": 6,
+      "wins": 3,
+      "bans": 3
+    },
+    "26": {
+      "picks": 12,
+      "wins": 7,
+      "bans": 7
+    },
+    "119": {
+      "picks": 1,
+      "wins": 0,
+      "bans": 0
+    },
+    "3": {
+      "picks": 4,
+      "wins": 3,
+      "bans": 4
+    },
     "1": {
       "picks": 1,
       "wins": 1,
       "bans": 6
     },
-    "100": {
+    "106": {
       "picks": 1,
       "wins": 0,
+      "bans": 1
+    },
+    "107": {
+      "picks": 2,
+      "wins": 1,
+      "bans": 0
+    },
+    "94": {
+      "picks": 3,
+      "wins": 1,
+      "bans": 12
+    },
+    "85": {
+      "picks": 3,
+      "wins": 3,
+      "bans": 19
+    },
+    "70": {
+      "picks": 6,
+      "wins": 5,
+      "bans": 18
+    },
+    "40": {
+      "picks": 3,
+      "wins": 1,
+      "bans": 2
+    },
+    "63": {
+      "picks": 2,
+      "wins": 1,
+      "bans": 0
+    },
+    "79": {
+      "picks": 3,
+      "wins": 2,
+      "bans": 2
+    },
+    "126": {
+      "picks": 3,
+      "wins": 2,
+      "bans": 0
+    },
+    "2": {
+      "picks": 6,
+      "wins": 2,
+      "bans": 21
+    },
+    "96": {
+      "picks": 1,
+      "wins": 1,
+      "bans": 1
+    },
+    "49": {
+      "picks": 4,
+      "wins": 3,
       "bans": 0
     }
   },
   "heroPlayerAgg": {
-    "105": {
-      "219481866": {
-        "account_id": 219481866,
-        "name": "POKLESS PUNK",
+    "29": {
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
         "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/219481866"
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "374810707": {
+        "account_id": 374810707,
+        "name": "Barpor the barbarian",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/374810707"
+      },
+      "387026803": {
+        "account_id": 387026803,
+        "name": "Jedleo",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/387026803"
+      },
+      "44505340": {
+        "account_id": 44505340,
+        "name": ".:Azure<>Fire.Ice:.",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/44505340"
       }
     },
-    "70": {
-      "1002536896": {
-        "account_id": 1002536896,
-        "name": "jarjeer",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1002536896"
-      },
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
-      "149970209": {
-        "account_id": 149970209,
-        "name": "sputn1k",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/149970209"
-      },
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
+    "93": {
       "1803122431": {
         "account_id": 1803122431,
         "name": "Gary the Carry",
         "games": 2,
-        "wins": 2,
+        "wins": 1,
         "profile": "https://www.opendota.com/players/1803122431"
       }
     },
-    "79": {
-      "1002536896": {
-        "account_id": 1002536896,
-        "name": "jarjeer",
+    "28": {
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/1002536896"
+        "profile": "https://www.opendota.com/players/183063377"
       },
-      "178768308": {
-        "account_id": 178768308,
-        "name": "bash_crazy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/178768308"
-      },
-      "1802720915": {
-        "account_id": 1802720915,
-        "name": "Worry is a misuse of imagination",
-        "games": 1,
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 3,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/1802720915"
-      }
-    },
-    "36": {
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/226354794"
-      }
-    },
-    "74": {
-      "401356923": {
-        "account_id": 401356923,
-        "name": "TRADE CM",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/401356923"
-      }
-    },
-    "138": {
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1127238076"
+        "profile": "https://www.opendota.com/players/1877912379"
       }
     },
     "15": {
@@ -7171,88 +7130,196 @@
         "profile": "https://www.opendota.com/players/1127238076"
       }
     },
-    "32": {
-      "190115398": {
-        "account_id": 190115398,
-        "name": "M1xed",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/190115398"
-      }
-    },
-    "131": {
-      "61566555": {
-        "account_id": 61566555,
-        "name": "Nelow",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/61566555"
-      }
-    },
-    "65": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
-      }
-    },
-    "112": {
+    "5": {
       "35804562": {
         "account_id": 35804562,
         "name": "A Tired Parent",
         "games": 1,
         "wins": 1,
         "profile": "https://www.opendota.com/players/35804562"
-      },
-      "121905961": {
-        "account_id": 121905961,
-        "name": "Fiend",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/121905961"
       }
     },
-    "51": {
-      "236584942": {
-        "account_id": 236584942,
-        "name": "Booz",
+    "59": {
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/236584942"
-      },
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 2,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1127238076"
+        "profile": "https://www.opendota.com/players/431599342"
       }
     },
-    "110": {
-      "106623037": {
-        "account_id": 106623037,
-        "name": "UNDEFEATED Muerta",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/106623037"
-      },
+    "64": {
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
         "games": 1,
         "wins": 1,
         "profile": "https://www.opendota.com/players/1127238076"
+      },
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/226354794"
+      },
+      "35804562": {
+        "account_id": 35804562,
+        "name": "A Tired Parent",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/35804562"
       }
     },
-    "60": {
+    "69": {
+      "149970209": {
+        "account_id": 149970209,
+        "name": "sputn1k",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/149970209"
+      },
+      "199627625": {
+        "account_id": 199627625,
+        "name": "✪ Captain Vodka",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/199627625"
+      }
+    },
+    "7": {
+      "122918915": {
+        "account_id": 122918915,
+        "name": "LipNeX",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/122918915"
+      },
+      "297477613": {
+        "account_id": 297477613,
+        "name": "abo",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/297477613"
+      },
       "57839727": {
         "account_id": 57839727,
         "name": "Great Love",
         "games": 1,
         "wins": 0,
         "profile": "https://www.opendota.com/players/57839727"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 3,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "1110210197": {
+        "account_id": 1110210197,
+        "name": "Sven",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1110210197"
+      },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1803122431"
+      }
+    },
+    "35": {
+      "374810707": {
+        "account_id": 374810707,
+        "name": "Barpor the barbarian",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/374810707"
+      }
+    },
+    "18": {
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "297477613": {
+        "account_id": 297477613,
+        "name": "abo",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/297477613"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/431599342"
+      }
+    },
+    "90": {
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1877912379"
+      }
+    },
+    "102": {
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/57839727"
+      }
+    },
+    "128": {
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 5,
+        "wins": 4,
+        "profile": "https://www.opendota.com/players/188889560"
+      }
+    },
+    "57": {
+      "199627625": {
+        "account_id": 199627625,
+        "name": "✪ Captain Vodka",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/199627625"
+      }
+    },
+    "62": {
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/188889560"
       }
     },
     "77": {
@@ -7271,50 +7338,137 @@
         "profile": "https://www.opendota.com/players/1127238076"
       }
     },
-    "102": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
-      }
-    },
-    "50": {
+    "103": {
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
-        "games": 1,
-        "wins": 1,
+        "games": 2,
+        "wins": 0,
         "profile": "https://www.opendota.com/players/1127238076"
+      }
+    },
+    "53": {
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 2,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1803122431"
       },
-      "236584942": {
-        "account_id": 236584942,
-        "name": "Booz",
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/226354794"
+      },
+      "149970209": {
+        "account_id": 149970209,
+        "name": "sputn1k",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/236584942"
+        "profile": "https://www.opendota.com/players/149970209"
+      },
+      "56352644": {
+        "account_id": 56352644,
+        "name": "StolteSomFaa",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/56352644"
+      },
+      "1523553613": {
+        "account_id": 1523553613,
+        "name": "kytoro999",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1523553613"
+      }
+    },
+    "99": {
+      "374810707": {
+        "account_id": 374810707,
+        "name": "Barpor the barbarian",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/374810707"
+      }
+    },
+    "112": {
+      "35804562": {
+        "account_id": 35804562,
+        "name": "A Tired Parent",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/35804562"
+      },
+      "121905961": {
+        "account_id": 121905961,
+        "name": "Fiend",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/121905961"
+      }
+    },
+    "34": {
+      "1002536896": {
+        "account_id": 1002536896,
+        "name": "jarjeer",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1002536896"
+      }
+    },
+    "129": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 3,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "297477613": {
+        "account_id": 297477613,
+        "name": "abo",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/297477613"
       },
       "183063377": {
         "account_id": 183063377,
         "name": "Zero",
         "games": 1,
-        "wins": 0,
+        "wins": 1,
         "profile": "https://www.opendota.com/players/183063377"
       },
-      "281526650": {
-        "account_id": 281526650,
-        "name": "Aquatech",
+      "387026803": {
+        "account_id": 387026803,
+        "name": "Jedleo",
+        "games": 2,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/387026803"
+      }
+    },
+    "27": {
+      "178768308": {
+        "account_id": 178768308,
+        "name": "bash_crazy",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/281526650"
+        "profile": "https://www.opendota.com/players/178768308"
       },
-      "78489654": {
-        "account_id": 78489654,
-        "name": "\\[T]/.Dr.Kunzel",
+      "1110210197": {
+        "account_id": 1110210197,
+        "name": "Sven",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/78489654"
+        "profile": "https://www.opendota.com/players/1110210197"
+      },
+      "35804562": {
+        "account_id": 35804562,
+        "name": "A Tired Parent",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/35804562"
       }
     },
     "71": {
@@ -7333,152 +7487,7 @@
         "profile": "https://www.opendota.com/players/57839727"
       }
     },
-    "53": {
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/226354794"
-      },
-      "1523553613": {
-        "account_id": 1523553613,
-        "name": "kytoro999",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1523553613"
-      },
-      "149970209": {
-        "account_id": 149970209,
-        "name": "sputn1k",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/149970209"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 2,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1803122431"
-      },
-      "56352644": {
-        "account_id": 56352644,
-        "name": "StolteSomFaa",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/56352644"
-      }
-    },
-    "28": {
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/183063377"
-      },
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 3,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1877912379"
-      }
-    },
-    "34": {
-      "1002536896": {
-        "account_id": 1002536896,
-        "name": "jarjeer",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1002536896"
-      }
-    },
-    "62": {
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/188889560"
-      }
-    },
-    "18": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/188889560"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1803122431"
-      },
-      "297477613": {
-        "account_id": 297477613,
-        "name": "abo",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/297477613"
-      }
-    },
-    "135": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
-      "992361072": {
-        "account_id": 992361072,
-        "name": "Grunt",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/992361072"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/183063377"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1803122431"
-      },
-      "185681464": {
-        "account_id": 185681464,
-        "name": "Tommy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/185681464"
-      }
-    },
-    "64": {
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/226354794"
-      },
+    "30": {
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
@@ -7486,133 +7495,42 @@
         "wins": 1,
         "profile": "https://www.opendota.com/players/1127238076"
       },
-      "35804562": {
-        "account_id": 35804562,
-        "name": "A Tired Parent",
+      "61566555": {
+        "account_id": 61566555,
+        "name": "Nelow",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/35804562"
-      }
-    },
-    "12": {
-      "78489654": {
-        "account_id": 78489654,
-        "name": "\\[T]/.Dr.Kunzel",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/78489654"
+        "profile": "https://www.opendota.com/players/61566555"
       },
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
+      "56352644": {
+        "account_id": 56352644,
+        "name": "StolteSomFaa",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/164067051"
-      }
-    },
-    "136": {
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1877912379"
+        "profile": "https://www.opendota.com/players/56352644"
       },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/1803122431"
+        "profile": "https://www.opendota.com/players/183063377"
       }
     },
-    "16": {
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 3,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/188889560"
-      }
-    },
-    "87": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
+    "86": {
+      "178768308": {
+        "account_id": 178768308,
+        "name": "bash_crazy",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/164067051"
+        "profile": "https://www.opendota.com/players/178768308"
       },
-      "106623037": {
-        "account_id": 106623037,
-        "name": "UNDEFEATED Muerta",
+      "1002536896": {
+        "account_id": 1002536896,
+        "name": "jarjeer",
         "games": 2,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/106623037"
-      },
-      "402197430": {
-        "account_id": 402197430,
-        "name": "jackH07",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/402197430"
-      },
-      "78489654": {
-        "account_id": 78489654,
-        "name": "\\[T]/.Dr.Kunzel",
-        "games": 4,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/78489654"
-      }
-    },
-    "11": {
-      "194252150": {
-        "account_id": 194252150,
-        "name": "Fat and happy",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/194252150"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 4,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1803122431"
-      }
-    },
-    "6": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
-      }
-    },
-    "59": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      }
-    },
-    "7": {
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1803122431"
-      },
-      "1110210197": {
-        "account_id": 1110210197,
-        "name": "Sven",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1110210197"
+        "profile": "https://www.opendota.com/players/1002536896"
       },
       "57839727": {
         "account_id": 57839727,
@@ -7621,35 +7539,154 @@
         "wins": 0,
         "profile": "https://www.opendota.com/players/57839727"
       },
-      "297477613": {
-        "account_id": 297477613,
-        "name": "abo",
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/297477613"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 3,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/188889560"
-      },
-      "122918915": {
-        "account_id": 122918915,
-        "name": "LipNeX",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/122918915"
+        "profile": "https://www.opendota.com/players/183063377"
       }
     },
-    "75": {
+    "45": {
       "78489654": {
         "account_id": 78489654,
         "name": "\\[T]/.Dr.Kunzel",
         "games": 1,
-        "wins": 1,
+        "wins": 0,
         "profile": "https://www.opendota.com/players/78489654"
+      },
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/183063377"
+      }
+    },
+    "123": {
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1877912379"
+      }
+    },
+    "54": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "992361072": {
+        "account_id": 992361072,
+        "name": "Grunt",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/992361072"
+      },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "121905961": {
+        "account_id": 121905961,
+        "name": "Fiend",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/121905961"
+      }
+    },
+    "33": {
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/57839727"
+      }
+    },
+    "100": {
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1127238076"
+      }
+    },
+    "37": {
+      "107968204": {
+        "account_id": 107968204,
+        "name": "e-snok",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/107968204"
+      },
+      "61566555": {
+        "account_id": 61566555,
+        "name": "Nelow",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/61566555"
+      },
+      "78489654": {
+        "account_id": 78489654,
+        "name": "\\[T]/.Dr.Kunzel",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/78489654"
+      },
+      "35804562": {
+        "account_id": 35804562,
+        "name": "A Tired Parent",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/35804562"
+      }
+    },
+    "11": {
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 4,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "194252150": {
+        "account_id": 194252150,
+        "name": "Fat and happy",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/194252150"
+      }
+    },
+    "23": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "199627625": {
+        "account_id": 199627625,
+        "name": "✪ Captain Vodka",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/199627625"
       }
     },
     "42": {
@@ -7661,523 +7698,113 @@
         "profile": "https://www.opendota.com/players/84835"
       }
     },
-    "25": {
-      "343877559": {
-        "account_id": 343877559,
-        "name": "Should I Call You Mista?",
+    "60": {
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/57839727"
+      }
+    },
+    "104": {
+      "190115398": {
+        "account_id": 190115398,
+        "name": "M1xed",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/343877559"
+        "profile": "https://www.opendota.com/players/190115398"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "374810707": {
+        "account_id": 374810707,
+        "name": "Barpor the barbarian",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/374810707"
+      }
+    },
+    "51": {
+      "236584942": {
+        "account_id": 236584942,
+        "name": "Booz",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/236584942"
+      },
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 2,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1127238076"
+      }
+    },
+    "105": {
+      "219481866": {
+        "account_id": 219481866,
+        "name": "POKLESS PUNK",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/219481866"
+      }
+    },
+    "56": {
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1877912379"
       },
       "226354794": {
         "account_id": 226354794,
         "name": "Kret",
         "games": 1,
-        "wins": 0,
+        "wins": 1,
         "profile": "https://www.opendota.com/players/226354794"
       }
     },
-    "85": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
+    "32": {
+      "190115398": {
+        "account_id": 190115398,
+        "name": "M1xed",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "107968204": {
-        "account_id": 107968204,
-        "name": "e-snok",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/107968204"
-      },
+        "profile": "https://www.opendota.com/players/190115398"
+      }
+    },
+    "31": {
       "106623037": {
         "account_id": 106623037,
         "name": "UNDEFEATED Muerta",
         "games": 1,
-        "wins": 1,
+        "wins": 0,
         "profile": "https://www.opendota.com/players/106623037"
       }
     },
-    "109": {
-      "1002536896": {
-        "account_id": 1002536896,
-        "name": "jarjeer",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1002536896"
-      }
-    },
-    "90": {
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1877912379"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1803122431"
-      }
-    },
-    "69": {
-      "149970209": {
-        "account_id": 149970209,
-        "name": "sputn1k",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/149970209"
-      },
-      "199627625": {
-        "account_id": 199627625,
-        "name": "✪ Captain Vodka",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/199627625"
-      }
-    },
-    "96": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
-      }
-    },
-    "22": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/164067051"
-      }
-    },
-    "46": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/431599342"
-      }
-    },
-    "48": {
-      "194252150": {
-        "account_id": 194252150,
-        "name": "Fat and happy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/194252150"
-      }
-    },
-    "119": {
-      "23817378": {
-        "account_id": 23817378,
-        "name": "sense",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/23817378"
-      }
-    },
-    "13": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      }
-    },
-    "106": {
-      "1002536896": {
-        "account_id": 1002536896,
-        "name": "jarjeer",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1002536896"
-      }
-    },
-    "33": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/57839727"
-      }
-    },
-    "40": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
+    "138": {
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
         "games": 1,
         "wins": 0,
         "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "78489654": {
-        "account_id": 78489654,
-        "name": "\\[T]/.Dr.Kunzel",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/78489654"
       }
     },
-    "114": {
-      "1002536896": {
-        "account_id": 1002536896,
-        "name": "jarjeer",
+    "135": {
+      "185681464": {
+        "account_id": 185681464,
+        "name": "Tommy",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/1002536896"
-      },
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
-      }
-    },
-    "2": {
-      "149970209": {
-        "account_id": 149970209,
-        "name": "sputn1k",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/149970209"
-      },
-      "297477613": {
-        "account_id": 297477613,
-        "name": "abo",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/297477613"
-      },
-      "199627625": {
-        "account_id": 199627625,
-        "name": "✪ Captain Vodka",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/199627625"
-      },
-      "111098380": {
-        "account_id": 111098380,
-        "name": "monkee",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/111098380"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/188889560"
-      },
-      "44505340": {
-        "account_id": 44505340,
-        "name": ".:Azure<>Fire.Ice:.",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/44505340"
-      }
-    },
-    "99": {
-      "374810707": {
-        "account_id": 374810707,
-        "name": "Barpor the barbarian",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/374810707"
-      }
-    },
-    "129": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 3,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "387026803": {
-        "account_id": 387026803,
-        "name": "Jedleo",
-        "games": 2,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/387026803"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/183063377"
-      },
-      "297477613": {
-        "account_id": 297477613,
-        "name": "abo",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/297477613"
-      }
-    },
-    "20": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "992361072": {
-        "account_id": 992361072,
-        "name": "Grunt",
-        "games": 3,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/992361072"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/183063377"
-      }
-    },
-    "103": {
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 2,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1127238076"
-      }
-    },
-    "23": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/188889560"
-      },
-      "199627625": {
-        "account_id": 199627625,
-        "name": "✪ Captain Vodka",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/199627625"
-      }
-    },
-    "78": {
-      "178768308": {
-        "account_id": 178768308,
-        "name": "bash_crazy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/178768308"
-      }
-    },
-    "29": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "374810707": {
-        "account_id": 374810707,
-        "name": "Barpor the barbarian",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/374810707"
-      },
-      "387026803": {
-        "account_id": 387026803,
-        "name": "Jedleo",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/387026803"
-      },
-      "44505340": {
-        "account_id": 44505340,
-        "name": ".:Azure<>Fire.Ice:.",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/44505340"
-      }
-    },
-    "94": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "374810707": {
-        "account_id": 374810707,
-        "name": "Barpor the barbarian",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/374810707"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/188889560"
-      }
-    },
-    "93": {
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1803122431"
-      }
-    },
-    "68": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "35804562": {
-        "account_id": 35804562,
-        "name": "A Tired Parent",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/35804562"
-      },
-      "56352644": {
-        "account_id": 56352644,
-        "name": "StolteSomFaa",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/56352644"
-      }
-    },
-    "5": {
-      "35804562": {
-        "account_id": 35804562,
-        "name": "A Tired Parent",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/35804562"
-      }
-    },
-    "3": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "281526650": {
-        "account_id": 281526650,
-        "name": "Aquatech",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/281526650"
-      }
-    },
-    "45": {
-      "78489654": {
-        "account_id": 78489654,
-        "name": "\\[T]/.Dr.Kunzel",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/78489654"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/183063377"
-      }
-    },
-    "123": {
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1877912379"
-      }
-    },
-    "30": {
-      "61566555": {
-        "account_id": 61566555,
-        "name": "Nelow",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/61566555"
-      },
-      "1127238076": {
-        "account_id": 1127238076,
-        "name": "Virvacus",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1127238076"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/183063377"
-      },
-      "56352644": {
-        "account_id": 56352644,
-        "name": "StolteSomFaa",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/56352644"
-      }
-    },
-    "54": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/164067051"
+        "profile": "https://www.opendota.com/players/185681464"
       },
       "992361072": {
         "account_id": 992361072,
@@ -8186,51 +7813,12 @@
         "wins": 0,
         "profile": "https://www.opendota.com/players/992361072"
       },
-      "121905961": {
-        "account_id": 121905961,
-        "name": "Fiend",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/121905961"
-      },
       "1803122431": {
         "account_id": 1803122431,
         "name": "Gary the Carry",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1803122431"
-      }
-    },
-    "35": {
-      "374810707": {
-        "account_id": 374810707,
-        "name": "Barpor the barbarian",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/374810707"
-      }
-    },
-    "86": {
-      "1002536896": {
-        "account_id": 1002536896,
-        "name": "jarjeer",
         "games": 2,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1002536896"
-      },
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "178768308": {
-        "account_id": 178768308,
-        "name": "bash_crazy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/178768308"
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1803122431"
       },
       "183063377": {
         "account_id": 183063377,
@@ -8238,22 +7826,13 @@
         "games": 1,
         "wins": 0,
         "profile": "https://www.opendota.com/players/183063377"
-      }
-    },
-    "43": {
-      "199627625": {
-        "account_id": 199627625,
-        "name": "✪ Captain Vodka",
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/199627625"
-      },
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 2,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/226354794"
+        "profile": "https://www.opendota.com/players/431599342"
       }
     },
     "17": {
@@ -8272,115 +7851,78 @@
         "profile": "https://www.opendota.com/players/226354794"
       }
     },
-    "128": {
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 5,
-        "wins": 4,
-        "profile": "https://www.opendota.com/players/188889560"
-      }
-    },
-    "137": {
-      "281526650": {
-        "account_id": 281526650,
-        "name": "Aquatech",
+    "78": {
+      "178768308": {
+        "account_id": 178768308,
+        "name": "bash_crazy",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/281526650"
+        "profile": "https://www.opendota.com/players/178768308"
       }
     },
-    "126": {
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 3,
+    "87": {
+      "402197430": {
+        "account_id": 402197430,
+        "name": "jackH07",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/402197430"
+      },
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "78489654": {
+        "account_id": 78489654,
+        "name": "\\[T]/.Dr.Kunzel",
+        "games": 4,
         "wins": 2,
-        "profile": "https://www.opendota.com/players/1877912379"
-      }
-    },
-    "26": {
-      "431599342": {
-        "account_id": 431599342,
-        "name": "T'erreL",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/431599342"
-      },
-      "56352644": {
-        "account_id": 56352644,
-        "name": "StolteSomFaa",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/56352644"
-      },
-      "185681464": {
-        "account_id": 185681464,
-        "name": "Tommy",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/185681464"
-      },
-      "219481866": {
-        "account_id": 219481866,
-        "name": "POKLESS PUNK",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/219481866"
-      },
-      "35804562": {
-        "account_id": 35804562,
-        "name": "A Tired Parent",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/35804562"
-      },
-      "183063377": {
-        "account_id": 183063377,
-        "name": "Zero",
-        "games": 2,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/183063377"
-      },
-      "114003462": {
-        "account_id": 114003462,
-        "name": "MooMoo",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/114003462"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/188889560"
+        "profile": "https://www.opendota.com/players/78489654"
       },
       "106623037": {
         "account_id": 106623037,
         "name": "UNDEFEATED Muerta",
-        "games": 1,
-        "wins": 1,
+        "games": 2,
+        "wins": 2,
         "profile": "https://www.opendota.com/players/106623037"
       }
     },
-    "63": {
-      "106623037": {
-        "account_id": 106623037,
-        "name": "UNDEFEATED Muerta",
+    "131": {
+      "61566555": {
+        "account_id": 61566555,
+        "name": "Nelow",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/106623037"
+        "profile": "https://www.opendota.com/players/61566555"
+      }
+    },
+    "136": {
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1803122431"
       },
       "1877912379": {
         "account_id": 1877912379,
         "name": "流",
         "games": 1,
-        "wins": 1,
+        "wins": 0,
         "profile": "https://www.opendota.com/players/1877912379"
       }
     },
     "39": {
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 3,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/226354794"
+      },
       "1002536896": {
         "account_id": 1002536896,
         "name": "jarjeer",
@@ -8388,6 +7930,13 @@
         "wins": 0,
         "profile": "https://www.opendota.com/players/1002536896"
       },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 3,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
       "1877912379": {
         "account_id": 1877912379,
         "name": "流",
@@ -8401,85 +7950,84 @@
         "games": 1,
         "wins": 1,
         "profile": "https://www.opendota.com/players/188889560"
+      }
+    },
+    "22": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/164067051"
+      }
+    },
+    "20": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "992361072": {
+        "account_id": 992361072,
+        "name": "Grunt",
+        "games": 3,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/992361072"
+      },
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/183063377"
+      }
+    },
+    "13": {
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/431599342"
+      }
+    },
+    "25": {
+      "343877559": {
+        "account_id": 343877559,
+        "name": "Should I Call You Mista?",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/343877559"
       },
       "226354794": {
         "account_id": 226354794,
         "name": "Kret",
-        "games": 3,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/226354794"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 3,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/1803122431"
-      }
-    },
-    "56": {
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
         "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1877912379"
-      },
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 1,
-        "wins": 1,
+        "wins": 0,
         "profile": "https://www.opendota.com/players/226354794"
       }
     },
-    "14": {
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/1803122431"
-      },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
+    "98": {
+      "922645723": {
+        "account_id": 922645723,
+        "name": "what is a clit?(visual learner)",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/188889560"
+        "profile": "https://www.opendota.com/players/922645723"
       }
     },
-    "27": {
-      "1110210197": {
-        "account_id": 1110210197,
-        "name": "Sven",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1110210197"
-      },
-      "178768308": {
-        "account_id": 178768308,
-        "name": "bash_crazy",
+    "74": {
+      "401356923": {
+        "account_id": 401356923,
+        "name": "TRADE CM",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/178768308"
-      },
-      "35804562": {
-        "account_id": 35804562,
-        "name": "A Tired Parent",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/35804562"
+        "profile": "https://www.opendota.com/players/401356923"
       }
     },
-    "49": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
+    "50": {
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
@@ -8487,115 +8035,67 @@
         "wins": 1,
         "profile": "https://www.opendota.com/players/1127238076"
       },
-      "44505340": {
-        "account_id": 44505340,
-        "name": ".:Azure<>Fire.Ice:.",
-        "games": 2,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/44505340"
-      }
-    },
-    "21": {
-      "122918915": {
-        "account_id": 122918915,
-        "name": "LipNeX",
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/122918915"
+        "profile": "https://www.opendota.com/players/183063377"
       },
-      "188889560": {
-        "account_id": 188889560,
-        "name": "HUNDSCHeiSSE",
+      "236584942": {
+        "account_id": 236584942,
+        "name": "Booz",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/188889560"
+        "profile": "https://www.opendota.com/players/236584942"
       },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
+      "281526650": {
+        "account_id": 281526650,
+        "name": "Aquatech",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/1803122431"
+        "profile": "https://www.opendota.com/players/281526650"
+      },
+      "78489654": {
+        "account_id": 78489654,
+        "name": "\\[T]/.Dr.Kunzel",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/78489654"
       }
     },
-    "97": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
-        "games": 2,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
-      },
-      "387026803": {
-        "account_id": 387026803,
-        "name": "Jedleo",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/387026803"
-      }
-    },
-    "104": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/57839727"
-      },
-      "374810707": {
-        "account_id": 374810707,
-        "name": "Barpor the barbarian",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/374810707"
-      },
-      "190115398": {
-        "account_id": 190115398,
-        "name": "M1xed",
-        "games": 1,
-        "wins": 1,
-        "profile": "https://www.opendota.com/players/190115398"
-      }
-    },
-    "19": {
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 4,
-        "wins": 3,
-        "profile": "https://www.opendota.com/players/226354794"
-      },
-      "1877912379": {
-        "account_id": 1877912379,
-        "name": "流",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1877912379"
-      },
-      "1803122431": {
-        "account_id": 1803122431,
-        "name": "Gary the Carry",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/1803122431"
-      }
-    },
-    "8": {
-      "57839727": {
-        "account_id": 57839727,
-        "name": "Great Love",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/57839727"
-      }
-    },
-    "31": {
+    "110": {
       "106623037": {
         "account_id": 106623037,
         "name": "UNDEFEATED Muerta",
         "games": 1,
-        "wins": 0,
+        "wins": 1,
         "profile": "https://www.opendota.com/players/106623037"
+      },
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1127238076"
+      }
+    },
+    "109": {
+      "1002536896": {
+        "account_id": 1002536896,
+        "name": "jarjeer",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1002536896"
+      }
+    },
+    "48": {
+      "194252150": {
+        "account_id": 194252150,
+        "name": "Fat and happy",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/194252150"
       }
     },
     "111": {
@@ -8614,13 +8114,349 @@
         "profile": "https://www.opendota.com/players/1002536896"
       }
     },
-    "98": {
-      "922645723": {
-        "account_id": 922645723,
-        "name": "what is a clit?(visual learner)",
+    "36": {
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/226354794"
+      }
+    },
+    "75": {
+      "78489654": {
+        "account_id": 78489654,
+        "name": "\\[T]/.Dr.Kunzel",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/78489654"
+      }
+    },
+    "6": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
+      }
+    },
+    "68": {
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "56352644": {
+        "account_id": 56352644,
+        "name": "StolteSomFaa",
         "games": 1,
         "wins": 0,
-        "profile": "https://www.opendota.com/players/922645723"
+        "profile": "https://www.opendota.com/players/56352644"
+      },
+      "35804562": {
+        "account_id": 35804562,
+        "name": "A Tired Parent",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/35804562"
+      }
+    },
+    "65": {
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/57839727"
+      }
+    },
+    "21": {
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "122918915": {
+        "account_id": 122918915,
+        "name": "LipNeX",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/122918915"
+      }
+    },
+    "43": {
+      "199627625": {
+        "account_id": 199627625,
+        "name": "✪ Captain Vodka",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/199627625"
+      },
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 2,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/226354794"
+      }
+    },
+    "14": {
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1803122431"
+      }
+    },
+    "46": {
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/431599342"
+      }
+    },
+    "137": {
+      "281526650": {
+        "account_id": 281526650,
+        "name": "Aquatech",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/281526650"
+      }
+    },
+    "114": {
+      "1002536896": {
+        "account_id": 1002536896,
+        "name": "jarjeer",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1002536896"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/57839727"
+      }
+    },
+    "76": {
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 2,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/226354794"
+      }
+    },
+    "97": {
+      "387026803": {
+        "account_id": 387026803,
+        "name": "Jedleo",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/387026803"
+      },
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
+      }
+    },
+    "12": {
+      "78489654": {
+        "account_id": 78489654,
+        "name": "\\[T]/.Dr.Kunzel",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/78489654"
+      },
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/164067051"
+      }
+    },
+    "8": {
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/57839727"
+      }
+    },
+    "16": {
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 3,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/188889560"
+      }
+    },
+    "19": {
+      "226354794": {
+        "account_id": 226354794,
+        "name": "Kret",
+        "games": 4,
+        "wins": 3,
+        "profile": "https://www.opendota.com/players/226354794"
+      },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1877912379"
+      }
+    },
+    "26": {
+      "106623037": {
+        "account_id": 106623037,
+        "name": "UNDEFEATED Muerta",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/106623037"
+      },
+      "35804562": {
+        "account_id": 35804562,
+        "name": "A Tired Parent",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/35804562"
+      },
+      "56352644": {
+        "account_id": 56352644,
+        "name": "StolteSomFaa",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/56352644"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "219481866": {
+        "account_id": 219481866,
+        "name": "POKLESS PUNK",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/219481866"
+      },
+      "183063377": {
+        "account_id": 183063377,
+        "name": "Zero",
+        "games": 2,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/183063377"
+      },
+      "185681464": {
+        "account_id": 185681464,
+        "name": "Tommy",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/185681464"
+      },
+      "114003462": {
+        "account_id": 114003462,
+        "name": "MooMoo",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/114003462"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/431599342"
+      }
+    },
+    "119": {
+      "23817378": {
+        "account_id": 23817378,
+        "name": "sense",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/23817378"
+      }
+    },
+    "3": {
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 2,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1127238076"
+      },
+      "281526650": {
+        "account_id": 281526650,
+        "name": "Aquatech",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/281526650"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/431599342"
+      }
+    },
+    "1": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
+      }
+    },
+    "106": {
+      "1002536896": {
+        "account_id": 1002536896,
+        "name": "jarjeer",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1002536896"
       }
     },
     "107": {
@@ -8639,45 +8475,103 @@
         "profile": "https://www.opendota.com/players/1127238076"
       }
     },
-    "76": {
-      "226354794": {
-        "account_id": 226354794,
-        "name": "Kret",
-        "games": 2,
-        "wins": 2,
-        "profile": "https://www.opendota.com/players/226354794"
-      }
-    },
-    "57": {
-      "199627625": {
-        "account_id": 199627625,
-        "name": "✪ Captain Vodka",
+    "94": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
         "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/199627625"
-      }
-    },
-    "37": {
-      "61566555": {
-        "account_id": 61566555,
-        "name": "Nelow",
-        "games": 1,
-        "wins": 0,
-        "profile": "https://www.opendota.com/players/61566555"
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
       },
+      "374810707": {
+        "account_id": 374810707,
+        "name": "Barpor the barbarian",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/374810707"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/188889560"
+      }
+    },
+    "85": {
       "107968204": {
         "account_id": 107968204,
         "name": "e-snok",
         "games": 1,
-        "wins": 0,
+        "wins": 1,
         "profile": "https://www.opendota.com/players/107968204"
       },
-      "35804562": {
-        "account_id": 35804562,
-        "name": "A Tired Parent",
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/35804562"
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "106623037": {
+        "account_id": 106623037,
+        "name": "UNDEFEATED Muerta",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/106623037"
+      }
+    },
+    "70": {
+      "164067051": {
+        "account_id": 164067051,
+        "name": "Moox",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/164067051"
+      },
+      "1002536896": {
+        "account_id": 1002536896,
+        "name": "jarjeer",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1002536896"
+      },
+      "149970209": {
+        "account_id": 149970209,
+        "name": "sputn1k",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/149970209"
+      },
+      "1803122431": {
+        "account_id": 1803122431,
+        "name": "Gary the Carry",
+        "games": 2,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/1803122431"
+      },
+      "431599342": {
+        "account_id": 431599342,
+        "name": "T'erreL",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/431599342"
+      }
+    },
+    "40": {
+      "1127238076": {
+        "account_id": 1127238076,
+        "name": "Virvacus",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/1127238076"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/57839727"
       },
       "78489654": {
         "account_id": 78489654,
@@ -8687,22 +8581,128 @@
         "profile": "https://www.opendota.com/players/78489654"
       }
     },
-    "1": {
-      "164067051": {
-        "account_id": 164067051,
-        "name": "Moox",
+    "63": {
+      "106623037": {
+        "account_id": 106623037,
+        "name": "UNDEFEATED Muerta",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/106623037"
+      },
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
         "games": 1,
         "wins": 1,
-        "profile": "https://www.opendota.com/players/164067051"
+        "profile": "https://www.opendota.com/players/1877912379"
       }
     },
-    "100": {
+    "79": {
+      "178768308": {
+        "account_id": 178768308,
+        "name": "bash_crazy",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/178768308"
+      },
+      "1002536896": {
+        "account_id": 1002536896,
+        "name": "jarjeer",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1002536896"
+      },
+      "1802720915": {
+        "account_id": 1802720915,
+        "name": "Worry is a misuse of imagination",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/1802720915"
+      }
+    },
+    "126": {
+      "1877912379": {
+        "account_id": 1877912379,
+        "name": "流",
+        "games": 3,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/1877912379"
+      }
+    },
+    "2": {
+      "297477613": {
+        "account_id": 297477613,
+        "name": "abo",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/297477613"
+      },
+      "149970209": {
+        "account_id": 149970209,
+        "name": "sputn1k",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/149970209"
+      },
+      "199627625": {
+        "account_id": 199627625,
+        "name": "✪ Captain Vodka",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/199627625"
+      },
+      "188889560": {
+        "account_id": 188889560,
+        "name": "HUNDSCHeiSSE",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/188889560"
+      },
+      "111098380": {
+        "account_id": 111098380,
+        "name": "monkee",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/111098380"
+      },
+      "44505340": {
+        "account_id": 44505340,
+        "name": ".:Azure<>Fire.Ice:.",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/44505340"
+      }
+    },
+    "96": {
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 1,
+        "profile": "https://www.opendota.com/players/57839727"
+      }
+    },
+    "49": {
       "1127238076": {
         "account_id": 1127238076,
         "name": "Virvacus",
         "games": 1,
-        "wins": 0,
+        "wins": 1,
         "profile": "https://www.opendota.com/players/1127238076"
+      },
+      "57839727": {
+        "account_id": 57839727,
+        "name": "Great Love",
+        "games": 1,
+        "wins": 0,
+        "profile": "https://www.opendota.com/players/57839727"
+      },
+      "44505340": {
+        "account_id": 44505340,
+        "name": ".:Azure<>Fire.Ice:.",
+        "games": 2,
+        "wins": 2,
+        "profile": "https://www.opendota.com/players/44505340"
       }
     }
   }
