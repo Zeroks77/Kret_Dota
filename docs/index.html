@@ -62,26 +62,6 @@ a{color:var(--accent)}
         <a class='btn' id='openNew' target='_blank' rel='noopener'>Open in new tab</a>
       </div>
     </div>
-    <div class="grid3">
-      <div>
-        <h3>Most common teammates</h3>
-        <ul class="simple">
-<li><span class='sub'>no games</span></li>
-        </ul>
-      </div>
-      <div>
-        <h3>Most courier kills</h3>
-        <ul class="simple">
-<li><span class='sub'>no data</span></li>
-        </ul>
-      </div>
-      <div>
-        <h3>Most camps stacked</h3>
-        <ul class="simple">
-<li><span class='sub'>no data</span></li>
-        </ul>
-      </div>
-    </div>
     <iframe id='frame' src='about:blank' loading='eager' referrerpolicy='no-referrer'></iframe>
   </main>
 
@@ -132,6 +112,11 @@ a{color:var(--accent)}
     const file = new URLSearchParams(location.hash.replace(/^#/, '')).get('file');
     if (file){ const t=items.find(li => li.querySelector('a')?.getAttribute('href')===file); if (t){ const v=items; const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } } }
     apply();
+    // If nothing selected yet, default to the Dynamic view entry if present
+    if (selIndex<0){
+      const dyn = items.find(li => li.getAttribute('data-range')==='dynamic');
+      if (dyn){ const v=vis(); const idx=v.indexOf(dyn); if (idx>=0) select(idx); }
+    }
   }
   init();
 })();

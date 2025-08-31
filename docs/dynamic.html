@@ -160,15 +160,26 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 const OD_PLAYER_URL = id => `https://www.opendota.com/players/${id}`;
 const OD_MATCH_URL = id => `https://www.opendota.com/matches/${id}`;
 function fmtPct(x){ return (x*100).toFixed(1)+'%'; }
-async function loadJson(url){ const r=await fetch(url,{cache:'no-store'}); if(!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }
+async function loadJson(url){
+  try{
+    const r = await fetch(url,{cache:'no-store'});
+    if(!r.ok) return null;
+    return await r.json();
+  }catch(_e){
+    return null;
+  }
+}
 async function loadJsonWithFallback(rel, raw){
   const isFile = (typeof location !== 'undefined' && location.protocol === 'file:');
   if(isFile){
     // When opened via file://, browsers block fetch() to file paths. Prefer HTTP raw first.
-    try { return await loadJson(raw); } catch(e){ /* fall through */ }
-    try { return await loadJson(rel); } catch(e){ throw e; }
+    const a = await loadJson(raw); if(a!=null) return a;
+    const b = await loadJson(rel); if(b!=null) return b;
+    throw new Error('Failed to load resource via file:// fallbacks');
   } else {
-    try { return await loadJson(rel); } catch(e){ return await loadJson(raw); }
+    const a = await loadJson(rel); if(a!=null) return a;
+    const b = await loadJson(raw); if(b!=null) return b;
+    throw new Error('Failed to load resource via HTTP fallbacks');
   }
 }
 function unix(dt){ return Math.floor(dt.getTime()/1000); }
@@ -463,7 +474,8 @@ function renderHighlights(high, heroMap, mapConf, label){
   function objectiveList(arr, label){
     if(!Array.isArray(arr) || !arr.length) return '';
     return `<div class='sub' style='margin-top:6px'>${label}</div><ul class='simple'>` + arr.map(ev=>{
-      const sec = Number(ev.time||0); const mm=Math.floor(sec/60), ss=sec%60;
+      const hasTime = ev.time!==undefined && ev.time!==null && isFinite(Number(ev.time));
+      const sec = hasTime ? Number(ev.time) : NaN; const mm = hasTime ? Math.floor(sec/60) : null; const ss = hasTime ? (sec%60) : null;
       const mid = String(ev.match_id||'');
       const team = esc(ev.team||'');
       const p = ev.player || null;
@@ -471,7 +483,10 @@ function renderHighlights(high, heroMap, mapConf, label){
       const profile = p && p.profile ? esc(p.profile) : null;
       const hero = p && p.hero ? ` (${esc(p.hero)})` : '';
       const person = profile ? `<a href='${profile}' target='_blank'>${name}</a>` : name;
-      return `<li><span>${label.replace(/s$/,'')}:</span><span class='badge'>${team}</span><span>${person}${hero}</span><a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>${mm}m ${ss}s</a></li>`;
+      const cnt = Number(ev.count||0);
+      const countBadge = cnt>1 ? `<span class='badge'>x${cnt}</span>` : '';
+      const timeBadge = hasTime ? `<a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>${mm}m ${ss}s</a>` : `<a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>n/a</a>`;
+      return `<li><span>${label.replace(/s$/,'')}:</span><span class='badge'>${team}</span><span>${person}${hero}</span>${countBadge}${timeBadge}</li>`;
     }).join('') + '</ul>';
   }
   // Roshan kills grouped by side
@@ -643,6 +658,15 @@ function renderHighlights(high, heroMap, mapConf, label){
     }).join('');
     return `<div class='sub' style='margin-top:6px'>Roshan kills by match</div><ul class='simple'>${items}</ul>`;
   })();
+  const torByMatchHtml = (function(){
+    const list = (high.tormentorByMatch||[]).slice(0,10);
+    if(!list.length) return '';
+    const items = list.map(function(x){
+      const mid=String(x.match_id||'');
+      return `<li><a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>M${mid}</a><span class='badge'>Radiant x${x.Radiant||0}</span><span class='badge'>Dire x${x.Dire||0}</span><span class='badge'>Total: ${x.total||0}</span></li>`;
+    }).join('');
+    return `<div class='sub' style='margin-top:6px'>Tormentor kills by match</div><ul class='simple'>${items}</ul>`;
+  })();
   const html = `
     <div class="grid3">
       <div>
@@ -653,7 +677,7 @@ function renderHighlights(high, heroMap, mapConf, label){
         <h3>Roshan taken</h3>
   ${roshByMatchHtml}
         ${objectiveList(high.aegisSnatch||[], 'Aegis snatches')}
-        ${objectiveList(high.tormentor||[], 'Tormentor kills')}
+        ${torByMatchHtml}
       </div>
       <div>
         <h3>Top single-match performances</h3>
@@ -803,7 +827,7 @@ async function main(){
     const rel = `${relBase}/cache/OpenDota/matches/${id}.json`;
     const raw = `${rawBase}/cache/OpenDota/matches/${id}.json`;
     const isFile = (typeof location !== 'undefined' && location.protocol === 'file:');
-    const tryLoad = async (url)=>{ try{ return await loadJson(url); }catch(_e){ return null; } };
+  const tryLoad = async (url)=>{ const v = await loadJson(url); return v||null; };
     let md = null;
     // Try cached paths first (skip rel on file://)
     if(!isFile){ md = await tryLoad(rel); }
@@ -820,8 +844,11 @@ async function main(){
       return !(hasPlayers && hasObjectives && hasUsageFields);
     };
     if(insufficient(md)){
-      try { const api = await loadJson(`https://api.opendota.com/api/matches/${id}`); if(api) md = api; } catch(e){ console.warn('Failed match fetch', id, e); }
+      const api = await loadJson(`https://api.opendota.com/api/matches/${id}`);
+      if(api) md = api;
     }
+    // If still missing, return a benign stub so downstream logic can skip gracefully
+    if(!md) return { match_id:Number(id)||0, players:[], objectives:[] };
     return md;
   }
   async function pMap(items, limit, worker){
@@ -849,7 +876,8 @@ async function main(){
   const roshanTeam = {Radiant:0, Dire:0};
     const roshPerMatch = {Radiant:new Map(), Dire:new Map()};
   const roshanEvents = [];
-    const aegisSnatch = []; const tormentor = [];
+  const aegisSnatch = []; const tormentor = [];
+  const tormentorExplicitMids = new Set();
     let bestGPM=null, bestKills=null, bestAssists=null, bestNet=null;
     const durList=[]; let objectivesSeen=false;
 
@@ -961,10 +989,26 @@ async function main(){
             }
             if(/CHAT_MESSAGE_AEGIS_STOLEN/i.test(t)){ const team = getTeamByObjective(ev, md); const sec=Number(ev.time||0); const slot = ev.player_slot; let player=null; if(slot!==undefined){ const pp=(md.players||[]).find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
               aegisSnatch.push({match_id:mid,time:sec,team,player}); }
-            if(/tormentor|miniboss|CHAT_MESSAGE_TORMENTOR_KILL/i.test(t) || /tormentor|miniboss/i.test(String(ev.key||'')) || /tormentor|miniboss/i.test(String(ev.unit||'')) || /tormentor|miniboss/i.test(String(ev.msg||''))){
+            if(/tormentor|miniboss|CHAT_MESSAGE_TORMENTOR_KILL|CHAT_MESSAGE_MINIBOSS/i.test(t) || /tormentor|miniboss/i.test(String(ev.key||'')) || /tormentor|miniboss/i.test(String(ev.unit||'')) || /tormentor|miniboss/i.test(String(ev.msg||''))){
               const team = getTeamByObjective(ev, md); const sec=Number(ev.time||0); const slot = ev.player_slot; let player=null; if(slot!==undefined){ const pp=(md.players||[]).find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
-              tormentor.push({match_id:mid,time:sec,team,player,confidence:'explicit'}); }
+              tormentor.push({match_id:mid,time:sec,team,player,confidence:'explicit'}); tormentorExplicitMids.add(mid); }
           } }
+        // Fallback: derive Tormentor kills from per-player killed logs when explicit objective not present
+        try{
+          if(!tormentorExplicitMids.has(mid)){
+            for(const p of (md.players||[])){
+              const killed = p && p.killed ? p.killed : null;
+              if(!killed) continue;
+              // sum keys that look like miniboss/tormentor
+              let ct = 0; try{ for(const k in killed){ if(/miniboss|tormentor/i.test(String(k||''))){ ct += Number(killed[k]||0); } } }catch(_e){}
+              if(ct>0){
+                const slot = p.player_slot; let player=null; if(slot!==undefined){ const pp=p; player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; }
+                const team = (Number(p.player_slot)<128)?'Radiant':'Dire';
+                tormentor.push({match_id:mid,time:null,team,player,confidence:'derived',count:ct});
+              }
+            }
+          }
+        }catch(_e){}
         // Duration
         const rname = md.radiant_name || 'Radiant'; const dname = md.dire_name || 'Dire'; const dur = Number(md.duration||0); durList.push({match_id:mid,duration:dur,radiant:rname,dire:dname,radiant_win: !!md.radiant_win});
       }catch(e){ console.warn('agg err', mid, e); }
@@ -1029,6 +1073,21 @@ async function main(){
       }).sort((a,b)=> (b.total - a.total) || (b.match_id - a.match_id));
       return arr;
     })();
+    // Tormentor kills by match (both sides summarized)
+    const tormentorByMatch = (()=>{
+      const mp = new Map();
+      for(const ev of (tormentor||[])){
+        const mid = Number(ev.match_id||0); if(!mid) continue;
+        const team = String(ev.team||'');
+        const add = Number(ev.count||1) || 1;
+        const cur = mp.get(mid) || {Radiant:0, Dire:0, total:0};
+        if(team==='Radiant'){ cur.Radiant += add; }
+        else if(team==='Dire'){ cur.Dire += add; }
+        cur.total = cur.Radiant + cur.Dire; mp.set(mid, cur);
+      }
+      const arr = Array.from(mp.entries()).map(([mid,o])=>({ match_id:Number(mid), Radiant:o.Radiant, Dire:o.Dire, total:o.total }));
+      return arr.sort((a,b)=> (b.total - a.total) || (b.match_id - a.match_id));
+    })();
     // Rampages list (top 10)
   const buildRampList = (map, gmap)=> Array.from(map.entries()).map(([aid,c])=>({ account_id:Number(aid), name: nameCache.get(Number(aid)) || `Player ${aid}`, profile: OD_PLAYER_URL(aid), count:Number(c), matches: Array.from((gmap.get(aid)||new Map()).entries()).map(([mid,v])=>({match_id:Number(mid), count:Number(v)})).sort((a,b)=> b.count-a.count || b.match_id-a.match_id) })).sort((a,b)=> b.count-a.count).slice(0,10);
   const rampList = buildRampList(rampages, rampGames);
@@ -1058,6 +1117,7 @@ async function main(){
   roshanEvents,
   roshanTop,
   roshanByMatch,
+  tormentorByMatch,
       topSingle,
       aegisSnatch,
       tormentor,

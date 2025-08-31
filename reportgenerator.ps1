@@ -870,7 +870,7 @@ function Build-Monthly-Highlights {
           $key = try { ''+($ev.key) } catch { '' }
           $unit = try { ''+($ev.unit) } catch { '' }
           $msg = try { ''+($ev.msg) } catch { '' }
-          if ($ts -match 'tormentor|miniboss' -or $key -match 'tormentor|miniboss' -or $unit -match 'tormentor|miniboss' -or $msg -match 'tormentor|miniboss') {
+          if ($ts -match 'tormentor|CHAT_MESSAGE_TORMENTOR_KILL|CHAT_MESSAGE_MINIBOSS|miniboss' -or $key -match 'tormentor|miniboss' -or $unit -match 'tormentor|miniboss' -or $msg -match 'tormentor|miniboss') {
             $team = Get-ObjectiveTeam -ev $ev
             $slot = $null; try { if ($ev.PSObject.Properties.Name -contains 'player_slot') { $slot = [int]$ev.player_slot } } catch {}
             $pi = $null; if ($slot -ne $null) { $pi = Resolve-PlayerInfoBySlot -md $md -slot $slot -HeroMap $HeroMap -PlayerNamesMap $PlayerNamesMap }
@@ -881,6 +881,31 @@ function Build-Monthly-Highlights {
       }
       try { if ($md.objectives.Count -gt 0) { $objectivesSeen++ } } catch {}
     }
+    # Fallback: if no explicit tormentor event for this match, derive from per-player killed dictionary (miniboss/tormentor keys)
+    try {
+      $hasExplicit = $false
+      try { if ($tormentorTaken.Count -gt 0) { $hasExplicit = ($tormentorTaken | Where-Object { $_.match_id -eq $mid -and $_.confidence -eq 'explicit' } | Measure-Object).Count -gt 0 } } catch {}
+      if (-not $hasExplicit) {
+        foreach($pp in $md.players){
+          try {
+            $killed = $pp.killed
+            if ($null -ne $killed) {
+              $ct = 0
+              foreach($kv in $killed.PSObject.Properties){
+                $kk = [string]$kv.Name; $vv = 0; try { $vv = [int]$kv.Value } catch {}
+                if ($kk -match 'miniboss|tormentor') { $ct += $vv }
+              }
+              if ($ct -gt 0) {
+                $slot = [int]$pp.player_slot
+                $pi = Resolve-PlayerInfoBySlot -md $md -slot $slot -HeroMap $HeroMap -PlayerNamesMap $PlayerNamesMap
+                $team = if ($slot -lt 128) { 'Radiant' } else { 'Dire' }
+                $tormentorTaken.Add([pscustomobject]@{ match_id=$mid; time=$null; team=$team; player=$pi; confidence='derived'; count=$ct }) | Out-Null
+              }
+            }
+          } catch {}
+        }
+      }
+    } catch {}
     # Clutch King via teamfights in last 10%
     try {
       $durT = 0; try { if ($null -ne $md.duration) { $durT = [int]$md.duration } } catch {}
@@ -1101,7 +1126,15 @@ function Build-Monthly-Highlights {
   # Objective Gamer (share and rosh)
   $aw_obj = @()
   foreach($kv in $TowerDamageBy.GetEnumerator()){
-    $aid=[int64]$kv.Key; $td=[double]$kv.Value; $teamTot = [double](if ($TeamTowerSumById.ContainsKey($aid)) { $TeamTowerSumById[$aid] } else { 0 }); $share = if ($teamTot -gt 0) { $td / $teamTot } else { 0.0 }; $nm = if ($pname.ContainsKey($aid)) { $pname[$aid] } elseif ($PlayerNamesMap[[string]$aid]) { $PlayerNamesMap[[string]$aid] } else { "Player $aid" }; $ro = [int](if ($RoshParticipation.ContainsKey($aid)) { $RoshParticipation[$aid] } else { 0 }); $aw_obj += [pscustomobject]@{ account_id=$aid; name=$nm; profile=(& $OD_PLAYER_URL $aid); share=[double]$share; rosh=[int]$ro }
+    $aid = [int64]$kv.Key
+    $td  = [double]$kv.Value
+    $teamTot = 0.0
+    if ($TeamTowerSumById.ContainsKey($aid)) { $teamTot = [double]$TeamTowerSumById[$aid] }
+    $share = if ($teamTot -gt 0) { $td / $teamTot } else { 0.0 }
+    $nm = if ($pname.ContainsKey($aid)) { $pname[$aid] } elseif ($PlayerNamesMap[[string]$aid]) { $PlayerNamesMap[[string]$aid] } else { "Player $aid" }
+    $ro = 0
+    if ($RoshParticipation.ContainsKey($aid)) { $ro = [int]$RoshParticipation[$aid] }
+    $aw_obj += [pscustomobject]@{ account_id=$aid; name=$nm; profile=(& $OD_PLAYER_URL $aid); share=[double]$share; rosh=[int]$ro }
   }
   if ($aw_obj.Count -gt 0) { $aw_obj = @($aw_obj | Sort-Object @{e='share';Descending=$true}, @{e='rosh';Descending=$true} | Select-Object -First 3) }
   # Early Farmer top 3
@@ -2622,20 +2655,26 @@ $(
   } else { '' }
 )
 $(
-  # Tormentor taken (explicit only)
+  # Tormentor by match (aggregate by match/team, hide player)
   if ($highAll -and $highAll.PSObject.Properties.Name -contains 'tormentor' -and $highAll.tormentor -and $highAll.tormentor.Count -gt 0) {
-    $items = ($highAll.tormentor | ForEach-Object {
-      $sec = [int]$_.time; $mm=[int]([math]::Floor($sec/60)); $ss=[int]($sec%60)
-      $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid
-      $team = if ($_.team) { [string]$_.team } else { '' }
-      $p = $_.player
-      $nm = if ($p -and $p.name) { [string]$p.name } else { 'Unknown' }
-      $hero = if ($p -and $p.hero) { [string]$p.hero } else { '' }
-      $conf = if ($_.confidence) { [string]$_.confidence } else { '' }
-      $prof = if ($p -and $p.profile) { [string]$p.profile } else { '' }
-      "<li><span>Tormentor taken:</span><span class='badge'>${team}</span><span>" + $( if($prof){ "<a href='"+(HtmlEscape $prof)+"' target='_blank'>"+(HtmlEscape $nm)+"</a>" } else { (HtmlEscape $nm) } ) + $( if ($hero){ " ("+(HtmlEscape $hero)+")" } else { "" } ) + "</span><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>${mm}m ${ss}s</a></li>"
-    }) -join "`n"
-    "<div class='sub' style='margin-top:6px'>Tormentor kills</div><ul class='simple'>${items}</ul>"
+    $agg = @{}
+    foreach($e in $highAll.tormentor){
+      try {
+        $mid = [string]$e.match_id; if (-not $mid) { continue }
+        if (-not $agg.ContainsKey($mid)) { $agg[$mid] = @{ Radiant = 0; Dire = 0; total = 0 } }
+        $add = 1; try { if ($e.PSObject.Properties.Name -contains 'count' -and $null -ne $e.count) { $add = [int]$e.count } } catch {}
+        $team = if ($e.team) { [string]$e.team } else { '' }
+        if ($team -eq 'Radiant') { $agg[$mid]['Radiant'] = [int]$agg[$mid]['Radiant'] + $add }
+        elseif ($team -eq 'Dire') { $agg[$mid]['Dire'] = [int]$agg[$mid]['Dire'] + $add }
+        $agg[$mid]['total'] = [int]$agg[$mid]['Radiant'] + [int]$agg[$mid]['Dire']
+      } catch {}
+    }
+    $list = @(); foreach($k in $agg.Keys){ $list += [pscustomobject]@{ match_id=[int64]$k; Radiant=[int]$agg[$k]['Radiant']; Dire=[int]$agg[$k]['Dire']; total=[int]$agg[$k]['total'] } }
+    if ($list.Count -gt 0) {
+      $list = @($list | Sort-Object @{e='total';Descending=$true}, @{e='match_id';Descending=$true} | Select-Object -First 10)
+      $items = ($list | ForEach-Object { $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid; "<li><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>M$mid</a><span class='badge'>Radiant x$($_.Radiant)</span><span class='badge'>Dire x$($_.Dire)</span><span class='badge'>Total: $($_.total)</span></li>" }) -join "`n"
+      "<div class='sub' style='margin-top:6px'>Tormentor kills by match</div><ul class='simple'>${items}</ul>"
+    } else { '' }
   } else { '' }
 )
       </div>
@@ -3037,18 +3076,26 @@ $(
   } else { '' }
 )
 $(
+  # Tormentor by match (aggregate by match/team, hide player)
   if ($high -and $high.PSObject.Properties.Name -contains 'tormentor' -and $high.tormentor -and $high.tormentor.Count -gt 0) {
-    $items = ($high.tormentor | ForEach-Object {
-      $sec=[int]$_.time; $mm=[int]([math]::Floor($sec/60)); $ss=[int]($sec%60)
-      $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid
-      $team = if ($_.team) { [string]$_.team } else { '' }
-      $p = $_.player
-      $nm = if ($p -and $p.name) { [string]$p.name } else { 'Unknown' }
-      $hero = if ($p -and $p.hero) { [string]$p.hero } else { '' }
-      $prof = if ($p -and $p.profile) { [string]$p.profile } else { '' }
-      "<li><span>Tormentor taken:</span><span class='badge'>${team}</span><span>" + $( if($prof){ "<a href='"+(HtmlEscape $prof)+"' target='_blank'>"+(HtmlEscape $nm)+"</a>" } else { (HtmlEscape $nm) } ) + $( if ($hero){ " ("+(HtmlEscape $hero)+")" } else { "" } ) + "</span><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>${mm}m ${ss}s</a></li>"
-    }) -join "`n"
-    "<div class='sub' style='margin-top:6px'>Tormentor kills</div><ul class='simple'>${items}</ul>"
+    $agg = @{}
+    foreach($e in $high.tormentor){
+      try {
+        $mid = [string]$e.match_id; if (-not $mid) { continue }
+        if (-not $agg.ContainsKey($mid)) { $agg[$mid] = @{ Radiant = 0; Dire = 0; total = 0 } }
+        $add = 1; try { if ($e.PSObject.Properties.Name -contains 'count' -and $null -ne $e.count) { $add = [int]$e.count } } catch {}
+        $team = if ($e.team) { [string]$e.team } else { '' }
+        if ($team -eq 'Radiant') { $agg[$mid]['Radiant'] = [int]$agg[$mid]['Radiant'] + $add }
+        elseif ($team -eq 'Dire') { $agg[$mid]['Dire'] = [int]$agg[$mid]['Dire'] + $add }
+        $agg[$mid]['total'] = [int]$agg[$mid]['Radiant'] + [int]$agg[$mid]['Dire']
+      } catch {}
+    }
+    $list = @(); foreach($k in $agg.Keys){ $list += [pscustomobject]@{ match_id=[int64]$k; Radiant=[int]$agg[$k]['Radiant']; Dire=[int]$agg[$k]['Dire']; total=[int]$agg[$k]['total'] } }
+    if ($list.Count -gt 0) {
+      $list = @($list | Sort-Object @{e='total';Descending=$true}, @{e='match_id';Descending=$true} | Select-Object -First 10)
+      $items = ($list | ForEach-Object { $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid; "<li><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>M$mid</a><span class='badge'>Radiant x$($_.Radiant)</span><span class='badge'>Dire x$($_.Dire)</span><span class='badge'>Total: $($_.total)</span></li>" }) -join "`n"
+      "<div class='sub' style='margin-top:6px'>Tormentor kills by match</div><ul class='simple'>${items}</ul>"
+    } else { '' }
   } else { '' }
 )
       </div>
