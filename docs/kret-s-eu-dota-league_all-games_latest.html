@@ -78,8 +78,8 @@ a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2
     </div>
   </div>
 
-  <section class="card">
-    <div class="summary-grid">
+    <section class="card">
+      <div class="summary-grid">
       <div class="summary-card">
         <h3>Top 3 most picked heroes</h3>
         <ul>
@@ -99,8 +99,8 @@ a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2
       <div class="summary-card">
         <h3>Top 3 players (WR, > 5 games)</h3>
         <ul>
-<li><span class='name'><a href='https://www.opendota.com/players/35804562' target='_blank'>A Tired Parent</a></span><span class='badge'>7 games</span><span class='badge'>WR: <strong>71,4 %</strong></span></li>
 <li><span class='name'><a href='https://www.opendota.com/players/106623037' target='_blank'>UNDEFEATED Muerta</a></span><span class='badge'>7 games</span><span class='badge'>WR: <strong>71,4 %</strong></span></li>
+<li><span class='name'><a href='https://www.opendota.com/players/35804562' target='_blank'>A Tired Parent</a></span><span class='badge'>7 games</span><span class='badge'>WR: <strong>71,4 %</strong></span></li>
 <li><span class='name'><a href='https://www.opendota.com/players/57839727' target='_blank'>Great Love</a></span><span class='badge'>12 games</span><span class='badge'>WR: <strong>66,7 %</strong></span></li>
         </ul>
       </div>
@@ -126,11 +126,21 @@ a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2
       </div>
     </div>
   </section>
+  <!-- Main tabs for All-time report sections -->
+  <div class="tabs" id="mainTabs" style="margin-top:12px">
+    <button class="tab active" data-tab="highlights">Highlights</button>
+    <button class="tab" data-tab="players">Players</button>
+    <button class="tab" data-tab="heroes">Heroes</button>
+    <button class="tab" data-tab="teams">Teams</button>
+  </div>
 
+  <div id="pane-highlights" class="tabpane active">
 
+  </div>
 
-  <section class="card">
-    <h2>Players</h2>
+  <div id="pane-players" class="tabpane" style="display:none">
+    <section class="card">
+      <h2>Players</h2>
   <table class="table sortable" id="playersTable">
     <thead>
       <tr>
@@ -145,217 +155,139 @@ a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2
     <tbody>
     <tr>
       <td data-sort='1'>1</td>
-      <td data-sort='MooMoo'><a href="https://www.opendota.com/players/114003462" target="_blank" rel="noopener">MooMoo</a></td>
-      <td data-sort='2'>2</td>
-      <td data-sort='1'><span class="win">2</span>-<span class="loss">0</span></td>
-      <td class="winrate" data-sort='1'>100,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lycan'><img src='https://courier.spectral.gg/images/dota/portraits/lycan.png' alt='Lycan'><div>Lycan<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='2'>2</td>
-      <td data-sort='Should I Call You Mista?'><a href="https://www.opendota.com/players/343877559" target="_blank" rel="noopener">Should I Call You Mista?</a></td>
-      <td data-sort='1'>1</td>
-      <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
-      <td class="winrate" data-sort='1'>100,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Lina'><img src='https://courier.spectral.gg/images/dota/portraits/lina.png' alt='Lina'><div>Lina<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='3'>3</td>
-      <td data-sort='monkee'><a href="https://www.opendota.com/players/111098380" target="_blank" rel="noopener">monkee</a></td>
-      <td data-sort='1'>1</td>
-      <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
-      <td class="winrate" data-sort='1'>100,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Axe'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' alt='Axe'><div>Axe<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='4'>4</td>
-      <td data-sort='Worry is a misuse of imagination'><a href="https://www.opendota.com/players/1802720915" target="_blank" rel="noopener">Worry is a misuse of imagination</a></td>
-      <td data-sort='1'>1</td>
-      <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
-      <td class="winrate" data-sort='1'>100,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Shadow Demon'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_demon.png' alt='Shadow Demon'><div>Shadow Demon<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='5'>5</td>
-      <td data-sort='TRADE CM'><a href="https://www.opendota.com/players/401356923" target="_blank" rel="noopener">TRADE CM</a></td>
-      <td data-sort='1'>1</td>
-      <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
-      <td class="winrate" data-sort='1'>100,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Invoker'><img src='https://courier.spectral.gg/images/dota/portraits/invoker.png' alt='Invoker'><div>Invoker<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='6'>6</td>
-      <td data-sort='UNDEFEATED Muerta'><a href="https://www.opendota.com/players/106623037" target="_blank" rel="noopener">UNDEFEATED Muerta</a></td>
-      <td data-sort='7'>7</td>
-      <td data-sort='0.714285714285714'><span class="win">5</span>-<span class="loss">2</span></td>
-      <td class="winrate" data-sort='0.714285714285714'>71,4 %</td>
-      <td><div class='heroes'><div class='hero' title='Disruptor'><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' alt='Disruptor'><div>Disruptor<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Lich'><img src='https://courier.spectral.gg/images/dota/portraits/lich.png' alt='Lich'><div>Lich<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Phoenix'><img src='https://courier.spectral.gg/images/dota/portraits/phoenix.png' alt='Phoenix'><div>Phoenix<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Undying'><img src='https://courier.spectral.gg/images/dota/portraits/undying.png' alt='Undying'><div>Undying<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Weaver'><img src='https://courier.spectral.gg/images/dota/portraits/weaver.png' alt='Weaver'><div>Weaver<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='7'>7</td>
-      <td data-sort='A Tired Parent'><a href="https://www.opendota.com/players/35804562" target="_blank" rel="noopener">A Tired Parent</a></td>
-      <td data-sort='7'>7</td>
-      <td data-sort='0.714285714285714'><span class="win">5</span>-<span class="loss">2</span></td>
-      <td class="winrate" data-sort='0.714285714285714'>71,4 %</td>
-      <td><div class='heroes'><div class='hero' title='Crystal Maiden'><img src='https://courier.spectral.gg/images/dota/portraits/crystal_maiden.png' alt='Crystal Maiden'><div>Crystal Maiden<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Jakiro'><img src='https://courier.spectral.gg/images/dota/portraits/jakiro.png' alt='Jakiro'><div>Jakiro<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Shadow Shaman'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' alt='Shadow Shaman'><div>Shadow Shaman<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Warlock'><img src='https://courier.spectral.gg/images/dota/portraits/warlock.png' alt='Warlock'><div>Warlock<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Winter Wyvern'><img src='https://courier.spectral.gg/images/dota/portraits/winter_wyvern.png' alt='Winter Wyvern'><div>Winter Wyvern<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='8'>8</td>
-      <td data-sort='Great Love'><a href="https://www.opendota.com/players/57839727" target="_blank" rel="noopener">Great Love</a></td>
-      <td data-sort='12'>12</td>
-      <td data-sort='0.666666666666667'><span class="win">8</span>-<span class="loss">4</span></td>
-      <td class="winrate" data-sort='0.666666666666667'>66,7 %</td>
-      <td><div class='heroes'><div class='hero' title='Abaddon'><img src='https://courier.spectral.gg/images/dota/portraits/abaddon.png' alt='Abaddon'><div>Abaddon<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Ancient Apparition'><img src='https://courier.spectral.gg/images/dota/portraits/ancient_apparition.png' alt='Ancient Apparition'><div>Ancient Apparition<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Batrider'><img src='https://courier.spectral.gg/images/dota/portraits/batrider.png' alt='Batrider'><div>Batrider<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Centaur Warrunner'><img src='https://courier.spectral.gg/images/dota/portraits/centaur.png' alt='Centaur Warrunner'><div>Centaur Warrunner<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Legion Commander'><img src='https://courier.spectral.gg/images/dota/portraits/legion_commander.png' alt='Legion Commander'><div>Legion Commander<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Monkey King'><img src='https://courier.spectral.gg/images/dota/portraits/monkey_king.png' alt='Monkey King'><div>Monkey King<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Night Stalker'><img src='https://courier.spectral.gg/images/dota/portraits/night_stalker.png' alt='Night Stalker'><div>Night Stalker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Rubick'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' alt='Rubick'><div>Rubick<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Spirit Breaker'><img src='https://courier.spectral.gg/images/dota/portraits/spirit_breaker.png' alt='Spirit Breaker'><div>Spirit Breaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Tidehunter'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' alt='Tidehunter'><div>Tidehunter<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Venomancer'><img src='https://courier.spectral.gg/images/dota/portraits/venomancer.png' alt='Venomancer'><div>Venomancer<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='9'>9</td>
-      <td data-sort='M1xed'><a href="https://www.opendota.com/players/190115398" target="_blank" rel="noopener">M1xed</a></td>
-      <td data-sort='3'>3</td>
-      <td data-sort='0.666666666666667'><span class="win">2</span>-<span class="loss">1</span></td>
-      <td class="winrate" data-sort='0.666666666666667'>66,7 %</td>
-      <td><div class='heroes'><div class='hero' title='Earth Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/earth_spirit.png' alt='Earth Spirit'><div>Earth Spirit<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Legion Commander'><img src='https://courier.spectral.gg/images/dota/portraits/legion_commander.png' alt='Legion Commander'><div>Legion Commander<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Riki'><img src='https://courier.spectral.gg/images/dota/portraits/riki.png' alt='Riki'><div>Riki<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='10'>10</td>
-      <td data-sort='HUNDSCHeiSSE'><a href="https://www.opendota.com/players/188889560" target="_blank" rel="noopener">HUNDSCHeiSSE</a></td>
-      <td data-sort='16'>16</td>
-      <td data-sort='0.625'><span class="win">10</span>-<span class="loss">6</span></td>
-      <td class="winrate" data-sort='0.625'>62,5 %</td>
-      <td><div class='heroes'><div class='hero' title='Axe'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' alt='Axe'><div>Axe<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Kunkka'><img src='https://courier.spectral.gg/images/dota/portraits/kunkka.png' alt='Kunkka'><div>Kunkka<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Medusa'><img src='https://courier.spectral.gg/images/dota/portraits/medusa.png' alt='Medusa'><div>Medusa<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Pudge'><img src='https://courier.spectral.gg/images/dota/portraits/pudge.png' alt='Pudge'><div>Pudge<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Queen of Pain'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' alt='Queen of Pain'><div>Queen of Pain<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Sand King'><img src='https://courier.spectral.gg/images/dota/portraits/sand_king.png' alt='Sand King'><div>Sand King<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Snapfire'><img src='https://courier.spectral.gg/images/dota/portraits/snapfire.png' alt='Snapfire'><div>Snapfire<br><span class='sub'>x4</span></div></div>
-<div class='hero' title='Windranger'><img src='https://courier.spectral.gg/images/dota/portraits/windrunner.png' alt='Windranger'><div>Windranger<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='11'>11</td>
-      <td data-sort='流'><a href="https://www.opendota.com/players/1877912379" target="_blank" rel="noopener">流</a></td>
-      <td data-sort='13'>13</td>
-      <td data-sort='0.615384615384615'><span class="win">8</span>-<span class="loss">5</span></td>
-      <td class="winrate" data-sort='0.615384615384615'>61,5 %</td>
-      <td><div class='heroes'><div class='hero' title='Clinkz'><img src='https://courier.spectral.gg/images/dota/portraits/clinkz.png' alt='Clinkz'><div>Clinkz<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Hoodwink'><img src='https://courier.spectral.gg/images/dota/portraits/hoodwink.png' alt='Hoodwink'><div>Hoodwink<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Keeper of the Light'><img src='https://courier.spectral.gg/images/dota/portraits/keeper_of_the_light.png' alt='Keeper of the Light'><div>Keeper of the Light<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Marci'><img src='https://courier.spectral.gg/images/dota/portraits/marci.png' alt='Marci'><div>Marci<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Queen of Pain'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' alt='Queen of Pain'><div>Queen of Pain<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Slardar'><img src='https://courier.spectral.gg/images/dota/portraits/slardar.png' alt='Slardar'><div>Slardar<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Void Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/void_spirit.png' alt='Void Spirit'><div>Void Spirit<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Weaver'><img src='https://courier.spectral.gg/images/dota/portraits/weaver.png' alt='Weaver'><div>Weaver<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='12'>12</td>
       <td data-sort='Kret'><a href="https://www.opendota.com/players/226354794" target="_blank" rel="noopener">Kret</a></td>
       <td data-sort='20'>20</td>
       <td data-sort='0.6'><span class="win">12</span>-<span class="loss">8</span></td>
       <td class="winrate" data-sort='0.6'>60,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Death Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/death_prophet.png' alt='Death Prophet'><div>Death Prophet<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Lina'><img src='https://courier.spectral.gg/images/dota/portraits/lina.png' alt='Lina'><div>Lina<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Nature&#39;s Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' alt='Nature&#39;s Prophet'><div>Nature&#39;s Prophet<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Necrophos'><img src='https://courier.spectral.gg/images/dota/portraits/necrolyte.png' alt='Necrophos'><div>Necrophos<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Outworld Devourer'><img src='https://courier.spectral.gg/images/dota/portraits/obsidian_destroyer.png' alt='Outworld Devourer'><div>Outworld Devourer<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Queen of Pain'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' alt='Queen of Pain'><div>Queen of Pain<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Storm Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/storm_spirit.png' alt='Storm Spirit'><div>Storm Spirit<br><span class='sub'>x6</span></div></div>
-<div class='hero' title='Tiny'><img src='https://courier.spectral.gg/images/dota/portraits/tiny.png' alt='Tiny'><div>Tiny<br><span class='sub'>x4</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='226354794'>8 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (8) - Kret</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/death_prophet.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Death Prophet</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lina.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lina</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Nature&#39;s Prophet</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/necrolyte.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Necrophos</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/obsidian_destroyer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Outworld Devourer</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Queen of Pain</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/storm_spirit.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Storm Spirit</span></div></td><td>6</td><td><span class='win'>0</span>-<span class='loss'>6</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/tiny.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Tiny</span></div></td><td>4</td><td><span class='win'>0</span>-<span class='loss'>4</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
-      <td data-sort='13'>13</td>
-      <td data-sort='.:Azure&lt;&gt;Fire.Ice:.'><a href="https://www.opendota.com/players/44505340" target="_blank" rel="noopener">.:Azure&lt;&gt;Fire.Ice:.</a></td>
-      <td data-sort='5'>5</td>
-      <td data-sort='0.6'><span class="win">3</span>-<span class="loss">2</span></td>
-      <td class="winrate" data-sort='0.6'>60,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Axe'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' alt='Axe'><div>Axe<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Dragon Knight'><img src='https://courier.spectral.gg/images/dota/portraits/dragon_knight.png' alt='Dragon Knight'><div>Dragon Knight<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Tidehunter'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' alt='Tidehunter'><div>Tidehunter<br><span class='sub'>x2</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='14'>14</td>
-      <td data-sort='Moox'><a href="https://www.opendota.com/players/164067051" target="_blank" rel="noopener">Moox</a></td>
-      <td data-sort='14'>14</td>
-      <td data-sort='0.571428571428571'><span class="win">8</span>-<span class="loss">6</span></td>
-      <td class="winrate" data-sort='0.571428571428571'>57,1 %</td>
-      <td><div class='heroes'><div class='hero' title='Anti-Mage'><img src='https://courier.spectral.gg/images/dota/portraits/antimage.png' alt='Anti-Mage'><div>Anti-Mage<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Disruptor'><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' alt='Disruptor'><div>Disruptor<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Drow Ranger'><img src='https://courier.spectral.gg/images/dota/portraits/drow_ranger.png' alt='Drow Ranger'><div>Drow Ranger<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Kunkka'><img src='https://courier.spectral.gg/images/dota/portraits/kunkka.png' alt='Kunkka'><div>Kunkka<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lifestealer'><img src='https://courier.spectral.gg/images/dota/portraits/life_stealer.png' alt='Lifestealer'><div>Lifestealer<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Magnus'><img src='https://courier.spectral.gg/images/dota/portraits/magnataur.png' alt='Magnus'><div>Magnus<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Mars'><img src='https://courier.spectral.gg/images/dota/portraits/mars.png' alt='Mars'><div>Mars<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Phantom Lancer'><img src='https://courier.spectral.gg/images/dota/portraits/phantom_lancer.png' alt='Phantom Lancer'><div>Phantom Lancer<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Undying'><img src='https://courier.spectral.gg/images/dota/portraits/undying.png' alt='Undying'><div>Undying<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Ursa'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' alt='Ursa'><div>Ursa<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Vengeful Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png' alt='Vengeful Spirit'><div>Vengeful Spirit<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='15'>15</td>
-      <td data-sort='Zero'><a href="https://www.opendota.com/players/183063377" target="_blank" rel="noopener">Zero</a></td>
-      <td data-sort='9'>9</td>
-      <td data-sort='0.555555555555556'><span class="win">5</span>-<span class="loss">4</span></td>
-      <td class="winrate" data-sort='0.555555555555556'>55,6 %</td>
-      <td><div class='heroes'><div class='hero' title='Dawnbreaker'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' alt='Dawnbreaker'><div>Dawnbreaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Dazzle'><img src='https://courier.spectral.gg/images/dota/portraits/dazzle.png' alt='Dazzle'><div>Dazzle<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Pugna'><img src='https://courier.spectral.gg/images/dota/portraits/pugna.png' alt='Pugna'><div>Pugna<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Rubick'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' alt='Rubick'><div>Rubick<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Slardar'><img src='https://courier.spectral.gg/images/dota/portraits/slardar.png' alt='Slardar'><div>Slardar<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Vengeful Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png' alt='Vengeful Spirit'><div>Vengeful Spirit<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Witch Doctor'><img src='https://courier.spectral.gg/images/dota/portraits/witch_doctor.png' alt='Witch Doctor'><div>Witch Doctor<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='16'>16</td>
+      <td data-sort='2'>2</td>
       <td data-sort='Gary the Carry'><a href="https://www.opendota.com/players/1803122431" target="_blank" rel="noopener">Gary the Carry</a></td>
       <td data-sort='20'>20</td>
       <td data-sort='0.5'><span class="win">10</span>-<span class="loss">10</span></td>
       <td class="winrate" data-sort='0.5'>50,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Dawnbreaker'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' alt='Dawnbreaker'><div>Dawnbreaker<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lifestealer'><img src='https://courier.spectral.gg/images/dota/portraits/life_stealer.png' alt='Lifestealer'><div>Lifestealer<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Marci'><img src='https://courier.spectral.gg/images/dota/portraits/marci.png' alt='Marci'><div>Marci<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Nature&#39;s Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' alt='Nature&#39;s Prophet'><div>Nature&#39;s Prophet<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Queen of Pain'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' alt='Queen of Pain'><div>Queen of Pain<br><span class='sub'>x3</span></div></div>
-<div class='hero' title='Shadow Fiend'><img src='https://courier.spectral.gg/images/dota/portraits/nevermore.png' alt='Shadow Fiend'><div>Shadow Fiend<br><span class='sub'>x4</span></div></div>
-<div class='hero' title='Slark'><img src='https://courier.spectral.gg/images/dota/portraits/slark.png' alt='Slark'><div>Slark<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Sven'><img src='https://courier.spectral.gg/images/dota/portraits/sven.png' alt='Sven'><div>Sven<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Ursa'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' alt='Ursa'><div>Ursa<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Windranger'><img src='https://courier.spectral.gg/images/dota/portraits/windrunner.png' alt='Windranger'><div>Windranger<br><span class='sub'>x1</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='1803122431'>11 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (11) - Gary the Carry</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Dawnbreaker</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Earthshaker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/life_stealer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lifestealer</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/marci.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Marci</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Nature&#39;s Prophet</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Queen of Pain</span></div></td><td>3</td><td><span class='win'>0</span>-<span class='loss'>3</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/nevermore.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Shadow Fiend</span></div></td><td>4</td><td><span class='win'>0</span>-<span class='loss'>4</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/slark.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Slark</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/sven.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Sven</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Ursa</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/windrunner.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Windranger</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
-      <td data-sort='17'>17</td>
+      <td data-sort='3'>3</td>
+      <td data-sort='Virvacus'><a href="https://www.opendota.com/players/1127238076" target="_blank" rel="noopener">Virvacus</a></td>
+      <td data-sort='18'>18</td>
+      <td data-sort='0.333333333333333'><span class="win">6</span>-<span class="loss">12</span></td>
+      <td class="winrate" data-sort='0.333333333333333'>33,3 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='1127238076'>14 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (14) - Virvacus</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/bane.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Bane</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/rattletrap.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Clockwerk</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/dragon_knight.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Dragon Knight</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/earth_spirit.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Earth Spirit</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/elder_titan.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Elder Titan</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/jakiro.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Jakiro</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lycan.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lycan</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/muerta.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Muerta</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/oracle.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Oracle</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/phoenix.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Phoenix</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/razor.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Razor</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/tusk.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Tusk</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/venomancer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Venomancer</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/witch_doctor.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Witch Doctor</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='4'>4</td>
+      <td data-sort='HUNDSCHeiSSE'><a href="https://www.opendota.com/players/188889560" target="_blank" rel="noopener">HUNDSCHeiSSE</a></td>
+      <td data-sort='16'>16</td>
+      <td data-sort='0.625'><span class="win">10</span>-<span class="loss">6</span></td>
+      <td class="winrate" data-sort='0.625'>62,5 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='188889560'>9 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (9) - HUNDSCHeiSSE</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Axe</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Earthshaker</span></div></td><td>3</td><td><span class='win'>0</span>-<span class='loss'>3</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/kunkka.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Kunkka</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/medusa.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Medusa</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/pudge.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Pudge</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Queen of Pain</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/sand_king.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Sand King</span></div></td><td>3</td><td><span class='win'>0</span>-<span class='loss'>3</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/snapfire.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Snapfire</span></div></td><td>4</td><td><span class='win'>0</span>-<span class='loss'>4</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/windrunner.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Windranger</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='5'>5</td>
+      <td data-sort='Moox'><a href="https://www.opendota.com/players/164067051" target="_blank" rel="noopener">Moox</a></td>
+      <td data-sort='14'>14</td>
+      <td data-sort='0.571428571428571'><span class="win">8</span>-<span class="loss">6</span></td>
+      <td class="winrate" data-sort='0.571428571428571'>57,1 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='164067051'>11 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (11) - Moox</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/antimage.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Anti-Mage</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Disruptor</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/drow_ranger.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Drow Ranger</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/kunkka.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Kunkka</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/life_stealer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lifestealer</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/magnataur.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Magnus</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/mars.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Mars</span></div></td><td>3</td><td><span class='win'>0</span>-<span class='loss'>3</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/phantom_lancer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Phantom Lancer</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/undying.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Undying</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Ursa</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Vengeful Spirit</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='6'>6</td>
+      <td data-sort='流'><a href="https://www.opendota.com/players/1877912379" target="_blank" rel="noopener">流</a></td>
+      <td data-sort='13'>13</td>
+      <td data-sort='0.615384615384615'><span class="win">8</span>-<span class="loss">5</span></td>
+      <td class="winrate" data-sort='0.615384615384615'>61,5 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='1877912379'>8 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (8) - 流</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/clinkz.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Clinkz</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/hoodwink.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Hoodwink</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/keeper_of_the_light.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Keeper of the Light</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/marci.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Marci</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Queen of Pain</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/slardar.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Slardar</span></div></td><td>3</td><td><span class='win'>0</span>-<span class='loss'>3</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/void_spirit.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Void Spirit</span></div></td><td>3</td><td><span class='win'>0</span>-<span class='loss'>3</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/weaver.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Weaver</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='7'>7</td>
+      <td data-sort='Great Love'><a href="https://www.opendota.com/players/57839727" target="_blank" rel="noopener">Great Love</a></td>
+      <td data-sort='12'>12</td>
+      <td data-sort='0.666666666666667'><span class="win">8</span>-<span class="loss">4</span></td>
+      <td class="winrate" data-sort='0.666666666666667'>66,7 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='57839727'>12 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (12) - Great Love</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/abaddon.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Abaddon</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/ancient_apparition.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Ancient Apparition</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/batrider.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Batrider</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/centaur.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Centaur Warrunner</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Earthshaker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/legion_commander.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Legion Commander</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/monkey_king.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Monkey King</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/night_stalker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Night Stalker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Rubick</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/spirit_breaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Spirit Breaker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Tidehunter</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/venomancer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Venomancer</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='8'>8</td>
+      <td data-sort='Zero'><a href="https://www.opendota.com/players/183063377" target="_blank" rel="noopener">Zero</a></td>
+      <td data-sort='9'>9</td>
+      <td data-sort='0.555555555555556'><span class="win">5</span>-<span class="loss">4</span></td>
+      <td class="winrate" data-sort='0.555555555555556'>55,6 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='183063377'>8 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (8) - Zero</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Dawnbreaker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/dazzle.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Dazzle</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lion</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/pugna.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Pugna</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Rubick</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/slardar.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Slardar</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Vengeful Spirit</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/witch_doctor.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Witch Doctor</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='9'>9</td>
+      <td data-sort='T&#39;erreL'><a href="https://www.opendota.com/players/431599342" target="_blank" rel="noopener">T&#39;erreL</a></td>
+      <td data-sort='9'>9</td>
+      <td data-sort='0.222222222222222'><span class="win">2</span>-<span class="loss">7</span></td>
+      <td class="winrate" data-sort='0.222222222222222'>22,2 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='431599342'>9 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (9) - T&#39;erreL</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/bane.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Bane</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Dawnbreaker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/huskar.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Huskar</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lion</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/puck.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Puck</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/razor.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Razor</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/sven.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Sven</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/templar_assassin.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Templar Assassin</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Ursa</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='10'>10</td>
+      <td data-sort='\[T]/.Dr.Kunzel'><a href="https://www.opendota.com/players/78489654" target="_blank" rel="noopener">\[T]/.Dr.Kunzel</a></td>
+      <td data-sort='8'>8</td>
+      <td data-sort='0.375'><span class="win">3</span>-<span class="loss">5</span></td>
+      <td class="winrate" data-sort='0.375'>37,5 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='78489654'>5 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (5) - \[T]/.Dr.Kunzel</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/dazzle.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Dazzle</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Disruptor</span></div></td><td>4</td><td><span class='win'>0</span>-<span class='loss'>4</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/silencer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Silencer</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/venomancer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Venomancer</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/warlock.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Warlock</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='11'>11</td>
+      <td data-sort='A Tired Parent'><a href="https://www.opendota.com/players/35804562" target="_blank" rel="noopener">A Tired Parent</a></td>
+      <td data-sort='7'>7</td>
+      <td data-sort='0.714285714285714'><span class="win">5</span>-<span class="loss">2</span></td>
+      <td class="winrate" data-sort='0.714285714285714'>71,4 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='35804562'>6 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (6) - A Tired Parent</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/crystal_maiden.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Crystal Maiden</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/jakiro.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Jakiro</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lion</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Shadow Shaman</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/warlock.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Warlock</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/winter_wyvern.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Winter Wyvern</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='12'>12</td>
+      <td data-sort='UNDEFEATED Muerta'><a href="https://www.opendota.com/players/106623037" target="_blank" rel="noopener">UNDEFEATED Muerta</a></td>
+      <td data-sort='7'>7</td>
+      <td data-sort='0.714285714285714'><span class="win">5</span>-<span class="loss">2</span></td>
+      <td class="winrate" data-sort='0.714285714285714'>71,4 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='106623037'>6 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (6) - UNDEFEATED Muerta</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Disruptor</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lich.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lich</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lion</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/phoenix.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Phoenix</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/undying.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Undying</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/weaver.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Weaver</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='13'>13</td>
+      <td data-sort='jarjeer'><a href="https://www.opendota.com/players/1002536896" target="_blank" rel="noopener">jarjeer</a></td>
+      <td data-sort='7'>7</td>
+      <td data-sort='0.285714285714286'><span class="win">2</span>-<span class="loss">5</span></td>
+      <td class="winrate" data-sort='0.285714285714286'>28,6 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='1002536896'>6 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (6) - jarjeer</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/monkey_king.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Monkey King</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Queen of Pain</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Rubick</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_demon.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Shadow Demon</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/tinker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Tinker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Ursa</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='14'>14</td>
+      <td data-sort='.:Azure&lt;&gt;Fire.Ice:.'><a href="https://www.opendota.com/players/44505340" target="_blank" rel="noopener">.:Azure&lt;&gt;Fire.Ice:.</a></td>
+      <td data-sort='5'>5</td>
+      <td data-sort='0.6'><span class="win">3</span>-<span class="loss">2</span></td>
+      <td class="winrate" data-sort='0.6'>60,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='44505340'>3 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (3) - .:Azure&lt;&gt;Fire.Ice:.</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Axe</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/dragon_knight.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Dragon Knight</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Tidehunter</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='15'>15</td>
+      <td data-sort='✪ Captain Vodka'><a href="https://www.opendota.com/players/199627625" target="_blank" rel="noopener">✪ Captain Vodka</a></td>
+      <td data-sort='5'>5</td>
+      <td data-sort='0.4'><span class="win">2</span>-<span class="loss">3</span></td>
+      <td class="winrate" data-sort='0.4'>40,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='199627625'>5 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (5) - ✪ Captain Vodka</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Axe</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/death_prophet.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Death Prophet</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/doom_bringer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Doom</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/kunkka.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Kunkka</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/omniknight.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Omniknight</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='16'>16</td>
       <td data-sort='abo'><a href="https://www.opendota.com/players/297477613" target="_blank" rel="noopener">abo</a></td>
       <td data-sort='4'>4</td>
       <td data-sort='0.5'><span class="win">2</span>-<span class="loss">2</span></td>
       <td class="winrate" data-sort='0.5'>50,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Axe'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' alt='Axe'><div>Axe<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Mars'><img src='https://courier.spectral.gg/images/dota/portraits/mars.png' alt='Mars'><div>Mars<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Sven'><img src='https://courier.spectral.gg/images/dota/portraits/sven.png' alt='Sven'><div>Sven<br><span class='sub'>x1</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='297477613'>4 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (4) - abo</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Axe</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Earthshaker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/mars.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Mars</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/sven.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Sven</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='17'>17</td>
+      <td data-sort='Barpor the barbarian'><a href="https://www.opendota.com/players/374810707" target="_blank" rel="noopener">Barpor the barbarian</a></td>
+      <td data-sort='4'>4</td>
+      <td data-sort='0.5'><span class="win">2</span>-<span class="loss">2</span></td>
+      <td class="winrate" data-sort='0.5'>50,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='374810707'>4 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (4) - Barpor the barbarian</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/legion_commander.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Legion Commander</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/medusa.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Medusa</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/sniper.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Sniper</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Tidehunter</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
       <td data-sort='18'>18</td>
@@ -363,350 +295,161 @@ a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2
       <td data-sort='4'>4</td>
       <td data-sort='0.5'><span class="win">2</span>-<span class="loss">2</span></td>
       <td class="winrate" data-sort='0.5'>50,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Dawnbreaker'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' alt='Dawnbreaker'><div>Dawnbreaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Vengeful Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png' alt='Vengeful Spirit'><div>Vengeful Spirit<br><span class='sub'>x3</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='992361072'>2 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (2) - Grunt</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Dawnbreaker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/vengefulspirit.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Vengeful Spirit</span></div></td><td>3</td><td><span class='win'>0</span>-<span class='loss'>3</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
       <td data-sort='19'>19</td>
-      <td data-sort='Barpor the barbarian'><a href="https://www.opendota.com/players/374810707" target="_blank" rel="noopener">Barpor the barbarian</a></td>
-      <td data-sort='4'>4</td>
-      <td data-sort='0.5'><span class="win">2</span>-<span class="loss">2</span></td>
-      <td class="winrate" data-sort='0.5'>50,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Legion Commander'><img src='https://courier.spectral.gg/images/dota/portraits/legion_commander.png' alt='Legion Commander'><div>Legion Commander<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Medusa'><img src='https://courier.spectral.gg/images/dota/portraits/medusa.png' alt='Medusa'><div>Medusa<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Sniper'><img src='https://courier.spectral.gg/images/dota/portraits/sniper.png' alt='Sniper'><div>Sniper<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Tidehunter'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' alt='Tidehunter'><div>Tidehunter<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='20'>20</td>
       <td data-sort='sputn1k'><a href="https://www.opendota.com/players/149970209" target="_blank" rel="noopener">sputn1k</a></td>
       <td data-sort='4'>4</td>
       <td data-sort='0.5'><span class="win">2</span>-<span class="loss">2</span></td>
       <td class="winrate" data-sort='0.5'>50,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Axe'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' alt='Axe'><div>Axe<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Doom'><img src='https://courier.spectral.gg/images/dota/portraits/doom_bringer.png' alt='Doom'><div>Doom<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Nature&#39;s Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' alt='Nature&#39;s Prophet'><div>Nature&#39;s Prophet<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Ursa'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' alt='Ursa'><div>Ursa<br><span class='sub'>x1</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='149970209'>4 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (4) - sputn1k</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Axe</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/doom_bringer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Doom</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Nature&#39;s Prophet</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Ursa</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
-      <td data-sort='21'>21</td>
-      <td data-sort='POKLESS PUNK'><a href="https://www.opendota.com/players/219481866" target="_blank" rel="noopener">POKLESS PUNK</a></td>
-      <td data-sort='2'>2</td>
-      <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
-      <td class="winrate" data-sort='0.5'>50,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Techies'><img src='https://courier.spectral.gg/images/dota/portraits/techies.png' alt='Techies'><div>Techies<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='22'>22</td>
-      <td data-sort='kytoro999'><a href="https://www.opendota.com/players/1523553613" target="_blank" rel="noopener">kytoro999</a></td>
-      <td data-sort='2'>2</td>
-      <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
-      <td class="winrate" data-sort='0.5'>50,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Nature&#39;s Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' alt='Nature&#39;s Prophet'><div>Nature&#39;s Prophet<br><span class='sub'>x2</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='23'>23</td>
-      <td data-sort='Jedleo'><a href="https://www.opendota.com/players/387026803" target="_blank" rel="noopener">Jedleo</a></td>
-      <td data-sort='2'>2</td>
-      <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
-      <td class="winrate" data-sort='0.5'>50,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Magnus'><img src='https://courier.spectral.gg/images/dota/portraits/magnataur.png' alt='Magnus'><div>Magnus<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Tidehunter'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' alt='Tidehunter'><div>Tidehunter<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='24'>24</td>
-      <td data-sort='Fiend'><a href="https://www.opendota.com/players/121905961" target="_blank" rel="noopener">Fiend</a></td>
-      <td data-sort='2'>2</td>
-      <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
-      <td class="winrate" data-sort='0.5'>50,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Lifestealer'><img src='https://courier.spectral.gg/images/dota/portraits/life_stealer.png' alt='Lifestealer'><div>Lifestealer<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Winter Wyvern'><img src='https://courier.spectral.gg/images/dota/portraits/winter_wyvern.png' alt='Winter Wyvern'><div>Winter Wyvern<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='25'>25</td>
-      <td data-sort='✪ Captain Vodka'><a href="https://www.opendota.com/players/199627625" target="_blank" rel="noopener">✪ Captain Vodka</a></td>
-      <td data-sort='5'>5</td>
-      <td data-sort='0.4'><span class="win">2</span>-<span class="loss">3</span></td>
-      <td class="winrate" data-sort='0.4'>40,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Axe'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' alt='Axe'><div>Axe<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Death Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/death_prophet.png' alt='Death Prophet'><div>Death Prophet<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Doom'><img src='https://courier.spectral.gg/images/dota/portraits/doom_bringer.png' alt='Doom'><div>Doom<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Kunkka'><img src='https://courier.spectral.gg/images/dota/portraits/kunkka.png' alt='Kunkka'><div>Kunkka<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Omniknight'><img src='https://courier.spectral.gg/images/dota/portraits/omniknight.png' alt='Omniknight'><div>Omniknight<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='26'>26</td>
-      <td data-sort='\[T]/.Dr.Kunzel'><a href="https://www.opendota.com/players/78489654" target="_blank" rel="noopener">\[T]/.Dr.Kunzel</a></td>
-      <td data-sort='8'>8</td>
-      <td data-sort='0.375'><span class="win">3</span>-<span class="loss">5</span></td>
-      <td class="winrate" data-sort='0.375'>37,5 %</td>
-      <td><div class='heroes'><div class='hero' title='Dazzle'><img src='https://courier.spectral.gg/images/dota/portraits/dazzle.png' alt='Dazzle'><div>Dazzle<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Disruptor'><img src='https://courier.spectral.gg/images/dota/portraits/disruptor.png' alt='Disruptor'><div>Disruptor<br><span class='sub'>x4</span></div></div>
-<div class='hero' title='Silencer'><img src='https://courier.spectral.gg/images/dota/portraits/silencer.png' alt='Silencer'><div>Silencer<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Venomancer'><img src='https://courier.spectral.gg/images/dota/portraits/venomancer.png' alt='Venomancer'><div>Venomancer<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Warlock'><img src='https://courier.spectral.gg/images/dota/portraits/warlock.png' alt='Warlock'><div>Warlock<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='27'>27</td>
-      <td data-sort='Virvacus'><a href="https://www.opendota.com/players/1127238076" target="_blank" rel="noopener">Virvacus</a></td>
-      <td data-sort='18'>18</td>
-      <td data-sort='0.333333333333333'><span class="win">6</span>-<span class="loss">12</span></td>
-      <td class="winrate" data-sort='0.333333333333333'>33,3 %</td>
-      <td><div class='heroes'><div class='hero' title='Bane'><img src='https://courier.spectral.gg/images/dota/portraits/bane.png' alt='Bane'><div>Bane<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Clockwerk'><img src='https://courier.spectral.gg/images/dota/portraits/rattletrap.png' alt='Clockwerk'><div>Clockwerk<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Dragon Knight'><img src='https://courier.spectral.gg/images/dota/portraits/dragon_knight.png' alt='Dragon Knight'><div>Dragon Knight<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Earth Spirit'><img src='https://courier.spectral.gg/images/dota/portraits/earth_spirit.png' alt='Earth Spirit'><div>Earth Spirit<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Elder Titan'><img src='https://courier.spectral.gg/images/dota/portraits/elder_titan.png' alt='Elder Titan'><div>Elder Titan<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Jakiro'><img src='https://courier.spectral.gg/images/dota/portraits/jakiro.png' alt='Jakiro'><div>Jakiro<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lycan'><img src='https://courier.spectral.gg/images/dota/portraits/lycan.png' alt='Lycan'><div>Lycan<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Muerta'><img src='https://courier.spectral.gg/images/dota/portraits/muerta.png' alt='Muerta'><div>Muerta<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Oracle'><img src='https://courier.spectral.gg/images/dota/portraits/oracle.png' alt='Oracle'><div>Oracle<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Phoenix'><img src='https://courier.spectral.gg/images/dota/portraits/phoenix.png' alt='Phoenix'><div>Phoenix<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Razor'><img src='https://courier.spectral.gg/images/dota/portraits/razor.png' alt='Razor'><div>Razor<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Tusk'><img src='https://courier.spectral.gg/images/dota/portraits/tusk.png' alt='Tusk'><div>Tusk<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Venomancer'><img src='https://courier.spectral.gg/images/dota/portraits/venomancer.png' alt='Venomancer'><div>Venomancer<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Witch Doctor'><img src='https://courier.spectral.gg/images/dota/portraits/witch_doctor.png' alt='Witch Doctor'><div>Witch Doctor<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='28'>28</td>
-      <td data-sort='jarjeer'><a href="https://www.opendota.com/players/1002536896" target="_blank" rel="noopener">jarjeer</a></td>
-      <td data-sort='7'>7</td>
-      <td data-sort='0.285714285714286'><span class="win">2</span>-<span class="loss">5</span></td>
-      <td class="winrate" data-sort='0.285714285714286'>28,6 %</td>
-      <td><div class='heroes'><div class='hero' title='Monkey King'><img src='https://courier.spectral.gg/images/dota/portraits/monkey_king.png' alt='Monkey King'><div>Monkey King<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Queen of Pain'><img src='https://courier.spectral.gg/images/dota/portraits/queenofpain.png' alt='Queen of Pain'><div>Queen of Pain<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Rubick'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' alt='Rubick'><div>Rubick<br><span class='sub'>x2</span></div></div>
-<div class='hero' title='Shadow Demon'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_demon.png' alt='Shadow Demon'><div>Shadow Demon<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Tinker'><img src='https://courier.spectral.gg/images/dota/portraits/tinker.png' alt='Tinker'><div>Tinker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Ursa'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' alt='Ursa'><div>Ursa<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='29'>29</td>
+      <td data-sort='20'>20</td>
       <td data-sort='bash_crazy'><a href="https://www.opendota.com/players/178768308" target="_blank" rel="noopener">bash_crazy</a></td>
       <td data-sort='4'>4</td>
       <td data-sort='0.25'><span class="win">1</span>-<span class="loss">3</span></td>
       <td class="winrate" data-sort='0.25'>25,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Brewmaster'><img src='https://courier.spectral.gg/images/dota/portraits/brewmaster.png' alt='Brewmaster'><div>Brewmaster<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Rubick'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' alt='Rubick'><div>Rubick<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Shadow Demon'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_demon.png' alt='Shadow Demon'><div>Shadow Demon<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Shadow Shaman'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' alt='Shadow Shaman'><div>Shadow Shaman<br><span class='sub'>x1</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='178768308'>4 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (4) - bash_crazy</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/brewmaster.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Brewmaster</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/rubick.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Rubick</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_demon.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Shadow Demon</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Shadow Shaman</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
-      <td data-sort='30'>30</td>
-      <td data-sort='T&#39;erreL'><a href="https://www.opendota.com/players/431599342" target="_blank" rel="noopener">T&#39;erreL</a></td>
-      <td data-sort='9'>9</td>
-      <td data-sort='0.222222222222222'><span class="win">2</span>-<span class="loss">7</span></td>
-      <td class="winrate" data-sort='0.222222222222222'>22,2 %</td>
-      <td><div class='heroes'><div class='hero' title='Bane'><img src='https://courier.spectral.gg/images/dota/portraits/bane.png' alt='Bane'><div>Bane<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Dawnbreaker'><img src='https://courier.spectral.gg/images/dota/portraits/dawnbreaker.png' alt='Dawnbreaker'><div>Dawnbreaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Huskar'><img src='https://courier.spectral.gg/images/dota/portraits/huskar.png' alt='Huskar'><div>Huskar<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Puck'><img src='https://courier.spectral.gg/images/dota/portraits/puck.png' alt='Puck'><div>Puck<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Razor'><img src='https://courier.spectral.gg/images/dota/portraits/razor.png' alt='Razor'><div>Razor<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Sven'><img src='https://courier.spectral.gg/images/dota/portraits/sven.png' alt='Sven'><div>Sven<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Templar Assassin'><img src='https://courier.spectral.gg/images/dota/portraits/templar_assassin.png' alt='Templar Assassin'><div>Templar Assassin<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Ursa'><img src='https://courier.spectral.gg/images/dota/portraits/ursa.png' alt='Ursa'><div>Ursa<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='31'>31</td>
+      <td data-sort='21'>21</td>
       <td data-sort='StolteSomFaa'><a href="https://www.opendota.com/players/56352644" target="_blank" rel="noopener">StolteSomFaa</a></td>
       <td data-sort='4'>4</td>
       <td data-sort='0'><span class="win">0</span>-<span class="loss">4</span></td>
       <td class="winrate" data-sort='0'>0,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Ancient Apparition'><img src='https://courier.spectral.gg/images/dota/portraits/ancient_apparition.png' alt='Ancient Apparition'><div>Ancient Apparition<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Lion'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' alt='Lion'><div>Lion<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Nature&#39;s Prophet'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' alt='Nature&#39;s Prophet'><div>Nature&#39;s Prophet<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Witch Doctor'><img src='https://courier.spectral.gg/images/dota/portraits/witch_doctor.png' alt='Witch Doctor'><div>Witch Doctor<br><span class='sub'>x1</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='56352644'>4 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (4) - StolteSomFaa</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/ancient_apparition.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Ancient Apparition</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lion</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Nature&#39;s Prophet</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/witch_doctor.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Witch Doctor</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
-      <td data-sort='32'>32</td>
+      <td data-sort='22'>22</td>
+      <td data-sort='M1xed'><a href="https://www.opendota.com/players/190115398" target="_blank" rel="noopener">M1xed</a></td>
+      <td data-sort='3'>3</td>
+      <td data-sort='0.666666666666667'><span class="win">2</span>-<span class="loss">1</span></td>
+      <td class="winrate" data-sort='0.666666666666667'>66,7 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='190115398'>3 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (3) - M1xed</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/earth_spirit.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Earth Spirit</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/legion_commander.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Legion Commander</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/riki.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Riki</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='23'>23</td>
       <td data-sort='Nelow'><a href="https://www.opendota.com/players/61566555" target="_blank" rel="noopener">Nelow</a></td>
       <td data-sort='3'>3</td>
       <td data-sort='0'><span class="win">0</span>-<span class="loss">3</span></td>
       <td class="winrate" data-sort='0'>0,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Ring Master'><img src='https://courier.spectral.gg/images/dota/portraits/ringmaster.png' alt='Ring Master'><div>Ring Master<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Warlock'><img src='https://courier.spectral.gg/images/dota/portraits/warlock.png' alt='Warlock'><div>Warlock<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Witch Doctor'><img src='https://courier.spectral.gg/images/dota/portraits/witch_doctor.png' alt='Witch Doctor'><div>Witch Doctor<br><span class='sub'>x1</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='61566555'>3 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (3) - Nelow</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/ringmaster.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Ring Master</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/warlock.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Warlock</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/witch_doctor.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Witch Doctor</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
-      <td data-sort='33'>33</td>
-      <td data-sort='Sven'><a href="https://www.opendota.com/players/1110210197" target="_blank" rel="noopener">Sven</a></td>
+      <td data-sort='24'>24</td>
+      <td data-sort='MooMoo'><a href="https://www.opendota.com/players/114003462" target="_blank" rel="noopener">MooMoo</a></td>
       <td data-sort='2'>2</td>
-      <td data-sort='0'><span class="win">0</span>-<span class="loss">2</span></td>
-      <td class="winrate" data-sort='0'>0,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Shadow Shaman'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' alt='Shadow Shaman'><div>Shadow Shaman<br><span class='sub'>x1</span></div></div></div></td>
+      <td data-sort='1'><span class="win">2</span>-<span class="loss">0</span></td>
+      <td class="winrate" data-sort='1'>100,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='114003462'>2 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (2) - MooMoo</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lion</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lycan.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lycan</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
-      <td data-sort='34'>34</td>
+      <td data-sort='25'>25</td>
+      <td data-sort='Fiend'><a href="https://www.opendota.com/players/121905961" target="_blank" rel="noopener">Fiend</a></td>
+      <td data-sort='2'>2</td>
+      <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
+      <td class="winrate" data-sort='0.5'>50,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='121905961'>2 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (2) - Fiend</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/life_stealer.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lifestealer</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/winter_wyvern.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Winter Wyvern</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='26'>26</td>
+      <td data-sort='Jedleo'><a href="https://www.opendota.com/players/387026803" target="_blank" rel="noopener">Jedleo</a></td>
+      <td data-sort='2'>2</td>
+      <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
+      <td class="winrate" data-sort='0.5'>50,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='387026803'>2 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (2) - Jedleo</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/magnataur.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Magnus</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/tidehunter.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Tidehunter</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='27'>27</td>
+      <td data-sort='kytoro999'><a href="https://www.opendota.com/players/1523553613" target="_blank" rel="noopener">kytoro999</a></td>
+      <td data-sort='2'>2</td>
+      <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
+      <td class="winrate" data-sort='0.5'>50,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='1523553613'>2 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (2) - kytoro999</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/furion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Nature&#39;s Prophet</span></div></td><td>2</td><td><span class='win'>0</span>-<span class='loss'>2</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='28'>28</td>
+      <td data-sort='POKLESS PUNK'><a href="https://www.opendota.com/players/219481866" target="_blank" rel="noopener">POKLESS PUNK</a></td>
+      <td data-sort='2'>2</td>
+      <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
+      <td class="winrate" data-sort='0.5'>50,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='219481866'>2 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (2) - POKLESS PUNK</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lion.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lion</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/techies.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Techies</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='29'>29</td>
       <td data-sort='LipNeX'><a href="https://www.opendota.com/players/122918915" target="_blank" rel="noopener">LipNeX</a></td>
       <td data-sort='2'>2</td>
       <td data-sort='0'><span class="win">0</span>-<span class="loss">2</span></td>
       <td class="winrate" data-sort='0'>0,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Earthshaker'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' alt='Earthshaker'><div>Earthshaker<br><span class='sub'>x1</span></div></div>
-<div class='hero' title='Windranger'><img src='https://courier.spectral.gg/images/dota/portraits/windrunner.png' alt='Windranger'><div>Windranger<br><span class='sub'>x1</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='122918915'>2 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (2) - LipNeX</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Earthshaker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/windrunner.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Windranger</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='30'>30</td>
+      <td data-sort='Sven'><a href="https://www.opendota.com/players/1110210197" target="_blank" rel="noopener">Sven</a></td>
+      <td data-sort='2'>2</td>
+      <td data-sort='0'><span class="win">0</span>-<span class="loss">2</span></td>
+      <td class="winrate" data-sort='0'>0,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='1110210197'>2 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (2) - Sven</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/earthshaker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Earthshaker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_shaman.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Shadow Shaman</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='31'>31</td>
+      <td data-sort='monkee'><a href="https://www.opendota.com/players/111098380" target="_blank" rel="noopener">monkee</a></td>
+      <td data-sort='1'>1</td>
+      <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
+      <td class="winrate" data-sort='1'>100,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='111098380'>1 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (1) - monkee</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/axe.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Axe</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='32'>32</td>
+      <td data-sort='Should I Call You Mista?'><a href="https://www.opendota.com/players/343877559" target="_blank" rel="noopener">Should I Call You Mista?</a></td>
+      <td data-sort='1'>1</td>
+      <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
+      <td class="winrate" data-sort='1'>100,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='343877559'>1 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (1) - Should I Call You Mista?</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/lina.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Lina</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='33'>33</td>
+      <td data-sort='TRADE CM'><a href="https://www.opendota.com/players/401356923" target="_blank" rel="noopener">TRADE CM</a></td>
+      <td data-sort='1'>1</td>
+      <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
+      <td class="winrate" data-sort='1'>100,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='401356923'>1 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (1) - TRADE CM</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/invoker.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Invoker</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='34'>34</td>
+      <td data-sort='Worry is a misuse of imagination'><a href="https://www.opendota.com/players/1802720915" target="_blank" rel="noopener">Worry is a misuse of imagination</a></td>
+      <td data-sort='1'>1</td>
+      <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
+      <td class="winrate" data-sort='1'>100,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='1802720915'>1 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (1) - Worry is a misuse of imagination</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/shadow_demon.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Shadow Demon</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
     <tr>
       <td data-sort='35'>35</td>
-      <td data-sort='what is a clit?(visual learner)'><a href="https://www.opendota.com/players/922645723" target="_blank" rel="noopener">what is a clit?(visual learner)</a></td>
-      <td data-sort='1'>1</td>
-      <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
-      <td class="winrate" data-sort='0'>0,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Timbersaw'><img src='https://courier.spectral.gg/images/dota/portraits/shredder.png' alt='Timbersaw'><div>Timbersaw<br><span class='sub'>x1</span></div></div></div></td>
-    </tr>
-    <tr>
-      <td data-sort='36'>36</td>
       <td data-sort='aZ_Shen-Zhen'><a href="https://www.opendota.com/players/84835" target="_blank" rel="noopener">aZ_Shen-Zhen</a></td>
       <td data-sort='1'>1</td>
       <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
       <td class="winrate" data-sort='0'>0,0 %</td>
-      <td><div class='heroes'><div class='hero' title='Wraith King'><img src='https://courier.spectral.gg/images/dota/portraits/skeleton_king.png' alt='Wraith King'><div>Wraith King<br><span class='sub'>x1</span></div></div></div></td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='84835'>1 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (1) - aZ_Shen-Zhen</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/skeleton_king.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Wraith King</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
+    </tr>
+    <tr>
+      <td data-sort='36'>36</td>
+      <td data-sort='what is a clit?(visual learner)'><a href="https://www.opendota.com/players/922645723" target="_blank" rel="noopener">what is a clit?(visual learner)</a></td>
+      <td data-sort='1'>1</td>
+      <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
+      <td class="winrate" data-sort='0'>0,0 %</td>
+      <td><div class='has-hover'><a href='#' class='badge player-heroes' data-player='922645723'>1 heroes</a><div class='hovercard' style='display:none'><div class='title'>Heroes played (1) - what is a clit?(visual learner)</div><table class='table' style='min-width:420px'><thead><tr><th>Hero</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody><tr><td style='text-align:left'><div style='display:flex;align-items:center;gap:8px'><img src='https://courier.spectral.gg/images/dota/portraits/shredder.png' style='width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>Timbersaw</span></div></td><td>1</td><td><span class='win'>0</span>-<span class='loss'>1</span></td><td>0,0 %</td></tr></tbody></table></div></div></td>
     </tr>
 
     </tbody>
   </table>
-  </section>
+    </section>
+  </div>
 
-  <section class="card">
-    <h2>Teams (with top performer)</h2>
-  <table class="table sortable" id="teamsTable">
-    <thead><tr>
-      <th data-type="num">#</th>
-      <th data-type="text">Team</th>
-      <th data-type="num">Games</th>
-      <th data-type="num">W-L</th>
-      <th data-type="num">Win rate</th>
-      <th data-type="num">Top performer</th>
-    </tr></thead>
-    <tbody>
-      <tr>
-        <td data-sort='1'>1</td>
-        <td class="teamcell" data-sort='0PlanGamers'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_935859.png" alt=""><span>0PlanGamers</span></td>
-        <td data-sort='1'>1</td>
-        <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
-        <td class="winrate" data-sort='1'>100,0 %</td>
-        <td data-sort='1'><a href='https://www.opendota.com/players/57839727' target='_blank'>Great Love</a> - 100,0 % (1/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='2'>2</td>
-        <td class="teamcell" data-sort='GeT//e\\Rektm8'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_7980509.png" alt=""><span>GeT//e\\Rektm8</span></td>
-        <td data-sort='1'>1</td>
-        <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
-        <td class="winrate" data-sort='1'>100,0 %</td>
-        <td data-sort='1'><a href='https://www.opendota.com/players/199627625' target='_blank'>✪ Captain Vodka</a> - 100,0 % (1/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='3'>3</td>
-        <td class="teamcell" data-sort='Fight Mongooses'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_2202377.png" alt=""><span>Fight Mongooses</span></td>
-        <td data-sort='1'>1</td>
-        <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
-        <td class="winrate" data-sort='1'>100,0 %</td>
-        <td data-sort='1'><a href='https://www.opendota.com/players/164067051' target='_blank'>Moox</a> - 100,0 % (1/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='4'>4</td>
-        <td class="teamcell" data-sort='Nicholas Cage and the Bees'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_2211498.png" alt=""><span>Nicholas Cage and the Bees</span></td>
-        <td data-sort='1'>1</td>
-        <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
-        <td class="winrate" data-sort='1'>100,0 %</td>
-        <td data-sort='1'><a href='https://www.opendota.com/players/226354794' target='_blank'>Kret</a> - 100,0 % (1/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='5'>5</td>
-        <td class="teamcell" data-sort='Kret Dire'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9833697.png" alt=""><span>Kret Dire</span></td>
-        <td data-sort='7'>7</td>
-        <td data-sort='0.714285714285714'><span class="win">5</span>-<span class="loss">2</span></td>
-        <td class="winrate" data-sort='0.714285714285714'>71,4 %</td>
-        <td data-sort='0.714285714285714'><a href='https://www.opendota.com/players/226354794' target='_blank'>Kret</a> - 71,4 % (5/7)</td>
-      </tr>
-      <tr>
-        <td data-sort='6'>6</td>
-        <td class="teamcell" data-sort='Kret Radiant'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9833690.png" alt=""><span>Kret Radiant</span></td>
-        <td data-sort='4'>4</td>
-        <td data-sort='0.5'><span class="win">2</span>-<span class="loss">2</span></td>
-        <td class="winrate" data-sort='0.5'>50,0 %</td>
-        <td data-sort='0.666666666666667'><a href='https://www.opendota.com/players/188889560' target='_blank'>HUNDSCHeiSSE</a> - 66,7 % (2/3)</td>
-      </tr>
-      <tr>
-        <td data-sort='7'>7</td>
-        <td class="teamcell" data-sort='Symphony of Skills'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_8328373.png" alt=""><span>Symphony of Skills</span></td>
-        <td data-sort='2'>2</td>
-        <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
-        <td class="winrate" data-sort='0.5'>50,0 %</td>
-        <td data-sort='1'><a href='https://www.opendota.com/players/164067051' target='_blank'>Moox</a> - 100,0 % (1/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='8'>8</td>
-        <td class="teamcell" data-sort='Yash baswant'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_2028767.png" alt=""><span>Yash baswant</span></td>
-        <td data-sort='2'>2</td>
-        <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
-        <td class="winrate" data-sort='0.5'>50,0 %</td>
-        <td data-sort='1'><a href='https://www.opendota.com/players/1877912379' target='_blank'>流</a> - 100,0 % (1/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='9'>9</td>
-        <td class="teamcell" data-sort='Team Pipsi'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_362098.png" alt=""><span>Team Pipsi</span></td>
-        <td data-sort='2'>2</td>
-        <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
-        <td class="winrate" data-sort='0.5'>50,0 %</td>
-        <td data-sort='1'><a href='https://www.opendota.com/players/188889560' target='_blank'>HUNDSCHeiSSE</a> - 100,0 % (1/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='10'>10</td>
-        <td class="teamcell" data-sort='Zelenskyy&#39;s Boys'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9833687.png" alt=""><span>Zelenskyy&#39;s Boys</span></td>
-        <td data-sort='16'>16</td>
-        <td data-sort='0.4375'><span class="win">7</span>-<span class="loss">9</span></td>
-        <td class="winrate" data-sort='0.4375'>43,8 %</td>
-        <td data-sort='1'><a href='https://www.opendota.com/players/106623037' target='_blank'>UNDEFEATED Muerta</a> - 100,0 % (3/3)</td>
-      </tr>
-      <tr>
-        <td data-sort='11'>11</td>
-        <td class="teamcell" data-sort='Pleb Gods'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9834594.png" alt=""><span>Pleb Gods</span></td>
-        <td data-sort='3'>3</td>
-        <td data-sort='0.333333333333333'><span class="win">1</span>-<span class="loss">2</span></td>
-        <td class="winrate" data-sort='0.333333333333333'>33,3 %</td>
-        <td data-sort='0.333333333333333'><a href='https://www.opendota.com/players/183063377' target='_blank'>Zero</a> - 33,3 % (1/3)</td>
-      </tr>
-      <tr>
-        <td data-sort='12'>12</td>
-        <td class="teamcell" data-sort='SY dota '><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_4326965.png" alt=""><span>SY dota </span></td>
-        <td data-sort='1'>1</td>
-        <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
-        <td class="winrate" data-sort='0'>0,0 %</td>
-        <td data-sort='0'><a href='https://www.opendota.com/players/57839727' target='_blank'>Great Love</a> - 0,0 % (0/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='13'>13</td>
-        <td class="teamcell" data-sort='I will kill you over time'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_1642081.png" alt=""><span>I will kill you over time</span></td>
-        <td data-sort='1'>1</td>
-        <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
-        <td class="winrate" data-sort='0'>0,0 %</td>
-        <td data-sort='0'><a href='https://www.opendota.com/players/387026803' target='_blank'>Jedleo</a> - 0,0 % (0/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='14'>14</td>
-        <td class="teamcell" data-sort='some germans and a dutch guy'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_1998165.png" alt=""><span>some germans and a dutch guy</span></td>
-        <td data-sort='1'>1</td>
-        <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
-        <td class="winrate" data-sort='0'>0,0 %</td>
-        <td data-sort='0'><a href='https://www.opendota.com/players/106623037' target='_blank'>UNDEFEATED Muerta</a> - 0,0 % (0/1)</td>
-      </tr>
-      <tr>
-        <td data-sort='15'>15</td>
-        <td class="teamcell" data-sort='Fairbrandt'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9834572.png" alt=""><span>Fairbrandt</span></td>
-        <td data-sort='1'>1</td>
-        <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
-        <td class="winrate" data-sort='0'>0,0 %</td>
-        <td data-sort='0'><a href='https://www.opendota.com/players/1127238076' target='_blank'>Virvacus</a> - 0,0 % (0/1)</td>
-      </tr>
-
-    </tbody>
-  </table>
-  </section>
-
-  <section class="card">
-    <h2>All heroes - Picks/Bans/Wins & best player</h2>
+  <div id="pane-heroes" class="tabpane" style="display:none">
+    <section class="card">
+      <h2>All heroes - Picks/Bans/Wins & best player</h2>
   <div class="toolbar">
     <input id="heroSearch" class="search" type="text" placeholder="Search hero ..." />
   </div>
@@ -1858,11 +1601,164 @@ a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2
 
     </tbody>
   </table>
-  </section>
+    </section>
+  </div>
+
+  <div id="pane-teams" class="tabpane" style="display:none">
+    <section class="card">
+      <h2>Teams (with top performer)</h2>
+  <table class="table sortable" id="teamsTable">
+    <thead><tr>
+      <th data-type="num">#</th>
+      <th data-type="text">Team</th>
+      <th data-type="num">Games</th>
+      <th data-type="num">W-L</th>
+      <th data-type="num">Win rate</th>
+      <th data-type="num">Top performer</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td data-sort='1'>1</td>
+        <td class="teamcell" data-sort='0PlanGamers'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_935859.png" alt=""><span>0PlanGamers</span></td>
+        <td data-sort='1'>1</td>
+        <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
+        <td class="winrate" data-sort='1'>100,0 %</td>
+        <td data-sort='1'><a href='https://www.opendota.com/players/57839727' target='_blank'>Great Love</a> - 100,0 % (1/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='2'>2</td>
+        <td class="teamcell" data-sort='GeT//e\\Rektm8'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_7980509.png" alt=""><span>GeT//e\\Rektm8</span></td>
+        <td data-sort='1'>1</td>
+        <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
+        <td class="winrate" data-sort='1'>100,0 %</td>
+        <td data-sort='1'><a href='https://www.opendota.com/players/199627625' target='_blank'>✪ Captain Vodka</a> - 100,0 % (1/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='3'>3</td>
+        <td class="teamcell" data-sort='Fight Mongooses'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_2202377.png" alt=""><span>Fight Mongooses</span></td>
+        <td data-sort='1'>1</td>
+        <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
+        <td class="winrate" data-sort='1'>100,0 %</td>
+        <td data-sort='1'><a href='https://www.opendota.com/players/164067051' target='_blank'>Moox</a> - 100,0 % (1/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='4'>4</td>
+        <td class="teamcell" data-sort='Nicholas Cage and the Bees'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_2211498.png" alt=""><span>Nicholas Cage and the Bees</span></td>
+        <td data-sort='1'>1</td>
+        <td data-sort='1'><span class="win">1</span>-<span class="loss">0</span></td>
+        <td class="winrate" data-sort='1'>100,0 %</td>
+        <td data-sort='1'><a href='https://www.opendota.com/players/226354794' target='_blank'>Kret</a> - 100,0 % (1/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='5'>5</td>
+        <td class="teamcell" data-sort='Kret Dire'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9833697.png" alt=""><span>Kret Dire</span></td>
+        <td data-sort='7'>7</td>
+        <td data-sort='0.714285714285714'><span class="win">5</span>-<span class="loss">2</span></td>
+        <td class="winrate" data-sort='0.714285714285714'>71,4 %</td>
+        <td data-sort='0.714285714285714'><a href='https://www.opendota.com/players/226354794' target='_blank'>Kret</a> - 71,4 % (5/7)</td>
+      </tr>
+      <tr>
+        <td data-sort='6'>6</td>
+        <td class="teamcell" data-sort='Kret Radiant'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9833690.png" alt=""><span>Kret Radiant</span></td>
+        <td data-sort='4'>4</td>
+        <td data-sort='0.5'><span class="win">2</span>-<span class="loss">2</span></td>
+        <td class="winrate" data-sort='0.5'>50,0 %</td>
+        <td data-sort='0.666666666666667'><a href='https://www.opendota.com/players/188889560' target='_blank'>HUNDSCHeiSSE</a> - 66,7 % (2/3)</td>
+      </tr>
+      <tr>
+        <td data-sort='7'>7</td>
+        <td class="teamcell" data-sort='Symphony of Skills'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_8328373.png" alt=""><span>Symphony of Skills</span></td>
+        <td data-sort='2'>2</td>
+        <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
+        <td class="winrate" data-sort='0.5'>50,0 %</td>
+        <td data-sort='1'><a href='https://www.opendota.com/players/164067051' target='_blank'>Moox</a> - 100,0 % (1/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='8'>8</td>
+        <td class="teamcell" data-sort='Yash baswant'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_2028767.png" alt=""><span>Yash baswant</span></td>
+        <td data-sort='2'>2</td>
+        <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
+        <td class="winrate" data-sort='0.5'>50,0 %</td>
+        <td data-sort='1'><a href='https://www.opendota.com/players/1877912379' target='_blank'>流</a> - 100,0 % (1/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='9'>9</td>
+        <td class="teamcell" data-sort='Team Pipsi'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_362098.png" alt=""><span>Team Pipsi</span></td>
+        <td data-sort='2'>2</td>
+        <td data-sort='0.5'><span class="win">1</span>-<span class="loss">1</span></td>
+        <td class="winrate" data-sort='0.5'>50,0 %</td>
+        <td data-sort='1'><a href='https://www.opendota.com/players/188889560' target='_blank'>HUNDSCHeiSSE</a> - 100,0 % (1/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='10'>10</td>
+        <td class="teamcell" data-sort='Zelenskyy&#39;s Boys'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9833687.png" alt=""><span>Zelenskyy&#39;s Boys</span></td>
+        <td data-sort='16'>16</td>
+        <td data-sort='0.4375'><span class="win">7</span>-<span class="loss">9</span></td>
+        <td class="winrate" data-sort='0.4375'>43,8 %</td>
+        <td data-sort='1'><a href='https://www.opendota.com/players/106623037' target='_blank'>UNDEFEATED Muerta</a> - 100,0 % (3/3)</td>
+      </tr>
+      <tr>
+        <td data-sort='11'>11</td>
+        <td class="teamcell" data-sort='Pleb Gods'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9834594.png" alt=""><span>Pleb Gods</span></td>
+        <td data-sort='3'>3</td>
+        <td data-sort='0.333333333333333'><span class="win">1</span>-<span class="loss">2</span></td>
+        <td class="winrate" data-sort='0.333333333333333'>33,3 %</td>
+        <td data-sort='0.333333333333333'><a href='https://www.opendota.com/players/183063377' target='_blank'>Zero</a> - 33,3 % (1/3)</td>
+      </tr>
+      <tr>
+        <td data-sort='12'>12</td>
+        <td class="teamcell" data-sort='SY dota '><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_4326965.png" alt=""><span>SY dota </span></td>
+        <td data-sort='1'>1</td>
+        <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
+        <td class="winrate" data-sort='0'>0,0 %</td>
+        <td data-sort='0'><a href='https://www.opendota.com/players/57839727' target='_blank'>Great Love</a> - 0,0 % (0/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='13'>13</td>
+        <td class="teamcell" data-sort='I will kill you over time'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_1642081.png" alt=""><span>I will kill you over time</span></td>
+        <td data-sort='1'>1</td>
+        <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
+        <td class="winrate" data-sort='0'>0,0 %</td>
+        <td data-sort='0'><a href='https://www.opendota.com/players/387026803' target='_blank'>Jedleo</a> - 0,0 % (0/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='14'>14</td>
+        <td class="teamcell" data-sort='some germans and a dutch guy'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_1998165.png" alt=""><span>some germans and a dutch guy</span></td>
+        <td data-sort='1'>1</td>
+        <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
+        <td class="winrate" data-sort='0'>0,0 %</td>
+        <td data-sort='0'><a href='https://www.opendota.com/players/106623037' target='_blank'>UNDEFEATED Muerta</a> - 0,0 % (0/1)</td>
+      </tr>
+      <tr>
+        <td data-sort='15'>15</td>
+        <td class="teamcell" data-sort='Fairbrandt'><img class="logo" src="https://courier.spectral.gg/images/dota/teams/square_9834572.png" alt=""><span>Fairbrandt</span></td>
+        <td data-sort='1'>1</td>
+        <td data-sort='0'><span class="win">0</span>-<span class="loss">1</span></td>
+        <td class="winrate" data-sort='0'>0,0 %</td>
+        <td data-sort='0'><a href='https://www.opendota.com/players/1127238076' target='_blank'>Virvacus</a> - 0,0 % (0/1)</td>
+      </tr>
+
+    </tbody>
+  </table>
+    </section>
+  </div>
 </div>
 
 <script>
 (function(){
+// Top-level tabs (Highlights / Players / Heroes / Teams)
+const tabsRoot = document.getElementById('mainTabs');
+if (tabsRoot){
+  const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
+  function showTab(name){
+    ['highlights','players','heroes','teams'].forEach(id=>{
+      const pane = document.getElementById('pane-'+id);
+      if (pane) pane.style.display = (id===name)? '' : 'none';
+    });
+    tabs.forEach(b=> b.classList.toggle('active', b.getAttribute('data-tab')===name));
+  }
+  tabs.forEach(b=> b.addEventListener('click', ()=> showTab(b.getAttribute('data-tab'))));
+}
 // Rampage hovercard: make it clickable and stable on hover/click
 document.querySelectorAll('.has-hover .ramp-badge').forEach(badge=>{
   const li = badge.closest('.has-hover');
@@ -1882,6 +1778,20 @@ document.querySelectorAll('.has-hover .ramp-badge').forEach(badge=>{
   document.addEventListener('click', (ev)=>{ if (!li.contains(ev.target)) { locked=false; close(); } });
   // Keyboard accessibility
   badge.addEventListener('keydown', (ev)=>{ if (ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); badge.click(); } });
+});
+// Click-to-open for player heroes lists
+document.querySelectorAll('.has-hover .player-heroes').forEach(link=>{
+  const li = link.closest('.has-hover');
+  const card = li ? li.querySelector('.hovercard') : null;
+  if (!card) return;
+  function open(){ card.style.display='block'; li.classList.add('open'); }
+  function close(){ card.style.display='none'; li.classList.remove('open'); }
+  let locked = false;
+  link.addEventListener('click', (e)=>{ e.preventDefault(); locked=!locked; if(locked) open(); else close(); });
+  card.addEventListener('mouseenter', open);
+  li.addEventListener('mouseleave', ()=>{ if (!locked) close(); });
+  document.addEventListener('click', (ev)=>{ if (!li.contains(ev.target)) { locked=false; close(); } });
+  link.addEventListener('keydown', (ev)=>{ if (ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); link.click(); } });
 });
 function v(td){
   if(td.dataset && td.dataset.sort!==undefined){ return parseFloat(td.dataset.sort); }

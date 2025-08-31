@@ -5,15 +5,17 @@
 <title>Kret's EU Dota League – Dynamic Viewer</title>
 <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
 <style>
-:root{--bg:#0b1020;--panel:#121832;--muted:#9aa3b2;--text:#eef1f7;--accent:#6da6ff;--chip:#1a2142;--border:rgba(255,255,255,.08)}
+:root{--bg:#0b1020;--panel:#121832;--muted:#9aa3b2;--text:#eef1f7;--accent:#9ec7ff;--chip:#1a2142;--border:rgba(255,255,255,.08)}
 *{box-sizing:border-box}
 body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+a{color:var(--accent)}
 .wrapper{max-width:1180px;margin:0 auto;padding:16px}
 .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:12px}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
 .controls .field{display:flex;flex-direction:column;gap:6px}
 input,select,button{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)}
+#quick{background:#ffffff;color:#000000;border-color:rgba(0,0,0,.25)}
 button{cursor:pointer}
 .grid{display:grid;grid-template-columns:2fr 1fr;gap:12px}
 .table{width:100%;border-collapse:collapse}
@@ -36,14 +38,44 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .has-hover .hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:10;background:rgba(10,16,34,.96);border:1px solid var(--border);border-radius:10px;padding:8px;min-width:220px;box-shadow:0 8px 20px rgba(0,0,0,.4)}
 .has-hover:hover .hovercard{display:block}
 .ramp-badge{background:#23305f}
+/* Ward map */
+.wardgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;align-items:start}
+@media (max-width: 980px){.wardgrid{grid-template-columns:1fr}}
+.wardmap{margin:8px 0 0;position:relative;width:100%;aspect-ratio:1/1;background:url('https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg') center/cover no-repeat;border:1px solid var(--border);border-radius:12px}
+.wardmap svg .spot{ transition: opacity .15s ease, fill .15s ease, stroke .15s ease }
+.wardmap svg .spot.hl:not(.longest){ fill: rgba(52,211,153,.14) !important; stroke:#34d399 !important; filter: drop-shadow(0 0 10px rgba(52,211,153,.7)); stroke-width:2.2 !important; opacity:1 !important }
+.wardmap svg .spot.longest.hl{ fill: rgba(255,107,107,.12) !important; stroke:#ff6b6b !important; filter: drop-shadow(0 0 10px rgba(255,107,107,.75)); stroke-width:2.2 !important; opacity:1 !important }
+.wardmap.highlighting svg .spot:not(.hl){ opacity:.25 !important }
+.tabs{display:flex;gap:6px;margin:6px 0 8px}
+.tab{padding:6px 10px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border-radius:10px;color:var(--text);cursor:pointer;font-size:12px}
+.tab.active{outline:2px solid rgba(109,166,255,.5);background:linear-gradient(180deg,rgba(109,166,255,.2),rgba(109,166,255,.08));border-color:rgba(109,166,255,.45)}
+.tabpane{margin-top:6px}
+/* Summary cards */
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.summary-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px}
+.summary-card h3{margin:0 0 6px;font-size:15px;color:var(--muted)}
+.summary-card ul{list-style:none;margin:0;padding:0}
+.summary-card li{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.summary-card li:last-child{border-bottom:0}
+.summary-card img{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)}
+/* Stacked badge lines */
+.stack .row{display:block;margin-top:4px}
+.stack .row .badge{margin-right:6px}
 </style>
 </head>
 <body>
 <div class="wrapper">
   <div class="header">
-    <h1 style="margin:0;font-size:22px">Dynamic viewer</h1>
-    <div class="badge">Client-side, using data/*.json</div>
+    <h1 id="leagueTitle" style="margin:0;font-size:22px">Dynamic viewer</h1>
+    <div class="badge">Client-side</div>
   </div>
+  <div class="sub" id="headerSub" style="margin:-8px 0 8px 2px"></div>
+
+  <section id="summarySection" class="card" style="display:none">
+    <div class="summary-grid" id="summaryGrid">
+      <!-- Filled by JS -->
+    </div>
+  </section>
   <div class="card controls">
     <div class="field">
       <label for="from">From (UTC)</label>
@@ -70,34 +102,57 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     </div>
   </div>
 
-  <div id="highlightsCard" class="card" style="margin-top:12px;display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <h2 style="margin:0 0 0;font-size:18px">Highlights</h2>
-      <div class="sub">Auto-switches with quick range (30 days / All time)</div>
-    </div>
-    <div id="highlightsBody"></div>
+  <!-- Main tabs like in All-time report -->
+  <div class="tabs" id="mainTabs" style="margin-top:12px">
+    <button class="tab active" data-tab="highlights">Highlights</button>
+    <button class="tab" data-tab="players">Players</button>
+    <button class="tab" data-tab="heroes">Heroes</button>
+    <button class="tab" data-tab="teams">Teams</button>
+  <button class="tab" data-tab="awards">Awards</button>
   </div>
 
-  <div class="grid" style="margin-top:12px">
-    <div class="card">
+  <div id="pane-highlights" class="tabpane active">
+    <div id="highlightsCard" class="card" style="margin-top:12px;display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <h2 style="margin:0 0 0;font-size:18px">Highlights</h2>
+        <div class="sub">Auto-switches with quick range (30 days / All time)</div>
+      </div>
+      <div id="highlightsBody"></div>
+    </div>
+  </div>
+
+  <div id="pane-players" class="tabpane" style="display:none">
+    <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Players</h2>
       <table class="table sortable" id="playersTable"><thead><tr>
         <th data-type="text">Name</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th><th data-type="text">Top 3 heroes</th>
       </tr></thead><tbody></tbody></table>
-    </div>
-    <div class="card">
+    </section>
+  </div>
+
+  <div id="pane-heroes" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Heroes</h2>
+      <table class="table sortable" id="heroesTable"><thead><tr>
+        <th data-type="text">Hero</th><th data-type="num">Picks</th><th data-type="num">Bans</th><th data-type="num">Wins</th><th data-type="num">WR</th><th data-type="text">Best player</th>
+      </tr></thead><tbody></tbody></table>
+    </section>
+  </div>
+
+  <div id="pane-teams" class="tabpane" style="display:none">
+    <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Teams</h2>
       <table class="table sortable" id="teamsTable"><thead><tr>
         <th data-type="text">Team</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th>
       </tr></thead><tbody></tbody></table>
-    </div>
+    </section>
   </div>
 
-  <div class="card" style="margin-top:12px">
-    <h2 style="margin:0 0 8px;font-size:18px">Heroes</h2>
-    <table class="table sortable" id="heroesTable"><thead><tr>
-      <th data-type="text">Hero</th><th data-type="num">Picks</th><th data-type="num">Bans</th><th data-type="num">Wins</th><th data-type="num">WR</th><th data-type="text">Best player</th>
-    </tr></thead><tbody></tbody></table>
+  <div id="pane-awards" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">🏆 Awards</h2>
+      <div id="awardsBody" class="sub">Select a range and Apply to compute awards.</div>
+    </section>
   </div>
 </div>
 
@@ -107,10 +162,18 @@ const OD_MATCH_URL = id => `https://www.opendota.com/matches/${id}`;
 function fmtPct(x){ return (x*100).toFixed(1)+'%'; }
 async function loadJson(url){ const r=await fetch(url,{cache:'no-store'}); if(!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }
 async function loadJsonWithFallback(rel, raw){
-  try { return await loadJson(rel); } catch(e){ return await loadJson(raw); }
+  const isFile = (typeof location !== 'undefined' && location.protocol === 'file:');
+  if(isFile){
+    // When opened via file://, browsers block fetch() to file paths. Prefer HTTP raw first.
+    try { return await loadJson(raw); } catch(e){ /* fall through */ }
+    try { return await loadJson(rel); } catch(e){ throw e; }
+  } else {
+    try { return await loadJson(rel); } catch(e){ return await loadJson(raw); }
+  }
 }
 function unix(dt){ return Math.floor(dt.getTime()/1000); }
-function toUTCInput(unixSec){ if(!unixSec) return ''; const d=new Date(unixSec*1000); const pad=n=>String(n).padStart(2,'0'); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`; }
+function toLocalInput(unixSec){ if(!unixSec) return ''; const d=new Date(unixSec*1000); const pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function parseLocalInput(val){ if(!val) return NaN; const ms = Date.parse(val); return isNaN(ms)? NaN : Math.floor(ms/1000); }
 
 // Sorting helpers
 function val(td){
@@ -249,42 +312,127 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
   }
 }
 
-function renderHighlights(high){
+function renderSummary(subsetAgg, heroMap){
+  const sec = document.getElementById('summarySection');
+  const grid = document.getElementById('summaryGrid');
+  if(!subsetAgg){ sec.style.display='none'; grid.innerHTML=''; return; }
+  // Build structures
+  const playersArr = Array.from(subsetAgg.players.values());
+  const heroesArr = Array.from(subsetAgg.heroStats.entries()).map(([hid,hs])=>({hid, ...hs}));
+  // thresholds
+  const minGamesTopPlayer = 5;
+  // Top 3 most picked heroes
+  const topPicked = heroesArr.filter(h=>h.picks>0).sort((a,b)=> b.picks - a.picks).slice(0,3).map(h=>{
+    const meta = heroMap[String(h.hid)]||{}; return {name:meta.name||`#${h.hid}`, img:meta.img||'', picks:h.picks, winrate: h.picks? (h.wins/h.picks):0};
+  });
+  // Top 3 most banned heroes
+  const topBanned = heroesArr.filter(h=>h.bans>0).sort((a,b)=> b.bans - a.bans).slice(0,3).map(h=>{
+    const meta = heroMap[String(h.hid)]||{}; return {name:meta.name||`#${h.hid}`, img:meta.img||'', bans:h.bans, picks:h.picks||0};
+  });
+  // Top 3 players by WR with threshold
+  const topPlayers = playersArr.map(p=>({name:p.name, profile:p.profile, games:p.games, wins:p.wins, wr: p.games? (p.wins/p.games):0}))
+    .filter(p=>p.games>=minGamesTopPlayer).sort((a,b)=> b.wr - a.wr || b.games - a.games).slice(0,3);
+  // Top 3 most played inhouses (most games)
+  const topPlayed = playersArr.slice().sort((a,b)=> b.games - a.games || (b.wins/b.games) - (a.wins/a.games)).slice(0,3).map(p=>({name:p.name, profile:p.profile, games:p.games, wr: p.games? (p.wins/p.games):0}));
+  // Highest/Lowest WR hero (min 5 games like All-time)
+  const minHeroGames = 5;
+  const heroPool = heroesArr.filter(h=>h.picks>=minHeroGames).map(h=>({
+    hid:h.hid, picks:h.picks, wins:h.wins, wr: h.picks? (h.wins/h.picks):0,
+    meta: heroMap[String(h.hid)]||{}
+  }));
+  const bestHero = heroPool.slice().sort((a,b)=> b.wr - a.wr || b.picks - a.picks)[0] || null;
+  const worstHero = heroPool.slice().sort((a,b)=> a.wr - b.wr || b.picks - a.picks)[0] || null;
+
+  function liPicked(h){ return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.img}' alt=''><span class='name'>${h.name}</span></span><span><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.winrate)}</strong></span></span></li>`; }
+  function liBanned(h){ return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.img}' alt=''><span class='name'>${h.name}</span></span><span><span class='badge'>Bans: ${h.bans}</span><span class='badge'>Picks: ${h.picks}</span></span></li>`; }
+  function liTopPlayer(p){ return `<li><span class='name'><a href='${p.profile}' target='_blank'>${p.name}</a></span><span><span class='badge'>${p.games} games</span><span class='badge'>WR: <strong>${fmtPct(p.wr)}</strong></span></span></li>`; }
+  function liMostPlayed(p){ return `<li><span class='name'><a href='${p.profile}' target='_blank'>${p.name}</a></span><span><span class='badge'>${p.games} games</span><span class='badge'>WR: <strong>${fmtPct(p.wr)}</strong></span></span></li>`; }
+  function heroRow(h){ return h? `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.meta.img||''}' alt=''><span class='name'>${h.meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.wr)}</strong></span></span></li>` : `<li><span class='sub'>no data</span></li>`; }
+
+  grid.innerHTML = `
+    <div class='summary-card'>
+      <h3>Top 3 most picked heroes</h3>
+      <ul>${topPicked.map(liPicked).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+    </div>
+    <div class='summary-card'>
+      <h3>Top 3 most banned heroes</h3>
+      <ul>${topBanned.map(liBanned).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+    </div>
+    <div class='summary-card'>
+      <h3>Top 3 players (WR, > ${minGamesTopPlayer} games)</h3>
+      <ul>${topPlayers.map(liTopPlayer).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+    </div>
+    <div class='summary-card'>
+      <h3>Top 3 most played inhouses</h3>
+      <ul>${topPlayed.map(liMostPlayed).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+    </div>
+    <div class='summary-card'>
+      <h3>Highest win rate hero (min ${minHeroGames} games)</h3>
+      <ul>${heroRow(bestHero)}</ul>
+    </div>
+    <div class='summary-card'>
+      <h3>Lowest win rate hero (min ${minHeroGames} games)</h3>
+      <ul>${heroRow(worstHero)}</ul>
+    </div>
+  `;
+  sec.style.display='';
+}
+
+function renderHighlights(high, heroMap, mapConf, label){
   const card = document.getElementById('highlightsCard');
   const body = document.getElementById('highlightsBody');
   if(!high || typeof high !== 'object'){ card.style.display='none'; body.innerHTML=''; return; }
   function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
   function linkPlayer(obj){
     if(!obj) return '<span class="sub">Unknown</span>';
+    // Allow passing a numeric account_id directly
+    if(typeof obj === 'number'){
+      const id = Number(obj)||0;
+      const name = id ? `Player ${id}` : 'Unknown';
+      const profile = id ? OD_PLAYER_URL(id) : '#';
+      return `<a href='${esc(profile)}' target='_blank' rel='noopener'>${esc(name)}</a>`;
+    }
     const id = obj.account_id || obj.id || obj.accountId || 0;
     const name = esc(obj.name || obj.personaname || (id?`Player ${id}`:'Unknown'));
     const profile = esc(obj.profile || (id? OD_PLAYER_URL(id) : '#'));
     return `<a href='${profile}' target='_blank' rel='noopener'>${name}</a>`;
   }
-  // Rampages
-  let rampHtml = '<li><span class="sub">no games</span></li>';
-  if(Array.isArray(high.rampages) && high.rampages.length){
-    rampHtml = high.rampages.map(r=>{
+  // Rampages grouped by side, with clickable count to toggle matches
+  function rampListHtml(arr){
+    if(!Array.isArray(arr) || !arr.length) return '<li><span class="sub">no games</span></li>';
+    return arr.map((r,idx)=>{
       const name = esc(r.name||'Player'); const profile = esc(r.profile||'#');
       const cnt = Number(r.count||0);
-      let matches = '';
-      if(Array.isArray(r.matches)){
-        matches = r.matches.map(m=>{
-          const mid = String(m.match_id||m.matchId||''); const c = Number(m.count||1);
-          const label = c>1 ? `x${c}` : 'match';
-          return `<a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>M${mid}</a><span class='badge'>${label}</span>`;
-        }).join(' ');
-      }
-      return `<li class='has-hover'><span><a href='${profile}' target='_blank'>${name}</a></span><span class='badge ramp-badge'>x${cnt}</span><div class='hovercard'><div class='title'>Rampage matches</div>${matches||'<div class="sub">no links</div>'}</div></li>`;
+      const rid = `rp-${Math.random().toString(36).slice(2)}-${idx}`;
+      const matches = Array.isArray(r.matches) && r.matches.length ? r.matches.map(m=>{
+        const mid = String(m.match_id||m.matchId||''); const c = Number(m.count||1);
+        const label = c>1 ? `x${c}` : 'match';
+        return `<a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>M${mid}</a><span class='badge'>${label}</span>`;
+      }).join(' ') : '<div class="sub">no links</div>';
+      return `<li><span><a href='${profile}' target='_blank'>${name}</a></span><button class='badge ramp-badge' data-toggle='${rid}' title='Show matches'>x${cnt}</button><div id='${rid}' class='stack' style='display:none;margin-top:6px'>${matches}</div></li>`;
     }).join('');
+  }
+  function rampSection(){
+    const rs = high.rampagesBySide || {Radiant:[], Dire:[]};
+    const rHtml = rampListHtml(rs.Radiant);
+    const dHtml = rampListHtml(rs.Dire);
+    return `<div class='grid2'>
+      <div><h4>Radiant</h4><ul class='simple'>${rHtml}</ul></div>
+      <div><h4>Dire</h4><ul class='simple'>${dHtml}</ul></div>
+    </div>`;
   }
   // New blocks: teammates, courier kills, camps stacked
   function teammatesList(arr){
     if(!Array.isArray(arr) || !arr.length) return `<li><span class="sub">no data</span></li>`;
     return arr.map(it=>{
-      // Try to normalize pair structure
-      const a = it.a || (Array.isArray(it.pair)? it.pair[0] : null) || (it.p1_id? {account_id: it.p1_id, name: it.p1_name, profile: it.p1_profile} : null);
-      const b = it.b || (Array.isArray(it.pair)? it.pair[1] : null) || (it.p2_id? {account_id: it.p2_id, name: it.p2_name, profile: it.p2_profile} : null);
+      // Try to normalize pair structure (supports name1/profile1 & name2/profile2 from server)
+  const a = (Array.isArray(it.pair)? it.pair[0] : null) ||
+  (it.p1_id? {account_id: it.p1_id, name: it.p1_name, profile: it.p1_profile} : null) ||
+  (it.name1 || it.profile1 ? {name: it.name1, profile: it.profile1} : null);
+  const b = (it.b!=null) ? { account_id: Number(it.b)||0, name: it.name2, profile: it.profile2 } :
+        (Array.isArray(it.pair)? it.pair[1] : null) ||
+        (it.p2_id? {account_id: it.p2_id, name: it.p2_name, profile: it.p2_profile} : null) ||
+        (it.name2 || it.profile2 ? {name: it.name2, profile: it.profile2} : null);
       const cnt = Number(it.count ?? it.games ?? it.value ?? 0);
       return `<li><span>${linkPlayer(a)} + ${linkPlayer(b)}</span><span class='badge'>x${cnt}</span></li>`;
     }).join('');
@@ -305,10 +453,52 @@ function renderHighlights(high){
   function rosTop(side){
     const arr = high.roshanTop && Array.isArray(high.roshanTop[side]) ? high.roshanTop[side] : [];
     if(!arr.length) return '';
-    return ' ' + arr.map(x=>{
+    const rows = arr.map(x=>{
       const mid = String(x.match_id||''); const c = Number(x.count||1);
-      return `<a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>M${mid}</a><span class='badge'>x${c}</span>`;
-    }).join(' ');
+      return `<div class='row'><a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>M${mid}</a><span class='badge'>x${c}</span></div>`;
+    }).join('');
+    return `<div class='stack'>${rows}</div>`;
+  }
+  // Aegis snatch and Tormentor
+  function objectiveList(arr, label){
+    if(!Array.isArray(arr) || !arr.length) return '';
+    return `<div class='sub' style='margin-top:6px'>${label}</div><ul class='simple'>` + arr.map(ev=>{
+      const sec = Number(ev.time||0); const mm=Math.floor(sec/60), ss=sec%60;
+      const mid = String(ev.match_id||'');
+      const team = esc(ev.team||'');
+      const p = ev.player || null;
+      const name = p ? esc(p.name||'Unknown') : 'Unknown';
+      const profile = p && p.profile ? esc(p.profile) : null;
+      const hero = p && p.hero ? ` (${esc(p.hero)})` : '';
+      const person = profile ? `<a href='${profile}' target='_blank'>${name}</a>` : name;
+      return `<li><span>${label.replace(/s$/,'')}:</span><span class='badge'>${team}</span><span>${person}${hero}</span><a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>${mm}m ${ss}s</a></li>`;
+    }).join('') + '</ul>';
+  }
+  // Roshan kills grouped by side
+  function roshKillsBySide(events){
+    const arr = Array.isArray(events)? events:[];
+    if(!arr.length) return '';
+    const rad = arr.filter(ev=> String(ev.team||'')==='Radiant');
+    const dire = arr.filter(ev=> String(ev.team||'')==='Dire');
+    function listSide(sideArr){
+      if(!sideArr.length) return `<ul class='simple'><li><span class='sub'>no kills</span></li></ul>`;
+      const items = sideArr.map(ev=>{
+        const sec = Number(ev.time||0); const mm=Math.floor(sec/60), ss=sec%60;
+        const mid = String(ev.match_id||'');
+        const p = ev.player || null;
+        const name = p ? esc(p.name||'Unknown') : 'Unknown';
+        const profile = p && p.profile ? esc(p.profile) : null;
+        const hero = p && p.hero ? ` (${esc(p.hero)})` : '';
+        const person = profile ? `<a href='${profile}' target='_blank'>${name}</a>` : name;
+        return `<li><span>Roshan</span><span>${person}${hero}</span><a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>${mm}m ${ss}s</a></li>`;
+      }).join('');
+      return `<ul class='simple'>${items}</ul>`;
+    }
+    return `<div class='sub' style='margin-top:6px'>Roshan kills</div>
+      <div class='grid2'>
+        <div><h4>Radiant</h4>${listSide(rad)}</div>
+        <div><h4>Dire</h4>${listSide(dire)}</div>
+      </div>`;
   }
   // Top single-match performances
   const ts = high.topSingle||{};
@@ -329,19 +519,141 @@ function renderHighlights(high){
       return `<li><span><a target='_blank' href='${OD_MATCH_URL(mid)}'>${vs}</a></span><span class='badge'>${mm}m ${ss}s</span><span class='badge'>Winner: ${win}</span></li>`;
     }).join('');
   }
+  // Duos
+  function duoList(arr){
+    if(!Array.isArray(arr) || !arr.length) return `<li><span class='sub'>no games</span></li>`;
+    return arr.map(d=>{
+      const a = heroMap[String(d.a)] || {}; const b = heroMap[String(d.b)] || {};
+      const aN = esc(a.name||(`#${d.a}`)); const bN = esc(b.name||(`#${d.b}`));
+      const wr = Number(d.winrate||0);
+      return `<li><span>${aN} + ${bN}</span><span class='badge'>WR: <strong>${fmtPct(wr)}</strong></span><span class='badge'>G: ${d.games||0}</span></li>`;
+    }).join('');
+  }
+  // Ward map rendering (popular spots + longest + player stats)
+  function wardHtml(){
+    if(!high.wardEvents || !Array.isArray(high.wardSpots)) return '';
+    const map = mapConf || {};
+    const asset = (map.major && map.current && map.major[map.current]) ? map.major[map.current] : null;
+    let bg = asset && asset.src ? asset.src : (map.default || 'https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg');
+    const mapScale = asset && asset.scale ? Number(asset.scale) : Number(map.defaultScale||127);
+    const invertY = !!(asset && asset.invertY);
+    // radii (percent of width) - prefer units or asset-specific pct
+    const cellUnits = (asset && asset.cellUnits) ? Number(asset.cellUnits) : Number(map.defaultCellUnits||128);
+    const obsUnits  = (asset && asset.obsRadiusUnits) ? Number(asset.obsRadiusUnits) : Number(map.defaultObsRadiusUnits||1600);
+    let obsPct = (asset && asset.obsRadiusPct!=null) ? Number(asset.obsRadiusPct) : (map.defaultObsRadiusPct!=null ? Number(map.defaultObsRadiusPct) : 10);
+    if(obsUnits && cellUnits && mapScale){ const calc = (obsUnits/(cellUnits*mapScale))*100; if(isFinite(calc)&&calc>0){ obsPct = Math.round(calc*100)/100; } }
+    if(!isFinite(obsPct) || obsPct<=0) obsPct = 10;
+    // Bounds mapping like 30-day report (minX/minY/maxX/maxY) when available
+    const minX = asset && asset.minX!=null ? Number(asset.minX) : null;
+    const minY = asset && asset.minY!=null ? Number(asset.minY) : null;
+    const maxX = asset && asset.maxX!=null ? Number(asset.maxX) : null;
+    const maxY = asset && asset.maxY!=null ? Number(asset.maxY) : null;
+    const hasBounds = (minX!=null && minY!=null && maxX!=null && maxY!=null && maxX>minX && maxY>minY);
+    // Build SVG circles for ranked spots and longest-lived
+    const spotMap = new Map();
+    for(const e of (high.wardEvents||[])){
+      const k = `${e.x},${e.y}`; const info = spotMap.get(k)||{obs:false,sen:false};
+      if(e.type==='obs') info.obs=true; if(e.type==='sen') info.sen=true; spotMap.set(k,info);
+    }
+    function norm(x,y){ const X=Number(x||0), Y=Number(y||0);
+      if(hasBounds){ const clX = Math.max(minX, Math.min(maxX, X)); const clY = Math.max(minY, Math.min(maxY, Y));
+        const cx = ((clX - minX)/(maxX - minX))*100; let yy = ((clY - minY)/(maxY - minY)); if(invertY) yy = 1-yy; const cy = yy*100;
+        return {cx: Math.round(cx*100)/100, cy: Math.round(cy*100)/100};
+      } else {
+        let cx = Math.max(0, Math.min(mapScale, X))/mapScale*100;
+        let yy = Math.max(0, Math.min(mapScale, Y))/mapScale; if(invertY) yy = 1-yy; const cy = yy*100;
+        return {cx: Math.round(cx*100)/100, cy: Math.round(cy*100)/100};
+      }
+    }
+    function svgFor(list, longest){
+      return list.map(s=>{
+        const k = String(s.spot||''); if(!k) return '';
+        const [x,y] = k.split(',').map(Number); const {cx,cy} = norm(x,y);
+        const info = spotMap.get(k)||{obs:false,sen:false}; if(!info.obs) return '';
+        const id = s.spotId ? String(s.spotId) : '';
+        const cnt = Number(s.count||0);
+        const mx = Number(s.maxSeconds||0); const mm = Math.floor(mx/60), ss = mx%60;
+        const title = longest ? `Spot ${k} - Longest life: ${mm}m ${ss}s - Placements: ${cnt}` : `Spot ${k} - Placements: ${cnt}`;
+        const klass = longest ? 'spot longest' : 'spot';
+        const stroke = longest ? 'rgba(86,227,150,0.55)' : 'rgba(255,215,0,0.65)';
+        const fill = longest ? 'rgba(86,227,150,0.06)' : 'rgba(255,215,0,0.08)';
+        const idAttr = id ? ` id='${id}'` : '';
+        return `<circle${idAttr} class='${klass}' cx='${cx}%' cy='${cy}%' r='${obsPct}' fill='${fill}' stroke='${stroke}' stroke-width='0.8' opacity='0.8'>\n<title>${esc(title)}</title>\n</circle>\n<circle cx='${cx}%' cy='${cy}%' r='1.0' fill='${stroke}' opacity='0.85' />`;
+      }).join('\n');
+    }
+    const svgSpots = svgFor(high.wardSpots||[], false);
+    const svgLongest = svgFor(high.wardLongest||[], true);
+    // Lists
+    function wardList(arr){ if(!Array.isArray(arr)||!arr.length) return `<li><span class='sub'>no games</span></li>`;
+      return arr.map(s=>{ const sid = s.spotId? String(s.spotId):''; const mx = Number(s.maxSeconds||0); const mm=Math.floor(mx/60), ss=mx%60; const cnt = Number(s.count||0); const [x,y] = String(s.spot||'').split(',').map(Number); const label = (isFinite(x)&&isFinite(y)) ? `${Math.round(x)},${Math.round(y)}` : String(s.spot||''); return `<li data-spot='${sid}'><span>Spot ${label}</span>`+(mx?`<span class='badge'>${mm}m ${ss}s</span>`:'')+`<span class='badge'>x${cnt}</span></li>`; }).join(''); }
+    function wardPlayersList(arr, unit){ if(!Array.isArray(arr)||!arr.length) return `<li><span class='sub'>no data</span></li>`; return arr.map(p=>`<li><span>${linkPlayer(p)}</span><span class='badge'>x${Number(p.count||0)}</span></li>`).join(''); }
+    const players = high.wardPlayers||{};
+  return `
+    <h3>Ward Spots</h3>
+    <div class='wardgrid'>
+      <div class='wardleft'>
+        <div class='sub' style='margin:-4px 0 8px'>${esc(label||'Period')} | Number = count of observer placements at spot | Circle = observer vision radius (~1600u).</div>
+        <div class='wardmap' id='dvWardMap' style="background-image:url('${esc(bg)}')">
+          <svg id='dvWardSvg' viewBox='0 0 100 100' preserveAspectRatio='none' width='100%' height='100%'>
+            <g id='dv-ov-spots'>${svgSpots||''}</g>
+            <g id='dv-ov-longest' style='display:none'>${svgLongest||''}</g>
+          </svg>
+        </div>
+        <div style='display:flex;align-items:center;gap:10px;margin-top:10px'>
+          <label style='font-size:13px;color:var(--muted)'><input id='dvToggleSpots' type='checkbox' checked style='vertical-align:middle;margin-right:6px'>Show ward overlay</label>
+        </div>
+      </div>
+      <div class='wardright'>
+        <div class='tabs'>
+          <button class='tab active' data-tab='spots'>Most popular spots</button>
+          <button class='tab' data-tab='players'>Players</button>
+          <button class='tab' data-tab='longest'>Longest-lived spots (min 3 placements)</button>
+        </div>
+        <div id='dv-tab-spots' class='tabpane active'>
+          <ul id='dvSpotList' class='simple' style='margin-top:8px'>${wardList(high.wardSpots||[])}</ul>
+        </div>
+        <div id='dv-tab-players' class='tabpane' style='display:none'>
+          <div class='grid3'>
+            <div>
+              <h4>Most placed</h4>
+              <ul class='simple'>${wardPlayersList(players.mostPlaced||[])}</ul>
+            </div>
+            <div>
+              <h4>Most dewards</h4>
+              <ul class='simple'>${wardPlayersList(players.mostDewards||[])}</ul>
+            </div>
+            <div>
+              <h4>Most successful (avg. lifetime)</h4>
+              <ul class='simple'>${(players.longestAvg||[]).map(p=>{ const sec=Number(p.avgSeconds||0); const mm=Math.floor(sec/60), ss=sec%60; return `<li><span>${linkPlayer(p)}</span><span class='badge'>${mm}m ${ss}s avg</span><span class='badge'>n=${p.samples||0}</span></li>`; }).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+            </div>
+          </div>
+        </div>
+        <div id='dv-tab-longest' class='tabpane' style='display:none'>
+          <ul id='dvLongestList' class='simple' style='opacity:.85'>${wardList(high.wardLongest||[])}</ul>
+        </div>
+    </div>
+  </div>`;
+  }
+  const roshByMatchHtml = (function(){
+    const list = (high.roshanByMatch||[]).slice(0,10);
+    if(!list.length) return '';
+    const items = list.map(function(x){
+      const mid=String(x.match_id||'');
+      return `<li><a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>M${mid}</a><span class='badge'>Radiant x${x.Radiant||0}</span><span class='badge'>Dire x${x.Dire||0}</span><span class='badge'>Total: ${x.total||0}</span></li>`;
+    }).join('');
+    return `<div class='sub' style='margin-top:6px'>Roshan kills by match</div><ul class='simple'>${items}</ul>`;
+  })();
   const html = `
     <div class="grid3">
       <div>
         <h3>Rampages</h3>
-        <ul class="simple">${rampHtml}</ul>
+        ${rampSection()}
       </div>
       <div>
         <h3>Roshan taken</h3>
-        <ul class="simple">
-          <li><span>Radiant</span><span class='badge'>x${rosR}</span>${rosTop('Radiant')}</li>
-          <li><span>Dire</span><span class='badge'>x${rosD}</span>${rosTop('Dire')}</li>
-        </ul>
-        ${objWarn}${objNone}
+  ${roshByMatchHtml}
+        ${objectiveList(high.aegisSnatch||[], 'Aegis snatches')}
+        ${objectiveList(high.tormentor||[], 'Tormentor kills')}
       </div>
       <div>
         <h3>Top single-match performances</h3>
@@ -362,6 +674,27 @@ function renderHighlights(high){
         <ul class="simple">${simpleCountList(high.stackTop, 'stacks')}</ul>
       </div>
     </div>
+    <div class="grid3" style="margin-top:8px">
+      <div>
+        <h3>Rapiers bought</h3>
+        <ul class="simple">${simpleCountList(high.rapierTop, 'rapiers')}</ul>
+      </div>
+      <div>
+        <h3>Gems bought</h3>
+        <ul class="simple">${simpleCountList(high.gemTop, 'gems')}</ul>
+      </div>
+      <div></div>
+    </div>
+    <div class="grid2" style="margin-top:8px">
+      <div>
+        <h3>Best Safe Lane Duos</h3>
+        <ul class="simple">${duoList(high.safeDuos||[])}</ul>
+      </div>
+      <div>
+        <h3>Best Off Lane Duos</h3>
+        <ul class="simple">${duoList(high.offDuos||[])}</ul>
+      </div>
+    </div>
     <div class="grid2" style="margin-top:8px">
       <div>
         <h3>3 longest matches</h3>
@@ -371,20 +704,70 @@ function renderHighlights(high){
         <h3>3 shortest matches</h3>
         <ul class="simple">${durList(high.durationShortest)}</ul>
       </div>
-    </div>`;
+    </div>
+    ${wardHtml()}`;
   body.innerHTML = html; card.style.display='';
+  // Attach rampage click-to-toggle handlers
+  try{
+    body.querySelectorAll('button[data-toggle]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.getAttribute('data-toggle');
+        const tgt = id && body.querySelector(`#${CSS.escape(id)}`);
+        if(tgt){ tgt.style.display = (tgt.style.display==='none' || !tgt.style.display) ? 'block' : 'none'; }
+      });
+    });
+  }catch(_e){}
+  // Attach ward interactivity if present
+  attachWardUI(body);
+}
+
+// Attach dynamic interactions for ward map/tabs/hover after DOM is inserted
+function attachWardUI(scope){
+  try{
+    const root = scope.querySelector('.wardgrid');
+    if(!root) return; // highlights may not include ward block when no data
+    const svg = root.querySelector('#dvWardSvg'); if(!svg) return;
+    const wrap = svg.closest('.wardmap'); const gSpots = svg.querySelector('#dv-ov-spots'); const gLongest = svg.querySelector('#dv-ov-longest');
+    const tabs = Array.from(root.querySelectorAll('.tabs .tab'));
+    function show(name){
+      root.querySelectorAll('.tabpane').forEach(p=>p.style.display='none');
+      const pane = root.querySelector('#dv-tab-'+name); if(pane) pane.style.display='';
+      tabs.forEach(b=>b.classList.toggle('active', b.getAttribute('data-tab')===name));
+      if(gSpots && gLongest){ if(name==='longest'){ gSpots.style.display='none'; gLongest.style.display=''; } else { gSpots.style.display=''; gLongest.style.display='none'; } }
+    }
+    tabs.forEach(b=> b.addEventListener('click', ()=> show(b.getAttribute('data-tab'))));
+    const active = new Set();
+    function setHighlight(id,on){ if(!id) return; const sel = '#'+CSS.escape(id); const els = svg.querySelectorAll(sel); if(els&&els.length){ els.forEach(el=> el.classList.toggle('hl', !!on)); }
+      if(on) active.add(id); else active.delete(id); if(wrap){ wrap.classList.toggle('highlighting', active.size>0); } }
+    function wireHover(ul){ if(!ul) return; ul.addEventListener('mouseover', e=>{ const li=e.target.closest('li[data-spot]'); if(!li) return; setHighlight(li.getAttribute('data-spot'), true); }); ul.addEventListener('mouseout', e=>{ const li=e.target.closest('li[data-spot]'); if(!li) return; setHighlight(li.getAttribute('data-spot'), false); }); }
+    wireHover(root.querySelector('#dvSpotList')); wireHover(root.querySelector('#dvLongestList'));
+    const toggle = root.querySelector('#dvToggleSpots'); if(toggle){ toggle.addEventListener('change', ()=>{ svg.style.display = toggle.checked ? '' : 'none'; }); }
+  }catch(err){ console.warn('Ward UI attach failed', err); }
 }
 
 async function main(){
+  // Top-level tabs wiring
+  (function(){
+    const tabsRoot = document.getElementById('mainTabs');
+    if (!tabsRoot) return;
+    const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
+    function showTab(name){
+  ['highlights','players','heroes','teams','awards'].forEach(id=>{
+        const pane = document.getElementById('pane-'+id);
+        if (pane) pane.style.display = (id===name)? '' : 'none';
+      });
+      tabs.forEach(b=> b.classList.toggle('active', b.getAttribute('data-tab')===name));
+    }
+    tabs.forEach(b=> b.addEventListener('click', ()=> showTab(b.getAttribute('data-tab'))));
+  })();
   // Load from root-level data/ via relative path (local) or raw.githubusercontent.com (GitHub Pages)
   const REPO='Zeroks77/Kret_Dota'; const BRANCH='main';
   const relBase='../data'; const rawBase=`https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
-  const [manifest, heroes, info, high30, highAll] = await Promise.all([
+  const [manifest, heroes, info, mapConf] = await Promise.all([
     loadJsonWithFallback(`${relBase}/manifest.json`, `${rawBase}/manifest.json`),
     loadJsonWithFallback(`${relBase}/heroes.json`, `${rawBase}/heroes.json`),
     loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({})),
-    loadJsonWithFallback(`${relBase}/highlights_30.json`, `${rawBase}/highlights_30.json`).catch(()=>null),
-    loadJsonWithFallback(`${relBase}/highlights_all.json`, `${rawBase}/highlights_all.json`).catch(()=>null)
+    loadJsonWithFallback(`${relBase}/maps.json`, `${rawBase}/maps.json`).catch(()=>null)
   ]);
   // Fetch all month shards listed in manifest
   const months = (manifest && Array.isArray(manifest.months)) ? manifest.months : [];
@@ -402,17 +785,322 @@ async function main(){
   }
 
   const from = document.getElementById('from'), to = document.getElementById('to'), quick = document.getElementById('quick');
+  // ---- Helpers to compute highlights client-side for any range ----
+  function mapHeroTag(heroMap){ const out={}; try{ for(const k in heroMap){ const v=heroMap[k]; if(v && v.tag) out[String(v.tag)] = Number(v.id||k); } }catch(_e){} return out; }
+  function getTeamByObjective(ev, md){
+    // Prefer explicit team on event; fallback to player_slot if present
+  try{
+      if(ev.team!==undefined && ev.team!==null){ const t=Number(ev.team); return (t===2||t===0)?'Radiant':'Dire'; }
+  }catch(_e){}
+  try{
+      const slot = Number(ev.player_slot);
+      if(!isNaN(slot)){ return (slot<128)?'Radiant':'Dire'; }
+  }catch(_e){}
+    // Fallback unknown
+    return '';
+  }
+  async function fetchMatchDetail(id){
+    const rel = `${relBase}/cache/OpenDota/matches/${id}.json`;
+    const raw = `${rawBase}/cache/OpenDota/matches/${id}.json`;
+    const isFile = (typeof location !== 'undefined' && location.protocol === 'file:');
+    const tryLoad = async (url)=>{ try{ return await loadJson(url); }catch(_e){ return null; } };
+    let md = null;
+    // Try cached paths first (skip rel on file://)
+    if(!isFile){ md = await tryLoad(rel); }
+    if(!md){ md = await tryLoad(raw); }
+    // Determine if the cached JSON is incomplete (missing players/objectives or key per-player fields)
+    const insufficient = (obj)=>{
+      if(!obj) return true;
+      const hasPlayers = Array.isArray(obj.players) && obj.players.length>0;
+      const hasObjectives = Array.isArray(obj.objectives);
+      let hasUsageFields = false;
+      if(hasPlayers){
+        for(const p of obj.players){ if(p && (p.purchase_log || p.item_uses || p.obs_killed!==undefined || p.sen_killed!==undefined)) { hasUsageFields = true; break; } }
+      }
+      return !(hasPlayers && hasObjectives && hasUsageFields);
+    };
+    if(insufficient(md)){
+      try { const api = await loadJson(`https://api.opendota.com/api/matches/${id}`); if(api) md = api; } catch(e){ console.warn('Failed match fetch', id, e); }
+    }
+    return md;
+  }
+  async function pMap(items, limit, worker){
+    const ret=new Array(items.length); let i=0; let active=0; let rej; const errors=[];
+    return await new Promise((resolve, reject)=>{ rej=reject; function next(){ if(i>=items.length && active===0){ resolve(ret); return; } while(active<limit && i<items.length){ const idx=i++; active++; Promise.resolve(worker(items[idx], idx)).then(v=>{ ret[idx]=v; active--; next(); }).catch(e=>{ errors.push(e); ret[idx]=null; active--; next(); }); } } next(); });
+  }
+  function computeHighlightsFromDetails(details, heroMap){
+    // Structures similar to server-side script
+    const tag2id = mapHeroTag(heroMap);
+  const rampages = new Map();        // aid -> count (all)
+  const rampGames = new Map();       // aid -> Map<match_id,count> (all)
+  const rampagesSide = {Radiant:new Map(), Dire:new Map()}; // side -> aid -> count
+  const rampGamesSide = {Radiant:new Map(), Dire:new Map()}; // side -> aid -> Map<match_id,count>
+    const wardSpots = new Map();       // "x,y" -> count
+    const wardEvents = [];             // {x,y,type}
+    const wardLifeMax = new Map();     // spot -> maxSeconds
+    const obsPlacedBy = new Map();     // aid -> count
+    const dewardsBy = new Map();       // aid -> count
+    const lifeBy = new Map();          // aid -> number[]
+    const pairCounts = new Map();      // "aid1-aid2" -> games
+    const courierKillsBy = new Map();  // aid -> total
+    const campsStackedBy = new Map();  // aid -> total
+    const rapierBy = new Map();        // aid -> total rapiers bought
+    const gemBy = new Map();           // aid -> total gems bought
+  const roshanTeam = {Radiant:0, Dire:0};
+    const roshPerMatch = {Radiant:new Map(), Dire:new Map()};
+  const roshanEvents = [];
+    const aegisSnatch = []; const tormentor = [];
+    let bestGPM=null, bestKills=null, bestAssists=null, bestNet=null;
+    const durList=[]; let objectivesSeen=false;
+
+    function addMapCount(map, key, inc=1){ const k=String(key); map.set(k, (map.get(k)||0)+inc); }
+    function addNestedCount(obj, side, matchId){ const m=obj[side]; const k=String(matchId); m.set(k, (m.get(k)||0)+1); }
+    function playerName(aid, md){
+      aid=Number(aid)||0; if(!aid) return `Player ${aid}`; const p=(md.players||[]).find(pp=>(pp.account_id|0)===aid); return p&&p.personaname ? p.personaname : `Player ${aid}`;
+    }
+
+    for(const md of details){ if(!md) continue; const mid = Number(md.match_id||md.matchId||0); if(!(mid>0)) continue;
+      try{
+        // Per-match helpers for ward life pairing
+        const placed=[], left=[]; const heroToAccount=new Map();
+        for(const p of (md.players||[])){
+          const aid = Number(p.account_id||0); const prof = aid? OD_PLAYER_URL(aid): '#';
+          // Multi-kills -> rampages
+          const mk = p.multi_kills || {};
+          const r = Number(mk['5']||0);
+          if(aid>0 && r>0){
+            // overall
+            addMapCount(rampages, aid, r);
+            if(!rampGames.has(aid)) rampGames.set(aid, new Map());
+            addMapCount(rampGames.get(aid), mid, r);
+            // by side
+            const side = (Number(p.player_slot)<128)? 'Radiant' : 'Dire';
+            addMapCount(rampagesSide[side], aid, r);
+            if(!rampGamesSide[side].has(aid)) rampGamesSide[side].set(aid, new Map());
+            addMapCount(rampGamesSide[side].get(aid), mid, r);
+          }
+          // Single-match tops
+          const nm = p.personaname || playerName(aid, md);
+          const setBest = (cur, val, label)=>{ if(val>0 && (!cur || (cur.value||0)<val)) return {account_id:aid,name:nm,profile:prof,value:val,match_id:mid}; return cur; };
+          bestGPM     = setBest(bestGPM, Number(p.gold_per_min||0), 'gpm');
+          bestKills   = setBest(bestKills, Number(p.kills||0), 'kills');
+          bestAssists = setBest(bestAssists, Number(p.assists||0), 'assists');
+          let net = Number(p.net_worth||0); if(!net){ net = Number(p.total_gold||0) || (Array.isArray(p.gold_t)&&p.gold_t.length? Number(p.gold_t[p.gold_t.length-1]||0):0); }
+          bestNet     = setBest(bestNet, net, 'networth');
+          // Courier / Stacks
+          if(aid>0 && Number(p.courier_kills||0)>0) addMapCount(courierKillsBy, aid, Number(p.courier_kills));
+          if(aid>0 && Number(p.camps_stacked||0)>0) addMapCount(campsStackedBy, aid, Number(p.camps_stacked));
+          // Purchases: Rapier / Gem
+          const plog = Array.isArray(p.purchase_log) ? p.purchase_log : [];
+          for(const it of plog){
+            const key = String(it.key||it.item||'').toLowerCase();
+            if(!aid) continue;
+            if(key.includes('rapier')) addMapCount(rapierBy, aid, 1);
+            if(key==='gem' || key.includes('gem_of_true_sight') || key.includes('gem')) addMapCount(gemBy, aid, 1);
+          }
+          // Ward stats
+          const obsLog = Array.isArray(p.obs_log)? p.obs_log : [];
+          const leftLog = Array.isArray(p.obs_left_log)? p.obs_left_log : [];
+          if(aid>0 && obsLog.length){ addMapCount(obsPlacedBy, aid, obsLog.length); }
+          for(const o of obsLog){ const x=Number(o.x), y=Number(o.y), t=Number(o.time||0); const k=`${x},${y}`; addMapCount(wardSpots, k, 1); wardEvents.push({x,y,type:'obs'}); placed.push({x,y,time:t}); }
+          for(const o of leftLog){ left.push({x:Number(o.x), y:Number(o.y), time:Number(o.time||0), attackername: String(o.attackername||'')}); }
+          // Dewards
+          let dk = Number(p.obs_kills||0);
+          if(!dk && Array.isArray(p.sen_log)){
+            let alt=0; for(const s of p.sen_log){ const typ=String(s.type||s.action||''); if(/deward|obs_kill/i.test(typ)) alt++; }
+            dk=alt;
+          }
+          if(aid>0 && dk>0) addMapCount(dewardsBy, aid, dk);
+          // Hero->Account for deward fallback
+          if((p.hero_id|0)>0 && aid>0) heroToAccount.set(Number(p.hero_id), aid);
+        }
+        // Additional dewards derivation via attackername in obs_left_log
+        for(const o of left){ const an = String(o.attackername||''); if(an.startsWith('npc_dota_hero_')){ const tag = an.replace(/^npc_dota_hero_/,''); const hid = tag2id[tag]; const killer = heroToAccount.get(hid); if(killer){ addMapCount(dewardsBy, killer, 1); } } }
+        // Pair placements with first removals per cell to compute longest lifetime per spot
+        const pBy=new Map(), lBy=new Map();
+        for(const e of placed){ const k=`${e.x},${e.y}`; if(!pBy.has(k)) pBy.set(k,[]); pBy.get(k).push(Number(e.time||0)); }
+        for(const e of left){ const k=`${e.x},${e.y}`; if(!lBy.has(k)) lBy.set(k,[]); lBy.get(k).push(Number(e.time||0)); }
+        for(const [k,pt] of pBy){ pt.sort((a,b)=>a-b); const lt=(lBy.get(k)||[]).sort((a,b)=>a-b); let j=0; for(let i=0;i<pt.length;i++){ const tP=pt[i]; while(j<lt.length && lt[j]<tP) j++; let life=480; if(j<lt.length){ life = Math.max(0, Number(lt[j]-tP)); j++; } const cur=wardLifeMax.get(k)||0; if(life>cur) wardLifeMax.set(k, life); } }
+        // Lifetimes per player (avg)
+        for(const p of (md.players||[])){
+          const aid=Number(p.account_id||0); if(!(aid>0)) continue; const obsLog=Array.isArray(p.obs_log)? p.obs_log:[]; const leftLog=Array.isArray(p.obs_left_log)? p.obs_left_log:[];
+          const times=[]; const P=obsLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); const L=leftLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); let jj=0; for(let i=0;i<P.length;i++){ const tP=P[i]; while(jj<L.length && L[jj]<tP) jj++; let life=480; if(jj<L.length){ life = Math.max(0, L[jj]-tP); jj++; } times.push(life); }
+          if(times.length){ const arr=lifeBy.get(aid)||[]; lifeBy.set(aid, arr.concat(times)); }
+        }
+        // Teammates per match, courier etc already counted per player; now pair counts
+        const rad=[], dire=[]; for(const p of (md.players||[])){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; (p.isRadiant?rad:dire).push(aid); }
+        const sides=[rad,dire]; for(const arr of sides){ for(let i=0;i<arr.length;i++){ for(let j=i+1;j<arr.length;j++){ const a=arr[i], b=arr[j]; const lo=Math.min(a,b), hi=Math.max(a,b); const key=`${lo}-${hi}`; addMapCount(pairCounts, key, 1); } } }
+        // Lane duos (Safe=1, Off=3), use lane_role and lane_efficiency_pct
+        const bySide={Radiant:(md.players||[]).filter(p=>p.isRadiant), Dire:(md.players||[]).filter(p=>!p.isRadiant)};
+        const duos={Safe:new Map(), Off:new Map()};
+        for(const laneName of ['Safe','Off']){
+          const code = laneName==='Safe'?1:3;
+          const rL = bySide.Radiant.filter(p=>(p.lane_role|0)===code);
+          const dL = bySide.Dire.filter(p=>(p.lane_role|0)===code);
+          if(rL.length===2 && dL.length===2){
+            const rAvg = (rL.map(p=>Number(p.lane_efficiency_pct||0)).reduce((a,b)=>a+b,0))/2;
+            const dAvg = (dL.map(p=>Number(p.lane_efficiency_pct||0)).reduce((a,b)=>a+b,0))/2;
+            const rPair=[Number(rL[0].hero_id), Number(rL[1].hero_id)].sort((a,b)=>a-b);
+            const dPair=[Number(dL[0].hero_id), Number(dL[1].hero_id)].sort((a,b)=>a-b);
+            const rk=`${rPair[0]}-${rPair[1]}`, dk=`${dPair[0]}-${dPair[1]}`;
+            const R=duos.Safe, O=duos.Off; const M = laneName==='Safe'?R:O;
+            if(!M.has(rk)) M.set(rk,{games:0,wins:0}); if(!M.has(dk)) M.set(dk,{games:0,wins:0});
+            M.get(rk).games++; M.get(dk).games++; if((rAvg-dAvg)>=0) M.get(rk).wins++; else M.get(dk).wins++;
+          }
+        }
+        // Objectives: Roshan, Aegis snatch, Tormentor
+        if(Array.isArray(md.objectives) && md.objectives.length){ objectivesSeen=true; for(const ev of md.objectives){ const t=String(ev.type||'');
+            if(/roshan_kill|CHAT_MESSAGE_ROSHAN_KILL/i.test(t)){
+              const team = getTeamByObjective(ev, md);
+              if(team){ roshanTeam[team]++; addNestedCount(roshPerMatch, team, mid); }
+              const sec = Number(ev.time||0);
+              const slot = ev.player_slot;
+              let player=null;
+              if(slot!==undefined){ const pp=(md.players||[]).find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
+              roshanEvents.push({match_id:mid,time:sec,team,player});
+            }
+            if(/CHAT_MESSAGE_AEGIS_STOLEN/i.test(t)){ const team = getTeamByObjective(ev, md); const sec=Number(ev.time||0); const slot = ev.player_slot; let player=null; if(slot!==undefined){ const pp=(md.players||[]).find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
+              aegisSnatch.push({match_id:mid,time:sec,team,player}); }
+            if(/tormentor|miniboss|CHAT_MESSAGE_TORMENTOR_KILL/i.test(t) || /tormentor|miniboss/i.test(String(ev.key||'')) || /tormentor|miniboss/i.test(String(ev.unit||'')) || /tormentor|miniboss/i.test(String(ev.msg||''))){
+              const team = getTeamByObjective(ev, md); const sec=Number(ev.time||0); const slot = ev.player_slot; let player=null; if(slot!==undefined){ const pp=(md.players||[]).find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
+              tormentor.push({match_id:mid,time:sec,team,player,confidence:'explicit'}); }
+          } }
+        // Duration
+        const rname = md.radiant_name || 'Radiant'; const dname = md.dire_name || 'Dire'; const dur = Number(md.duration||0); durList.push({match_id:mid,duration:dur,radiant:rname,dire:dname,radiant_win: !!md.radiant_win});
+      }catch(e){ console.warn('agg err', mid, e); }
+    }
+    // Build outputs
+    function dedupeByProximity(items, take, radius){
+      const r2 = radius*radius; const out=[];
+      outer: for(const it of items){
+        for(const s of out){ const dx=it.x-s.x, dy=it.y-s.y; if((dx*dx + dy*dy) <= r2){ continue outer; } }
+        out.push(it); if(out.length>=take) break;
+      }
+      return out;
+    }
+    const wardSpotItems = Array.from(wardSpots.entries()).map(([spot,count])=>{ const [x,y]=String(spot).split(',').map(Number); return {spot:String(spot), x, y, count:Number(count)||0}; }).sort((a,b)=> b.count - a.count);
+    const wardTopItems = dedupeByProximity(wardSpotItems, 10, 3);
+  const wardTop = wardTopItems.map((w,i)=>({spot:`${w.x},${w.y}`, count:w.count, spotId:`spot${i}`}));
+    const wardPoints = Array.from(wardSpots.entries()).map(([k,c])=>{ const [x,y]=k.split(',').map(n=>Number(n)); return {x,y,count:c}; });
+    const rawLongest = Array.from(wardLifeMax.entries()).map(([spot,maxSeconds])=>{ const count = wardSpots.get(spot)||0; if(count<3) return null; const [x,y]=String(spot).split(',').map(Number); const id = (wardTop.find(w=>w.spot===spot)||{}).spotId || ('spot_'+spot.replace(/[^0-9]/g,'_')); return {spot:String(spot), x, y, maxSeconds:Number(maxSeconds)||0, count:Number(count)||0, spotId:id}; }).filter(Boolean).sort((a,b)=> b.maxSeconds-a.maxSeconds);
+    const wardLongestItems = dedupeByProximity(rawLongest, 10, 3);
+    const wardLongest = wardLongestItems.map((o,i)=>({spot:o.spot, maxSeconds:o.maxSeconds, count:o.count, spotId:o.spotId || `long${i}`}));
+
+  function topNByCount(mp, n){ return Array.from(mp.entries()).map(([aid,c])=>({account_id:Number(aid), name: `Player ${aid}`, profile: OD_PLAYER_URL(aid), count:c})).sort((a,b)=> b.count-a.count).slice(0,n); }
+    function namedTop(mp, n){ return topNByCount(mp, n).map(x=>{ x.name = x.name; return x; }); }
+    // Resolve names for players we saw
+    const nameCache=new Map(); for(const md of details){ if(!md) continue; for(const p of (md.players||[])){ const aid=Number(p.account_id||0); if(aid>0 && p.personaname) nameCache.set(aid, p.personaname); } }
+    function withNames(arr){ return (arr||[]).map(o=> ({...o, name: nameCache.get(Number(o.account_id)) || o.name})); }
+    const mostPlaced = withNames(topNByCount(obsPlacedBy, 5));
+    const mostDewards = withNames(topNByCount(dewardsBy, 5));
+    const longestAvg = withNames(Array.from(lifeBy.entries()).map(([aid,arr])=>({account_id:Number(aid), name:`Player ${aid}`, profile: OD_PLAYER_URL(aid), avgSeconds: arr.length? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0, samples: arr.length})).sort((a,b)=> b.avgSeconds-a.avgSeconds).slice(0,5));
+    // Teammates pairs top
+    const teammates = Array.from(pairCounts.entries()).map(([k,games])=>{ const [a,b]=k.split('-').map(Number); return {a,b, name1: nameCache.get(a)||`Player ${a}`, name2: nameCache.get(b)||`Player ${b}`, profile1: OD_PLAYER_URL(a), profile2: OD_PLAYER_URL(b), games: Number(games)}; }).sort((a,b)=> b.games-a.games || String(a.name1).localeCompare(String(b.name1))).slice(0,3);
+    // Courier/Stacks
+    const courierTop = withNames(topNByCount(courierKillsBy,3));
+    const stackTop = withNames(topNByCount(campsStackedBy,3));
+  const rapierTop = withNames(topNByCount(rapierBy,3));
+  const gemTop = withNames(topNByCount(gemBy,3));
+  // Duos build arrays with WR
+  function duosFromMap(mp){ return Array.from(mp.entries()).map(([key,v])=>{ const [a,b]=key.split('-').map(Number); const wr = v.games? v.wins/v.games : 0; return {a,b,games:v.games,wins:v.wins,winrate:wr}; }).sort((a,b)=> (b.winrate-a.winrate) || (b.games-a.games)).slice(0,5); }
+    // We actually stored duos within scope above; recompute here by re-deriving from details for simplicity
+    const duoAgg = {Safe:new Map(), Off:new Map()};
+    for(const md of details){ if(!md) continue; const bySide={Radiant:(md.players||[]).filter(p=>p.isRadiant), Dire:(md.players||[]).filter(p=>!p.isRadiant)};
+      for(const laneName of ['Safe','Off']){ const code=laneName==='Safe'?1:3; const rL=bySide.Radiant.filter(p=>(p.lane_role|0)===code); const dL=bySide.Dire.filter(p=>(p.lane_role|0)===code); if(rL.length===2 && dL.length===2){ const rAvg=(Number(rL[0].lane_efficiency_pct||0)+Number(rL[1].lane_efficiency_pct||0))/2; const dAvg=(Number(dL[0].lane_efficiency_pct||0)+Number(dL[1].lane_efficiency_pct||0))/2; const rPair=[Number(rL[0].hero_id),Number(rL[1].hero_id)].sort((a,b)=>a-b); const dPair=[Number(dL[0].hero_id),Number(dL[1].hero_id)].sort((a,b)=>a-b);
+        const rk=`${rPair[0]}-${rPair[1]}`, dk=`${dPair[0]}-${dPair[1]}`;
+        const R=duoAgg.Safe, O=duoAgg.Off; const M = laneName==='Safe'?R:O;
+        if(!M.has(rk)) M.set(rk,{games:0,wins:0}); if(!M.has(dk)) M.set(dk,{games:0,wins:0});
+        M.get(rk).games++; M.get(dk).games++; if((rAvg-dAvg)>=0) M.get(rk).wins++; else M.get(dk).wins++;
+      }
+  }
+  // Close outer loop over details
+  }
+  const safeDuosArr = duosFromMap(duoAgg.Safe); const offDuosArr = duosFromMap(duoAgg.Off);
+    // Roshan top matches arrays
+    function roshTopArr(map){ const arr = Array.from(map.entries()).map(([mid,c])=>({match_id:Number(mid), count:Number(c)})).sort((a,b)=> b.count-a.count || b.match_id-a.match_id); if(!arr.length) return []; const max=arr[0].count; return arr.filter(x=>x.count===max).slice(0,3); }
+    const roshanTop = { Radiant: roshTopArr(roshPerMatch.Radiant), Dire: roshTopArr(roshPerMatch.Dire) };
+    // Roshan kills by match (both sides summarized)
+    const roshanByMatch = (()=>{
+      const ids = new Set([...roshPerMatch.Radiant.keys(), ...roshPerMatch.Dire.keys()]);
+      const arr = Array.from(ids).map(mid=>{
+        const r = Number(roshPerMatch.Radiant.get(mid)||0);
+        const d = Number(roshPerMatch.Dire.get(mid)||0);
+        return { match_id: Number(mid), Radiant: r, Dire: d, total: r+d };
+      }).sort((a,b)=> (b.total - a.total) || (b.match_id - a.match_id));
+      return arr;
+    })();
+    // Rampages list (top 10)
+  const buildRampList = (map, gmap)=> Array.from(map.entries()).map(([aid,c])=>({ account_id:Number(aid), name: nameCache.get(Number(aid)) || `Player ${aid}`, profile: OD_PLAYER_URL(aid), count:Number(c), matches: Array.from((gmap.get(aid)||new Map()).entries()).map(([mid,v])=>({match_id:Number(mid), count:Number(v)})).sort((a,b)=> b.count-a.count || b.match_id-a.match_id) })).sort((a,b)=> b.count-a.count).slice(0,10);
+  const rampList = buildRampList(rampages, rampGames);
+  const rampListRadiant = buildRampList(rampagesSide.Radiant, rampGamesSide.Radiant);
+  const rampListDire = buildRampList(rampagesSide.Dire, rampGamesSide.Dire);
+    // Top single
+    const topSingle={}; if(bestGPM) topSingle.gpm=bestGPM; if(bestKills) topSingle.kills=bestKills; if(bestAssists) topSingle.assists=bestAssists; if(bestNet) topSingle.networth=bestNet;
+    // Duration lists
+    const durationLongest = durList.slice().sort((a,b)=> b.duration-a.duration).slice(0,3);
+    const durationShortest = durList.slice().sort((a,b)=> a.duration-b.duration).slice(0,3);
+    return {
+  rampages: rampList,
+  rampagesBySide: { Radiant: rampListRadiant, Dire: rampListDire },
+      wardSpots: wardTop,
+      wardPoints,
+      wardEvents,
+      wardLongest,
+      wardPlayers: { mostPlaced, mostDewards, longestAvg },
+      teammates,
+      courierTop,
+      stackTop,
+  rapierTop,
+  gemTop,
+      safeDuos: safeDuosArr,
+      offDuos: offDuosArr,
+  roshan: { Radiant: roshanTeam.Radiant, Dire: roshanTeam.Dire },
+  roshanEvents,
+  roshanTop,
+  roshanByMatch,
+      topSingle,
+      aegisSnatch,
+      tormentor,
+      objectivesSeen,
+      durationLongest,
+      durationShortest
+    };
+  }
+
+  async function computeHighlightsForSubset(subset, heroMap, mapConf, label){
+    const body = document.getElementById('highlightsBody'); const card = document.getElementById('highlightsCard');
+    card.style.display=''; body.innerHTML = `<div class='sub'>Computing highlights for selected range… This may take a few seconds.</div>`;
+    // Limit concurrency; fetch details for all matches in range
+    const ids = subset.map(m=>m.match_id).filter(Boolean);
+    // Guard against extremely large ranges
+    if(ids.length>600){ body.innerHTML = `<div class='sub'>Range has ${ids.length} matches. Computing highlights on-the-fly would take too long. Narrow the range or use prebuilt All-time page.</div>`; return; }
+  const details = (await pMap(ids, 4, id=> fetchMatchDetail(id))).filter(Boolean);
+  const high = computeHighlightsFromDetails(details, heroMap);
+  renderHighlights(high, heroMap, mapConf, label);
+  // Compute awards in parallel with same details
+  const awards = computeAwardsFromDetails(details, heroMap);
+  renderAwards(awards, heroMap);
+  }
+
   function apply(){
-    let f=from.valueAsDate? unix(new Date(from.value)) : 0;
-    let t=to.valueAsDate? unix(new Date(to.value)) : Number.MAX_SAFE_INTEGER;
+    let f = parseLocalInput(from.value); if(!isFinite(f)) f=0;
+    let t = parseLocalInput(to.value);   if(!isFinite(t)) t=Number.MAX_SAFE_INTEGER;
+    if(f>t){ const tmp=f; f=t; t=tmp; }
+    // Header title/sub
+    try{
+      const league = (info && (info.league_name||info.league||'')) || "League";
+      document.getElementById('leagueTitle').textContent = `${league} – Dynamic viewer`;
+      const fmt=(s)=>{ if(!s) return ''; const d=new Date(s*1000); return d.toISOString().replace('T',' ').slice(0,16)+'Z'; };
+      const sub=`${fmt(f)} to ${fmt(t)} (UTC)`;
+      document.getElementById('headerSub').textContent=sub;
+  }catch(_e){}
     const subset = allMatches.filter(m=> (m.start_time>=f) && (m.start_time<=t) );
-    const agg = aggregate(subset, playerNames, teamNames);
+  const agg = aggregate(subset, playerNames, teamNames);
+  renderSummary(agg, heroes);
     render(agg, heroes);
-    // Render highlights based on quick selection
-    const hv = quick.value;
-    if(hv==='30' && high30){ renderHighlights(high30); }
-    else if(hv==='all' && highAll){ renderHighlights(highAll); }
-    else { renderHighlights(null); }
+  // Compute highlights live for this arbitrary range
+  const label = `Period: ${new Date(f*1000).toISOString().slice(0,10)} to ${new Date(t*1000).toISOString().slice(0,10)} (UTC)`;
+  computeHighlightsForSubset(subset, heroes, mapConf, label);
   }
   document.getElementById('apply').addEventListener('click', apply);
   quick.addEventListener('change', async ()=>{
@@ -423,22 +1111,466 @@ async function main(){
       try{ const patch=await fetch('https://api.opendota.com/api/constants/patch',{cache:'force-cache'}).then(r=>r.json());
         let latest=0; for(const k in patch){ const it=patch[k]; const d = typeof it.date==='number' ? it.date : Date.parse(it.date)/1000; if(!isNaN(d) && d>latest) latest=d; }
         fromUnix = latest||0;
-      }catch{ fromUnix=0; }
+  }catch(_e){ fromUnix=0; }
     } else if(v==='all'){ fromUnix = 0; }
-    from.value = toUTCInput(fromUnix); to.value = toUTCInput(now);
+    from.value = toLocalInput(fromUnix); to.value = toLocalInput(now);
     // Auto-apply when quick changes for instant feedback
     apply();
   });
 
   // Initialize inputs to last 30 days
   const now = Math.floor(Date.now()/1000);
-  from.value = toUTCInput(now - 30*86400);
-  to.value   = toUTCInput(now);
+  from.value = toLocalInput(now - 30*86400);
+  to.value   = toLocalInput(now);
   // Default quick to 30 to show highlights
   const quickSel = document.getElementById('quick'); quickSel.value='30';
   apply();
 }
 enableSorting();
+// ------- Awards logic (compute + render) -------
+function computeAwardsFromDetails(details, heroMap){
+  const res = {
+    spaceCreator: [],
+    objectiveGamer: [],
+    earlyFarmer: [],
+    clutchKing: [], // kept in result shape but will stay empty (removed)
+    courierAssassin: [],
+    visionMvp: [],
+    stackMaster: [],
+    smokeCommander: [],
+    runeController: [],
+  aegisSnatcher: [],
+  // Extended awards
+  disablerSupreme: [],
+  ancientFarmer: [],
+  medic: [],
+  killLeader: [],
+  assistArchitect: [],
+  gpmKing: [],
+  xpmKing: [],
+  lastHitLord: [],
+  denyDemon: [],
+  damageDealer: [],
+  buildingBreaker: [],
+  laneDominator: [],
+  runeMagnet: [],
+  wardArchitect: [],
+  visionDenier: [],
+  stackMasterPlus: [],
+  dustDetective: [],
+  saviorPlays: [],
+  spellSlinger: [],
+  buybackBaron: [],
+  smokeSupplier: [],
+  sentryCfo: [],
+  observerCeo: [],
+  shardHunter: [],
+  neutralHoarder: [],
+  ancientAnnihilator: [],
+  towerTerminator: [],
+  firstBloodHunter: [],
+  rampageCollector: [],
+  spreeLegend: [],
+  spellDamageSpecialist: [],
+  rightClickRoyalty: [],
+  bottleService: [],
+  urnSpiritMvp: [],
+  lotusLawyer: [],
+  glimmerGuardian: [],
+  forceMaster: [],
+  blinkJunkie: [],
+  };
+  const nameCache = new Map();
+  function sideOf(slot){ return (Number(slot)<128)? 'Radiant' : 'Dire'; }
+  // Aggregates
+  const deathsWon = new Map();               // aid -> total deaths in wins
+  const deathsWonGames = new Map();          // aid -> [{match_id, deaths}]
+  const towerDmg = new Map();                // aid -> sum tower_damage
+  const roshPart = new Map();                // aid -> roshan participations
+  const smokeUses = new Map();               // aid -> smokes purchased
+  const runesCount = new Map();              // aid -> total runes
+  const courierKills = new Map();            // aid -> courier_kills
+  const stacks = new Map();                  // aid -> camps_stacked
+  const wardScore = new Map();               // aid -> warding + dewarding score
+  const earlyBest = new Map();               // aid -> best networth @10
+  const aegisStolen = new Map();             // aid -> aegis snatches
+  // Extended aggregates for additional awards
+  const stunsSum = new Map();                // total stun duration
+  const ancientSum = new Map();              // ancient kills for tiebreak
+  const neutralSum = new Map();              // neutral kills for tiebreaks
+  const healHero = new Map();                // hero healing
+  const killsSum = new Map();                // kills
+  const assistsSum = new Map();              // assists
+  const gpmBest = new Map();                 // best GPM per player
+  const xpmBest = new Map();                 // best XPM per player
+  const lastHits = new Map();                // last hits
+  const denies = new Map();                  // denies
+  const heroDmg = new Map();                 // hero damage
+  const laneEffBest = new Map();             // best lane efficiency
+  const runePickups = new Map();             // rune pickups
+  const wardsPlaced = new Map();             // observers + sentries placed
+  const wardsKilled = new Map();             // wards killed
+  const dustDetect = new Map();              // dust purchases/uses
+  const saviorUses = new Map();              // force/glimmer/lotus uses
+  const abilityCasts = new Map();            // ability casts total
+  const buybacks = new Map();                // buybacks total
+  const tps = new Map();                     // tp scroll uses
+  const smokePurch = new Map();              // smokes purchased
+  const sentryPurch = new Map();             // sentries purchased
+  const observerPurch = new Map();           // observers purchased
+  const shardGot = new Map();                // shard received w/o purchase
+  const neutralKills = new Map();            // neutral kills
+  const ancientKills = new Map();            // ancient kills
+  const towerKillEvents = new Map();         // tower kills credited via objectives
+  const firstBloods = new Map();             // first bloods via objectives
+  const rampageCount = new Map();            // total rampages (5x multi-kills)
+  const spreeMax = new Map();                // longest kill spree across matches
+  const streaksEnded = new Map();            // streaks ended
+  const spellDamage = new Map();             // spell damage
+  const rightClickDmg = new Map();           // right-click damage
+  const outpostCaptures = new Map();         // capture events (outpost etc)
+  const bottlePurch = new Map();             // bottle purchases
+  const tomeCount = new Map();               // tomes used/purchased
+  const urnSpiritUses = new Map();           // urn + spirit vessel uses
+  const lotusUses = new Map();               // lotus orb uses
+  const glimmerUses = new Map();             // glimmer cape uses
+  const forceUses = new Map();               // force staff uses
+  const blinkUses = new Map();               // blink uses
+
+  for(const md of details){ if(!md) continue; const isRadWin = !!md.radiant_win;
+    for(const p of (md.players||[])){
+      const aid = Number(p.account_id||0); if(!(aid>0)) continue;
+      const side = sideOf(p.player_slot);
+      // cache name
+      const nm = p.personaname || ('Player '+aid); nameCache.set(aid, nm);
+      // deaths in wins (with per-game breakdown)
+      const won = (side==='Radiant') ? isRadWin : !isRadWin;
+      if(won){ const d = Number(p.deaths||0); if(d){ deathsWon.set(aid, (deathsWon.get(aid)||0)+d); if(!deathsWonGames.has(aid)) deathsWonGames.set(aid, []); deathsWonGames.get(aid).push({match_id:Number(md.match_id||0), deaths:d}); } }
+      // tower damage
+      towerDmg.set(aid, (towerDmg.get(aid)||0) + Number(p.tower_damage||0));
+      // warding score: place + deward
+      const ws = Number(p.obs_placed||0) + Number(p.sen_placed||0) + Number(p.obs_killed||0) + Number(p.sen_killed||0);
+      if(ws) wardScore.set(aid, (wardScore.get(aid)||0) + ws);
+      // early farmer: networth @10:00 (gold_t index 10)
+      const gt = Array.isArray(p.gold_t)? p.gold_t : [];
+      const nw10 = Number(gt[10]||0);
+      if(nw10>0){ const prev = earlyBest.get(aid)||0; if(nw10>prev) earlyBest.set(aid, nw10); }
+      // smokes used (purchases)
+      const plog = Array.isArray(p.purchase_log)? p.purchase_log:[];
+      const smkCnt = plog.reduce((acc,it)=> acc + (String(it.key||'').toLowerCase()==='smoke_of_deceit'?1:0), 0);
+      if(smkCnt) smokeUses.set(aid, (smokeUses.get(aid)||0)+smkCnt);
+      // runes taken
+      const runes = p.runes||{}; const sumRunes = Object.values(runes).reduce((a,b)=>a+Number(b||0),0);
+      if(sumRunes) runesCount.set(aid, (runesCount.get(aid)||0)+sumRunes);
+      // courier kills
+      const ck = Number(p.courier_kills||0); if(ck) courierKills.set(aid, (courierKills.get(aid)||0)+ck);
+      // stacks
+      const st = Number(p.camps_stacked||0); if(st) stacks.set(aid, (stacks.get(aid)||0)+st);
+  // ---- Extended aggregates ----
+  // stuns
+  const stunDur = Number(p.stuns||0); if(stunDur) stunsSum.set(aid, (stunsSum.get(aid)||0)+stunDur);
+  // ancients / neutrals
+  const anc = Number(p.ancient_kills||0); if(anc){ ancientSum.set(aid, (ancientSum.get(aid)||0)+anc); ancientKills.set(aid, (ancientKills.get(aid)||0)+anc); }
+  const neu = Number(p.neutral_kills||0); if(neu){ neutralSum.set(aid, (neutralSum.get(aid)||0)+neu); neutralKills.set(aid, (neutralKills.get(aid)||0)+neu); }
+  // healing to heroes
+  const hHeal = Number(p.hero_healing||0); if(hHeal) healHero.set(aid, (healHero.get(aid)||0)+hHeal);
+  // core stats
+  const ksum = Number(p.kills||0); if(ksum) killsSum.set(aid, (killsSum.get(aid)||0)+ksum);
+  const asum = Number(p.assists||0); if(asum) assistsSum.set(aid, (assistsSum.get(aid)||0)+asum);
+  const gpm = Number(p.gold_per_min||0); if(gpm>0){ const prev=gpmBest.get(aid)||0; if(gpm>prev) gpmBest.set(aid, gpm); }
+  const xpm = Number(p.xp_per_min||0); if(xpm>0){ const prev=xpmBest.get(aid)||0; if(xpm>prev) xpmBest.set(aid, xpm); }
+  const lh = Number(p.last_hits||0); if(lh) lastHits.set(aid, (lastHits.get(aid)||0)+lh);
+  const dn = Number(p.denies||0); if(dn) denies.set(aid, (denies.get(aid)||0)+dn);
+  const hd = Number(p.hero_damage||0); if(hd) heroDmg.set(aid, (heroDmg.get(aid)||0)+hd);
+  // lane efficiency
+  const lep = Number(p.lane_efficiency_pct||0); if(lep>0){ const prev=laneEffBest.get(aid)||0; if(lep>prev) laneEffBest.set(aid, lep); }
+  // runes pickups
+  const rp = Number(p.rune_pickups||0); if(rp) runePickups.set(aid, (runePickups.get(aid)||0)+rp);
+  // wards placed/killed
+  const placed = Number(p.obs_placed||0)+Number(p.sen_placed||0); if(placed) wardsPlaced.set(aid, (wardsPlaced.get(aid)||0)+placed);
+  let killed = 0;
+  if(p.obs_killed!==undefined || p.sen_killed!==undefined){
+    killed = Number(p.obs_killed||0)+Number(p.sen_killed||0);
+  }else if(Array.isArray(p.wards)){ // some APIs expose a per-ward log; count removals
+    killed = p.wards.reduce((acc,w)=> acc + (String(w.type||'').includes('destroyed')?1:0), 0);
+  }
+  if(killed) wardsKilled.set(aid, (wardsKilled.get(aid)||0)+killed);
+  // purchases/logs/uses
+  const plog2 = Array.isArray(p.purchase_log)? p.purchase_log:[];
+  const uses = p.item_uses||{}; const purch = p.purchase||{};
+  // dust purchases + uses
+  const dustP = plog2.reduce((acc,it)=> acc + (String(it.key||'').toLowerCase()==='dust_of_appearance'?1:0), 0) + Number(uses.dust_of_appearance||0);
+  if(dustP) dustDetect.set(aid, (dustDetect.get(aid)||0)+dustP);
+  // savior items uses (force/glimmer/lotus)
+  const sav = Number(uses.force_staff||0)+Number(uses.glimmer_cape||0)+Number(uses.lotus_orb||0); if(sav) saviorUses.set(aid, (saviorUses.get(aid)||0)+sav);
+  // ability casts
+  const aUses = p.ability_uses||{}; const aSum = Object.values(aUses).reduce((a,b)=> a+Number(b||0), 0); if(aSum) abilityCasts.set(aid, (abilityCasts.get(aid)||0)+aSum);
+  // buybacks / tps
+  const bb = Number(p.buyback_count||0); if(bb) buybacks.set(aid, (buybacks.get(aid)||0)+bb);
+  let tpv = Number(p.tp_count||0);
+  if(!tpv){ const iu = p.item_uses||{}; tpv = Number(iu.tpscroll||0); }
+  if(tpv) tps.set(aid, (tps.get(aid)||0)+tpv);
+  // smoke purchases (also count as uses in our simple model)
+  const smkCnt2 = plog2.reduce((acc,it)=> acc + (String(it.key||'').toLowerCase()==='smoke_of_deceit'?1:0), 0); if(smkCnt2) smokePurch.set(aid, (smokePurch.get(aid)||0)+smkCnt2);
+  // sentry/observer purchases
+  const sentFromPurch = Number(purch.ward_sentry||0);
+  const sentFromLog = plog2.reduce((acc,it)=> acc + (String(it.key||'').toLowerCase()==='ward_sentry'?1:0), 0);
+  const sentTotal = sentFromPurch + sentFromLog; if(sentTotal) sentryPurch.set(aid, (sentryPurch.get(aid)||0)+sentTotal);
+  const obsFromPurch = Number(purch.observer_ward||0);
+  const obsFromLog = plog2.reduce((acc,it)=> acc + ((String(it.key||'').toLowerCase()==='observer_ward'||String(it.key||'').toLowerCase()==='ward_observer')?1:0), 0);
+  const obsTotal = obsFromPurch + obsFromLog; if(obsTotal) observerPurch.set(aid, (observerPurch.get(aid)||0)+obsTotal);
+  // bottle / tome
+  const bott = Number(purch.bottle||0) + plog2.reduce((a,it)=> a + (String(it.key||'').toLowerCase()==='bottle'?1:0), 0); if(bott) bottlePurch.set(aid, (bottlePurch.get(aid)||0)+bott);
+  const tom = Number(purch.tome_of_knowledge||0) + Number(uses.tome_of_knowledge||0); if(tom) tomeCount.set(aid, (tomeCount.get(aid)||0)+tom);
+  // urn / vessel / lotus / glimmer / force / blink uses
+  const urnU = Number(uses.urn_of_shadows||0)+Number(uses.spirit_vessel||0); if(urnU) urnSpiritUses.set(aid, (urnSpiritUses.get(aid)||0)+urnU);
+  const lotU = Number(uses.lotus_orb||0); if(lotU) lotusUses.set(aid, (lotusUses.get(aid)||0)+lotU);
+  const gliU = Number(uses.glimmer_cape||0); if(gliU) glimmerUses.set(aid, (glimmerUses.get(aid)||0)+gliU);
+  const forU = Number(uses.force_staff||0); if(forU) forceUses.set(aid, (forceUses.get(aid)||0)+forU);
+  const bliU = Number(uses.blink||0)+Number(uses.blink_dagger||0); if(bliU) blinkUses.set(aid, (blinkUses.get(aid)||0)+bliU);
+      // rampages (5x multi-kills)
+      const mk = p.multi_kills||{};
+      const ramps = Number(mk['5']||0);
+      if(ramps>0){ rampageCount.set(aid, (rampageCount.get(aid)||0)+ramps); }
+
+      // longest kill spree within this match using kill/death logs
+      const killsLog = (p.kills_log||[]).map(e=>e.time).sort((a,b)=>a-b);
+      const deathsLog = (p.deaths_log||[]).map(e=>e.time).sort((a,b)=>a-b);
+      let dIdx=0, cur=0, best=0;
+      for(const kt of killsLog){
+        while(dIdx<deathsLog.length && deathsLog[dIdx] <= kt){ cur=0; dIdx++; }
+        cur++;
+        if(cur>best) best=cur;
+      }
+      if(best>0){ const prev = spreeMax.get(aid)||0; if(best>prev) spreeMax.set(aid, best); }
+  // streaks ended
+  const ksEnd = Number(p.killed_streaks||0); if(ksEnd) streaksEnded.set(aid, (streaksEnded.get(aid)||0)+ksEnd);
+  // damage inflictor separation
+  const di = p.damage_inflictor||{}; const exclude = new Set(['null','attack','attack_debuff','generic']);
+  let spell=0, right=0; for(const [k,v] of Object.entries(di)){ const key=String(k||'').toLowerCase(); const val=Number(v||0); if(!val) continue; if(exclude.has(key)) right+=val; else spell+=val; }
+  if(spell) spellDamage.set(aid, (spellDamage.get(aid)||0)+spell);
+  if(right) rightClickDmg.set(aid, (rightClickDmg.get(aid)||0)+right);
+  // shard hunter heuristic
+  const buffs = Array.isArray(p.permanent_buffs)? p.permanent_buffs:[];
+  const hasShardBuff = buffs.some(b=> Number(b.permanent_buff)===13 && Number(b.stack_count||0)>0);
+  const boughtShard = plog2.some(it=> String(it.key||'').toLowerCase()==='aghanims_shard') || Number((purch||{}).aghanims_shard||0)>0;
+  if(hasShardBuff && !boughtShard) shardGot.set(aid, (shardGot.get(aid)||0)+1);
+    }
+    // Roshan participation: credit all players on the killing team, and capture other objective events
+    const objectivesArr = Array.isArray(md.objectives) ? md.objectives : (Array.isArray(md.objectives_events)? md.objectives_events: []);
+    for(const ev of objectivesArr){
+      const t = String(ev.type||ev.key||'');
+      if(/roshan_kill|CHAT_MESSAGE_ROSHAN_KILL/i.test(t)){
+        const team = (Number(ev.team)===2||Number(ev.team)===0)? 'Radiant' : 'Dire';
+        for(const p of (md.players||[])){
+          if(p && ((Number(p.player_slot)<128)?'Radiant':'Dire')===team){ const id=Number(p.account_id||0); if(id>0) roshPart.set(id, (roshPart.get(id)||0)+1); }
+        }
+      }
+      // Aegis snatch
+      if(/CHAT_MESSAGE_AEGIS_STOLEN/i.test(t)){ const slot=ev.player_slot; const p = (md.players||[]).find(x=>x.player_slot===slot); if(p){ const id=Number(p.account_id||0); if(id>0) aegisStolen.set(id, (aegisStolen.get(id)||0)+1); } }
+      // Tower kills credited to player
+  if(/CHAT_MESSAGE_TOWER_KILL|TOWER_KILL|building_kill/i.test(t)){ const slot=Number(ev.player_slot); const p=(md.players||[]).find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) towerKillEvents.set(id, (towerKillEvents.get(id)||0)+1); }
+      // First blood event
+  if(/CHAT_MESSAGE_FIRSTBLOOD|FIRST_BLOOD/i.test(t)){ const slot=Number(ev.player_slot); const p=(md.players||[]).find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) firstBloods.set(id, (firstBloods.get(id)||0)+1); }
+      // Capture point (outpost etc)
+  if(/CHAT_MESSAGE_CAPTURE_POINT|CAPTURE_POINT|OUTPOST_CAPTURE|CAPTURE/i.test(t)){ const slot=Number(ev.player_slot); const p=(md.players||[]).find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) outpostCaptures.set(id, (outpostCaptures.get(id)||0)+1); }
+    }
+  }
+
+  function topN(map, n){ return Array.from(map.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,n); }
+  function withNames(arr){ return arr.map(o=>{ const id=Number(o.account_id||o.id||0); const name = nameCache.get(id) || (id? `Player ${id}` : 'Unknown'); const profile = id? OD_PLAYER_URL(id) : '#'; return {...o, account_id:id, name, profile}; }); }
+
+  // Space Creator top 3 with per-game breakdown
+  const scTop = topN(deathsWon, 3);
+  res.spaceCreator = withNames(scTop).map(o=>{
+    const games = (deathsWonGames.get(o.account_id)||[])
+      .slice()
+      .sort((a,b)=> (b.deaths - a.deaths) || (b.match_id - a.match_id))
+      .slice(0,10);
+    return {...o, games};
+  });
+
+  // Objective Gamer: tower share (player td / team td on his side across games) + rosh participation
+  const teamSums = new Map(); // id -> sum of his team's tower dmg across games he played
+  for(const md of details){ const sums={Radiant:0, Dire:0}; for(const p of (md.players||[])){ sums[sideOf(p.player_slot)] += Number(p.tower_damage||0); }
+    for(const p of (md.players||[])){ const id=Number(p.account_id||0); if(!(id>0)) continue; const side=sideOf(p.player_slot); teamSums.set(id, (teamSums.get(id)||0) + (sums[side]||0)); }
+  }
+  const ogArr=[]; for(const [id,td] of towerDmg.entries()){ const teamTd = teamSums.get(id)||0; const share = teamTd>0 ? (td/teamTd) : 0; const rosh=roshPart.get(id)||0; ogArr.push({account_id:id, share, rosh, td, teamTd}); }
+  res.objectiveGamer = withNames(ogArr.sort((a,b)=> (b.share-a.share) || (b.rosh-a.rosh)).slice(0,3));
+
+  // Early Farmer top 3 (per-player best)
+  res.earlyFarmer = withNames(Array.from(earlyBest.entries()).map(([id,val])=>({account_id:Number(id), value:Number(val)})).sort((a,b)=> b.value-a.value).slice(0,3));
+
+  // Other simple top 3s
+  res.courierAssassin = withNames(topN(courierKills, 3));
+  res.stackMaster    = withNames(topN(stacks, 3));
+  res.smokeCommander = withNames(topN(smokeUses, 3));
+  res.runeController = withNames(topN(runesCount, 3));
+  res.visionMvp      = withNames(topN(wardScore, 3));
+  res.aegisSnatcher  = withNames(topN(aegisStolen, 3));
+  // Extended awards
+  res.disablerSupreme     = withNames(topN(stunsSum, 3));
+  { const arr=[]; for(const [id,val] of ancientSum.entries()){ arr.push({account_id:Number(id), val:Number(val), neutral:Number(neutralSum.get(id)||0)}); } arr.sort((a,b)=> (b.val-a.val) || (b.neutral-a.neutral)); res.ancientFarmer = withNames(arr.slice(0,3)); }
+  res.medic               = withNames(topN(healHero, 3));
+  res.killLeader          = withNames(topN(killsSum, 3));
+  res.assistArchitect     = withNames(topN(assistsSum, 3));
+  res.gpmKing             = withNames(Array.from(gpmBest.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.xpmKing             = withNames(Array.from(xpmBest.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.lastHitLord         = withNames(topN(lastHits, 3));
+  res.denyDemon           = withNames(topN(denies, 3));
+  res.damageDealer        = withNames(topN(heroDmg, 3));
+  res.buildingBreaker     = withNames(topN(towerDmg, 3));
+  res.laneDominator       = withNames(Array.from(laneEffBest.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.runeMagnet          = withNames(topN(runePickups, 3));
+  res.wardArchitect       = withNames(topN(wardsPlaced, 3));
+  res.visionDenier        = withNames(topN(wardsKilled, 3));
+  res.stackMasterPlus     = withNames(topN(stacks, 3));
+  res.dustDetective       = withNames(topN(dustDetect, 3));
+  res.saviorPlays         = withNames(topN(saviorUses, 3));
+  res.spellSlinger        = withNames(topN(abilityCasts, 3));
+  res.buybackBaron        = withNames(topN(buybacks, 3));
+  res.tpTraveler          = withNames(topN(tps, 3));
+  res.smokeSupplier       = withNames(topN(smokePurch, 3));
+  res.sentryCfo           = withNames(topN(sentryPurch, 3));
+  res.observerCeo         = withNames(topN(observerPurch, 3));
+  res.shardHunter         = withNames(topN(shardGot, 3));
+  res.neutralHoarder      = withNames(topN(neutralKills, 3));
+  res.ancientAnnihilator  = withNames(topN(ancientKills, 3));
+  res.towerTerminator     = withNames(topN(towerKillEvents, 3));
+  res.firstBloodHunter    = withNames(topN(firstBloods, 3));
+  res.rampageCollector    = withNames(Array.from(rampageCount.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).filter(o=>o.val>0).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.spreeLegend         = withNames(Array.from(spreeMax.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).filter(o=>o.val>0).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.streakBreaker       = withNames(topN(streaksEnded, 3));
+  res.spellDamageSpecialist = withNames(topN(spellDamage, 3));
+  res.rightClickRoyalty   = withNames(topN(rightClickDmg, 3));
+  res.objectiveScout      = withNames(topN(outpostCaptures, 3));
+  res.bottleService       = withNames(topN(bottlePurch, 3));
+  res.urnSpiritMvp        = withNames(topN(urnSpiritUses, 3));
+  res.lotusLawyer         = withNames(topN(lotusUses, 3));
+  res.glimmerGuardian     = withNames(topN(glimmerUses, 3));
+  res.forceMaster         = withNames(topN(forceUses, 3));
+  res.blinkJunkie         = withNames(topN(blinkUses, 3));
+  return res;
+}
+
+function renderAwards(aw, heroMap){
+  const root = document.getElementById('awardsBody'); if(!root) return;
+  function nm(obj){ const id=Number(obj.account_id||obj.id||0); const label = obj.name || (id?`Player ${id}`:'Unknown'); const href = obj.profile || (id? OD_PLAYER_URL(id): '#'); return `<a href='${href}' target='_blank'>${label}</a>`; }
+  function uniqueById(arr){
+    const seen = new Set();
+    const out = [];
+    for(const o of (arr||[])){
+      const id = Number(o.account_id||o.id||0);
+      if(seen.has(id)) continue;
+      seen.add(id); out.push(o);
+    }
+    return out;
+  }
+  const fmtMap = {
+    deaths: o => ''+o.val,
+    objective: o => (o.share*100).toFixed(1)+'% · Rosh x'+(o.rosh||0),
+    early: o => ''+o.value,
+  plain: o => ''+o.val,
+  seconds: o => (Number(o.val||0)).toFixed(1)+'s',
+  pct: o => (Number(o.val||0)).toFixed(1)+'%',
+  tier: o => 'T'+o.val,
+    xval: o => 'x'+o.val,
+    ward: o => (o.val||0).toFixed(1),
+  };
+  function list3(title, arr, fmtKey){
+    if(!Array.isArray(arr) || arr.length===0) return `<div><h3>${title}</h3><ul class='simple'><li><span class='sub'>no data</span></li></ul></div>`;
+    const fmt = fmtMap[fmtKey] || (function(o){ var v=(o&&('val' in o))?o.val:''; return String(v==null? '': v); });
+    const list = uniqueById(arr).slice(0,3);
+    const items = list.map(o=> `<li class='has-hover'><span>${nm(o)}</span><span class='badge'>${fmt(o)}</span>${(title.startsWith('Space Creator') && o.games && o.games.length) ? (`<div class='hovercard'><div class='title'>Deaths by match</div>` + o.games.map(g=>`<div><a class='badge' target='_blank' href='${OD_MATCH_URL(g.match_id)}'>M${g.match_id}</a><span class='badge'>x${g.deaths}</span></div>`).join('') + `</div>`) : ''}${(title.startsWith('Objective Gamer') && (o.td!=null) && (o.teamTd!=null)) ? (`<div class='hovercard'><div class='title'>Share breakdown</div><div><span class='badge'>Your tower dmg: ${o.td}</span><span class='badge'>Team total: ${o.teamTd}</span><span class='badge'>Share: ${(o.share*100).toFixed(1)}%</span></div></div>`) : ''}</li>`).join('');
+    return `<div><h3>${title}</h3><ul class='simple'>${items}</ul></div>`;
+  }
+  const html = `
+    <div class='grid3'>
+  ${list3('Space Creator – most deaths in wins', aw.spaceCreator, 'deaths')}
+  ${list3('Objective Gamer – tower share + rosh', aw.objectiveGamer, 'objective')}
+  ${list3('Early Farmer – net worth @10:00', aw.earlyFarmer, 'early')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Courier Assassin – most couriers', aw.courierAssassin, 'xval')}
+  ${list3('Vision MVP – warding/dewarding', aw.visionMvp, 'ward')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Stack Master – most stacks', aw.stackMaster, 'xval')}
+  ${list3('Smoke Commander – most smokes', aw.smokeCommander, 'xval')}
+  ${list3('Rune Controller – runes taken', aw.runeController, 'xval')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Aegis Snatcher – most snatches', aw.aegisSnatcher, 'xval')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Disabler Supreme – stun duration', aw.disablerSupreme, 'seconds')}
+  ${list3('Medic – hero healing', aw.medic, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Kill Leader – most kills', aw.killLeader, 'plain')}
+  ${list3('Assist Architect – most assists', aw.assistArchitect, 'plain')}
+  ${list3('GPM King – highest GPM', aw.gpmKing, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('XPM King – highest XPM', aw.xpmKing, 'plain')}
+  ${list3('Last-Hit Lord – last hits', aw.lastHitLord, 'plain')}
+  ${list3('Deny Demon – denies', aw.denyDemon, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Damage Dealer – hero damage', aw.damageDealer, 'plain')}
+  ${list3('Building Breaker – tower damage', aw.buildingBreaker, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Lane Dominator – lane efficiency', aw.laneDominator, 'pct')}
+  ${list3('Rune Magnet – rune pickups', aw.runeMagnet, 'plain')}
+  ${list3('Ward Architect – wards placed', aw.wardArchitect, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Vision Denier – wards killed', aw.visionDenier, 'plain')}
+  ${list3('Dust Detective – dust uses', aw.dustDetective, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Savior Plays – Force/Glimmer/Lotus', aw.saviorPlays, 'plain')}
+  ${list3('Spell Slinger – ability casts', aw.spellSlinger, 'plain')}
+  ${list3('Buyback Baron – buybacks', aw.buybackBaron, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('TP Traveler – teleports', aw.tpTraveler, 'plain')}
+  ${list3('Smoke Supplier – smokes bought', aw.smokeSupplier, 'plain')}
+  ${list3('Sentry CFO – sentries bought', aw.sentryCfo, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Observer CEO – observers bought', aw.observerCeo, 'plain')}
+  ${list3('Shard Hunter – shards (no buy)', aw.shardHunter, 'plain')}
+  ${list3('Neutral Hoarder – neutral kills', aw.neutralHoarder, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Ancient Annihilator – ancient kills', aw.ancientAnnihilator, 'plain')}
+  ${list3('Tower Terminator – tower kills', aw.towerTerminator, 'plain')}
+  ${list3('First Blood Hunter – first bloods', aw.firstBloodHunter, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Rampage Collector – total rampages', aw.rampageCollector, 'plain')}
+  ${list3('Spree Legend – longest kill streak', aw.spreeLegend, 'plain')}
+  ${list3('Streak Breaker – streaks ended', aw.streakBreaker, 'plain')}
+  ${list3('Spell Damage Specialist – spell dmg', aw.spellDamageSpecialist, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Right-Click Royalty – attack dmg', aw.rightClickRoyalty, 'plain')}
+  ${list3('Objective Scout – captures', aw.objectiveScout, 'plain')}
+  ${list3('Bottle Service – bottles bought', aw.bottleService, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Urn/Spirit MVP – charges used', aw.urnSpiritMvp, 'plain')}
+  ${list3('Lotus Lawyer – lotus orb uses', aw.lotusLawyer, 'plain')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Glimmer Guardian – glimmer uses', aw.glimmerGuardian, 'plain')}
+  ${list3('Force Master – force uses', aw.forceMaster, 'plain')}
+  ${list3('Blink Junkie – blink uses', aw.blinkJunkie, 'plain')}
+    </div>`;
+  root.innerHTML = html;
+}
 main().catch(e=>{
   document.body.innerHTML = `<div style='padding:24px;color:#fff'>Failed to load data. ${e}</div>`;
   console.error(e);
