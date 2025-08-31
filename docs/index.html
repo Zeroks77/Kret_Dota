@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang='en'>
 <head>
 <meta charset='utf-8'>
@@ -28,6 +28,11 @@ body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, tran
 iframe{border:0;flex:1;width:100%}
 a{color:var(--accent)}
 </style>
+.has-hover{position:relative}
+.hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:5;min-width:260px;max-width:420px;padding:10px;border-radius:10px;background:rgba(15,20,40,.96);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.hovercard .title{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:6px}
+.hovercard a{display:inline-block;margin:2px 6px 2px 0;background:var(--chip);padding:3px 8px;border-radius:999px}
+.has-hover:hover > .hovercard{display:block}
 </head>
 <body>
   <aside class='sidebar'>
@@ -39,12 +44,8 @@ a{color:var(--accent)}
     <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
     <ul id='list' class='list'>
 <li class="item" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html">Dynamic view (custom timeframe)</a></li>
-<li class="item" data-range="all-games" data-time="638921914311795194"><a href="./kret-s-eu-dota-league_all-games_latest.html">2025-08-30 22:57 - All games</a></li>
-<li class="item" data-range="unknown" data-time="638921913820595558"><a href="./index.backup-20250830-225703.html">2025-08-30 22:56 - unknown</a></li>
-<li class="item" data-range="2025-08-30" data-time="638921913820484696"><a href="./kret-s-eu-dota-league_30-days_2025-08-30_2256.html">2025-08-30 22:56 - 2025-08-30</a></li>
-<li class="item" data-range="unknown" data-time="638921908411164430"><a href="./preview_30days.html">2025-08-30 22:47 - unknown</a></li>
-<li class="item" data-range="2025-08-30" data-time="638921905541000358"><a href="./kret-s-eu-dota-league_30-days_2025-08-30_2242.html">2025-08-30 22:42 - 2025-08-30</a></li>
-<li class="item" data-range="unknown" data-time="638921584087594438"><a href="./dynamic.html">2025-08-30 13:46 - unknown</a></li>
+<li class="item" data-range="all-games" data-time="638922619460874360"><a href="./kret-s-eu-dota-league_all-games_latest.html">2025-08-31 18:32 - All games</a></li>
+<li class="item" data-range="unknown" data-time="638922615853680818"><a href="./dynamic.html">2025-08-31 18:26 - unknown</a></li>
     </ul>
   </aside>
 
@@ -55,6 +56,26 @@ a{color:var(--accent)}
         <button class='btn' id='prevBtn' title='Previous (ArrowUp)'><- Previous</button>
         <button class='btn' id='nextBtn' title='Next (ArrowDown)'>Next -></button>
         <a class='btn' id='openNew' target='_blank' rel='noopener'>Open in new tab</a>
+      </div>
+    </div>
+    <div class="grid3">
+      <div>
+        <h3>Most common teammates</h3>
+        <ul class="simple">
+<li><span class='sub'>no games</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Most courier kills</h3>
+        <ul class="simple">
+<li><span class='sub'>no data</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Most camps stacked</h3>
+        <ul class="simple">
+<li><span class='sub'>no data</span></li>
+        </ul>
       </div>
     </div>
     <iframe id='frame' src='about:blank' loading='eager' referrerpolicy='no-referrer'></iframe>

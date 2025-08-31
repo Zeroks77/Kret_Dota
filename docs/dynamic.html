@@ -25,6 +25,17 @@ button{cursor:pointer}
 .heroes{display:flex;gap:8px;flex-wrap:wrap}
 .hero{display:inline-flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;width:64px}
 .hero img{width:64px;height:36px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
+/* Highlights UI */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+ul.simple{list-style:none;margin:0;padding:0}
+ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.sub{color:var(--muted);font-size:12px}
+.title{font-weight:600;margin-bottom:6px}
+.has-hover{position:relative}
+.has-hover .hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:10;background:rgba(10,16,34,.96);border:1px solid var(--border);border-radius:10px;padding:8px;min-width:220px;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.has-hover:hover .hovercard{display:block}
+.ramp-badge{background:#23305f}
 </style>
 </head>
 <body>
@@ -59,6 +70,14 @@ button{cursor:pointer}
     </div>
   </div>
 
+  <div id="highlightsCard" class="card" style="margin-top:12px;display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h2 style="margin:0 0 0;font-size:18px">Highlights</h2>
+      <div class="sub">Auto-switches with quick range (30 days / All time)</div>
+    </div>
+    <div id="highlightsBody"></div>
+  </div>
+
   <div class="grid" style="margin-top:12px">
     <div class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Players</h2>
@@ -84,6 +103,7 @@ button{cursor:pointer}
 
 <script>
 const OD_PLAYER_URL = id => `https://www.opendota.com/players/${id}`;
+const OD_MATCH_URL = id => `https://www.opendota.com/matches/${id}`;
 function fmtPct(x){ return (x*100).toFixed(1)+'%'; }
 async function loadJson(url){ const r=await fetch(url,{cache:'no-store'}); if(!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }
 async function loadJsonWithFallback(rel, raw){
@@ -229,14 +249,142 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
   }
 }
 
+function renderHighlights(high){
+  const card = document.getElementById('highlightsCard');
+  const body = document.getElementById('highlightsBody');
+  if(!high || typeof high !== 'object'){ card.style.display='none'; body.innerHTML=''; return; }
+  function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+  function linkPlayer(obj){
+    if(!obj) return '<span class="sub">Unknown</span>';
+    const id = obj.account_id || obj.id || obj.accountId || 0;
+    const name = esc(obj.name || obj.personaname || (id?`Player ${id}`:'Unknown'));
+    const profile = esc(obj.profile || (id? OD_PLAYER_URL(id) : '#'));
+    return `<a href='${profile}' target='_blank' rel='noopener'>${name}</a>`;
+  }
+  // Rampages
+  let rampHtml = '<li><span class="sub">no games</span></li>';
+  if(Array.isArray(high.rampages) && high.rampages.length){
+    rampHtml = high.rampages.map(r=>{
+      const name = esc(r.name||'Player'); const profile = esc(r.profile||'#');
+      const cnt = Number(r.count||0);
+      let matches = '';
+      if(Array.isArray(r.matches)){
+        matches = r.matches.map(m=>{
+          const mid = String(m.match_id||m.matchId||''); const c = Number(m.count||1);
+          const label = c>1 ? `x${c}` : 'match';
+          return `<a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>M${mid}</a><span class='badge'>${label}</span>`;
+        }).join(' ');
+      }
+      return `<li class='has-hover'><span><a href='${profile}' target='_blank'>${name}</a></span><span class='badge ramp-badge'>x${cnt}</span><div class='hovercard'><div class='title'>Rampage matches</div>${matches||'<div class="sub">no links</div>'}</div></li>`;
+    }).join('');
+  }
+  // New blocks: teammates, courier kills, camps stacked
+  function teammatesList(arr){
+    if(!Array.isArray(arr) || !arr.length) return `<li><span class="sub">no data</span></li>`;
+    return arr.map(it=>{
+      // Try to normalize pair structure
+      const a = it.a || (Array.isArray(it.pair)? it.pair[0] : null) || (it.p1_id? {account_id: it.p1_id, name: it.p1_name, profile: it.p1_profile} : null);
+      const b = it.b || (Array.isArray(it.pair)? it.pair[1] : null) || (it.p2_id? {account_id: it.p2_id, name: it.p2_name, profile: it.p2_profile} : null);
+      const cnt = Number(it.count ?? it.games ?? it.value ?? 0);
+      return `<li><span>${linkPlayer(a)} + ${linkPlayer(b)}</span><span class='badge'>x${cnt}</span></li>`;
+    }).join('');
+  }
+  function simpleCountList(arr, unit){
+    if(!Array.isArray(arr) || !arr.length) return `<li><span class="sub">no data</span></li>`;
+    return arr.map(it=>{
+      const cnt = Number(it.count ?? it.total ?? it.value ?? it.kills ?? it.stacks ?? 0);
+      const player = it.player || it;
+      return `<li><span>${linkPlayer(player)}</span><span class='badge'>x${cnt} ${unit}</span></li>`;
+    }).join('');
+  }
+  // Roshan
+  const rosR = high.roshan && typeof high.roshan.Radiant==='number' ? high.roshan.Radiant : 0;
+  const rosD = high.roshan && typeof high.roshan.Dire==='number' ? high.roshan.Dire : 0;
+  const objWarn = high.objectivesSeen===false ? `<div class='sub'>no objective data in parsed matches</div>` : '';
+  const objNone = (rosR+rosD)===0 ? `<div class='sub'>no Roshan events in this period</div>` : '';
+  function rosTop(side){
+    const arr = high.roshanTop && Array.isArray(high.roshanTop[side]) ? high.roshanTop[side] : [];
+    if(!arr.length) return '';
+    return ' ' + arr.map(x=>{
+      const mid = String(x.match_id||''); const c = Number(x.count||1);
+      return `<a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>M${mid}</a><span class='badge'>x${c}</span>`;
+    }).join(' ');
+  }
+  // Top single-match performances
+  const ts = high.topSingle||{};
+  const topHtml = ['gpm','kills','assists','networth'].map(k=>{
+    const p = ts[k]; if(!p) return '';
+    const name=esc(p.name||'Player'); const profile=esc(p.profile||'#'); const val = esc(p.value); const mid = esc(p.match_id||'');
+    const label = k==='gpm'?'Highest GPM':k==='kills'?'Highest Kills':k==='assists'?'Highest Assists':'Highest Net Worth';
+    return `<li><span><a href='${profile}' target='_blank'>${name}</a></span><span class='badge'>${label}: <strong>${val}</strong></span><a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>Match</a></li>`;
+  }).filter(Boolean).join('') || `<li><span class='sub'>no games</span></li>`;
+  // Durations
+  function durList(arr){
+    if(!Array.isArray(arr) || !arr.length) return `<li><span class='sub'>no games</span></li>`;
+    return arr.map(x=>{
+      const sec = Number(x.duration||0); const mm=Math.floor(sec/60), ss=sec%60;
+      const vs = esc(`${x.radiant||'Radiant'} vs ${x.dire||'Dire'}`);
+      const win = x.radiant_win ? 'Radiant' : 'Dire';
+      const mid = esc(x.match_id||'');
+      return `<li><span><a target='_blank' href='${OD_MATCH_URL(mid)}'>${vs}</a></span><span class='badge'>${mm}m ${ss}s</span><span class='badge'>Winner: ${win}</span></li>`;
+    }).join('');
+  }
+  const html = `
+    <div class="grid3">
+      <div>
+        <h3>Rampages</h3>
+        <ul class="simple">${rampHtml}</ul>
+      </div>
+      <div>
+        <h3>Roshan taken</h3>
+        <ul class="simple">
+          <li><span>Radiant</span><span class='badge'>x${rosR}</span>${rosTop('Radiant')}</li>
+          <li><span>Dire</span><span class='badge'>x${rosD}</span>${rosTop('Dire')}</li>
+        </ul>
+        ${objWarn}${objNone}
+      </div>
+      <div>
+        <h3>Top single-match performances</h3>
+        <ul class="simple">${topHtml}</ul>
+      </div>
+    </div>
+    <div class="grid3" style="margin-top:8px">
+      <div>
+        <h3>Most common teammates</h3>
+        <ul class="simple">${teammatesList(high.teammates)}</ul>
+      </div>
+      <div>
+        <h3>Most courier kills</h3>
+        <ul class="simple">${simpleCountList(high.courierTop, 'couriers')}</ul>
+      </div>
+      <div>
+        <h3>Most camps stacked</h3>
+        <ul class="simple">${simpleCountList(high.stackTop, 'stacks')}</ul>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:8px">
+      <div>
+        <h3>3 longest matches</h3>
+        <ul class="simple">${durList(high.durationLongest)}</ul>
+      </div>
+      <div>
+        <h3>3 shortest matches</h3>
+        <ul class="simple">${durList(high.durationShortest)}</ul>
+      </div>
+    </div>`;
+  body.innerHTML = html; card.style.display='';
+}
+
 async function main(){
   // Load from root-level data/ via relative path (local) or raw.githubusercontent.com (GitHub Pages)
   const REPO='Zeroks77/Kret_Dota'; const BRANCH='main';
   const relBase='../data'; const rawBase=`https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
-  const [manifest, heroes, info] = await Promise.all([
+  const [manifest, heroes, info, high30, highAll] = await Promise.all([
     loadJsonWithFallback(`${relBase}/manifest.json`, `${rawBase}/manifest.json`),
     loadJsonWithFallback(`${relBase}/heroes.json`, `${rawBase}/heroes.json`),
-    loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({}))
+    loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({})),
+    loadJsonWithFallback(`${relBase}/highlights_30.json`, `${rawBase}/highlights_30.json`).catch(()=>null),
+    loadJsonWithFallback(`${relBase}/highlights_all.json`, `${rawBase}/highlights_all.json`).catch(()=>null)
   ]);
   // Fetch all month shards listed in manifest
   const months = (manifest && Array.isArray(manifest.months)) ? manifest.months : [];
@@ -260,6 +408,11 @@ async function main(){
     const subset = allMatches.filter(m=> (m.start_time>=f) && (m.start_time<=t) );
     const agg = aggregate(subset, playerNames, teamNames);
     render(agg, heroes);
+    // Render highlights based on quick selection
+    const hv = quick.value;
+    if(hv==='30' && high30){ renderHighlights(high30); }
+    else if(hv==='all' && highAll){ renderHighlights(highAll); }
+    else { renderHighlights(null); }
   }
   document.getElementById('apply').addEventListener('click', apply);
   quick.addEventListener('change', async ()=>{
@@ -273,12 +426,16 @@ async function main(){
       }catch{ fromUnix=0; }
     } else if(v==='all'){ fromUnix = 0; }
     from.value = toUTCInput(fromUnix); to.value = toUTCInput(now);
+    // Auto-apply when quick changes for instant feedback
+    apply();
   });
 
   // Initialize inputs to last 30 days
   const now = Math.floor(Date.now()/1000);
   from.value = toUTCInput(now - 30*86400);
   to.value   = toUTCInput(now);
+  // Default quick to 30 to show highlights
+  const quickSel = document.getElementById('quick'); quickSel.value='30';
   apply();
 }
 enableSorting();
