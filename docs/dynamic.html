@@ -1601,97 +1601,150 @@ function renderAwards(aw, heroMap){
     xval: o => 'x'+o.val,
     ward: o => (o.val||0).toFixed(1),
   };
-  function list3(title, arr, fmtKey){
+  // Human-friendly explanations for how each award is computed
+  const desc = {
+    spaceCreator: 'Most total deaths, counted only in matches that your team won. Hover shows top matches.',
+    objectiveGamer: 'Your tower damage share (your tower_damage divided by your team\'s total in your games), plus Roshan participation count.',
+    earlyFarmer: 'Best personal net worth at 10:00 across matches (gold_t[10]).',
+    courierAssassin: 'Total courier_kills across matches.',
+    visionMvp: 'Observers placed + Sentries placed + Observer kills + Sentry kills.',
+    stackMaster: 'Total camps_stacked.',
+    smokeCommander: 'Total Smokes of Deceit purchased.',
+    runeController: 'Total runes picked up (sum of rune counters).',
+    aegisSnatcher: 'Count of Aegis stolen events credited to the player.',
+    disablerSupreme: 'Total stun duration (seconds).',
+    medic: 'Total healing done to heroes (hero_healing).',
+    killLeader: 'Total kills.',
+    assistArchitect: 'Total assists.',
+    gpmKing: 'Highest GPM recorded in a single match.',
+    xpmKing: 'Highest XPM recorded in a single match.',
+    lastHitLord: 'Total last hits.',
+    denyDemon: 'Total denies.',
+    damageDealer: 'Total hero damage.',
+    buildingBreaker: 'Total tower damage.',
+    laneDominator: 'Best lane efficiency percentage (max lane_efficiency_pct).',
+    runeMagnet: 'Total number of rune pickups.',
+    wardArchitect: 'Observers + Sentries placed.',
+    visionDenier: 'Observers + Sentries killed (dewards).',
+    stackMasterPlus: 'Total camps stacked (same source as Stack Master).',
+    dustDetective: 'Dust purchases plus uses (dust_of_appearance).',
+    saviorPlays: 'Uses of Force Staff, Glimmer Cape, and Lotus Orb combined.',
+    spellSlinger: 'Total ability casts (sum of ability_uses values).',
+    buybackBaron: 'Total buybacks (buyback_count).',
+    tpTraveler: 'Total TP scroll uses (tp_count or item uses).',
+    smokeSupplier: 'Total smokes purchased.',
+    sentryCfo: 'Total sentry wards purchased (from purchases and logs).',
+    observerCeo: 'Total observer wards purchased (from purchases and logs).',
+    shardHunter: 'Received Aghanim\'s Shard (permanent buff) without having purchased it.',
+    neutralHoarder: 'Total neutral kills.',
+    ancientAnnihilator: 'Total ancient camp kills.',
+    towerTerminator: 'Count of tower kill events credited in objectives.',
+    firstBloodHunter: 'Count of first blood events credited in objectives.',
+    rampageCollector: 'Total Rampages (5x multi-kills).',
+    spreeLegend: 'Longest kill spree reached across matches.',
+    streakBreaker: 'Number of kill streaks ended.',
+    spellDamageSpecialist: 'Damage dealt by abilities (damage_inflictor minus right-click/generic).',
+    rightClickRoyalty: 'Damage dealt by right-clicks (attack/generic buckets).',
+    objectiveScout: 'Capture/point control events (e.g., outposts).',
+    bottleService: 'Bottles purchased/obtained.',
+    urnSpiritMvp: 'Urn of Shadows + Spirit Vessel charges used.',
+    lotusLawyer: 'Lotus Orb uses.',
+    glimmerGuardian: 'Glimmer Cape uses.',
+    forceMaster: 'Force Staff uses.',
+    blinkJunkie: 'Blink uses (blink/blink_dagger).'
+  };
+  function list3(title, arr, fmtKey, key){
     if(!Array.isArray(arr) || arr.length===0) return `<div><h3>${title}</h3><ul class='simple'><li><span class='sub'>no data</span></li></ul></div>`;
     const fmt = fmtMap[fmtKey] || (function(o){ var v=(o&&('val' in o))?o.val:''; return String(v==null? '': v); });
     const list = uniqueById(arr).slice(0,3);
     const items = list.map(o=> `<li class='has-hover'><span>${nm(o)}</span><span class='badge'>${fmt(o)}</span>${(title.startsWith('Space Creator') && o.games && o.games.length) ? (`<div class='hovercard'><div class='title'>Deaths by match</div>` + o.games.map(g=>`<div><a class='badge' target='_blank' href='${OD_MATCH_URL(g.match_id)}'>M${g.match_id}</a><span class='badge'>x${g.deaths}</span></div>`).join('') + `</div>`) : ''}${(title.startsWith('Objective Gamer') && (o.td!=null) && (o.teamTd!=null)) ? (`<div class='hovercard'><div class='title'>Share breakdown</div><div><span class='badge'>Your tower dmg: ${o.td}</span><span class='badge'>Team total: ${o.teamTd}</span><span class='badge'>Share: ${(o.share*100).toFixed(1)}%</span></div></div>`) : ''}</li>`).join('');
-    return `<div><h3>${title}</h3><ul class='simple'>${items}</ul></div>`;
+    const info = key && desc[key] ? `<span class='badge' style='margin-left:6px' title='${desc[key].replace(/'/g,"&#39;")}'>&#9432;</span>` : '';
+    return `<div><h3>${title}${info}</h3><ul class='simple'>${items}</ul></div>`;
   }
   const html = `
     <div class='grid3'>
-  ${list3('Space Creator – most deaths in wins', aw.spaceCreator, 'deaths')}
-  ${list3('Objective Gamer – tower share + rosh', aw.objectiveGamer, 'objective')}
-  ${list3('Early Farmer – net worth @10:00', aw.earlyFarmer, 'early')}
+  ${list3('Space Creator – most deaths in wins', aw.spaceCreator, 'deaths', 'spaceCreator')}
+  ${list3('Objective Gamer – tower share + rosh', aw.objectiveGamer, 'objective', 'objectiveGamer')}
+  ${list3('Early Farmer – net worth @10:00', aw.earlyFarmer, 'early', 'earlyFarmer')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Courier Assassin – most couriers', aw.courierAssassin, 'xval')}
-  ${list3('Vision MVP – warding/dewarding', aw.visionMvp, 'ward')}
+  ${list3('Courier Assassin – most couriers', aw.courierAssassin, 'xval', 'courierAssassin')}
+  ${list3('Vision MVP – warding/dewarding', aw.visionMvp, 'ward', 'visionMvp')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Stack Master – most stacks', aw.stackMaster, 'xval')}
-  ${list3('Smoke Commander – most smokes', aw.smokeCommander, 'xval')}
-  ${list3('Rune Controller – runes taken', aw.runeController, 'xval')}
+  ${list3('Stack Master – most stacks', aw.stackMaster, 'xval', 'stackMaster')}
+  ${list3('Smoke Commander – most smokes', aw.smokeCommander, 'xval', 'smokeCommander')}
+  ${list3('Rune Controller – runes taken', aw.runeController, 'xval', 'runeController')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Aegis Snatcher – most snatches', aw.aegisSnatcher, 'xval')}
+  ${list3('Aegis Snatcher – most snatches', aw.aegisSnatcher, 'xval', 'aegisSnatcher')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Disabler Supreme – stun duration', aw.disablerSupreme, 'seconds')}
-  ${list3('Medic – hero healing', aw.medic, 'plain')}
+  ${list3('Disabler Supreme – stun duration', aw.disablerSupreme, 'seconds', 'disablerSupreme')}
+  ${list3('Medic – hero healing', aw.medic, 'plain', 'medic')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Kill Leader – most kills', aw.killLeader, 'plain')}
-  ${list3('Assist Architect – most assists', aw.assistArchitect, 'plain')}
-  ${list3('GPM King – highest GPM', aw.gpmKing, 'plain')}
+  ${list3('Kill Leader – most kills', aw.killLeader, 'plain', 'killLeader')}
+  ${list3('Assist Architect – most assists', aw.assistArchitect, 'plain', 'assistArchitect')}
+  ${list3('GPM King – highest GPM', aw.gpmKing, 'plain', 'gpmKing')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('XPM King – highest XPM', aw.xpmKing, 'plain')}
-  ${list3('Last-Hit Lord – last hits', aw.lastHitLord, 'plain')}
-  ${list3('Deny Demon – denies', aw.denyDemon, 'plain')}
+  ${list3('XPM King – highest XPM', aw.xpmKing, 'plain', 'xpmKing')}
+  ${list3('Last-Hit Lord – last hits', aw.lastHitLord, 'plain', 'lastHitLord')}
+  ${list3('Deny Demon – denies', aw.denyDemon, 'plain', 'denyDemon')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Damage Dealer – hero damage', aw.damageDealer, 'plain')}
-  ${list3('Building Breaker – tower damage', aw.buildingBreaker, 'plain')}
+  ${list3('Damage Dealer – hero damage', aw.damageDealer, 'plain', 'damageDealer')}
+  ${list3('Building Breaker – tower damage', aw.buildingBreaker, 'plain', 'buildingBreaker')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Lane Dominator – lane efficiency', aw.laneDominator, 'pct')}
-  ${list3('Rune Magnet – rune pickups', aw.runeMagnet, 'plain')}
-  ${list3('Ward Architect – wards placed', aw.wardArchitect, 'plain')}
+  ${list3('Lane Dominator – lane efficiency', aw.laneDominator, 'pct', 'laneDominator')}
+  ${list3('Rune Magnet – rune pickups', aw.runeMagnet, 'plain', 'runeMagnet')}
+  ${list3('Ward Architect – wards placed', aw.wardArchitect, 'plain', 'wardArchitect')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Vision Denier – wards killed', aw.visionDenier, 'plain')}
-  ${list3('Dust Detective – dust uses', aw.dustDetective, 'plain')}
+  ${list3('Vision Denier – wards killed', aw.visionDenier, 'plain', 'visionDenier')}
+  ${list3('Dust Detective – dust uses', aw.dustDetective, 'plain', 'dustDetective')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Savior Plays – Force/Glimmer/Lotus', aw.saviorPlays, 'plain')}
-  ${list3('Spell Slinger – ability casts', aw.spellSlinger, 'plain')}
-  ${list3('Buyback Baron – buybacks', aw.buybackBaron, 'plain')}
+  ${list3('Savior Plays – Force/Glimmer/Lotus', aw.saviorPlays, 'plain', 'saviorPlays')}
+  ${list3('Spell Slinger – ability casts', aw.spellSlinger, 'plain', 'spellSlinger')}
+  ${list3('Buyback Baron – buybacks', aw.buybackBaron, 'plain', 'buybackBaron')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('TP Traveler – teleports', aw.tpTraveler, 'plain')}
-  ${list3('Smoke Supplier – smokes bought', aw.smokeSupplier, 'plain')}
-  ${list3('Sentry CFO – sentries bought', aw.sentryCfo, 'plain')}
+  ${list3('TP Traveler – teleports', aw.tpTraveler, 'plain', 'tpTraveler')}
+  ${list3('Smoke Supplier – smokes bought', aw.smokeSupplier, 'plain', 'smokeSupplier')}
+  ${list3('Sentry CFO – sentries bought', aw.sentryCfo, 'plain', 'sentryCfo')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Observer CEO – observers bought', aw.observerCeo, 'plain')}
-  ${list3('Shard Hunter – shards (no buy)', aw.shardHunter, 'plain')}
-  ${list3('Neutral Hoarder – neutral kills', aw.neutralHoarder, 'plain')}
+  ${list3('Observer CEO – observers bought', aw.observerCeo, 'plain', 'observerCeo')}
+  ${list3('Shard Hunter – shards (no buy)', aw.shardHunter, 'plain', 'shardHunter')}
+  ${list3('Neutral Hoarder – neutral kills', aw.neutralHoarder, 'plain', 'neutralHoarder')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Ancient Annihilator – ancient kills', aw.ancientAnnihilator, 'plain')}
-  ${list3('Tower Terminator – tower kills', aw.towerTerminator, 'plain')}
-  ${list3('First Blood Hunter – first bloods', aw.firstBloodHunter, 'plain')}
+  ${list3('Ancient Annihilator – ancient kills', aw.ancientAnnihilator, 'plain', 'ancientAnnihilator')}
+  ${list3('Tower Terminator – tower kills', aw.towerTerminator, 'plain', 'towerTerminator')}
+  ${list3('First Blood Hunter – first bloods', aw.firstBloodHunter, 'plain', 'firstBloodHunter')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Rampage Collector – total rampages', aw.rampageCollector, 'plain')}
-  ${list3('Spree Legend – longest kill streak', aw.spreeLegend, 'plain')}
-  ${list3('Streak Breaker – streaks ended', aw.streakBreaker, 'plain')}
-  ${list3('Spell Damage Specialist – spell dmg', aw.spellDamageSpecialist, 'plain')}
+  ${list3('Rampage Collector – total rampages', aw.rampageCollector, 'plain', 'rampageCollector')}
+  ${list3('Spree Legend – longest kill streak', aw.spreeLegend, 'plain', 'spreeLegend')}
+  ${list3('Streak Breaker – streaks ended', aw.streakBreaker, 'plain', 'streakBreaker')}
+  ${list3('Spell Damage Specialist – spell dmg', aw.spellDamageSpecialist, 'plain', 'spellDamageSpecialist')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Right-Click Royalty – attack dmg', aw.rightClickRoyalty, 'plain')}
-  ${list3('Objective Scout – captures', aw.objectiveScout, 'plain')}
-  ${list3('Bottle Service – bottles bought', aw.bottleService, 'plain')}
+  ${list3('Right-Click Royalty – attack dmg', aw.rightClickRoyalty, 'plain', 'rightClickRoyalty')}
+  ${list3('Objective Scout – captures', aw.objectiveScout, 'plain', 'objectiveScout')}
+  ${list3('Bottle Service – bottles bought', aw.bottleService, 'plain', 'bottleService')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Urn/Spirit MVP – charges used', aw.urnSpiritMvp, 'plain')}
-  ${list3('Lotus Lawyer – lotus orb uses', aw.lotusLawyer, 'plain')}
+  ${list3('Urn/Spirit MVP – charges used', aw.urnSpiritMvp, 'plain', 'urnSpiritMvp')}
+  ${list3('Lotus Lawyer – lotus orb uses', aw.lotusLawyer, 'plain', 'lotusLawyer')}
     </div>
     <div class='grid3' style='margin-top:8px'>
-  ${list3('Glimmer Guardian – glimmer uses', aw.glimmerGuardian, 'plain')}
-  ${list3('Yedi Master – force uses', aw.forceMaster, 'plain')}
-  ${list3('Blink Junkie – blink uses', aw.blinkJunkie, 'plain')}
+  ${list3('Glimmer Guardian – glimmer uses', aw.glimmerGuardian, 'plain', 'glimmerGuardian')}
+  ${list3('Yedi Master – force uses', aw.forceMaster, 'plain', 'forceMaster')}
+  ${list3('Blink Junkie – blink uses', aw.blinkJunkie, 'plain', 'blinkJunkie')}
     </div>`;
   root.innerHTML = html;
 }
