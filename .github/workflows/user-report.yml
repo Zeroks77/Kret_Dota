@@ -2,7 +2,7 @@ name: Generate User Report
 
 on:
   issues:
-    types: [opened]
+    types: [opened, labeled, edited]
 
 permissions:
   contents: write
@@ -10,7 +10,8 @@ permissions:
 
 jobs:
   run:
-    if: contains(github.event.issue.labels.*.name, 'user-report')
+    # Trigger when labeled user-report OR when the title is created via Dynamic View
+    if: contains(github.event.issue.labels.*.name, 'user-report') || startsWith(github.event.issue.title, 'Generate user report:')
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -54,8 +55,21 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add docs/User-Reports docs/reports.json
-          git commit -m "ci(user-report): add report for ${{ steps.parse.outputs.name }} (${ { steps.parse.outputs.account } })" -m "Issue #${{ github.event.issue.number }}" || echo "Nothing to commit"
+          git commit -m "ci(user-report): add report for ${{ steps.parse.outputs.name }} (${{ steps.parse.outputs.account }})" -m "Issue #${{ github.event.issue.number }}" || echo "Nothing to commit"
           git push
+      - name: Add label to issue
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try{
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['user-report']
+              });
+            }catch(e){ /* ignore */ }
       - name: Comment with link
         if: always()
         uses: actions/github-script@v7
