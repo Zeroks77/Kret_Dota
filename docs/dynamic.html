@@ -545,7 +545,9 @@ function renderHighlights(high, heroMap, mapConf, label){
   // Aegis snatch and Tormentor
   function objectiveList(arr, label){
     if(!Array.isArray(arr) || !arr.length) return '';
-    return `<div class='sub' style='margin-top:6px'>${label}</div><ul class='simple'>` + arr.map(ev=>{
+    const heading = label ? `<div class='sub' style='margin-top:6px'>${label}</div>` : '';
+    const singular = label ? label.replace(/s$/,'') : null;
+    return heading + `<ul class='simple'>` + arr.map(ev=>{
       const hasTime = ev.time!==undefined && ev.time!==null && isFinite(Number(ev.time));
       const sec = hasTime ? Number(ev.time) : NaN; const mm = hasTime ? Math.floor(sec/60) : null; const ss = hasTime ? (sec%60) : null;
       const mid = String(ev.match_id||'');
@@ -558,7 +560,8 @@ function renderHighlights(high, heroMap, mapConf, label){
       const cnt = Number(ev.count||0);
       const countBadge = cnt>1 ? `<span class='badge'>x${cnt}</span>` : '';
       const timeBadge = hasTime ? `<a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>${mm}m ${ss}s</a>` : `<a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>n/a</a>`;
-      return `<li><span>${label.replace(/s$/,'')}:</span><span class='badge'>${team}</span><span>${person}${hero}</span>${countBadge}${timeBadge}</li>`;
+      const prefix = singular ? `<span>${singular}:</span>` : '';
+      return `<li>${prefix}<span class='badge'>${team}</span><span>${person}${hero}</span>${countBadge}${timeBadge}</li>`;
     }).join('') + '</ul>';
   }
   // Roshan kills grouped by side
@@ -722,7 +725,7 @@ function renderHighlights(high, heroMap, mapConf, label){
   </div>`;
   }
   const roshByMatchHtml = (function(){
-    const list = (high.roshanByMatch||[]).slice(0,10);
+    const list = (high.roshanByMatch||[]).slice(0,5);
     if(!list.length) return '';
     const items = list.map(function(x){
       const mid=String(x.match_id||'');
@@ -731,7 +734,7 @@ function renderHighlights(high, heroMap, mapConf, label){
     return `<div class='sub' style='margin-top:6px'>Roshan kills by match</div><ul class='simple'>${items}</ul>`;
   })();
   const torByMatchHtml = (function(){
-    const list = (high.tormentorByMatch||[]).slice(0,10);
+    const list = (high.tormentorByMatch||[]).slice(0,5);
     if(!list.length) return '';
     const items = list.map(function(x){
       const mid=String(x.match_id||'');
@@ -740,20 +743,28 @@ function renderHighlights(high, heroMap, mapConf, label){
     return `<div class='sub' style='margin-top:6px'>Tormentor kills by match</div><ul class='simple'>${items}</ul>`;
   })();
   const html = `
-    <div class="grid3">
+    <div class="grid2">
       <div>
         <h3>Rampages</h3>
         ${rampSection()}
       </div>
       <div>
+        <h3>Top single-match performances</h3>
+        <ul class="simple">${topHtml}</ul>
+      </div>
+    </div>
+    <div class="grid3" style="margin-top:8px">
+      <div>
         <h3>Roshan taken</h3>
-  ${roshByMatchHtml}
-        ${objectiveList(high.aegisSnatch||[], 'Aegis snatches')}
+        ${roshByMatchHtml}
+      </div>
+      <div>
+        <h3>Tormentor</h3>
         ${torByMatchHtml}
       </div>
       <div>
-        <h3>Top single-match performances</h3>
-        <ul class="simple">${topHtml}</ul>
+        <h3>Aegis snatches</h3>
+        ${objectiveList(high.aegisSnatch||[], '')}
       </div>
     </div>
     <div class="grid3" style="margin-top:8px">
@@ -867,6 +878,16 @@ async function main(){
     loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({})),
     loadJsonWithFallback(`${relBase}/maps.json`, `${rawBase}/maps.json`).catch(()=>null)
   ]);
+  // Allow wrapper to override map patch via URL (?map=7.39 or ?patch=7.39 or ?mpatch=7_39)
+  try{
+    const sp = new URLSearchParams(location.search);
+    const pMap = sp.get('map') || sp.get('patch') || sp.get('mpatch');
+    if(mapConf && pMap){
+      // Normalize: accept 7.39 or 7_39
+      const key = String(pMap).replace('_','.');
+      if(mapConf.major && mapConf.major[key]){ mapConf.current = key; }
+    }
+  }catch(_e){}
   // Fetch all month shards listed in manifest
   const months = (manifest && Array.isArray(manifest.months)) ? manifest.months : [];
   const files = months.map(m => ({rel: `${relBase}/${m.file}`, raw: `${rawBase}/${m.file}`}));
@@ -934,10 +955,17 @@ async function main(){
       const hasPlayers = Array.isArray(obj.players) && obj.players.length>0;
       const hasObjectives = Array.isArray(obj.objectives);
       let hasUsageFields = false;
+      let hasChat = Array.isArray(obj.chat) && obj.chat.length>0;
+      let hasLogs = false; // kills_log/deaths_log present for at least one player
       if(hasPlayers){
-        for(const p of obj.players){ if(p && (p.purchase_log || p.item_uses || p.obs_killed!==undefined || p.sen_killed!==undefined)) { hasUsageFields = true; break; } }
+        for(const p of obj.players){
+          if(p && (p.purchase_log || p.item_uses || p.obs_killed!==undefined || p.sen_killed!==undefined)) { hasUsageFields = true; }
+          if(p && (Array.isArray(p.kills_log) || Array.isArray(p.deaths_log))) { hasLogs = true; }
+          if(hasUsageFields && hasLogs) break;
+        }
       }
-      return !(hasPlayers && hasObjectives && hasUsageFields);
+      // Require chat and logs as well; these power several awards. If missing, we will try the live API.
+      return !(hasPlayers && hasObjectives && hasUsageFields && hasLogs && hasChat);
     };
     if(insufficient(md)){
       const api = await loadJson(`https://api.opendota.com/api/matches/${id}`);
@@ -1593,7 +1621,9 @@ function computeAwardsFromDetails(details, heroMap){
       // Invisible Man: glimmer + shadow blade uses + invis rune pickups
       { const iu = p.item_uses||{}; const runes2 = p.runes||{}; const val = Number(iu.glimmer_cape||0) + Number(iu.invis_sword||0) + Number(runes2['3']||0); if(val){ invisCount.set(aid, (invisCount.get(aid)||0)+val); } }
       // Bounty Hunter IRL: bounty runes (id '5')
-      { const runes2 = p.runes||{}; const val = Number(runes2['5']||0); if(val){ bountyRunes.set(aid, (bountyRunes.get(aid)||0)+val); } }
+      { let val = 0; const runes2 = p.runes||{}; if(Object.keys(runes2).length){ val = Number(runes2['5']||0); }
+        else if(Number(p.rune_pickups||0)>0 && Array.isArray(p.kills_log)){ /* no per-type map; skip */ }
+        if(val){ bountyRunes.set(aid, (bountyRunes.get(aid)||0)+val); } }
       // Die Hard: longest time between death and next death/end
       { const dl = Array.isArray(p.deaths_log)? p.deaths_log.map(e=>Number(e.time||0)).sort((a,b)=>a-b) : [];
         if(dl.length){ let best=0; for(let i=0;i<dl.length;i++){ const cur = (i<dl.length-1) ? (dl[i+1]-dl[i]) : (matchDuration - dl[i]); if(cur>best) best=cur; }
@@ -1635,6 +1665,7 @@ function computeAwardsFromDetails(details, heroMap){
   // Roshan participation: credit all players on the killing team, and capture other objective events
   const objectivesArr = Array.isArray(md.objectives) ? md.objectives : (Array.isArray(md.objectives_events)? md.objectives_events: []);
   const roshByTeamKillers = {Radiant:new Set(), Dire:new Set()}; let roshCountTeam = {Radiant:0, Dire:0};
+  let sawTipEvent = false;
   for(const ev of objectivesArr){
       const t = String(ev.type||ev.key||'');
       if(/roshan_kill|CHAT_MESSAGE_ROSHAN_KILL/i.test(t)){
@@ -1655,7 +1686,7 @@ function computeAwardsFromDetails(details, heroMap){
       // Capture point (outpost etc)
   if(/CHAT_MESSAGE_CAPTURE_POINT|CAPTURE_POINT|OUTPOST_CAPTURE|CAPTURE/i.test(t)){ const slot=Number(ev.player_slot); const p=(md.players||[]).find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) outpostCaptures.set(id, (outpostCaptures.get(id)||0)+1); }
       // Tips given
-      if(/CHAT_MESSAGE_TIP/i.test(t)){ const slot=Number(ev.player_slot); const aid = slotToAid.get(slot)||0; if(aid){ tipCount.set(aid, (tipCount.get(aid)||0)+1); } }
+      if(/CHAT_MESSAGE_TIP/i.test(t)){ const slot=Number(ev.player_slot); const aid = slotToAid.get(slot)||0; if(aid){ tipCount.set(aid, (tipCount.get(aid)||0)+1); sawTipEvent=true; } }
     }
     // Roshan Tourist: unique killer for team across rosh kills
     for(const side of ['Radiant','Dire']){
@@ -1666,6 +1697,22 @@ function computeAwardsFromDetails(details, heroMap){
       const chat = Array.isArray(md.chat)? md.chat: [];
       for(const c of chat){ const slot = Number(c.slot!=null? c.slot: c.player_slot); const aid = slotToAid.get(slot)||0; if(aid){ chatCount.set(aid, (chatCount.get(aid)||0)+1); } }
     }catch(_e){}
+    // Tip Spammer fallback: some parses aggregate tips under players.actions.tip
+    if(!sawTipEvent){
+      for(const p of (md.players||[])){
+        const aid=Number(p.account_id||0); if(!(aid>0)) continue; const acts=p.actions||{}; const tips=Number(acts.tip||0); if(tips>0){ tipCount.set(aid, (tipCount.get(aid)||0)+tips); }
+      }
+    }
+    // Roshan Tourist fallback: if objectives lacked explicit kills, use per-player roshan_kills grouped by team to detect a sole killer
+    if(roshCountTeam.Radiant===0 && roshCountTeam.Dire===0){
+      const killersByTeam={Radiant:new Map(), Dire:new Map()}; const totalByTeam={Radiant:0, Dire:0};
+      for(const p of (md.players||[])){
+        const aid=Number(p.account_id||0); if(!(aid>0)) continue; const side = ((Number(p.player_slot)<128)?'Radiant':'Dire'); const rk = Number(p.roshan_kills||0); if(rk>0){ killersByTeam[side].set(aid, (killersByTeam[side].get(aid)||0)+rk); totalByTeam[side]+=rk; }
+      }
+      for(const side of ['Radiant','Dire']){
+        if(totalByTeam[side]>0 && killersByTeam[side].size===1){ const aid = Array.from(killersByTeam[side].keys())[0]; roshAllKillsKiller.set(aid, (roshAllKillsKiller.get(aid)||0)+1); }
+      }
+    }
     // Fountain Diver via killed_by
     for(const p of (md.players||[])){
       const aid = Number(p.account_id||0); if(!(aid>0)) continue; const kb = p.killed_by||{}; const val = Number(kb.npc_dota_fountain||0); if(val){ fountainDeaths.set(aid, (fountainDeaths.get(aid)||0)+val); }
@@ -1877,116 +1924,80 @@ function renderAwards(aw, heroMap, opts){
     })();
     return `<div class='aw-tile'><h3>${title}${info}</h3><ul class='simple'>${items}</ul></div>`;
   }
-  const html = `
-    <div class='grid3'>
-  ${list3('Space Creator – most deaths in wins', aw.spaceCreator, 'deaths', 'spaceCreator')}
-  ${list3('Objective Gamer – tower share + rosh', aw.objectiveGamer, 'objective', 'objectiveGamer')}
-  ${list3('Early Farmer – net worth @10:00', aw.earlyFarmer, 'early', 'earlyFarmer')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Courier Assassin – most couriers', aw.courierAssassin, 'xval', 'courierAssassin')}
-  ${list3('Vision MVP – warding/dewarding', aw.visionMvp, 'ward', 'visionMvp')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Stack Master – most stacks', aw.stackMaster, 'xval', 'stackMaster')}
-  ${list3('Smoke Commander – most smokes', aw.smokeCommander, 'xval', 'smokeCommander')}
-  ${list3('Rune Controller – runes taken', aw.runeController, 'xval', 'runeController')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Aegis Snatcher – most snatches', aw.aegisSnatcher, 'xval', 'aegisSnatcher')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Disabler Supreme – stun duration', aw.disablerSupreme, 'seconds', 'disablerSupreme')}
-  ${list3('Medic – hero healing', aw.medic, 'plain', 'medic')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Kill Leader – most kills', aw.killLeader, 'plain', 'killLeader')}
-  ${list3('Assist Architect – most assists', aw.assistArchitect, 'plain', 'assistArchitect')}
-  ${list3('GPM King – highest GPM', aw.gpmKing, 'plain', 'gpmKing')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('XPM King – highest XPM', aw.xpmKing, 'plain', 'xpmKing')}
-  ${list3('Last-Hit Lord – last hits', aw.lastHitLord, 'plain', 'lastHitLord')}
-  ${list3('Deny Demon – denies', aw.denyDemon, 'plain', 'denyDemon')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Damage Dealer – hero damage', aw.damageDealer, 'plain', 'damageDealer')}
-  ${list3('Building Breaker – tower damage', aw.buildingBreaker, 'plain', 'buildingBreaker')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Lane Dominator – lane efficiency', aw.laneDominator, 'pct', 'laneDominator')}
-  ${list3('Rune Magnet – rune pickups', aw.runeMagnet, 'plain', 'runeMagnet')}
-  ${list3('Ward Architect – wards placed', aw.wardArchitect, 'plain', 'wardArchitect')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Vision Denier – wards killed', aw.visionDenier, 'plain', 'visionDenier')}
-  ${list3('Dust Detective – dust uses', aw.dustDetective, 'plain', 'dustDetective')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Savior Plays – Force/Glimmer/Lotus', aw.saviorPlays, 'plain', 'saviorPlays')}
-  ${list3('Spell Slinger – ability casts', aw.spellSlinger, 'plain', 'spellSlinger')}
-  ${list3('Buyback Baron – buybacks', aw.buybackBaron, 'plain', 'buybackBaron')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('TP Traveler – teleports', aw.tpTraveler, 'plain', 'tpTraveler')}
-  ${list3('Smoke Supplier – smokes bought', aw.smokeSupplier, 'plain', 'smokeSupplier')}
-  ${list3('Sentry CFO – sentries bought', aw.sentryCfo, 'plain', 'sentryCfo')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Observer CEO – observers bought', aw.observerCeo, 'plain', 'observerCeo')}
-  ${list3('Shard Hunter – shards (no buy)', aw.shardHunter, 'plain', 'shardHunter')}
-  ${list3('Neutral Hoarder – neutral kills', aw.neutralHoarder, 'plain', 'neutralHoarder')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Ancient Annihilator – ancient kills', aw.ancientAnnihilator, 'plain', 'ancientAnnihilator')}
-  ${list3('Tower Terminator – tower kills', aw.towerTerminator, 'plain', 'towerTerminator')}
-  ${list3('First Blood Hunter – first bloods', aw.firstBloodHunter, 'plain', 'firstBloodHunter')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Rampage Collector – total rampages', aw.rampageCollector, 'plain', 'rampageCollector')}
-  ${list3('Spree Legend – longest kill streak', aw.spreeLegend, 'plain', 'spreeLegend')}
-  ${list3('Streak Breaker – streaks ended', aw.streakBreaker, 'plain', 'streakBreaker')}
-  ${list3('Spell Damage Specialist – spell dmg', aw.spellDamageSpecialist, 'plain', 'spellDamageSpecialist')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Right-Click Royalty – attack dmg', aw.rightClickRoyalty, 'plain', 'rightClickRoyalty')}
-  ${list3('Objective Scout – captures', aw.objectiveScout, 'plain', 'objectiveScout')}
-  ${list3('Bottle Service – bottles bought', aw.bottleService, 'plain', 'bottleService')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Urn/Spirit MVP – charges used', aw.urnSpiritMvp, 'plain', 'urnSpiritMvp')}
-  ${list3('Lotus Lawyer – lotus orb uses', aw.lotusLawyer, 'plain', 'lotusLawyer')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Glimmer Guardian – glimmer uses', aw.glimmerGuardian, 'plain', 'glimmerGuardian')}
-  ${list3('Yedi Master – force uses', aw.forceMaster, 'plain', 'forceMaster')}
-  ${list3('Blink Junkie – blink uses', aw.blinkJunkie, 'plain', 'blinkJunkie')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Feeding Frenzy – most deaths (single game)', aw.feedingFrenzy, 'plain', 'feedingFrenzy')}
-  ${list3('One Hit Wonder – 1 kill, team won', aw.oneHitWonder, 'plain', 'oneHitWonder')}
-  ${list3('Assist Machine – best A/D (≥10A)', aw.assistMachine, 'plain', 'assistMachine')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Captain Obvious – most chat', aw.captainObvious, 'plain', 'captainObvious')}
-  ${list3('Shopaholic – longest purchase log', aw.shopaholic, 'plain', 'shopaholic')}
-  ${list3('No TP Club – 30m+, 0 TP', aw.noTpClub, 'plain', 'noTpClub')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Invisible Man – invis actions', aw.invisibleMan, 'plain', 'invisibleMan')}
-  ${list3('Bounty Hunter IRL – bounty runes', aw.bountyHunterIRL, 'plain', 'bountyHunterIRL')}
-  ${list3('Die Hard – longest death (approx)', aw.dieHard, 'seconds', 'dieHard')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('AFK Farmer – high GPM, low dmg', aw.afkFarmer, 'plain', 'afkFarmer')}
-  ${list3('Tip Spammer – most tips', aw.tipSpammer, 'plain', 'tipSpammer')}
-  ${list3('Roshan Tourist – all team rosh kills (killer)', aw.roshanTourist, 'plain', 'roshanTourist')}
-    </div>
-    <div class='grid3' style='margin-top:8px'>
-  ${list3('Fountain Diver – fountain deaths', aw.fountainDiver, 'plain', 'fountainDiver')}
-  ${list3('Bottle Hoarder – bottle uses', aw.bottleHoarder, 'plain', 'bottleHoarder')}
-  ${list3('Jungle Enthusiast – jungle activity', aw.jungleEnthusiast, 'plain', 'jungleEnthusiast')}
-  </div>`;
+  // Build all award tiles, sort alphabetically by title, and render in rows of 3
+  const defs = [
+    {t:'AFK Farmer – high GPM, low dmg', k:'afkFarmer', f:'plain'},
+    {t:'Aegis Snatcher – most snatches', k:'aegisSnatcher', f:'xval'},
+    {t:'Ancient Annihilator – ancient kills', k:'ancientAnnihilator', f:'plain'},
+    {t:'Assist Architect – most assists', k:'assistArchitect', f:'plain'},
+    {t:'Assist Machine – best A/D (≥10A)', k:'assistMachine', f:'plain'},
+    {t:'Blink Junkie – blink uses', k:'blinkJunkie', f:'plain'},
+    {t:'Bottle Hoarder – bottle uses', k:'bottleHoarder', f:'plain'},
+    {t:'Bottle Service – bottles bought', k:'bottleService', f:'plain'},
+    {t:'Bounty Hunter IRL – bounty runes', k:'bountyHunterIRL', f:'plain'},
+    {t:'Building Breaker – tower damage', k:'buildingBreaker', f:'plain'},
+    {t:'Buyback Baron – buybacks', k:'buybackBaron', f:'plain'},
+    {t:'Captain Obvious – most chat', k:'captainObvious', f:'plain'},
+    {t:'Courier Assassin – most couriers', k:'courierAssassin', f:'xval'},
+    {t:'Damage Dealer – hero damage', k:'damageDealer', f:'plain'},
+    {t:'Deny Demon – denies', k:'denyDemon', f:'plain'},
+    {t:'Die Hard – longest death (approx)', k:'dieHard', f:'seconds'},
+    {t:'Disabler Supreme – stun duration', k:'disablerSupreme', f:'seconds'},
+    {t:'Dust Detective – dust uses', k:'dustDetective', f:'plain'},
+    {t:'Early Farmer – net worth @10:00', k:'earlyFarmer', f:'early'},
+    {t:'Feeding Frenzy – most deaths (single game)', k:'feedingFrenzy', f:'plain'},
+    {t:'First Blood Hunter – first bloods', k:'firstBloodHunter', f:'plain'},
+    {t:'Fountain Diver – fountain deaths', k:'fountainDiver', f:'plain'},
+    {t:'Glimmer Guardian – glimmer uses', k:'glimmerGuardian', f:'plain'},
+    {t:'GPM King – highest GPM', k:'gpmKing', f:'plain'},
+    {t:'Invisible Man – invis actions', k:'invisibleMan', f:'plain'},
+    {t:'Jungle Enthusiast – jungle activity', k:'jungleEnthusiast', f:'plain'},
+    {t:'Kill Leader – most kills', k:'killLeader', f:'plain'},
+    {t:'Lane Dominator – lane efficiency', k:'laneDominator', f:'pct'},
+    {t:'Last-Hit Lord – last hits', k:'lastHitLord', f:'plain'},
+    {t:'Lotus Lawyer – lotus orb uses', k:'lotusLawyer', f:'plain'},
+    {t:'Medic – hero healing', k:'medic', f:'plain'},
+    {t:'Neutral Hoarder – neutral kills', k:'neutralHoarder', f:'plain'},
+    {t:'No TP Club – 30m+, 0 TP', k:'noTpClub', f:'plain'},
+    {t:'Objective Gamer – tower share + rosh', k:'objectiveGamer', f:'objective'},
+    {t:'Objective Scout – captures', k:'objectiveScout', f:'plain'},
+    {t:'Observer CEO – observers bought', k:'observerCeo', f:'plain'},
+    {t:'One Hit Wonder – 1 kill, team won', k:'oneHitWonder', f:'plain'},
+    {t:'Rampage Collector – total rampages', k:'rampageCollector', f:'plain'},
+    {t:'Right-Click Royalty – attack dmg', k:'rightClickRoyalty', f:'plain'},
+    {t:'Roshan Tourist – all team rosh kills (killer)', k:'roshanTourist', f:'plain'},
+    {t:'Rune Controller – runes taken', k:'runeController', f:'xval'},
+    {t:'Rune Magnet – rune pickups', k:'runeMagnet', f:'plain'},
+    {t:'Savior Plays – Force/Glimmer/Lotus', k:'saviorPlays', f:'plain'},
+    {t:'Sentry CFO – sentries bought', k:'sentryCfo', f:'plain'},
+    {t:'Shard Hunter – shards (no buy)', k:'shardHunter', f:'plain'},
+    {t:'Shopaholic – longest purchase log', k:'shopaholic', f:'plain'},
+    {t:'Smoke Commander – most smokes', k:'smokeCommander', f:'xval'},
+    {t:'Smoke Supplier – smokes bought', k:'smokeSupplier', f:'plain'},
+    {t:'Space Creator – most deaths in wins', k:'spaceCreator', f:'deaths'},
+    {t:'Spell Damage Specialist – spell dmg', k:'spellDamageSpecialist', f:'plain'},
+    {t:'Spell Slinger – ability casts', k:'spellSlinger', f:'plain'},
+    {t:'Spree Legend – longest kill streak', k:'spreeLegend', f:'plain'},
+    {t:'Stack Master – most stacks', k:'stackMaster', f:'xval'},
+    {t:'Streak Breaker – streaks ended', k:'streakBreaker', f:'plain'},
+    {t:'Tower Terminator – tower kills', k:'towerTerminator', f:'plain'},
+    {t:'TP Traveler – teleports', k:'tpTraveler', f:'plain'},
+    {t:'Tip Spammer – most tips', k:'tipSpammer', f:'plain'},
+    {t:'Urn/Spirit MVP – charges used', k:'urnSpiritMvp', f:'plain'},
+    {t:'Vision Denier – wards killed', k:'visionDenier', f:'plain'},
+    {t:'Vision MVP – warding/dewarding', k:'visionMvp', f:'ward'},
+    {t:'Ward Architect – wards placed', k:'wardArchitect', f:'plain'},
+    {t:'XPM King – highest XPM', k:'xpmKing', f:'plain'},
+    {t:'Yedi Master – force uses', k:'forceMaster', f:'plain'},
+  ];
+  defs.sort((a,b)=> a.t.localeCompare(b.t, undefined, {sensitivity:'base'}));
+  const tiles = defs.map(d=> list3(d.t, aw[d.k], d.f, d.k)).filter(s=> s && s.length>0);
+  // Chunk into rows of 3
+  let html = '';
+  for(let i=0;i<tiles.length;i+=3){
+    const row = tiles.slice(i,i+3).join('\n');
+    html += `<div class='grid3'${i>0?" style='margin-top:8px'":''}>${row}</div>`;
+  }
   root.innerHTML = html;
   // Wire info popovers in awards
   try{
