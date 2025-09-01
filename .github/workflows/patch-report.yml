@@ -1,27 +1,25 @@
-name: Monthly dynamic wrapper (last full month)
+name: Manual patch report wrapper
 
 on:
-  schedule:
-    - cron: '5 3 1 * *' # 03:05 UTC on the 1st of each month, after daily
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build-report:
+  build-patch:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Generate last full month wrapper and update index
+      - name: Generate patch wrapper and update index
         shell: pwsh
         run: |
-          ./scripts/create_dynamic_reports.ps1 -GenerateMonthly -LastFullMonth
+          ./scripts/create_dynamic_reports.ps1 -GeneratePatch
       - name: Commit and push
         if: ${{ success() }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add -- docs/
-          git commit -m "chore(ci): monthly wrapper (last full month)" || echo "no changes"
+          git commit -m "chore(ci): patch wrapper"
           git push

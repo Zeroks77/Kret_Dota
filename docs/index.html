@@ -45,10 +45,7 @@ a{color:var(--accent)}
   <!-- Filters removed; Dynamic view is available as a pinned list entry below -->
     <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
     <ul id='list' class='list'>
-<li class="item" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html">Dynamic view (custom timeframe)</a></li>
-<li class="item" data-range="2025-09-01" data-time="638922944926627355"><a href="./kret-s-eu-dota-league_30-days_2025-09-01_0334.html">2025-09-01 03:34 - 2025-09-01</a></li>
-<li class="item" data-range="all-games" data-time="638922944557339171"><a href="./kret-s-eu-dota-league_all-games_latest.html">2025-09-01 03:34 - All games</a></li>
-<li class="item" data-range="unknown" data-time="638922944556870438"><a href="./dynamic.html">2025-09-01 03:34 - unknown</a></li>
+      <li class="item" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html">Dynamic view (custom timeframe)</a></li>
     </ul>
   </aside>
 
@@ -68,7 +65,7 @@ a{color:var(--accent)}
 <script>
 (function(){
   const list = document.getElementById('list');
-  const items = Array.from(list.querySelectorAll('.item'));
+  let items = Array.from(list.querySelectorAll('.item'));
   const q = document.getElementById('q');
   const frame = document.getElementById('frame');
   const title = document.getElementById('viewerTitle');
@@ -102,13 +99,64 @@ a{color:var(--accent)}
   }
   function sync(){ const v=vis(); prevBtn.disabled = (selIndex<=0 || !v.length); nextBtn.disabled = (selIndex>=v.length-1 || !v.length); }
 
-  items.forEach(li=>li.addEventListener('click', e=>{e.preventDefault(); const v=vis(); const idx=v.indexOf(li); if (idx>=0) select(idx);}));
+  function wireItemClicks(){
+    items.forEach(li=>li.addEventListener('click', e=>{e.preventDefault(); const v=vis(); const idx=v.indexOf(li); if (idx>=0) select(idx);}));
+  }
+  wireItemClicks();
   q.addEventListener('input', apply);
   prevBtn.addEventListener('click', ()=> select(selIndex-1));
   nextBtn.addEventListener('click', ()=> select(selIndex+1));
   document.addEventListener('keydown', ev=>{ if (ev.key==='ArrowUp'){ev.preventDefault(); select(selIndex-1);} if (ev.key==='ArrowDown'){ev.preventDefault(); select(selIndex+1);} });
 
-  function init(){
+  async function loadReports(){
+    try {
+      const res = await fetch('./reports.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      if (!data || !Array.isArray(data.items)) return;
+      // Remove old items except the pinned dynamic one
+      const pinned = list.querySelectorAll('li.item');
+      const keep = pinned[0];
+      list.innerHTML = '';
+      if (keep) list.appendChild(keep);
+
+      // Group and sort: monthly (desc by sort or time), then patch (desc), then others
+      const itemsArr = data.items.slice();
+      function safeDate(x){ const t = Date.parse(x?.time||''); return isFinite(t)?t:0; }
+      function groupOrder(g){ if(g==='monthly') return 0; if(g==='patch') return 1; return 2; }
+      itemsArr.sort((a,b)=>{
+        const go = groupOrder(a.group)-groupOrder(b.group);
+        if (go!==0) return go;
+        // Prefer sort key desc if both present and in same group
+        if (a.group==='monthly' && b.group==='monthly' && a.sort && b.sort){
+          return a.sort<b.sort?1:(a.sort>b.sort?-1:0);
+        }
+        if (a.group==='patch' && b.group==='patch' && a.sort && b.sort){
+          return a.sort<b.sort?1:(a.sort>b.sort?-1:0);
+        }
+        return safeDate(b)-safeDate(a);
+      });
+
+      for (const it of itemsArr){
+        const li = document.createElement('li');
+        li.className = 'item';
+        li.setAttribute('data-range', it.group||'report');
+        li.setAttribute('data-time', String(safeDate(it)));
+        const a = document.createElement('a');
+        a.href = it.href || '#';
+        a.textContent = it.title || it.href || 'Report';
+        li.appendChild(a);
+        list.appendChild(li);
+      }
+      items = Array.from(list.querySelectorAll('.item'));
+      wireItemClicks();
+    } catch (e) {
+      // ignore; fallback to static pinned entry
+    }
+  }
+
+  async function init(){
+    await loadReports();
     const file = new URLSearchParams(location.hash.replace(/^#/, '')).get('file');
     if (file){ const t=items.find(li => li.querySelector('a')?.getAttribute('href')===file); if (t){ const v=items; const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } } }
     apply();

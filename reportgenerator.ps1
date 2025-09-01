@@ -58,53 +58,55 @@ param(
 
   [switch]$VerboseLog,
 
-  # Cache controls
-  [switch]$DisableCache,
-  [string]$CachePath        = (Join-Path ($PSScriptRoot) "data\cache"),
-  [int]   $ConstantsTtlDays = 7,
-
-  # Prefer reading pre-sharded monthly match JSONs under docs/data/matches for range runs
-  [switch]$PreferShards
+      <div>
+        <h3>Roshan taken (by match)</h3>
+        <ul class="simple">
+$(
+  if ($high -and $high.PSObject.Properties.Name -contains 'roshanByMatch' -and $high.roshanByMatch -and $high.roshanByMatch.Count -gt 0) {
+    $list = @($high.roshanByMatch | Sort-Object @{e='total';Descending=$true}, @{e='match_id';Descending=$true} | Select-Object -First 10)
+    ($list | ForEach-Object { $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid; "<li><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>M$mid</a><span class='badge'>Radiant x$($_.Radiant)</span><span class='badge'>Dire x$($_.Dire)</span><span class='badge'>Total: $($_.total)</span></li>" }) -join "`n"
+  } else { "<li><span class='sub'>no Roshan events in this period</span></li>" }
 )
-
-# ===== FIXED LEAGUE =====
-$LEAGUE_NAME   = "Kret's EU Dota League"
-$LEAGUE_ID     = 18438
-
-# ===== Constants =====
-$OD_BASE       = "https://api.opendota.com/api"
-$OD_MATCH_URL  = { param($id) "https://www.opendota.com/matches/$id" }
-$OD_PLAYER_URL = { param($id) "https://www.opendota.com/players/$id" }
-$STEAM_BASE    = "https://api.steampowered.com/IDOTA2Match_570"
-
-$SPECTRAL_BASE = "https://courier.spectral.gg/images/dota"
-function Get-HeroPortraitUrl([string]$tag){ return "$SPECTRAL_BASE/portraits/$tag.png" }
-function Get-TeamLogoUrl([int]$teamId){ if(-not $teamId){ return "$SPECTRAL_BASE/teams/default.png" } "$SPECTRAL_BASE/teams/square_$teamId.png" }
-function Get-LeagueBannerUrl([int]$leagueId){ return "$SPECTRAL_BASE/leagues/${leagueId}_banner.png" }
-
-# Time
-$TZ = $null
-try { $TZ = [TimeZoneInfo]::FindSystemTimeZoneById("Europe/Berlin") } catch {
-  try { $TZ = [TimeZoneInfo]::FindSystemTimeZoneById("W. Europe Standard Time") } catch { $TZ = [TimeZoneInfo]::Local }
-}
-$EN = [System.Globalization.CultureInfo]::GetCultureInfo("en-US")
-
-# ===== Utils =====
-function Get-RoleName($lane_role, $is_roaming) {
-  if ($is_roaming) { return "Roam" }
-  switch ([int]$lane_role) { 1 { "Safe" } 2 { "Mid" } 3 { "Off" } 4 { "Jungle" } default { "Unknown" } }
-}
-function HtmlEscape([string]$s){ [System.Net.WebUtility]::HtmlEncode($s) }
-function FmtPct([double]$x){ "{0:P1}" -f $x }
-function Inc-Map([hashtable]$map, [string]$key) { if ($map.ContainsKey($key)) { $map[$key] = [int]$map[$key] + 1 } else { $map[$key] = 1 } }
-function Slugify([string]$s){ if (-not $s) { return "" }; $t=$s.ToLowerInvariant(); $t=$t -replace "[^a-z0-9]+","-"; $t=$t.Trim("-"); return $t }
-
-# Safely enumerate maps that may be Hashtable or PSCustomObject from JSON
-function Get-MapEnumerator($map){
-  if ($null -eq $map) { return @() }
-  if ($map -is [System.Collections.IDictionary]) { return $map.GetEnumerator() }
-  if ($map -is [psobject]) { return ($map.PSObject.Properties | ForEach-Object { [pscustomobject]@{ Key=$_.Name; Value=$_.Value } }) }
-  return @()
+        </ul>
+  $objWarn
+$(
+  if ($high -and $high.PSObject.Properties.Name -contains 'aegisSnatch' -and $high.aegisSnatch -and $high.aegisSnatch.Count -gt 0) {
+    $items = ($high.aegisSnatch | ForEach-Object {
+      $sec=[int]$_.time; $mm=[int]([math]::Floor($sec/60)); $ss=[int]($sec%60)
+      $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid
+      $team = if ($_.team) { [string]$_.team } else { '' }
+      $p = $_.player
+      $nm = if ($p -and $p.name) { [string]$p.name } else { 'Unknown' }
+      $hero = if ($p -and $p.hero) { [string]$p.hero } else { '' }
+      $prof = if ($p -and $p.profile) { [string]$p.profile } else { '' }
+      "<li><span>Aegis snatch:</span><span class='badge'>${team}</span><span>" + $( if($prof){ "<a href='"+(HtmlEscape $prof)+"' target='_blank'>"+(HtmlEscape $nm)+"</a>" } else { (HtmlEscape $nm) } ) + $( if ($hero){ " ("+(HtmlEscape $hero)+")" } else { "" } ) + "</span><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>${mm}m ${ss}s</a></li>"
+    }) -join "`n"
+    "<div class='sub' style='margin-top:6px'>Aegis snatches</div><ul class='simple'>${items}</ul>"
+  } else { '' }
+)
+$(
+  # Tormentor by match (aggregate by match/team, hide player)
+  if ($high -and $high.PSObject.Properties.Name -contains 'tormentor' -and $high.tormentor -and $high.tormentor.Count -gt 0) {
+    $agg = @{}
+    foreach($e in $high.tormentor){
+      try {
+        $mid = [string]$e.match_id; if (-not $mid) { continue }
+        if (-not $agg.ContainsKey($mid)) { $agg[$mid] = @{ Radiant = 0; Dire = 0; total = 0 } }
+        $add = 1; try { if ($e.PSObject.Properties.Name -contains 'count' -and $null -ne $e.count) { $add = [int]$e.count } } catch {}
+        $team = if ($e.team) { [string]$e.team } else { '' }
+        if ($team -eq 'Radiant') { $agg[$mid]['Radiant'] = [int]$agg[$mid]['Radiant'] + $add }
+        elseif ($team -eq 'Dire') { $agg[$mid]['Dire'] = [int]$agg[$mid]['Dire'] + $add }
+        $agg[$mid]['total'] = [int]$agg[$mid]['Radiant'] + [int]$agg[$mid]['Dire']
+      } catch {}
+    }
+    $list = @(); foreach($k in $agg.Keys){ $list += [pscustomobject]@{ match_id=[int64]$k; Radiant=[int]$agg[$k]['Radiant']; Dire=[int]$agg[$k]['Dire']; total=[int]$agg[$k]['total'] } }
+    if ($list.Count -gt 0) {
+      $list = @($list | Sort-Object @{e='total';Descending=$true}, @{e='match_id';Descending=$true} | Select-Object -First 10)
+      $items = ($list | ForEach-Object { $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid; "<li><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>M$mid</a><span class='badge'>Radiant x$($_.Radiant)</span><span class='badge'>Dire x$($_.Dire)</span><span class='badge'>Total: $($_.total)</span></li>" }) -join "`n"
+      "<div class='sub' style='margin-top:6px'>Tormentor kills by match</div><ul class='simple'>${items}</ul>"
+    } else { '' }
+  } else { '' }
+)
 }
 
 function Select-TopCandidate {
@@ -165,266 +167,34 @@ function Redact-Key([string]$uri){ if ($null -eq $uri) { return "" }; return ($u
 
 function Invoke-Json {
   param([string]$Method,[string]$Uri,[hashtable]$Headers,[object]$Body,[ValidateSet("OpenDota","Steam","Other")][string]$Service="Other")
-  $backoff = $InitialBackoffMs
-  for ($attempt=1; $attempt -le $MaxRetries; $attempt++) {
-    try {
-      if ($Service -eq "OpenDota") { Start-Throttle -ms $OpenDotaDelayMs -last ([ref]$global:__LastOpenDotaCall) }
-      if ($Service -eq "Steam")    { Start-Throttle -ms $SteamDelayMs    -last ([ref]$global:__LastSteamCall) }
+  <#
+    Deprecated: reportgenerator.ps1
 
-      $u = $Uri; $hdrs = if ($Headers -and $Headers.Count -gt 0) { $Headers } else { $DefaultHeaders }
-      if ($VerboseLog) {
-        $dispUri = if ($Service -eq 'Steam') { Redact-Key $u } else { $u }
-        Write-Host "HTTP $Method $dispUri" -ForegroundColor DarkGray
-      }
+    This script used to build HTML reports. The project has moved to a unified
+    dynamic viewer (docs/dynamic.html) with static wrapper generation handled by
+    scripts/create_dynamic_reports.ps1, and data fetching handled by
+    scripts/fetch_opendota_data.ps1.
 
-      $params = @{ Method=$Method; Uri=$u; Headers=$hdrs; ErrorAction='Stop' }
-      if ($Body) { $params.Body = ($Body | ConvertTo-Json -Depth 50); $params.ContentType = "application/json" }
-      $resp = Invoke-RestMethod @params
-      if ($Service -eq "OpenDota") { $global:__LastOpenDotaCall = Get-Date }
-      if ($Service -eq "Steam")    { $global:__LastSteamCall    = Get-Date }
-      if ($null -ne $resp) { return $resp }
+    For backward compatibility in CI and local use, this script now only fetches
+    OpenDota constants and cached match details. It ignores previous parameters
+    related to HTML generation.
+  #>
 
-      if ($VerboseLog) { Write-Warning "Null response, trying webrequest fallback..." }
-      $raw = Invoke-WebRequest -Uri $u -Headers $hdrs -Method $Method -ErrorAction Stop
-      if ($raw -and $raw.Content) { return ($raw.Content | ConvertFrom-Json -ErrorAction Stop) }
-
-      return $null
-    } catch {
-      $ex = $_.Exception
-      $status = try { $ex.Response.StatusCode.Value__ } catch { 0 }
-      if ($VerboseLog) { Write-Warning "Request failed ($status): $($ex.Message)" }
-  if ($attempt -ge $MaxRetries -or ($status -ne 429 -and ($status -lt 500 -or $status -ge 600))) { throw }
-      Start-Sleep -Milliseconds $backoff
-      $backoff = [math]::Min($backoff * 2, 10000)
-    }
-  }
-}
-
-# ===== APIs =====
-function Get-OpenDotaMatch([long]$matchId, [switch]$BypassCache) {
-  $cf = Get-CacheFile -service 'OpenDota' -kind 'matches' -name ([string]$matchId)
-  if (-not $BypassCache) {
-    $hit = Try-ReadJsonCache -path $cf -maxAgeDays -1
-    if ($hit) { return $hit }
-  }
-  $resp = Invoke-Json -Method GET -Uri "$OD_BASE/matches/$matchId" -Service OpenDota -Headers $DefaultHeaders
+  param(
+    [int]$OpenDotaDelayMs  = 1200,
+    [switch]$PublishToRepo,
+    [string]$RepoPath = $PSScriptRoot
   if ($resp) { Write-JsonCache -obj $resp -path $cf }
-  return $resp
-}
-function Get-OpenDotaHeroesConst {
-  $cf = Get-CacheFile -service 'OpenDota' -kind 'constants' -name 'heroes'
-  $hit = Try-ReadJsonCache -path $cf -maxAgeDays $ConstantsTtlDays
-  if ($hit) { return $hit }
-  $resp = Invoke-Json -Method GET -Uri "$OD_BASE/constants/heroes"  -Service OpenDota -Headers $DefaultHeaders
-  if ($resp) { Write-JsonCache -obj $resp -path $cf }
-  return $resp
-}
-function Get-OpenDotaPatchConst {
-  $cf = Get-CacheFile -service 'OpenDota' -kind 'constants' -name 'patch'
-  $hit = Try-ReadJsonCache -path $cf -maxAgeDays $ConstantsTtlDays
-  if ($hit) { return $hit }
-  $resp = Invoke-Json -Method GET -Uri "$OD_BASE/constants/patch"   -Service OpenDota -Headers $DefaultHeaders
-  if ($resp) { Write-JsonCache -obj $resp -path $cf }
-  return $resp
-}
-
-# ===== Map assets (per major patch) =====
-function Load-MapConfig {
-  param([string]$RepoPath)
-  try {
-    $base = if ($RepoPath) { $RepoPath } else { $PSScriptRoot }
-    $path = Join-Path $base "data\maps.json"
-    if (Test-Path -LiteralPath $path) {
-      $raw = Get-Content -LiteralPath $path -Raw -Encoding UTF8
-      if ($raw) { return ($raw | ConvertFrom-Json) }
-    }
-  } catch {}
-  # Fallback defaults
-  return [pscustomobject]@{
-  default = 'https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg'
-  defaultScale = 127
-  # Radius configuration (either provide percent directly, or game units + cellUnits)
-  defaultObsRadiusUnits = 1600
-  defaultSenRadiusUnits = 1000
-  defaultCellUnits = 128
-  defaultObsRadiusPct = $null
-  defaultSenRadiusPct = $null
-  current = ''
-  major   = @{ '7.39' = [pscustomobject]@{ src='img/7_39/Game_map_7.39.jpg'; scale=127; invertY=$false; obsRadiusUnits=1600; senRadiusUnits=1000; cellUnits=128 } }
-  }
-}
-function Get-PatchList {
-  $patch = Get-OpenDotaPatchConst
-  $items = New-Object System.Collections.Generic.List[object]
-  if ($patch) {
-    # Case 1: array of patch objects
-    if ($patch -is [System.Collections.IEnumerable] -and ($patch -isnot [string]) -and -not ($patch -is [System.Collections.IDictionary])) {
-      foreach ($v in $patch) {
-        $nm = $null
-        try { $nm = if ($v.name) { [string]$v.name } elseif ($v.patch) { [string]$v.patch } else { $null } } catch { $nm = $null }
-        $dto = $null
-        try {
-          if ($v.date -is [string]) { [void][DateTimeOffset]::TryParse($v.date, [ref]$dto) }
-          elseif ($v.date -is [double] -or $v.date -is [int]) { $dto = [DateTimeOffset]::FromUnixTimeSeconds([long]$v.date) }
-        } catch { $dto = $null }
-  if ($nm -and $null -ne $dto) { $items.Add([pscustomobject]@{ name=$nm; dateUnix=[long]$dto.ToUnixTimeSeconds() }) | Out-Null }
-      }
-    } else {
-      # Case 2: object/dictionary keyed by name
-      foreach ($prop in $patch.PSObject.Properties) {
-        $name = [string]$prop.Name
-        $v = $prop.Value
-        $dto = $null
-        try {
-          if ($v.date -is [string]) { [void][DateTimeOffset]::TryParse($v.date, [ref]$dto) }
-          elseif ($v.date -is [double] -or $v.date -is [int]) { $dto = [DateTimeOffset]::FromUnixTimeSeconds([long]$v.date) }
-        } catch { $dto = $null }
-  if ($null -ne $dto) { $items.Add([pscustomobject]@{ name=$name; dateUnix=[long]$dto.ToUnixTimeSeconds() }) | Out-Null }
-      }
-    }
-  }
-  return ($items.ToArray() | Sort-Object dateUnix)
-}
-function Get-MajorPatchTag {
-  param([string]$patchName)
-  if (-not $patchName) { return $null }
-  $m = [regex]::Match($patchName, '^[0-9]+\.[0-9]+')
-  if ($m.Success) { return $m.Value }
-  return $patchName
-}
-function Get-MajorPatchForUnix {
-  param([long]$unix)
-  $list = Get-PatchList
-  if (-not $list -or $list.Count -eq 0) { return $null }
-  $cand = ($list | Where-Object { [long]$_.dateUnix -le $unix } | Sort-Object dateUnix -Descending | Select-Object -First 1)
-  if (-not $cand) { $cand = ($list | Sort-Object dateUnix | Select-Object -First 1) }
-  return (Get-MajorPatchTag -patchName $cand.name)
-}
-function Resolve-MapAsset {
-  param([psobject]$MapConf,[string]$MajorTag)
-  if (-not $MapConf) { return $null }
-  $def = $MapConf.default
-  if (-not $MapConf.major) { return $def }
-  $majObj = $MapConf.major
-  # Helper to safely get a property value by name (supports dotted keys like '7.39')
-  function __Get-MajorEntry([object]$obj,[string]$name){
-    if ($null -eq $obj -or [string]::IsNullOrWhiteSpace($name)) { return $null }
-    try {
-      $prop = $obj.PSObject.Properties[$name]
-      if ($prop) { return $prop.Value }
-    } catch {}
-    return $null
-  }
-  $props = @($majObj.PSObject.Properties | ForEach-Object { $_.Name })
-  if (-not $props -or $props.Count -eq 0) { return $def }
-  if ($MajorTag -and ($props -contains $MajorTag)) {
-    $val = __Get-MajorEntry $majObj $MajorTag
-  if ($null -ne $val) { return $val }
-  }
-  # if auto-detect failed, use configured 'current' if present
-  if ($MapConf.current -and ($props -contains [string]$MapConf.current)) {
-    $val = __Get-MajorEntry $majObj ([string]$MapConf.current)
-  if ($null -ne $val) { return $val }
-  }
-  # fallback to nearest lower version
-  try {
-    $majVer = if ($MajorTag) { [version]$MajorTag } else { $null }
-  } catch { $majVer = $null }
-  if ($null -ne $majVer) {
-    $bestName = $null; $bestVer = $null
-    foreach($n in $props){
-      try { $v=[version]$n } catch { $v=$null }
-  if ($null -ne $v) {
-        if ($v -le $majVer) {
-          if ($null -eq $bestVer -or $v -gt $bestVer) { $bestVer=$v; $bestName=$n }
-        }
-      }
-    }
-    if ($bestName) {
-      $val = __Get-MajorEntry $majObj $bestName
-  if ($null -ne $val) { return $val }
-    }
-  }
-  # otherwise use highest defined as last resort
-  $sorted = @($props | ForEach-Object { try { [version]$_ } catch { $null } } | Where-Object { $_ -ne $null } | Sort-Object)
-  if ($sorted.Count -gt 0) {
-    $top = ($sorted | Select-Object -Last 1)
-    $val = __Get-MajorEntry $majObj ($top.ToString())
-  if ($null -ne $val) { return $val }
-  }
-  return $def
-}
-function Copy-AssetToDocs {
-  param([string]$RepoPath,[string]$RelPath)
-  if (-not $RepoPath -or -not $RelPath) { return $null }
-  $src = Join-Path $RepoPath $RelPath
-  if (-not (Test-Path -LiteralPath $src)) { return $null }
-  $dest = Join-Path (Join-Path $RepoPath 'docs') $RelPath
-  # Ensure entire directory tree exists
-  Ensure-Dir $dest
-  Copy-Item -LiteralPath $src -Destination $dest -Force
-  return $dest
-}
-
-# ===== Parse tracking (parsed/pending lists) =====
-function Get-ParseFiles {
-  param([string]$RepoPath)
-  $base = if ($RepoPath) { $RepoPath } else { $PSScriptRoot }
-  $dataDir = Join-Path $base "data"
-  return @{ parsed = (Join-Path $dataDir "allgames_parsed.json"); ready = (Join-Path $dataDir "ready_toParse.json") }
-}
-function Load-IdArray {
-  param([string]$path)
-  try {
-    if (-not (Test-Path -LiteralPath $path)) { return @() }
-    $raw = Get-Content -LiteralPath $path -Raw -Encoding UTF8
-    if ([string]::IsNullOrWhiteSpace($raw)) { return @() }
-    $arr = $raw | ConvertFrom-Json
-    $out = New-Object System.Collections.Generic.List[long]
-    foreach($x in $arr){ try { [void]$out.Add([long]$x) } catch {} }
-    return $out.ToArray()
-  } catch { return @() }
-}
-function Save-IdArray {
-  param([long[]]$ids,[string]$path)
-  Ensure-Dir $path
-  try { ($ids | ConvertTo-Json -Depth 5) | Set-Content -Path $path -Encoding UTF8 } catch {}
-}
-function Is-OD-Parsed {
-  param([long]$matchId)
-  try {
-    $md = Get-OpenDotaMatch -matchId $matchId
-    # Basic presence of players isn't enough for ward maps. Consider parsed-for-wards if any player has obs_log/sen_log property (present even if empty).
-  if ($null -eq $md -or -not $md.players -or $md.players.Count -eq 0) { return $false }
-    foreach ($p in $md.players) {
+  Set-StrictMode -Version Latest
+  $ErrorActionPreference = 'Stop'
       try {
-        $hasObs = $p.PSObject.Properties.Name -contains 'obs_log'
-        $hasSen = $p.PSObject.Properties.Name -contains 'sen_log'
-        if ($hasObs -or $hasSen) { return $true }
-      } catch {}
-    }
-    return $false
-  } catch { return $false }
-}
-function Audit-ParsedStatus {
-  param([array]$MatchRecords,[switch]$RequestParseIfMissing)
-  $parsed = New-Object System.Collections.Generic.List[object]
-  $pending = New-Object System.Collections.Generic.List[object]
-  foreach ($rec in ($MatchRecords | Sort-Object start_time)) {
-    $mid = [long]$rec.match_id
-    $ok = Is-OD-Parsed -matchId $mid
-    if ($ok) { $parsed.Add([pscustomobject]@{ match_id=$mid; start_time=[long]$rec.start_time }) | Out-Null }
-    else {
-      $pending.Add($mid) | Out-Null
-      if ($RequestParseIfMissing) { Request-OpenDotaParse -matchId $mid }
-    }
-  }
-  return [pscustomobject]@{ parsed=$parsed.ToArray(); pending=$pending.ToArray() }
-}
-function Update-ReadyToParse {
-  param([long[]]$newIds,[string]$RepoPath,[int]$MaxRequests=100)
+  function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot" | Select-Object -ExpandProperty Path) }
   $paths = Get-ParseFiles -RepoPath $RepoPath
-  $ready = [System.Collections.Generic.HashSet[long]]::new()
+  Write-Host 'reportgenerator.ps1 is deprecated. Running data fetcher instead.' -ForegroundColor Yellow
+  $fetcher = Join-Path (Join-Path (Get-RepoRoot) 'scripts') 'fetch_opendota_data.ps1'
+  if (-not (Test-Path -LiteralPath $fetcher)) { throw "Fetcher not found: $fetcher" }
+  & $fetcher -DelayMs $OpenDotaDelayMs
+  Write-Host 'Done.'
   foreach($x in (Load-IdArray -path $paths.ready)) { [void]$ready.Add($x) }
   $reqs = 0
   foreach ($id in $newIds) {
@@ -1090,6 +860,23 @@ function Build-Monthly-Highlights {
 
   # Roshan totals and top matches
   $roshanAgg = [pscustomobject]@{ Radiant=$roshanTeam.Radiant; Dire=$roshanTeam.Dire }
+  # Build per-match Roshan aggregation (Radiant/Dire counts per match)
+  $roshanByMatch = @()
+  try {
+    $allKeys = New-Object 'System.Collections.Generic.HashSet[string]'
+    foreach($k in $roshanPerMatch.Radiant.Keys){ [void]$allKeys.Add([string]$k) }
+    foreach($k in $roshanPerMatch.Dire.Keys){ [void]$allKeys.Add([string]$k) }
+    foreach($k in $allKeys){
+      try {
+        $r = 0; $d = 0
+        if ($roshanPerMatch.Radiant.ContainsKey($k)) { $r = [int]$roshanPerMatch.Radiant[$k] }
+        if ($roshanPerMatch.Dire.ContainsKey($k))    { $d = [int]$roshanPerMatch.Dire[$k] }
+        $mid = 0
+        try { $mid = [int64]$k } catch { try { $mid = [int64]::Parse($k) } catch { $mid = 0 } }
+        $roshanByMatch += [pscustomobject]@{ match_id=$mid; Radiant=$r; Dire=$d; total=([int]$r + [int]$d) }
+      } catch {}
+    }
+  } catch {}
   function Get-TopRoshan($ht){
     try {
       $arr = @()
@@ -1176,6 +963,7 @@ function Build-Monthly-Highlights {
     offDuos    = $offTop
   roshan     = $roshanAgg
   roshanTop  = $roshanTop
+  roshanByMatch = $roshanByMatch
   topSingle  = $topSingle
   aegisSnatch = $aegisSnatch.ToArray()
   tormentor   = $tormentorTaken.ToArray()
@@ -2401,8 +2189,8 @@ a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2
 .hero img{width:64px;height:36px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
 .logo{width:20px;height:20px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.1)}
 .teamcell{display:flex;align-items:center;gap:8px}
-.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .simple{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .cal{margin-top:8px}
 .cal .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
@@ -2417,7 +2205,7 @@ a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2
 .toolbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px}
 .wardmap{margin:8px 0 0;position:relative;width:100%;aspect-ratio:1/1;background:url('https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg') center/cover no-repeat;border:1px solid rgba(255,255,255,.08);border-radius:12px}
 .wardmap.half{width:50%; margin:8px auto 0}
-.wardgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:start}
+.wardgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;align-items:start}
 .wardleft{position:relative}
 .wardright{position:relative}
 @media (max-width: 980px){.wardgrid{grid-template-columns:1fr}}
@@ -2543,7 +2331,9 @@ a{color:var(--accent);text-decoration:none} h1{font-size:28px;margin:0 0 8px} h2
     return ("<div class='hovercard'><div class='title'>Rampage matches</div>" + ($items -join " ") + "</div>")
   }
 
-  if ($Range -eq "All") {
+  # NOTE: This All-time block was incorrectly nested inside the monthly (30-day) branch.
+  # Keep it disabled here and reinsert a top-level version before final HTML.
+  if ($false -and $Range -eq "All") {
     # Build All-time highlights (no calendar)
     $excludeSet = Load-ExcludeSet -RepoPath $RepoPath
     if (-not $excludeSet) { $excludeSet = [System.Collections.Generic.HashSet[string]]::new() }
@@ -2612,13 +2402,16 @@ $rampHtmlAll
         </ul>
       </div>
       <div>
-        <h3>Roshan taken</h3>
+        <h3>Roshan taken (by match)</h3>
         <ul class="simple">
-          <li><span>Radiant</span><span class='badge'>x$rosRAll</span>$rosTopRAll</li>
-          <li><span>Dire</span><span class='badge'>x$rosDAll</span>$rosTopDAll</li>
+$(
+  if ($highAll -and $highAll.PSObject.Properties.Name -contains 'roshanByMatch' -and $highAll.roshanByMatch -and $highAll.roshanByMatch.Count -gt 0) {
+    $list = @($highAll.roshanByMatch | Sort-Object @{e='total';Descending=$true}, @{e='match_id';Descending=$true} | Select-Object -First 10)
+    ($list | ForEach-Object { $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid; "<li><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>M$mid</a><span class='badge'>Radiant x$($_.Radiant)</span><span class='badge'>Dire x$($_.Dire)</span><span class='badge'>Total: $($_.total)</span></li>" }) -join "`n"
+  } else { "<li><span class='sub'>no Roshan events in this period</span></li>" }
+)
         </ul>
   $objWarnAll
-  $objNoneAll
 $(
   # Aegis snatches (explicit)
   if ($highAll -and $highAll.PSObject.Properties.Name -contains 'aegisSnatch' -and $highAll.aegisSnatch -and $highAll.aegisSnatch.Count -gt 0) {
@@ -3497,6 +3290,415 @@ $runes
         <h3>Aegis Snatcher – most snatches</h3>
         <ul class="simple">
 $aegis
+        </ul>
+      </div>
+    </div>
+  </section>
+"@
+    }
+  }
+
+  # Top-level All-time highlights (moved out of monthly branch)
+  if ($Range -eq "All") {
+    # Build All-time highlights (no calendar)
+    $excludeSet = Load-ExcludeSet -RepoPath $RepoPath
+    if (-not $excludeSet) { $excludeSet = [System.Collections.Generic.HashSet[string]]::new() }
+    $exSet = $excludeSet
+    $allSubset = @($state.matches | Where-Object {
+      try { -not ($exSet -and $exSet.Contains([string]$_.match_id)) } catch { $true }
+    })
+    $highAll = $null
+    if ($allSubset.Count -gt 0) {
+      $highAll = Build-Monthly-Highlights -MatchesSubset $allSubset -HeroMap $heroMap -PlayerNamesMap $state.playerNames -PollRetries 0 -PollDelayMs 0
+    }
+
+    function DuoHtml2($arr){ $o=@(); foreach($d in $arr){ $a=$heroMap[[int]$d.a]; $b=$heroMap[[int]$d.b]; $aN= if($a){$a.name}else{"#"+$d.a}; $bN= if($b){$b.name}else{"#"+$d.b}; $o += "<li><span>"+(HtmlEscape $aN)+" + "+(HtmlEscape $bN)+"</span><span class='badge'>WR: <strong>"+(FmtPct $d.winrate)+"</strong></span><span class='badge'>G: $($d.games)</span></li>" }; ($o -join "`n") }
+
+    function RampHoverAll($rp){
+      if (-not $rp.matches -or $rp.matches.Count -eq 0) { return "" }
+      $items = @()
+      foreach($m in $rp.matches){ $mid = [string]$m.match_id; $url = & $OD_MATCH_URL $mid; $cnt=[int]$m.count; $label = if ($cnt -gt 1) { "x$cnt (same match)" } else { "x$cnt" }; $items += "<a href='"+(HtmlEscape $url)+"' target='_blank'>M$mid</a><span class='badge'>${label}</span>" }
+      return ("<div class='hovercard'><div class='title'>Rampage matches</div>" + ($items -join " ") + "</div>")
+    }
+
+    $rampHtmlAll = if ($highAll -and $highAll.rampages -and $highAll.rampages.Count -gt 0) {
+      ($highAll.rampages | ForEach-Object { $hover = RampHoverAll $_; "<li class='has-hover'><span><a href='"+(HtmlEscape $_.profile)+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge ramp-badge' tabindex='0'>x$($_.count)</span>$hover</li>" }) -join "`n"
+    } else { "<li><span class='sub'>no games</span></li>" }
+    $rosRAll = if ($highAll -and $highAll.roshan -and $highAll.roshan.PSObject.Properties.Name -contains 'Radiant') { [int]$highAll.roshan.Radiant } else { 0 }
+    $rosDAll = if ($highAll -and $highAll.roshan -and $highAll.roshan.PSObject.Properties.Name -contains 'Dire') { [int]$highAll.roshan.Dire } else { 0 }
+    $objWarnAll = if ($highAll -and $highAll.PSObject.Properties.Name -contains 'objectivesSeen' -and -not $highAll.objectivesSeen) { "<div class='sub'>no objective data in parsed matches</div>" } else { "" }
+    $objNoneAll = if ( ($rosRAll + $rosDAll) -eq 0 ) { "<div class='sub'>no Roshan events in this period</div>" } else { "" }
+    $rosTopRAll = ""; $rosTopDAll = ""
+    if ($highAll -and $highAll.PSObject.Properties.Name -contains 'roshanTop' -and $highAll.roshanTop) {
+      try { if ($highAll.roshanTop.Radiant -and $highAll.roshanTop.Radiant.Count -gt 0) { $rosTopRAll = ' ' + (($highAll.roshanTop.Radiant | ForEach-Object { $mid=[string]$_.match_id; $cnt=[int]$_.count; "<a class='badge' target='_blank' href='"+(HtmlEscape (& $OD_MATCH_URL $mid))+"'>M$mid</a><span class='badge'>x$cnt</span>" }) -join ' ') } } catch {}
+      try { if ($highAll.roshanTop.Dire    -and $highAll.roshanTop.Dire.Count -gt 0)    { $rosTopDAll = ' ' + (($highAll.roshanTop.Dire    | ForEach-Object { $mid=[string]$_.match_id; $cnt=[int]$_.count; "<a class='badge' target='_blank' href='"+(HtmlEscape (& $OD_MATCH_URL $mid))+"'>M$mid</a><span class='badge'>x$cnt</span>" }) -join ' ') } } catch {}
+    }
+
+    # Ward map background image: use latest match across allSubset
+    $mapConf = Load-MapConfig -RepoPath $RepoPath
+    $mapBgUrl = $mapConf.default
+    $mapScale = if ($mapConf.defaultScale) { [int]$mapConf.defaultScale } else { 127 }
+    $mapInvertY = $false
+    try {
+      $latestUnixAll = 0
+      foreach($m in $allSubset){ $u=[long]$m.start_time; if ($u -gt $latestUnixAll) { $latestUnixAll = $u } }
+      if ($latestUnixAll -gt 0) {
+        $maj = Get-MajorPatchForUnix -unix $latestUnixAll
+        $asset = Resolve-MapAsset -MapConf $mapConf -MajorTag $maj
+        $cand = $null; $scale = $null; $invY = $null
+        if ($asset -is [string]) { $cand = [string]$asset }
+        elseif ($asset -is [psobject]) { try { $cand = [string]$asset.src } catch {}; try { if ($asset.scale) { $scale = [int]$asset.scale } } catch {}; try { if ($null -ne $asset.invertY) { $invY = [bool]$asset.invertY } } catch {} }
+        if ($scale) { $mapScale = $scale }
+        if ($null -ne $invY) { $mapInvertY = $invY }
+        if ($cand -and ($cand -notmatch '^https?://')) {
+          $copied = Copy-AssetToDocs -RepoPath $RepoPath -RelPath $cand
+          if ($copied) { $mapBgUrl = $cand -replace "\\","/"; $assetDocPath = Join-Path (Join-Path $RepoPath 'docs') $cand; $preExtraCommit += ,$assetDocPath }
+        } elseif ($cand) { $mapBgUrl = $cand }
+      }
+    } catch {}
+
+    $highBlock = @"
+  <section class="card">
+    <h2>Highlights (All time)</h2>
+    <div class="grid3">
+      <div>
+        <h3>Rampages</h3>
+        <ul class="simple">
+$rampHtmlAll
+        </ul>
+      </div>
+      <div>
+        <h3>Roshan taken (by match)</h3>
+        <ul class="simple">
+$(
+  if ($highAll -and $highAll.PSObject.Properties.Name -contains 'roshanByMatch' -and $highAll.roshanByMatch -and $highAll.roshanByMatch.Count -gt 0) {
+    $list = @($highAll.roshanByMatch | Sort-Object @{e='total';Descending=$true}, @{e='match_id';Descending=$true} | Select-Object -First 10)
+    ($list | ForEach-Object { $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid; "<li><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>M$mid</a><span class='badge'>Radiant x$($_.Radiant)</span><span class='badge'>Dire x$($_.Dire)</span><span class='badge'>Total: $($_.total)</span></li>" }) -join "`n"
+  } else { "<li><span class='sub'>no Roshan events in this period</span></li>" }
+)
+        </ul>
+  $objWarnAll
+$(
+  # Aegis snatches (explicit)
+  if ($highAll -and $highAll.PSObject.Properties.Name -contains 'aegisSnatch' -and $highAll.aegisSnatch -and $highAll.aegisSnatch.Count -gt 0) {
+    $items = ($highAll.aegisSnatch | ForEach-Object {
+      $sec = [int]$_.time; $mm=[int]([math]::Floor($sec/60)); $ss=[int]($sec%60)
+      $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid
+      $team = if ($_.team) { [string]$_.team } else { '' }
+      $p = $_.player
+      $nm = if ($p -and $p.name) { [string]$p.name } else { 'Unknown' }
+      $hero = if ($p -and $p.hero) { [string]$p.hero } else { '' }
+      $prof = if ($p -and $p.profile) { [string]$p.profile } else { '' }
+      "<li><span>Aegis snatch:</span><span class='badge'>${team}</span><span>" + $( if($prof){ "<a href='"+(HtmlEscape $prof)+"' target='_blank'>"+(HtmlEscape $nm)+"</a>" } else { (HtmlEscape $nm) } ) + $( if ($hero){ " ("+(HtmlEscape $hero)+")" } else { "" } ) + "</span><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>${mm}m ${ss}s</a></li>"
+    }) -join "`n"
+    "<div class='sub' style='margin-top:6px'>Aegis snatches</div><ul class='simple'>${items}</ul>"
+  } else { '' }
+)
+$(
+  # Tormentor by match (aggregate by match/team, hide player)
+  if ($highAll -and $highAll.PSObject.Properties.Name -contains 'tormentor' -and $highAll.tormentor -and $highAll.tormentor.Count -gt 0) {
+    $agg = @{}
+    foreach($e in $highAll.tormentor){
+      try {
+        $mid = [string]$e.match_id; if (-not $mid) { continue }
+        if (-not $agg.ContainsKey($mid)) { $agg[$mid] = @{ Radiant = 0; Dire = 0; total = 0 } }
+        $add = 1; try { if ($e.PSObject.Properties.Name -contains 'count' -and $null -ne $e.count) { $add = [int]$e.count } } catch {}
+        $team = if ($e.team) { [string]$e.team } else { '' }
+        if ($team -eq 'Radiant') { $agg[$mid]['Radiant'] = [int]$agg[$mid]['Radiant'] + $add }
+        elseif ($team -eq 'Dire') { $agg[$mid]['Dire'] = [int]$agg[$mid]['Dire'] + $add }
+        $agg[$mid]['total'] = [int]$agg[$mid]['Radiant'] + [int]$agg[$mid]['Dire']
+      } catch {}
+    }
+    $list = @(); foreach($k in $agg.Keys){ $list += [pscustomobject]@{ match_id=[int64]$k; Radiant=[int]$agg[$k]['Radiant']; Dire=[int]$agg[$k]['Dire']; total=[int]$agg[$k]['total'] } }
+    if ($list.Count -gt 0) {
+      $list = @($list | Sort-Object @{e='total';Descending=$true}, @{e='match_id';Descending=$true} | Select-Object -First 10)
+      $items = ($list | ForEach-Object { $mid=[string]$_.match_id; $url = & $OD_MATCH_URL $mid; "<li><a class='badge' target='_blank' href='"+(HtmlEscape $url)+"'>M$mid</a><span class='badge'>Radiant x$($_.Radiant)</span><span class='badge'>Dire x$($_.Dire)</span><span class='badge'>Total: $($_.total)</span></li>" }) -join "`n"
+      "<div class='sub' style='margin-top:6px'>Tormentor kills by match</div><ul class='simple'>${items}</ul>"
+    } else { '' }
+  } else { '' }
+)
+      </div>
+      <div>
+        <h3>Top single-match performances</h3>
+        <ul class="simple">
+$(
+  $out=@()
+  if ($highAll -and $highAll.topSingle) {
+    if ($highAll.topSingle.PSObject.Properties.Name -contains 'gpm' -and $highAll.topSingle.gpm) {
+      $p=$highAll.topSingle.gpm; $out += "<li><span><a href='"+(HtmlEscape $p.profile)+"' target='_blank'>"+(HtmlEscape $p.name)+"</a></span><span class='badge'>Highest GPM: <strong>$($p.value)</strong></span><a class='badge' target='_blank' href='"+(HtmlEscape (& $OD_MATCH_URL $p.match_id))+"'>Match</a></li>"
+    }
+    if ($highAll.topSingle.PSObject.Properties.Name -contains 'kills' -and $highAll.topSingle.kills) {
+      $p=$highAll.topSingle.kills; $out += "<li><span><a href='"+(HtmlEscape $p.profile)+"' target='_blank'>"+(HtmlEscape $p.name)+"</a></span><span class='badge'>Highest Kills: <strong>$($p.value)</strong></span><a class='badge' target='_blank' href='"+(HtmlEscape (& $OD_MATCH_URL $p.match_id))+"'>Match</a></li>"
+    }
+    if ($highAll.topSingle.PSObject.Properties.Name -contains 'assists' -and $highAll.topSingle.assists) {
+      $p=$highAll.topSingle.assists; $out += "<li><span><a href='"+(HtmlEscape $p.profile)+"' target='_blank'>"+(HtmlEscape $p.name)+"</a></span><span class='badge'>Highest Assists: <strong>$($p.value)</strong></span><a class='badge' target='_blank' href='"+(HtmlEscape (& $OD_MATCH_URL $p.match_id))+"'>Match</a></li>"
+    }
+    if ($highAll.topSingle.PSObject.Properties.Name -contains 'networth' -and $highAll.topSingle.networth) {
+      $p=$highAll.topSingle.networth; $out += "<li><span><a href='"+(HtmlEscape $p.profile)+"' target='_blank'>"+(HtmlEscape $p.name)+"</a></span><span class='badge'>Highest Net Worth: <strong>$($p.value)</strong></span><a class='badge' target='_blank' href='"+(HtmlEscape (& $OD_MATCH_URL $p.match_id))+"'>Match</a></li>"
+    }
+  }
+  if ($out.Count -eq 0) { "<li><span class='sub'>no games</span></li>" } else { ($out -join "`n") }
+)
+        </ul>
+      </div>
+    </div>
+  <div class="grid3">
+      <div>
+        <h3>Most common teammates</h3>
+        <ul class="simple">
+$(if ($highAll -and $highAll.PSObject.Properties.Name -contains 'teammates' -and $highAll.teammates -and $highAll.teammates.Count -gt 0) { ($highAll.teammates | ForEach-Object { "<li><span><a href='$(HtmlEscape $_.profile1)' target='_blank'>$(HtmlEscape $_.name1)</a> + <a href='$(HtmlEscape $_.profile2)' target='_blank'>$(HtmlEscape $_.name2)</a></span><span class='badge'>x$($_.games)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no games</span></li>" })
+        </ul>
+      </div>
+      <div>
+        <h3>Most courier kills</h3>
+        <ul class="simple">
+$(if ($highAll -and $highAll.PSObject.Properties.Name -contains 'courierTop' -and $highAll.courierTop -and $highAll.courierTop.Count -gt 0) { ($highAll.courierTop | ForEach-Object { "<li><span><a href='$(HtmlEscape $_.profile)' target='_blank'>$(HtmlEscape $_.name)</a></span><span class='badge'>x$($_.count)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" })
+        </ul>
+      </div>
+      <div>
+        <h3>Most camps stacked</h3>
+        <ul class="simple">
+$(if ($highAll -and $highAll.PSObject.Properties.Name -contains 'stackTop' -and $highAll.stackTop -and $highAll.stackTop.Count -gt 0) { ($highAll.stackTop | ForEach-Object { "<li><span><a href='$(HtmlEscape $_.profile)' target='_blank'>$(HtmlEscape $_.name)</a></span><span class='badge'>x$($_.count)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" })
+        </ul>
+      </div>
+    </div>
+    <div class="grid2">
+      <div>
+        <h3>Best Safe Lane Duos</h3>
+        <ul class="simple">
+$(if ($highAll -and $highAll.safeDuos) { DuoHtml2 $highAll.safeDuos } else { "<li><span class='sub'>no games</span></li>" })
+        </ul>
+      </div>
+      <div>
+        <h3>Best Off Lane Duos</h3>
+        <ul class="simple">
+$(if ($highAll -and $highAll.offDuos) { DuoHtml2 $highAll.offDuos } else { "<li><span class='sub'>no games</span></li>" })
+        </ul>
+      </div>
+    </div>
+    <div class="grid2">
+      <div>
+  <h3>3 longest matches</h3>
+        <ul class="simple">
+$(
+  if ($highAll -and $highAll.durationLongest -and $highAll.durationLongest.Count -gt 0) {
+    ($highAll.durationLongest | ForEach-Object {
+      $sec=[int]$_.duration; $mm=[int]([math]::Floor($sec/60)); $ss=[int]($sec%60)
+      $vs = (HtmlEscape ($_.radiant + ' vs ' + $_.dire))
+      $win = if ($_.radiant_win) { 'Radiant' } else { 'Dire' }
+      "<li><span><a target='_blank' href='"+(HtmlEscape (& $OD_MATCH_URL $_.match_id))+"'>${vs}</a></span><span class='badge'>${mm}m ${ss}s</span><span class='badge'>Winner: ${win}</span></li>"
+    }) -join "`n"
+  } else { "<li><span class='sub'>no games</span></li>" }
+)
+        </ul>
+      </div>
+      <div>
+  <h3>3 shortest matches</h3>
+        <ul class="simple">
+$(
+  if ($highAll -and $highAll.durationShortest -and $highAll.durationShortest.Count -gt 0) {
+    ($highAll.durationShortest | ForEach-Object {
+      $sec=[int]$_.duration; $mm=[int]([math]::Floor($sec/60)); $ss=[int]($sec%60)
+      $vs = (HtmlEscape ($_.radiant + ' vs ' + $_.dire))
+      $win = if ($_.radiant_win) { 'Radiant' } else { 'Dire' }
+      "<li><span><a target='_blank' href='"+(HtmlEscape (& $OD_MATCH_URL $_.match_id))+"'>${vs}</a></span><span class='badge'>${mm}m ${ss}s</span><span class='badge'>Winner: ${win}</span></li>"
+    }) -join "`n"
+  } else { "<li><span class='sub'>no games</span></li>" }
+)
+        </ul>
+      </div>
+    </div>
+  <h3>Ward Spots</h3>
+  <div class="wardgrid">
+    <div class="wardleft">
+      <div class="sub" style="margin:-4px 0 8px">All tracked games | Number = count of observer placements at spot | Circle = observer vision radius (~1600u).</div>
+      <div class="wardmap" style="background-image:url('$(HtmlEscape $mapBgUrl)')">
+        <svg id="wardSvg" viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%">
+$(
+  if ($highAll -and $highAll.wardEvents -and $highAll.wardEvents.Count -gt 0) {
+  $obsPct = $null; $senPct = $null; $obsUnits=$null; $senUnits=$null; $cellUnits=$null; $spanX=$null
+    try { $majTagTmp = Get-MajorPatchForUnix -unix $latestUnixAll; $assetTmp = Resolve-MapAsset -MapConf $mapConf -MajorTag $majTagTmp; if ($assetTmp -is [psobject]) { if ($assetTmp.obsRadiusUnits){$obsUnits=[double]$assetTmp.obsRadiusUnits}; if ($assetTmp.senRadiusUnits){$senUnits=[double]$assetTmp.senRadiusUnits}; if ($assetTmp.cellUnits){$cellUnits=[double]$assetTmp.cellUnits}; if ($null -ne $assetTmp.minX -and $null -ne $assetTmp.maxX){ $spanX=[double]$assetTmp.maxX - [double]$assetTmp.minX } } } catch {}
+    if (-not $cellUnits) { try { if ($mapConf.defaultCellUnits){ $cellUnits = [double]$mapConf.defaultCellUnits } } catch {} }
+    if (-not $obsUnits)  { try { if ($mapConf.defaultObsRadiusUnits){ $obsUnits = [double]$mapConf.defaultObsRadiusUnits } } catch {} }
+    if (-not $senUnits)  { try { if ($mapConf.defaultSenRadiusUnits){ $senUnits = [double]$mapConf.defaultSenRadiusUnits } } catch {} }
+    if (-not $spanX -or $spanX -le 0) { $spanX = [double]$mapScale }
+    if ($obsUnits -and $cellUnits -and $spanX -gt 0) { $obsPct = [math]::Round(($obsUnits / ($cellUnits * $spanX)) * 100, 2) }
+    if ($senUnits -and $cellUnits -and $spanX -gt 0) { $senPct = [math]::Round(($senUnits / ($cellUnits * $spanX)) * 100, 2) }
+    if (-not $obsPct) { try { if ($assetTmp -is [psobject] -and $assetTmp.obsRadiusPct) { $obsPct = [double]$assetTmp.obsRadiusPct } } catch {} }
+    if (-not $senPct) { try { if ($assetTmp -is [psobject] -and $assetTmp.senRadiusPct) { $senPct = [double]$assetTmp.senRadiusPct } } catch {} }
+    if (-not $obsPct) { $obsPct = if ($mapConf.defaultObsRadiusPct) { [double]$mapConf.defaultObsRadiusPct } else { 10 } }
+    if (-not $senPct) { $senPct = if ($mapConf.defaultSenRadiusPct) { [double]$mapConf.defaultSenRadiusPct } else { 6 } }
+  $spotMap = @{}; foreach($e in $highAll.wardEvents){ try { $kx=[int]$e.x; $ky=[int]$e.y; $k = ("{0},{1}" -f $kx,$ky); if (-not $spotMap[$k]){ $spotMap[$k] = @{ obs=$false; sen=$false } }; if ($e.type -eq 'obs'){ $spotMap[$k].obs = $true } elseif ($e.type -eq 'sen'){ $spotMap[$k].sen = $true } } catch {} }
+  $ranked = @($highAll.wardSpots); $rankLongest = @($highAll.wardLongest)
+  $svgSpots = ($ranked | ForEach-Object { try { $kspot=[string]$_.spot; if (-not $kspot){ return '' }; $parts=$kspot.Split(','); $px=[double]$parts[0]; $py=[double]$parts[1]; $minX=$null; $minY=$null; $maxX=$null; $maxY=$null; try { if ($assetTmp -is [psobject]) { if ($assetTmp.minX -ne $null) { $minX=[double]$assetTmp.minX }; if ($assetTmp.minY -ne $null) { $minY=[double]$assetTmp.minY }; if ($assetTmp.maxX -ne $null) { $maxX=[double]$assetTmp.maxX }; if ($assetTmp.maxY -ne $null) { $maxY=[double]$assetTmp.maxY } } } catch {}; if ($minX -ne $null -and $minY -ne $null -and $maxX -ne $null -and $maxY -ne $null -and $maxX -gt $minX -and $maxY -gt $minY) { if ($px -lt $minX){$px=$minX}; if ($px -gt $maxX){$px=$maxX}; if ($py -lt $minY){$py=$minY}; if ($py -gt $maxY){$py=$maxY}; $cx=[math]::Round((($px - $minX)/($maxX - $minX))*100,2); $yy=(($py - $minY)/($maxY - $minY)); if ($mapInvertY){ $yy = 1.0 - $yy }; $cy=[math]::Round(($yy)*100,2) } else { $scale=[double]$mapScale; if ($px -lt 0){$px=0}; if ($px -gt $scale){$px=$scale}; if ($py -lt 0){$py=0}; if ($py -gt $scale){$py=$scale}; $cx=[math]::Round(($px/$scale)*100,2); $yy=($py/$scale); if ($mapInvertY){ $yy = 1.0 - $yy }; $cy=[math]::Round(($yy)*100,2) }; $info=$spotMap[$kspot]; $isObs=[bool]$info.obs; $svgOut=New-Object System.Text.StringBuilder; $elId = if ($_.spotId) { [string]$_.spotId } elseif ($info -and $info.id) { [string]$info.id } else { $null }; if ($isObs) { $rpct=$obsPct; $stroke='rgba(255,215,0,0.65)'; $fill='rgba(255,215,0,0.08)'; $idAttr= if ($elId) { (" id='"+$elId+"'") } else { '' }; $cnt= try { [int]$_.count } catch { 0 }; [void]$svgOut.Append("          <circle"+$idAttr+" class='spot' cx='${cx}%' cy='${cy}%' r='${rpct}' fill='${fill}' stroke='${stroke}' stroke-width='0.8' opacity='0.8'>`n            <title>Spot ${kspot} - Placements: ${cnt} - Period: All time</title>`n          </circle>`n          <circle cx='${cx}%' cy='${cy}%' r='1.0' fill='${stroke}' opacity='0.85' />") }; $svgOut.ToString() } catch { '' } }) -join "`n"
+  $svgLongest = ($rankLongest | ForEach-Object { try { $kspot=[string]$_.spot; if (-not $kspot){ return '' }; $parts=$kspot.Split(','); $px=[double]$parts[0]; $py=[double]$parts[1]; $minX=$null; $minY=$null; $maxX=$null; $maxY=$null; try { if ($assetTmp -is [psobject]) { if ($assetTmp.minX -ne $null) { $minX=[double]$assetTmp.minX }; if ($assetTmp.minY -ne $null) { $minY=[double]$assetTmp.minY }; if ($assetTmp.maxX -ne $null) { $maxX=[double]$assetTmp.maxX }; if ($assetTmp.maxY -ne $null) { $maxY=[double]$assetTmp.maxY } } } catch {}; if ($minX -ne $null -and $minY -ne $null -and $maxX -ne $null -and $maxY -ne $null -and $maxX -gt $minX -and $maxY -gt $minY) { if ($px -lt $minX){$px=$minX}; if ($px -gt $maxX){$px=$maxX}; if ($py -lt $minY){$py=$minY}; if ($py -gt $maxY){$py=$maxY}; $cx=[math]::Round((($px - $minX)/($maxX - $minX))*100,2); $yy=(($py - $minY)/($maxY - $minY)); if ($mapInvertY){ $yy = 1.0 - $yy }; $cy=[math]::Round(($yy)*100,2) } else { $scale=[double]$mapScale; if ($px -lt 0){$px=0}; if ($px -gt $scale){$px=$scale}; if ($py -lt 0){$py=0}; if ($py -gt $scale){$py=$scale}; $cx=[math]::Round(($px/$scale)*100,2); $yy=($py/$scale); if ($mapInvertY){ $yy = 1.0 - $yy }; $cy=[math]::Round(($yy)*100,2) }; $info=$spotMap[$kspot]; $isObs=[bool]$info.obs; $svgOut=New-Object System.Text.StringBuilder; $elId = if ($_.spotId) { [string]$_.spotId } elseif ($info -and $info.id) { [string]$info.id } else { $null }; if ($isObs) { $rpct=$obsPct; $stroke='rgba(86,227,150,0.55)'; $fill='rgba(86,227,150,0.06)'; $idAttr= if ($elId) { (" id='"+$elId+"'") } else { '' }; $mx= try { [int]$_.maxSeconds } catch { $null }; $mm = if ($mx -ne $null) { [int]([math]::Floor($mx/60)) } else { 0 }; $ss = if ($mx -ne $null) { [int]($mx % 60) } else { 0 }; $pc = try { [int]$_.count } catch { 0 }; [void]$svgOut.Append("          <circle"+$idAttr+" class='spot longest' cx='${cx}%' cy='${cy}%' r='${rpct}' fill='${fill}' stroke='${stroke}' stroke-width='0.6' opacity='0.7'>`n            <title>Spot ${kspot} - Longest life: ${mm}m ${ss}s - Placements: ${pc}</title>`n          </circle>`n          <circle cx='${cx}%' cy='${cy}%' r='0.8' fill='${stroke}' opacity='0.75' />") }; $svgOut.ToString() } catch { '' } }) -join "`n"
+
+  "<g id='ov-spots'>${svgSpots}</g><g id='ov-longest' style='display:none'>${svgLongest}</g>"
+  } else { "          <!-- no wards -->" }
+)
+        </svg>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+        <label style="font-size:13px;color:var(--muted)"><input id="toggleSpots" type="checkbox" checked style="vertical-align:middle;margin-right:6px">Show ward overlay</label>
+      </div>
+      <script>
+      (function(){
+        const svg = document.getElementById('wardSvg');
+        if (!svg) return;
+        const wrap = svg.closest('.wardmap');
+        const active = new Set();
+        function setHighlight(id, on){
+          if (!id) return;
+          const els = svg.querySelectorAll('#'+CSS.escape(id));
+          if (els && els.length){ els.forEach(el=> el.classList.toggle('hl', !!on)); }
+          if (on) { active.add(id); } else { active.delete(id); }
+          if (wrap){ wrap.classList.toggle('highlighting', active.size>0); }
+        }
+        window.__wardHover = { setHighlight };
+      })();
+      </script>
+    </div>
+    <div class="wardright">
+      <div class="tabs">
+        <button class="tab active" data-tab="spots">Most popular spots</button>
+        <button class="tab" data-tab="players">Players</button>
+  <button class="tab" data-tab="longest">Longest-lived spots (min 3 placements)</button>
+      </div>
+      <div id="tab-spots" class="tabpane active">
+        <ul id="spotList" class="simple" style="margin-top:8px">
+$(if ($highAll -and $highAll.wardSpots) { ($highAll.wardSpots | ForEach-Object { $sid = if ($_.spotId){$_.spotId}else{""}; "<li data-spot='${sid}'><span>Spot $($_.spot)</span><span class='badge'>x$($_.count)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no games</span></li>" })
+        </ul>
+      </div>
+      <div id="tab-players" class="tabpane" style="display:none">
+      <div class="grid3">
+        <div>
+          <h4>Most placed</h4>
+          <ul class="simple">
+$(if ($highAll -and $highAll.wardPlayers -and $highAll.wardPlayers.mostPlaced) { ($highAll.wardPlayers.mostPlaced | ForEach-Object { "<li><span><a href='"+(HtmlEscape $_.profile)+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>x$($_.count)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" })
+          </ul>
+        </div>
+        <div>
+          <h4>Most dewards</h4>
+          <ul class="simple">
+$(if ($highAll -and $highAll.wardPlayers -and $highAll.wardPlayers.mostDewards) { ($highAll.wardPlayers.mostDewards | ForEach-Object { "<li><span><a href='"+(HtmlEscape $_.profile)+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>x$($_.count)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" })
+          </ul>
+        </div>
+        <div>
+          <h4>Most successful (avg. lifetime)</h4>
+          <ul class="simple">
+$(if ($highAll -and $highAll.wardPlayers -and $highAll.wardPlayers.longestAvg) { ($highAll.wardPlayers.longestAvg | ForEach-Object { $sec=[int]$_.avgSeconds; $mm=[int]([math]::Floor($sec/60)); $ss=[int]($sec%60); "<li><span><a href='"+(HtmlEscape $_.profile)+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>${mm}m ${ss}s avg</span><span class='badge'>n=$($_.samples)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" })
+          </ul>
+        </div>
+      </div>
+    </div>
+      <div id="tab-longest" class="tabpane" style="display:none">
+      $( if ($highAll -and $highAll.wardLongest -and $highAll.wardLongest.Count -gt 0) { $items = ($highAll.wardLongest | ForEach-Object { $sid = if ($_.spotId){$_.spotId}else{""}; $sec=[int]$_.maxSeconds; $mm=[int]([math]::Floor($sec/60)); $ss=[int]($sec%60); $pc = try { [int]$_.count } catch { 0 }; "<li data-spot='${sid}'><span>Spot $($_.spot)</span><span class='badge'>${mm}m ${ss}s</span><span class='badge'>x${pc}</span></li>" }) -join "`n"; "<ul id='longestList' class='simple' style='opacity:.85'>${items}</ul>" } else { '<ul class="simple"><li><span class="sub">no data</span></li></ul>' } )
+      </div>
+      <script>
+      (function(){
+        const root = document.currentScript.closest('.wardright');
+        const tabs = Array.from(root.querySelectorAll('.tabs .tab'));
+        const svg = document.getElementById('wardSvg');
+        const gSpots = svg ? svg.querySelector('#ov-spots') : null;
+        const gLongest = svg ? svg.querySelector('#ov-longest') : null;
+        function show(name){
+          root.querySelectorAll('.tabpane').forEach(p=>p.style.display='none');
+          root.querySelector('#tab-'+name).style.display='';
+          tabs.forEach(b=>b.classList.toggle('active', b.getAttribute('data-tab')===name));
+          if (gSpots && gLongest){ if (name==='longest'){ gSpots.style.display='none'; gLongest.style.display=''; } else { gSpots.style.display=''; gLongest.style.display='none'; } }
+        }
+        tabs.forEach(b=>b.addEventListener('click', ()=> show(b.getAttribute('data-tab'))));
+        function wireHover(ul){ const hover = window.__wardHover; if (!hover || !ul) return; ul.addEventListener('mouseover', e => { const li = e.target.closest('li[data-spot]'); if (!li) return; hover.setHighlight(li.getAttribute('data-spot'), true); }); ul.addEventListener('mouseout', e => { const li = e.target.closest('li[data-spot]'); if (!li) return; hover.setHighlight(li.getAttribute('data-spot'), false); }); }
+        wireHover(document.getElementById('spotList'));
+        wireHover(document.getElementById('longestList'));
+        const toggle = document.getElementById('toggleSpots'); if (toggle && svg){ toggle.addEventListener('change', ()=>{ svg.style.display = toggle.checked ? '' : 'none'; }); }
+      })();
+      </script>
+    </div>
+  </div>
+"@
+    # Append Awards (All time)
+    $awAll = if ($highAll -and ($highAll.PSObject.Properties.Name -contains 'awards')) { $highAll.awards } else { $null }
+    if ($awAll) {
+      $spaceAll = if ($awAll.spaceCreator -and $awAll.spaceCreator.Count -gt 0) { ($awAll.spaceCreator | ForEach-Object { "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>x"+([int]$_.val)+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+      $ogAll = if ($awAll.objectiveGamer -and $awAll.objectiveGamer.Count -gt 0) { ($awAll.objectiveGamer | ForEach-Object { "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>"+(FmtPct $_.share)+"</span><span class='badge'>Rosh: x"+([int]$_.rosh)+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+      $earlyAll = if ($awAll.earlyFarmer -and $awAll.earlyFarmer.Count -gt 0) { ($awAll.earlyFarmer | ForEach-Object { "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>"+([int]$_.value)+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+      $clutchAll = if ($awAll.clutchKing -and $awAll.clutchKing.Count -gt 0) { ($awAll.clutchKing | ForEach-Object { "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>"+(FmtPct $_.ratio)+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+      $courierAll = if ($awAll.courierAssassin -and $awAll.courierAssassin.Count -gt 0) { ($awAll.courierAssassin | ForEach-Object { "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>x"+([int]$_.val)+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+      $visionAll = if ($awAll.visionMvp -and $awAll.visionMvp.Count -gt 0) { ($awAll.visionMvp | ForEach-Object { $v=[double]$_.val; $vs=([string]([math]::Round($v,1))); "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>"+$vs+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+      $stackAll = if ($awAll.stackMaster -and $awAll.stackMaster.Count -gt 0) { ($awAll.stackMaster | ForEach-Object { "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>x"+([int]$_.val)+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+      $smokeAll = if ($awAll.smokeCommander -and $awAll.smokeCommander.Count -gt 0) { ($awAll.smokeCommander | ForEach-Object { "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>x"+([int]$_.val)+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+      $runesAll = if ($awAll.runeController -and $awAll.runeController.Count -gt 0) { ($awAll.runeController | ForEach-Object { "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>x"+([int]$_.val)+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+      $aegisAll = if ($awAll.aegisSnatcher -and $awAll.aegisSnatcher.Count -gt 0) { ($awAll.aegisSnatcher | ForEach-Object { "<li><span><a href='"+(HtmlEscape (& $OD_PLAYER_URL $_.account_id))+"' target='_blank'>"+(HtmlEscape $_.name)+"</a></span><span class='badge'>x"+([int]$_.val)+"</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" }
+
+      $highBlock += @"
+  <section class="card">
+    <h2>Awards (All time)</h2>
+    <div class="grid3">
+      <div>
+        <h3>Space Creator – most deaths in wins</h3>
+        <ul class="simple">
+$spaceAll
+        </ul>
+      </div>
+      <div>
+        <h3>Objective Gamer – tower share + rosh</h3>
+        <ul class="simple">
+$ogAll
+        </ul>
+      </div>
+      <div>
+        <h3>Early Farmer – net worth @10:00</h3>
+        <ul class="simple">
+$earlyAll
+        </ul>
+      </div>
+    </div>
+    <div class="grid3" style="margin-top:8px">
+      <div>
+        <h3>Clutch King – KP in last 10%</h3>
+        <ul class="simple">
+$clutchAll
+        </ul>
+      </div>
+      <div>
+        <h3>Courier Assassin – most couriers</h3>
+        <ul class="simple">
+$courierAll
+        </ul>
+      </div>
+      <div>
+        <h3>Vision MVP – warding/dewarding</h3>
+        <ul class="simple">
+$visionAll
+        </ul>
+      </div>
+    </div>
+    <div class="grid3" style="margin-top:8px">
+      <div>
+        <h3>Stack Master – most stacks</h3>
+        <ul class="simple">
+$stackAll
+        </ul>
+      </div>
+      <div>
+        <h3>Smoke Commander – most smokes</h3>
+        <ul class="simple">
+$smokeAll
+        </ul>
+      </div>
+      <div>
+        <h3>Rune Controller – runes taken</h3>
+        <ul class="simple">
+$runesAll
+        </ul>
+      </div>
+    </div>
+    <div class="grid3" style="margin-top:8px">
+      <div>
+        <h3>Aegis Snatcher – most snatches</h3>
+        <ul class="simple">
+$aegisAll
         </ul>
       </div>
     </div>

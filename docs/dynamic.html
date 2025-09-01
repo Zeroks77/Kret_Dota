@@ -61,6 +61,15 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 /* Stacked badge lines */
 .stack .row{display:block;margin-top:4px}
 .stack .row .badge{margin-right:6px}
+/* Calendar */
+.cal{margin-top:8px}
+.cal .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .dow div{color:var(--muted);font-size:12px;text-align:center}
+.cal .day{min-height:90px;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015))}
+.cal .date{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:4px}
+.cal .matches{display:flex;flex-wrap:wrap;gap:4px}
+.cal .matches a{display:inline-block;background:var(--chip);color:var(--text);border-radius:999px;font-size:11px;padding:2px 6px}
 </style>
 </head>
 <body>
@@ -108,6 +117,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     <button class="tab" data-tab="players">Players</button>
     <button class="tab" data-tab="heroes">Heroes</button>
     <button class="tab" data-tab="teams">Teams</button>
+  <button class="tab" data-tab="calendar">Calendar</button>
   <button class="tab" data-tab="awards">Awards</button>
   </div>
 
@@ -152,6 +162,22 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">🏆 Awards</h2>
       <div id="awardsBody" class="sub">Select a range and Apply to compute awards.</div>
+    </section>
+  </div>
+
+  <div id="pane-calendar" class="tabpane" style="display:none">
+    <section class="card">
+      <div class="cal">
+        <div class="toolbar">
+          <button class="tab" id="calPrev">← Prev</button>
+          <div class="title" id="calTitle">-</div>
+          <button class="tab" id="calNext">Next →</button>
+        </div>
+        <div class="dow grid7">
+          <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+        </div>
+        <div id="calGrid" class="grid7" style="margin-top:6px"></div>
+      </div>
     </section>
   </div>
 </div>
@@ -776,13 +802,15 @@ async function main(){
     if (!tabsRoot) return;
     const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
     function showTab(name){
-  ['highlights','players','heroes','teams','awards'].forEach(id=>{
+  ['highlights','players','heroes','teams','awards','calendar'].forEach(id=>{
         const pane = document.getElementById('pane-'+id);
         if (pane) pane.style.display = (id===name)? '' : 'none';
       });
       tabs.forEach(b=> b.classList.toggle('active', b.getAttribute('data-tab')===name));
     }
     tabs.forEach(b=> b.addEventListener('click', ()=> showTab(b.getAttribute('data-tab'))));
+    // Expose for initial selection via URL
+    window.__dvShowTab = showTab;
   })();
   // Load from root-level data/ via relative path (local) or raw.githubusercontent.com (GitHub Pages)
   const REPO='Zeroks77/Kret_Dota'; const BRANCH='main';
@@ -809,6 +837,10 @@ async function main(){
   }
 
   const from = document.getElementById('from'), to = document.getElementById('to'), quick = document.getElementById('quick');
+  // Keep last subset for calendar/nav
+  let __subsetCache = [];
+  let __rangeUnix = {from:0,to:0};
+  let __calCursor = null; // {y,m}
   // ---- Helpers to compute highlights client-side for any range ----
   function mapHeroTag(heroMap){ const out={}; try{ for(const k in heroMap){ const v=heroMap[k]; if(v && v.tag) out[String(v.tag)] = Number(v.id||k); } }catch(_e){} return out; }
   function getTeamByObjective(ev, md){
@@ -1154,13 +1186,18 @@ async function main(){
       const sub=`${fmt(f)} to ${fmt(t)} (UTC)`;
       document.getElementById('headerSub').textContent=sub;
   }catch(_e){}
-    const subset = allMatches.filter(m=> (m.start_time>=f) && (m.start_time<=t) );
+  const subset = allMatches.filter(m=> (m.start_time>=f) && (m.start_time<=t) );
+  __subsetCache = subset; __rangeUnix = {from:f,to:t};
+  // Init calendar cursor to month of 'to'
+  const dTo = new Date(t*1000); __calCursor = {y:dTo.getUTCFullYear(), m:dTo.getUTCMonth()};
   const agg = aggregate(subset, playerNames, teamNames);
   renderSummary(agg, heroes);
     render(agg, heroes);
   // Compute highlights live for this arbitrary range
   const label = `Period: ${new Date(f*1000).toISOString().slice(0,10)} to ${new Date(t*1000).toISOString().slice(0,10)} (UTC)`;
   computeHighlightsForSubset(subset, heroes, mapConf, label);
+  // Render calendar for current cursor
+  renderCalendarMonth(__subsetCache, __rangeUnix, __calCursor);
   }
   document.getElementById('apply').addEventListener('click', apply);
   quick.addEventListener('change', async ()=>{
@@ -1180,11 +1217,33 @@ async function main(){
 
   // Initialize inputs to last 30 days
   const now = Math.floor(Date.now()/1000);
-  from.value = toLocalInput(now - 30*86400);
-  to.value   = toLocalInput(now);
-  // Default quick to 30 to show highlights
-  const quickSel = document.getElementById('quick'); quickSel.value='30';
-  apply();
+  // URL params support: ?range=30|60|120|patch|all or ?from=...&to=... (epoch or YYYY-MM-DD)
+  (function initFromUrl(){
+    const sp = new URLSearchParams(location.search);
+    const pr = sp.get('range');
+    const pf = sp.get('from');
+    const pt = sp.get('to');
+    const ptab = sp.get('tab');
+    function parseDateish(s){ if(!s) return NaN; if(/^\d{10}$/.test(s)) return Number(s); const ms = Date.parse(s); return isNaN(ms)? NaN : Math.floor(ms/1000); }
+    let fux = NaN, tux = NaN;
+    if(pf||pt){ fux = parseDateish(pf); tux = parseDateish(pt); }
+    if(isFinite(fux) || isFinite(tux)){
+      const f2 = isFinite(fux)? fux : 0; const t2 = isFinite(tux)? tux : now;
+      from.value = toLocalInput(f2); to.value = toLocalInput(t2);
+      quick.value = '';
+    } else if(pr){
+      quick.value = pr;
+      const event = new Event('change'); quick.dispatchEvent(event);
+    } else {
+      from.value = toLocalInput(now - 30*86400);
+      to.value   = toLocalInput(now);
+      quick.value='30';
+    }
+    // Optional: open requested tab
+    if(ptab && window.__dvShowTab){ window.__dvShowTab(ptab); }
+  })();
+  // If quick change handler didn’t apply yet, do it now
+  if(!__subsetCache.length) apply();
 }
 enableSorting();
 // ------- Awards logic (compute + render) -------
@@ -1630,6 +1689,43 @@ function renderAwards(aw, heroMap){
   ${list3('Blink Junkie – blink uses', aw.blinkJunkie, 'plain')}
     </div>`;
   root.innerHTML = html;
+}
+
+// ===== Calendar rendering =====
+function renderCalendarMonth(subset, range, cursor){
+  try{
+    const grid = document.getElementById('calGrid'); const title = document.getElementById('calTitle'); const prev = document.getElementById('calPrev'); const next = document.getElementById('calNext');
+    if(!grid||!title||!prev||!next) return;
+    const y = cursor.y, m = cursor.m; // m: 0..11 (UTC)
+    const first = new Date(Date.UTC(y,m,1,0,0,0));
+    const last  = new Date(Date.UTC(y,m+1,0,23,59,59));
+    title.textContent = first.toLocaleString('en-US',{month:'long', year:'numeric', timeZone:'UTC'}) + ' (UTC)';
+    // Determine Monday-based start index
+    let startDow = first.getUTCDay(); // 0=Sun
+    startDow = (startDow+6)%7; // 0=Mon
+    const daysInMonth = last.getUTCDate();
+    // Group matches by YYYY-MM-DD (UTC)
+    const byDay = new Map();
+    for(const mrec of subset){ const d = new Date(mrec.start_time*1000); const key = d.toISOString().slice(0,10); if(!byDay.has(key)) byDay.set(key, []); byDay.get(key).push(mrec); }
+    // Build cells
+    const cells = [];
+    for(let i=0;i<startDow;i++){ cells.push(`<div></div>`); }
+    for(let day=1; day<=daysInMonth; day++){
+      const key = `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const arr = (byDay.get(key)||[]).slice().sort((a,b)=> a.start_time-b.start_time);
+      const chips = arr.map(x=> `<a href='${OD_MATCH_URL(x.match_id)}' target='_blank' title='${x.radiant_name||'Radiant'} vs ${x.dire_name||'Dire'}'>M${x.match_id}</a>`).join('');
+      cells.push(`<div class='day'><div class='date'>${day}</div><div class='matches'>${chips||''}</div></div>`);
+    }
+    grid.innerHTML = cells.join('');
+    // Enable/disable nav within selected range
+    const minD = new Date(range.from*1000), maxD = new Date(range.to*1000);
+    const prevMonthEnd = new Date(Date.UTC(y,m,0,23,59,59));
+    const nextMonthStart = new Date(Date.UTC(y,m+1,1,0,0,0));
+    prev.disabled = prevMonthEnd < new Date(Date.UTC(minD.getUTCFullYear(), minD.getUTCMonth(), 1, 0,0,0));
+    next.disabled = nextMonthStart > new Date(Date.UTC(maxD.getUTCFullYear(), maxD.getUTCMonth(), 1, 23,59,59));
+    prev.onclick = ()=>{ const nm = new Date(Date.UTC(cursor.y, cursor.m, 1)); nm.setUTCMonth(cursor.m-1); cursor.y = nm.getUTCFullYear(); cursor.m = nm.getUTCMonth(); renderCalendarMonth(subset, range, cursor); };
+    next.onclick = ()=>{ const nm = new Date(Date.UTC(cursor.y, cursor.m, 1)); nm.setUTCMonth(cursor.m+1); cursor.y = nm.getUTCFullYear(); cursor.m = nm.getUTCMonth(); renderCalendarMonth(subset, range, cursor); };
+  }catch(e){ console.warn('calendar render failed', e); }
 }
 main().catch(e=>{
   document.body.innerHTML = `<div style='padding:24px;color:#fff'>Failed to load data. ${e}</div>`;
