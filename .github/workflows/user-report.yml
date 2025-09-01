@@ -2,16 +2,27 @@ name: Generate User Report
 
 on:
   issues:
-    types: [opened, labeled, edited]
+    types: [opened, labeled]
 
 permissions:
   contents: write
   issues: write
 
+concurrency:
+  group: user-report-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
 jobs:
   run:
-    # Trigger when labeled user-report OR when the title is created via Dynamic View
-    if: contains(github.event.issue.labels.*.name, 'user-report') || startsWith(github.event.issue.title, 'Generate user report:')
+    # Run on:
+    # - opened: when title comes from Dynamic View
+    # - labeled: when someone manually adds the 'user-report' label (ignore bot-added labels)
+    if: >-
+      (
+        github.event.action == 'opened' && startsWith(github.event.issue.title, 'Generate user report:')
+      ) || (
+        github.event.action == 'labeled' && github.event.label.name == 'user-report' && github.actor != 'github-actions[bot]'
+      )
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -48,7 +59,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          ./scripts/create_user_report.ps1 -Name "${{ steps.parse.outputs.name }}" -AccountId [int]"${{ steps.parse.outputs.account }}" -RangeDays [int]"${{ steps.parse.outputs.ranged }}"
+          ./scripts/create_user_report.ps1 -Name "${{ steps.parse.outputs.name }}" -AccountId ${{ steps.parse.outputs.account }} -RangeDays ${{ steps.parse.outputs.ranged }}
       - name: Commit and push
         shell: pwsh
         run: |
