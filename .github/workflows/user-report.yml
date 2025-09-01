@@ -1,0 +1,78 @@
+name: Generate User Report
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  run:
+    if: contains(github.event.issue.labels.*.name, 'user-report')
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PowerShell
+        shell: pwsh
+        run: echo "Using PowerShell"
+      - name: Parse issue
+        id: parse
+        shell: pwsh
+        run: |
+          $title = "${{ github.event.issue.title }}"
+          $body = "${{ github.event.issue.body }}"
+          # Prefer body keys, fallback to parsing title
+          $name = ''
+          $account = ''
+          $ranged = ''
+          if($body){
+            if($body -match "Name:\s*(.*)") { $name = $Matches[1].Trim() }
+            if($body -match "AccountId:\s*(\d+)") { $account = $Matches[1].Trim() }
+            if($body -match "RangeDays:\s*(\d+)") { $ranged = $Matches[1].Trim() }
+          }
+          if(-not $name){ if($title -match "Generate user report:\s*(.*)\s*\((\d+)\)"){ $name=$Matches[1].Trim(); if(-not $account){ $account=$Matches[2] } } }
+          if(-not $ranged){ $ranged = '30' }
+          echo "name=$name" >> $env:GITHUB_OUTPUT
+          echo "account=$account" >> $env:GITHUB_OUTPUT
+          echo "ranged=$ranged" >> $env:GITHUB_OUTPUT
+      - name: Validate inputs
+        shell: pwsh
+        run: |
+          if([string]::IsNullOrWhiteSpace("${{ steps.parse.outputs.name }}")) { throw 'Missing name' }
+          if([string]::IsNullOrWhiteSpace("${{ steps.parse.outputs.account }}")) { throw 'Missing account' }
+      - name: Generate report
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          ./scripts/create_user_report.ps1 -Name "${{ steps.parse.outputs.name }}" -AccountId [int]"${{ steps.parse.outputs.account }}" -RangeDays [int]"${{ steps.parse.outputs.ranged }}"
+      - name: Commit and push
+        shell: pwsh
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/User-Reports docs/reports.json
+          git commit -m "ci(user-report): add report for ${{ steps.parse.outputs.name }} (${ { steps.parse.outputs.account } })" -m "Issue #${{ github.event.issue.number }}" || echo "Nothing to commit"
+          git push
+      - name: Comment with link
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let url = '';
+            try{
+              const data = JSON.parse(fs.readFileSync('docs/reports.json','utf8'));
+              const items = (data.items||[]).filter(it => (it.group||'').toLowerCase()==='user');
+              items.sort((a,b)=> String(b.time||'').localeCompare(String(a.time||'')));
+              if(items.length){ url = `https://zeroks77.github.io/Kret_Dota/${items[0].href}`; }
+            }catch(e){ }
+            const body = url ? `Report generated: ${url}` : 'Report generated. Check the Pages site under User Reports.';
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });

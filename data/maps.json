@@ -5,6 +5,16 @@
   "defaultSenRadiusPct": 12,
   "current": "7.39",
   "major": {
-  "7.39": { "src": "img/7_39/Game_map_7.39.jpg", "scale": 127, "invertY": false, "obsRadiusPct": 22, "senRadiusPct": 12, "minX": 65.5, "minY": 62.2, "maxX": 190.7, "maxY": 186.9 }
+    "7.39": {
+      "src": "img/7_39/Game_map_7.39.jpg",
+      "scale": 127,
+      "invertY": true,
+      "obsRadiusPct": 22,
+      "senRadiusPct": 12,
+      "minX": 65.5,
+      "minY": 62.2,
+      "maxX": 190.7,
+      "maxY": 186.9
+    }
   }
 }

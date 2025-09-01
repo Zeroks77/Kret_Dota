@@ -52,9 +52,8 @@ function Get-LastFullMonth(){
 function Get-CurrentMajorPatchTag(){
   $dataPath = Get-DataPath
   $maps = Read-JsonFile (Join-Path $dataPath 'maps.json')
-  if($maps -and $maps.major -and $maps.major.PSObject.Properties.Name -contains 'current'){
-    return [string]$maps.major.current # e.g. '7_39'
-  }
+  # maps.json structure: { current: '7.39', major: { '7.39': { src, scale, ... } } }
+  if($maps -and $maps.current){ return [string]$maps.current }
   return $null
 }
 
@@ -65,29 +64,47 @@ function Get-Patch-StartUnix([string]$version){
   $dataPath = Get-DataPath
   $constFile = Join-Path $dataPath 'cache\OpenDota\constants\patch.json'
   $const = Read-JsonFile $constFile
-  if($const){
-    # patch constants structure is a map of entries, pick the matching version or nearest preceding
-    $candidates = @()
-    foreach($k in $const.PSObject.Properties.Name){
-      $it = $const.$k
-      if($it -and $it.date){
-        $ts = if($it.date -is [int]){ [int]$it.date } else { [int][math]::Floor(([datetime]::Parse($it.date)).ToUniversalTime().Subtract([datetime]'1970-01-01Z').TotalSeconds) }
-        $ver = if($it.name){ [string]$it.name } elseif($it.patch){ [string]$it.patch } else { [string]$k }
-        $candidates += [pscustomobject]@{ version=$ver; unix=$ts }
-      }
+  if(-not $const){ return $null }
+  # File is an array of objects: [{ name, date, id }, ...]
+  $candidates = @()
+  foreach($it in $const){
+    if($null -ne $it -and $it.PSObject.Properties.Name -contains 'date'){
+      $ts = if($it.date -is [int]){ [int]$it.date } else { [int][math]::Floor(([datetime]::Parse([string]$it.date)).ToUniversalTime().Subtract([datetime]'1970-01-01Z').TotalSeconds) }
+      $ver = if($it.PSObject.Properties.Name -contains 'name'){ [string]$it.name } elseif($it.PSObject.Properties.Name -contains 'patch'){ [string]$it.patch } else { '' }
+      if($ts){ $candidates += [pscustomobject]@{ version=$ver; unix=$ts } }
     }
-    if($version){
-      $match = $candidates | Where-Object { $_.version -eq $version } | Sort-Object unix | Select-Object -Last 1
-      if($match){ return $match.unix }
-      # fallback: find first candidate whose version starts with desired major (e.g., 7.39a -> 7.39)
-      $major = ($version -replace '[^0-9\.]','')
-      $match = $candidates | Where-Object { $_.version -like "$major*" } | Sort-Object unix | Select-Object -First 1
-      if($match){ return $match.unix }
-    }
-    # latest if nothing provided
-    $latest = $candidates | Sort-Object unix | Select-Object -Last 1
-    if($latest){ return $latest.unix }
   }
+  if(-not $candidates.Count){ return $null }
+  $candidates = $candidates | Sort-Object unix
+  if($version){
+    $match = $candidates | Where-Object { $_.version -eq $version } | Select-Object -Last 1
+    if($match){ return $match.unix }
+    $major = ($version -replace '([^0-9\.]).*','$1')
+    if([string]::IsNullOrWhiteSpace($major)) { $major = ($version -replace '[^0-9\.]','') }
+    $match = $candidates | Where-Object { $_.version -like "$major*" } | Select-Object -First 1
+    if($match){ return $match.unix }
+  }
+  return ($candidates | Select-Object -Last 1).unix
+}
+
+function Get-Patch-Version-AtUnix([int]$unix){
+  $dataPath = Get-DataPath
+  $constFile = Join-Path $dataPath 'cache\OpenDota\constants\patch.json'
+  $const = Read-JsonFile $constFile
+  if(-not $const){ return $null }
+  $candidates = @()
+  foreach($it in $const){
+    if($null -ne $it -and $it.PSObject.Properties.Name -contains 'date'){
+      $ts = if($it.date -is [int]){ [int]$it.date } else { [int][math]::Floor(([datetime]::Parse([string]$it.date)).ToUniversalTime().Subtract([datetime]'1970-01-01Z').TotalSeconds) }
+      $ver = if($it.PSObject.Properties.Name -contains 'name'){ [string]$it.name } elseif($it.PSObject.Properties.Name -contains 'patch'){ [string]$it.patch } else { '' }
+      if($ts){ $candidates += [pscustomobject]@{ version=$ver; unix=$ts } }
+    }
+  }
+  if(-not $candidates.Count){ return $null }
+  $candidates = $candidates | Sort-Object unix
+  if(-not $unix){ return ($candidates | Select-Object -Last 1).version }
+  $match = $candidates | Where-Object { $_.unix -le $unix } | Select-Object -Last 1
+  if($match){ return $match.version }
   return $null
 }
 
@@ -127,6 +144,14 @@ function Write-Dynamic-Wrapper([string]$outDir,[string]$title,[string]$query){
   Write-Host "Wrote $out"
 }
 
+function Normalize-Href([string]$href){
+  if([string]::IsNullOrWhiteSpace($href)){ return '' }
+  $h = $href.Trim()
+  if($h.StartsWith('./')){ $h = $h.Substring(2) }
+  if(-not $h.EndsWith('/')){ $h = $h + '/' }
+  return $h
+}
+
 function Update-ReportsJson([string]$docsRoot,[string]$title,[string]$href,[string]$group,[datetime]$when,[string]$sortKey){
   $file = Join-Path $docsRoot 'reports.json'
   $obj = @{ items = @() }
@@ -134,17 +159,34 @@ function Update-ReportsJson([string]$docsRoot,[string]$title,[string]$href,[stri
     try{ $obj = Get-Content -Raw -Path $file | ConvertFrom-Json -ErrorAction Stop } catch { $obj = @{ items = @() } }
     if(-not $obj.items){ $obj = @{ items = @() } }
   }
-  $items = @()
-  $items += $obj.items
+  # Normalize existing hrefs
+  $items = @(); $items += $obj.items
+  for($i=0; $i -lt $items.Count; $i++){ if($items[$i] -and $items[$i].href){ $items[$i].href = (Normalize-Href -href ([string]$items[$i].href)) } }
   # Upsert by href
   $found = $false
+  $nhref = Normalize-Href -href $href
   for($i=0; $i -lt $items.Count; $i++){
-    if([string]$items[$i].href -eq [string]$href){
+    if([string]$items[$i].href -eq [string]$nhref){
       $items[$i] = [pscustomobject]@{ title=$title; href=$href; group=$group; time=$when.ToString('yyyy-MM-ddTHH:mm:ssZ'); sort=$sortKey }
       $found=$true; break
     }
   }
-  if(-not $found){ $items += [pscustomobject]@{ title=$title; href=$href; group=$group; time=$when.ToString('yyyy-MM-ddTHH:mm:ssZ'); sort=$sortKey } }
+  if(-not $found){ $items += [pscustomobject]@{ title=$title; href=$nhref; group=$group; time=$when.ToString('yyyy-MM-ddTHH:mm:ssZ'); sort=$sortKey } }
+  # Deduplicate by normalized href keeping the most recent time
+  $map = @{}
+  foreach($it in $items){
+    if(-not $it){ continue }
+    $h = Normalize-Href -href ([string]$it.href)
+    $t = $null; try{ $t = [datetime]::Parse((""+$it.time)) }catch{ $t = Get-Date '1970-01-01Z' }
+    if($map.ContainsKey($h)){
+      $prev = $map[$h]
+      $pt = $null; try{ $pt = [datetime]::Parse((""+$prev.time)) }catch{ $pt = Get-Date '1970-01-01Z' }
+      if($t -gt $pt){ $map[$h] = $it }
+    } else {
+      $map[$h] = $it
+    }
+  }
+  $items = @(); foreach($k in $map.Keys){ $items += $map[$k] }
   $outJson = @{ items = $items } | ConvertTo-Json -Depth 5
   Set-Content -Path $file -Value $outJson -Encoding UTF8
   Write-Host "Updated $file with entry: $title -> $href"
@@ -159,10 +201,16 @@ if($GenerateMonthly){
   $monthName = Get-MonthName $ym.Month
   $folderName = "{0}-{1}-Report" -f $ym.Year, $monthName
   $outDir = Join-Path $rootDocs $folderName
+  # Determine patch version at the end of this month; use major (e.g., 7.39)
+  $patchVer = Get-Patch-Version-AtUnix -unix $r.ToUnix
+  $major = if($patchVer){ ($patchVer -replace '^(\d+\.\d+).*','$1') } else { Get-CurrentMajorPatchTag }
   $query = ("?from=$($r.FromUnix)" + "`&to=$($r.ToUnix)" + "`&tab=highlights" + "`&lock=1")
-  Write-Dynamic-Wrapper -outDir $outDir -title "Monthly Report – $monthName $($ym.Year)" -query $query
+  if($major){ $query += "`&map=$major" }
+  $title = if($major){ "Monthly Report - $monthName $($ym.Year) - $major" } else { "Monthly Report - $monthName $($ym.Year)" }
+  Write-Dynamic-Wrapper -outDir $outDir -title $title -query $query
   # Update index for sidebar
-  Update-ReportsJson -docsRoot $rootDocs -title "${monthName} $($ym.Year)" -href ("{0}/" -f $folderName) -group 'monthly' -when ((Get-Date).ToUniversalTime()) -sortKey ("$($ym.Year)-$($ym.Month.ToString('00'))")
+  $idxTitle = "$monthName $($ym.Year)"
+  Update-ReportsJson -docsRoot $rootDocs -title $idxTitle -href ("{0}/" -f $folderName) -group 'monthly' -when ((Get-Date).ToUniversalTime()) -sortKey ("$($ym.Year)-$($ym.Month.ToString('00'))")
 }
 
 if($GeneratePatch){
@@ -175,7 +223,7 @@ if($GeneratePatch){
   $folderName = if($ver){ "Patch - $ver - Report" } else { "Patch - Latest - Report" }
   $outDir = Join-Path $rootDocs $folderName
   $query = ("?from=$startUnix" + "`&to=$nowUnix" + "`&tab=highlights" + "`&lock=1")
-  Write-Dynamic-Wrapper -outDir $outDir -title "Patch Report – $displayVer" -query $query
+  Write-Dynamic-Wrapper -outDir $outDir -title "Patch Report - $displayVer" -query $query
   # Update index for sidebar
   Update-ReportsJson -docsRoot $rootDocs -title "$displayVer" -href ("{0}/" -f $folderName) -group 'patch' -when ((Get-Date).ToUniversalTime()) -sortKey $displayVer
 }

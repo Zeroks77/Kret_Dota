@@ -1,4 +1,27 @@
 {
 	"version": "2.0.0",
-	"tasks": []
+	"tasks": [
+		{
+			"label": "Rebuild monthly 30-days report",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"reportgenerator.ps1",
+				"-Range",
+				"30",
+				"-PreferShards",
+				"-PublishToRepo",
+				"-RepoPath",
+				".",
+				"-OutFile",
+				"docs/last-30-days.html"
+			],
+			"isBackground": false,
+			"group": "build"
+		}
+	]
 }

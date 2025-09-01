@@ -14,7 +14,12 @@ a{color:var(--accent)}
 .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:12px;overflow:visible}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
 .controls .field{display:flex;flex-direction:column;gap:6px}
-input,select,button{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)}
+input,button{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)}
+/* Picklists: always white with black text */
+select{padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.25);background:#ffffff;color:#000000}
+select option{background:#ffffff;color:#000000}
+select:disabled{background:#f2f2f2;color:#666;opacity:1}
+/* legacy explicit quick preset styling kept for specificity (redundant but harmless) */
 #quick{background:#ffffff;color:#000000;border-color:rgba(0,0,0,.25)}
 button{cursor:pointer}
 .grid{display:grid;grid-template-columns:2fr 1fr;gap:12px}
@@ -112,8 +117,16 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
       </select>
     </div>
     <div class="field">
+      <label for="playerFilter">Player filter</label>
+      <select id="playerFilter"><option value="">All players</option></select>
+    </div>
+    
+    <div class="field">
       <label>&nbsp;</label>
-      <button id="apply">Apply</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+  <button id="apply">Apply</button>
+  <button id="genUserReport" title="Generate a temporary user report under docs/User-Reports">Generate user report</button>
+      </div>
     </div>
   </div>
 
@@ -139,7 +152,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 
   <div id="pane-players" class="tabpane" style="display:none">
     <section class="card">
-      <h2 style="margin:0 0 8px;font-size:18px">Players</h2>
+  <h2 style="margin:0 0 8px;font-size:18px">Players <span id="playerFocus" class="sub" style="margin-left:8px;display:none"></span></h2>
       <table class="table sortable" id="playersTable"><thead><tr>
         <th data-type="text">Name</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th><th data-type="num">Hero pool</th>
       </tr></thead><tbody></tbody></table>
@@ -297,9 +310,18 @@ function aggregate(matches, playerNames, teamNames){
   return {teams,players,teamPlayers,heroStats,heroPlayerAgg};
 }
 
+let __focusAid = 0; // optional focus account_id from URL (?aid=123)
+let __userOnlyAid = 0; // when >0, restrict everything to only this user's stats
 function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
   // Players
-  const playerRows = Array.from(players.values()).map(p=>{
+  let plist = Array.from(players.values());
+  if(__userOnlyAid>0){ plist = plist.filter(p=> Number(p.account_id)===__userOnlyAid); }
+  // If focusing a player, move them to front
+  if(__focusAid>0){
+    const idx = plist.findIndex(p=> Number(p.account_id)===__focusAid);
+    if(idx>0){ const [it] = plist.splice(idx,1); plist.unshift(it); }
+  }
+  const playerRows = plist.map(p=>{
     const wr = p.games>0 ? p.wins/p.games : 0;
     // Build hero breakdown list
     const poolSize = Object.keys(p.heroes||{}).length;
@@ -320,7 +342,8 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
         ${heroList || `<div class='sub'>no heroes</div>`}
       </div>
     </div>`;
-    return `<tr>
+  const hl = (__focusAid>0 && Number(p.account_id)===__focusAid) ? " style='outline:2px solid rgba(109,166,255,.6)'" : '';
+  return `<tr${hl}>
       <td data-sort="${p.name.toLowerCase()}"><a href='${p.profile}' target='_blank' rel='noopener'>${p.name}</a></td>
       <td data-sort="${p.games}">${p.games}</td>
       <td data-sort="${p.wins/(p.games||1)}"><span class='win'>${p.wins}</span>-<span class='loss'>${p.games-p.wins}</span></td>
@@ -364,23 +387,45 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
   document.querySelector('#teamsTable tbody').innerHTML = teamRows;
 
   // Heroes
-  const heroRows = Array.from(heroStats.keys()).map(hid=>{
-    const hs=heroStats.get(hid), picks=hs.picks|0, wins=hs.wins|0, bans=hs.bans|0, wr = picks>0 ? wins/picks : 0;
-    const meta = heroMap[String(hid)] || {name:`Hero ${hid}`,img:''};
-    // best player
-    let bestLabel='<span class="badge">no data</span>', bestWr=0; const hpa=heroPlayerAgg.get(hid);
-    if(hpa){ const arr=Array.from(hpa.values()).filter(x=>x.games>0).map(x=>({...x,wr:x.wins/x.games})).sort((a,b)=> b.wr - a.wr || b.games - a.games || b.wins - a.wins );
-      if(arr.length){ const b=arr[0]; bestLabel = `<a href='${b.profile}' target='_blank'>${b.name}</a> - ${fmtPct(b.wr)} (${b.wins}/${b.games})`; bestWr=b.wr; }
+  const heroRows = (function(){
+    if(__userOnlyAid>0){
+      const p = Array.from(players.values()).find(x=> Number(x.account_id)===__userOnlyAid);
+      if(!p){ return ''; }
+      const rows = Object.keys(p.heroes||{}).map(hid=>{
+        const cnt = Number(p.heroes[hid]||0);
+        const wins = Number(p.heroWins && p.heroWins[hid] || 0);
+        const meta = heroMap[String(hid)] || {name:`Hero ${hid}`,img:''};
+        const wr = cnt>0 ? (wins/cnt) : 0;
+        const bestLabel = `<a href='${p.profile}' target='_blank'>${p.name}</a> - ${fmtPct(wr)} (${wins}/${cnt})`;
+        return `<tr>
+          <td data-sort="${meta.name.toLowerCase()}"><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td>
+          <td data-sort="${cnt}">${cnt}</td>
+          <td data-sort="0">0</td>
+          <td data-sort="${wins}">${wins}</td>
+          <td data-sort="${wr}">${fmtPct(wr)}</td>
+          <td data-sort="${wr}">${bestLabel}</td>
+        </tr>`;
+      }).sort().join('');
+      return rows;
     }
-    return `<tr>
-      <td data-sort="${meta.name.toLowerCase()}"><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td>
-      <td data-sort="${picks}">${picks}</td>
-      <td data-sort="${bans}">${bans}</td>
-      <td data-sort="${wins}">${wins}</td>
-      <td data-sort="${wr}">${fmtPct(wr)}</td>
-      <td data-sort="${bestWr}">${bestLabel}</td>
-    </tr>`;
-  }).join('');
+    return Array.from(heroStats.keys()).map(hid=>{
+      const hs=heroStats.get(hid), picks=hs.picks|0, wins=hs.wins|0, bans=hs.bans|0, wr = picks>0 ? wins/picks : 0;
+      const meta = heroMap[String(hid)] || {name:`Hero ${hid}`,img:''};
+      // best player
+      let bestLabel='<span class="badge">no data</span>', bestWr=0; const hpa=heroPlayerAgg.get(hid);
+      if(hpa){ const arr=Array.from(hpa.values()).filter(x=>x.games>0).map(x=>({...x,wr:x.wins/x.games})).sort((a,b)=> b.wr - a.wr || b.games - a.games || b.wins - a.wins );
+        if(arr.length){ const b=arr[0]; bestLabel = `<a href='${b.profile}' target='_blank'>${b.name}</a> - ${fmtPct(b.wr)} (${b.wins}/${b.games})`; bestWr=b.wr; }
+      }
+      return `<tr>
+        <td data-sort="${meta.name.toLowerCase()}"><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td>
+        <td data-sort="${picks}">${picks}</td>
+        <td data-sort="${bans}">${bans}</td>
+        <td data-sort="${wins}">${wins}</td>
+        <td data-sort="${wr}">${fmtPct(wr)}</td>
+        <td data-sort="${bestWr}">${bestLabel}</td>
+      </tr>`;
+    }).join('');
+  })();
   document.querySelector('#heroesTable tbody').innerHTML = heroRows;
 
   // Initial default sorts (desc): Players by WR, Teams by WR, Heroes by Picks
@@ -388,7 +433,8 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
     const pt = document.getElementById('playersTable');
     const tt = document.getElementById('teamsTable');
     const ht = document.getElementById('heroesTable');
-    sortTable(pt, 3, 'num', false);
+  // When focusing a player, don’t auto-sort players (keep focused first)
+  if(!(__focusAid>0)) sortTable(pt, 3, 'num', false);
     sortTable(tt, 3, 'num', false);
     sortTable(ht, 1, 'num', false);
     window.__dvSortedOnce = true;
@@ -621,49 +667,72 @@ function renderHighlights(high, heroMap, mapConf, label){
   }
   // Ward map rendering (popular spots + longest + player stats)
   function wardHtml(){
-    if(!high.wardEvents || !Array.isArray(high.wardSpots)) return '';
-    const map = mapConf || {};
+  // Always render the ward map container; if there is no data, we'll just show an empty overlay and "no games" lists
+  const map = mapConf || {};
     const asset = (map.major && map.current && map.major[map.current]) ? map.major[map.current] : null;
-    let bg = asset && asset.src ? asset.src : (map.default || 'https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg');
-    const mapScale = asset && asset.scale ? Number(asset.scale) : Number(map.defaultScale||127);
+  let bg = asset && asset.src ? asset.src : (map.default || 'https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg');
+  const bgUrls = [];
+  if(asset && asset.src) bgUrls.push(asset.src);
+  if(map && map.default) bgUrls.push(map.default);
+  const bgCss = bgUrls.length ? bgUrls.map(u=>`url('${esc(u)}')`).join(', ') : `url('${esc(bg)}')`;
+  const mapScale = asset && asset.scale ? Number(asset.scale) : Number(map.defaultScale||127);
     const invertY = !!(asset && asset.invertY);
+  // Bounds mapping like 30-day report (minX/minY/maxX/maxY) when available
+  const minX = asset && asset.minX!=null ? Number(asset.minX) : null;
+  const minY = asset && asset.minY!=null ? Number(asset.minY) : null;
+  const maxX = asset && asset.maxX!=null ? Number(asset.maxX) : null;
+  const maxY = asset && asset.maxY!=null ? Number(asset.maxY) : null;
+  const hasBounds = (minX!=null && minY!=null && maxX!=null && maxY!=null && maxX>minX && maxY>minY);
+  // Derive dynamic scale from observed ward coordinates to avoid clamping when scale is outdated
+  const observedMax = (function(){ let mx=0,my=0; for(const ev of (high.wardEvents||[])){ const x=Number(ev.x); const y=Number(ev.y); if(isFinite(x)) mx=Math.max(mx,x); if(isFinite(y)) my=Math.max(my,y); } return {mx,my}; })();
+  const dynScale = Math.max(isFinite(mapScale)?mapScale:0, observedMax.mx, observedMax.my, 1);
     // radii (percent of width) - prefer units or asset-specific pct
     const cellUnits = (asset && asset.cellUnits) ? Number(asset.cellUnits) : Number(map.defaultCellUnits||128);
     const obsUnits  = (asset && asset.obsRadiusUnits) ? Number(asset.obsRadiusUnits) : Number(map.defaultObsRadiusUnits||1600);
     let obsPct = (asset && asset.obsRadiusPct!=null) ? Number(asset.obsRadiusPct) : (map.defaultObsRadiusPct!=null ? Number(map.defaultObsRadiusPct) : 10);
-    if(obsUnits && cellUnits && mapScale){ const calc = (obsUnits/(cellUnits*mapScale))*100; if(isFinite(calc)&&calc>0){ obsPct = Math.round(calc*100)/100; } }
+    // Only auto-compute radius when not explicitly provided in asset/defaults
+    const shouldAuto = !(asset && asset.obsRadiusPct!=null) && !(map.defaultObsRadiusPct!=null);
+    if(shouldAuto && obsUnits && cellUnits){
+      if(hasBounds){ const calc = (obsUnits/(cellUnits*(maxX-minX)))*100; if(isFinite(calc)&&calc>0){ obsPct = Math.round(calc*100)/100; } }
+      else if(dynScale){ const calc = (obsUnits/(cellUnits*dynScale))*100; if(isFinite(calc)&&calc>0){ obsPct = Math.round(calc*100)/100; } }
+    }
     if(!isFinite(obsPct) || obsPct<=0) obsPct = 10;
-    // Bounds mapping like 30-day report (minX/minY/maxX/maxY) when available
-    const minX = asset && asset.minX!=null ? Number(asset.minX) : null;
-    const minY = asset && asset.minY!=null ? Number(asset.minY) : null;
-    const maxX = asset && asset.maxX!=null ? Number(asset.maxX) : null;
-    const maxY = asset && asset.maxY!=null ? Number(asset.maxY) : null;
-    const hasBounds = (minX!=null && minY!=null && maxX!=null && maxY!=null && maxX>minX && maxY>minY);
+  // Prefer local asset; if missing, fall back to OpenDota default
+  if((!asset || !asset.src) && map.default){ bg = map.default; }
     // Build SVG circles for ranked spots and longest-lived
-    const spotMap = new Map();
-    for(const e of (high.wardEvents||[])){
+  const spotMap = new Map();
+  for(const e of (high.wardEvents||[])){
       const k = `${e.x},${e.y}`; const info = spotMap.get(k)||{obs:false,sen:false};
       if(e.type==='obs') info.obs=true; if(e.type==='sen') info.sen=true; spotMap.set(k,info);
     }
-    function norm(x,y){ const X=Number(x||0), Y=Number(y||0);
-      if(hasBounds){ const clX = Math.max(minX, Math.min(maxX, X)); const clY = Math.max(minY, Math.min(maxY, Y));
-        const cx = ((clX - minX)/(maxX - minX))*100; let yy = ((clY - minY)/(maxY - minY)); if(invertY) yy = 1-yy; const cy = yy*100;
-        return {cx: Math.round(cx*100)/100, cy: Math.round(cy*100)/100};
+    function norm(x,y){
+      const X = Number(x||0), Y = Number(y||0);
+      if(hasBounds){
+        const clX = Math.max(minX, Math.min(maxX, X));
+        const clY = Math.max(minY, Math.min(maxY, Y));
+        // For a 0..127 grid, this reduces to clX/127 and clY/127; keep generic for other grids
+        const cx0 = (clX - minX) / (maxX - minX);
+        let cy0 = (clY - minY) / (maxY - minY);
+        if(invertY) cy0 = 1 - cy0;
+        return { cx: Math.round(cx0*10000)/100, cy: Math.round(cy0*10000)/100 };
       } else {
-        let cx = Math.max(0, Math.min(mapScale, X))/mapScale*100;
-        let yy = Math.max(0, Math.min(mapScale, Y))/mapScale; if(invertY) yy = 1-yy; const cy = yy*100;
-        return {cx: Math.round(cx*100)/100, cy: Math.round(cy*100)/100};
+        // Fallback to observed scale
+        let cx0 = Math.max(0, Math.min(dynScale, X)) / dynScale;
+        let cy0 = Math.max(0, Math.min(dynScale, Y)) / dynScale;
+        if(invertY) cy0 = 1 - cy0;
+        return { cx: Math.round(cx0*10000)/100, cy: Math.round(cy0*10000)/100 };
       }
     }
     function svgFor(list, longest){
-      return list.map(s=>{
+      return list.map((s, idx)=>{
         const k = String(s.spot||''); if(!k) return '';
         const [x,y] = k.split(',').map(Number); const {cx,cy} = norm(x,y);
         const info = spotMap.get(k)||{obs:false,sen:false}; if(!info.obs) return '';
         const id = s.spotId ? String(s.spotId) : '';
         const cnt = Number(s.count||0);
         const mx = Number(s.maxSeconds||0); const mm = Math.floor(mx/60), ss = mx%60;
-        const title = longest ? `Spot ${k} - Longest life: ${mm}m ${ss}s - Placements: ${cnt}` : `Spot ${k} - Placements: ${cnt}`;
+        const nlabel = `Ward ${idx+1}`;
+    const title = longest ? `${nlabel} — (${k}, norm ${cx}%, ${cy}%) • Longest life: ${mm}m ${ss}s • Placements: ${cnt}` : `${nlabel} — (${k}, norm ${cx}%, ${cy}%) • Placements: ${cnt}`;
         const klass = longest ? 'spot longest' : 'spot';
         const stroke = longest ? 'rgba(86,227,150,0.55)' : 'rgba(255,215,0,0.65)';
         const fill = longest ? 'rgba(86,227,150,0.06)' : 'rgba(255,215,0,0.08)';
@@ -671,11 +740,13 @@ function renderHighlights(high, heroMap, mapConf, label){
         return `<circle${idAttr} class='${klass}' cx='${cx}%' cy='${cy}%' r='${obsPct}' fill='${fill}' stroke='${stroke}' stroke-width='0.8' opacity='0.8'>\n<title>${esc(title)}</title>\n</circle>\n<circle cx='${cx}%' cy='${cy}%' r='1.0' fill='${stroke}' opacity='0.85' />`;
       }).join('\n');
     }
-    const svgSpots = svgFor(high.wardSpots||[], false);
+  const svgSpots = svgFor(high.wardSpots||[], false);
     const svgLongest = svgFor(high.wardLongest||[], true);
+  // Debug grid (10x10) to verify projection
+  const grid = (function(){ const lines=[]; for(let i=0;i<=10;i++){ const p=i*10; lines.push(`<line x1='${p}%' y1='0%' x2='${p}%' y2='100%' stroke='rgba(255,255,255,.08)' stroke-width='0.3'/>`); lines.push(`<line x1='0%' y1='${p}%' x2='100%' y2='${p}%' stroke='rgba(255,255,255,.08)' stroke-width='0.3'/>`);} return lines.join(''); })();
     // Lists
     function wardList(arr){ if(!Array.isArray(arr)||!arr.length) return `<li><span class='sub'>no games</span></li>`;
-      return arr.map(s=>{ const sid = s.spotId? String(s.spotId):''; const mx = Number(s.maxSeconds||0); const mm=Math.floor(mx/60), ss=mx%60; const cnt = Number(s.count||0); const [x,y] = String(s.spot||'').split(',').map(Number); const label = (isFinite(x)&&isFinite(y)) ? `${Math.round(x)},${Math.round(y)}` : String(s.spot||''); return `<li data-spot='${sid}'><span>Spot ${label}</span>`+(mx?`<span class='badge'>${mm}m ${ss}s</span>`:'')+`<span class='badge'>x${cnt}</span></li>`; }).join(''); }
+      return arr.map((s, idx)=>{ const sid = s.spotId? String(s.spotId):''; const mx = Number(s.maxSeconds||0); const mm=Math.floor(mx/60), ss=mx%60; const cnt = Number(s.count||0); const [x,y] = String(s.spot||'').split(',').map(Number); const coords = (isFinite(x)&&isFinite(y)) ? `${Math.round(x)},${Math.round(y)}` : String(s.spot||''); const nlabel = `Ward ${idx+1}`; return `<li data-spot='${sid}' title='${esc(coords)}'><span>${nlabel}</span>`+(mx?`<span class='badge'>${mm}m ${ss}s</span>`:'')+`<span class='badge'>x${cnt}</span></li>`; }).join(''); }
     function wardPlayersList(arr, unit){ if(!Array.isArray(arr)||!arr.length) return `<li><span class='sub'>no data</span></li>`; return arr.map(p=>`<li><span>${linkPlayer(p)}</span><span class='badge'>x${Number(p.count||0)}</span></li>`).join(''); }
     const players = high.wardPlayers||{};
   return `
@@ -683,14 +754,16 @@ function renderHighlights(high, heroMap, mapConf, label){
     <div class='wardgrid'>
       <div class='wardleft'>
         <div class='sub' style='margin:-4px 0 8px'>${esc(label||'Period')} | Number = count of observer placements at spot | Circle = observer vision radius (~1600u).</div>
-        <div class='wardmap' id='dvWardMap' style="background-image:url('${esc(bg)}')">
+  <div class='wardmap' id='dvWardMap' style="background-image: ${bgCss}">
           <svg id='dvWardSvg' viewBox='0 0 100 100' preserveAspectRatio='none' width='100%' height='100%'>
+            <g id='dv-ov-debug' style='display:none'>${grid}</g>
             <g id='dv-ov-spots'>${svgSpots||''}</g>
             <g id='dv-ov-longest' style='display:none'>${svgLongest||''}</g>
           </svg>
         </div>
         <div style='display:flex;align-items:center;gap:10px;margin-top:10px'>
           <label style='font-size:13px;color:var(--muted)'><input id='dvToggleSpots' type='checkbox' checked style='vertical-align:middle;margin-right:6px'>Show ward overlay</label>
+          <label style='font-size:13px;color:var(--muted)'><input id='dvToggleDebug' type='checkbox' style='vertical-align:middle;margin-right:6px'>Show debug grid</label>
         </div>
       </div>
       <div class='wardright'>
@@ -848,7 +921,9 @@ function attachWardUI(scope){
       if(on) active.add(id); else active.delete(id); if(wrap){ wrap.classList.toggle('highlighting', active.size>0); } }
     function wireHover(ul){ if(!ul) return; ul.addEventListener('mouseover', e=>{ const li=e.target.closest('li[data-spot]'); if(!li) return; setHighlight(li.getAttribute('data-spot'), true); }); ul.addEventListener('mouseout', e=>{ const li=e.target.closest('li[data-spot]'); if(!li) return; setHighlight(li.getAttribute('data-spot'), false); }); }
     wireHover(root.querySelector('#dvSpotList')); wireHover(root.querySelector('#dvLongestList'));
-    const toggle = root.querySelector('#dvToggleSpots'); if(toggle){ toggle.addEventListener('change', ()=>{ svg.style.display = toggle.checked ? '' : 'none'; }); }
+  const toggle = root.querySelector('#dvToggleSpots'); if(toggle){ toggle.addEventListener('change', ()=>{ svg.style.display = toggle.checked ? '' : 'none'; }); }
+  const toggleDbg = root.querySelector('#dvToggleDebug'); const gDbg = svg.querySelector('#dv-ov-debug');
+  if(toggleDbg && gDbg){ toggleDbg.addEventListener('change', ()=>{ gDbg.style.display = toggleDbg.checked ? '' : 'none'; }); }
   }catch(err){ console.warn('Ward UI attach failed', err); }
 }
 
@@ -920,6 +995,17 @@ async function main(){
     if(m.radiant_team_id && m.radiant_name) teamNames[String(m.radiant_team_id)] = m.radiant_name;
     if(m.dire_team_id && m.dire_name)       teamNames[String(m.dire_team_id)]    = m.dire_name;
   }
+  // Populate player filter dropdown
+  try{
+    const sel = document.getElementById('playerFilter');
+    if(sel){
+      const list = Object.entries(playerNames).map(([id,name])=>({id:Number(id), name: String(name||(`Player ${id}`))})).filter(x=>x.id>0);
+      list.sort((a,b)=> a.name.localeCompare(b.name));
+      const opts = ["<option value=''>All players</option>"];
+      for(const it of list){ opts.push(`<option value='${it.id}'>${it.name}</option>`); }
+      sel.innerHTML = opts.join('');
+    }
+  }catch(_e){}
 
   const from = document.getElementById('from'), to = document.getElementById('to'), quick = document.getElementById('quick');
   // Keep last subset for calendar/nav
@@ -1266,8 +1352,15 @@ async function main(){
     // Guard against extremely large ranges
     if(ids.length>600){ body.innerHTML = `<div class='sub'>Range has ${ids.length} matches. Computing highlights on-the-fly would take too long. Narrow the range or use prebuilt All-time page.</div>`; return; }
   const details = (await pMap(ids, 4, id=> fetchMatchDetail(id))).filter(Boolean);
+  // If none of the details have player data, inform the user about possible CORS/offline issues
+  const okDetails = details.filter(d => Array.isArray(d.players) && d.players.length>0);
+  const warnNoDetails = okDetails.length===0;
   const high = computeHighlightsFromDetails(details, heroMap);
   renderHighlights(high, heroMap, mapConf, label);
+  if(warnNoDetails){
+    const note = `<div class='sub' style='margin-bottom:8px'>Detailed match data could not be loaded (file:// CORS or offline). The map renders with available data, but some highlights may be missing. For full data, serve docs/ over a local server.</div>`;
+    try{ body.innerHTML = note + body.innerHTML; }catch(_e){}
+  }
   // Update Top Banned summary from detailed banCounts
   try{
     const ul = document.getElementById('ul-top-banned');
@@ -1280,7 +1373,7 @@ async function main(){
   // Compute awards in parallel with same details
   const awards = computeAwardsFromDetails(details, heroMap);
   const hideEmpty = !!(document.getElementById('awHideEmpty') && document.getElementById('awHideEmpty').checked);
-  renderAwards(awards, heroMap, { hideEmpty });
+  renderAwards(awards, heroMap, { hideEmpty, filterAid: __userOnlyAid>0 ? __userOnlyAid : 0 });
   }
 
   function apply(){
@@ -1292,19 +1385,38 @@ async function main(){
       const league = (info && (info.league_name||info.league||'')) || "League";
       document.getElementById('leagueTitle').textContent = `${league} – Dynamic viewer`;
       const fmt=(s)=>{ if(!s) return ''; const d=new Date(s*1000); return d.toISOString().replace('T',' ').slice(0,16)+'Z'; };
-      const sub=`${fmt(f)} to ${fmt(t)} (UTC)`;
+  let sub=`${fmt(f)} to ${fmt(t)} (UTC)`;
+  if(__userOnlyAid>0){ sub += ' · user-only'; }
       document.getElementById('headerSub').textContent=sub;
+      // Show focused player chip if requested
+      const el = document.getElementById('playerFocus');
+      if(el){
+        if(__focusAid>0){
+          // Try to resolve player name from current subset cache
+          let nm = '';
+          const any = __subsetCache && __subsetCache.length ? __subsetCache : [];
+          for(const m of any){ if(Array.isArray(m.players)){ const p=m.players.find(x=> Number(x.account_id||0)===__focusAid); if(p && p.personaname){ nm=p.personaname; break; } } }
+          el.style.display='inline'; el.textContent = nm ? `(focused: ${nm})` : `(focused AID ${__focusAid})`;
+        } else {
+          el.style.display='none'; el.textContent='';
+        }
+      }
   }catch(_e){}
-  const subset = allMatches.filter(m=> (m.start_time>=f) && (m.start_time<=t) );
-  __subsetCache = subset; __rangeUnix = {from:f,to:t};
+  // Build base subset by time; derive stats vs view subsets
+  const baseSubset = allMatches.filter(m=> (m.start_time>=f) && (m.start_time<=t) );
+  const hasAid = (m, aid)=> Array.isArray(m.players) && m.players.some(p=> Number(p.account_id||0)===aid);
+  let statsSubset = baseSubset;
+  if(__userOnlyAid>0){ statsSubset = baseSubset.filter(m => hasAid(m, __userOnlyAid)); }
+  __subsetCache = statsSubset; __rangeUnix = {from:f,to:t};
   // Init calendar cursor to month of 'to'
   const dTo = new Date(t*1000); __calCursor = {y:dTo.getUTCFullYear(), m:dTo.getUTCMonth()};
-  const agg = aggregate(subset, playerNames, teamNames);
+  const agg = aggregate(statsSubset, playerNames, teamNames);
   renderSummary(agg, heroes);
     render(agg, heroes);
   // Compute highlights live for this arbitrary range
   const label = `Period: ${new Date(f*1000).toISOString().slice(0,10)} to ${new Date(t*1000).toISOString().slice(0,10)} (UTC)`;
-  computeHighlightsForSubset(subset, heroes, mapConf, label);
+  // Use statsSubset for highlights to reflect overall stats when games-only is active
+  computeHighlightsForSubset(statsSubset, heroes, mapConf, label);
   // Render calendar for current cursor
   renderCalendarMonth(__subsetCache, __rangeUnix, __calCursor);
   }
@@ -1316,6 +1428,25 @@ async function main(){
     if(cb){ cb.checked = saved===null ? true : (saved==='1'); cb.addEventListener('change', ()=>{ localStorage.setItem(key, cb.checked?'1':'0'); if(typeof __lastAwards==='object'){ renderAwards(__lastAwards, heroes, { hideEmpty: cb.checked }); } }); }
   }catch(_e){}
   document.getElementById('apply').addEventListener('click', apply);
+  // Player filter: selecting a player enforces user-only view
+  try{
+    const sel = document.getElementById('playerFilter');
+    const genBtn = document.getElementById('genUserReport');
+    if(sel){ sel.addEventListener('change', ()=>{ const v=Number(sel.value||0)||0; __focusAid=v; __userOnlyAid = v>0 ? v : 0; apply(); }); }
+    if(genBtn){ genBtn.addEventListener('click', ()=>{
+      const aid = Number((sel&&sel.value)||0)||0; if(!(aid>0)) { alert('Select a player first.'); return; }
+      const name = (function(){ try{ const opt=sel.options[sel.selectedIndex]; return (opt&&opt.text)||`Player ${aid}`; }catch(_e){ return `Player ${aid}`; } })();
+      const f = parseLocalInput(document.getElementById('from').value);
+      const t = parseLocalInput(document.getElementById('to').value);
+      let rangeDays = 30; if(f && t && t>f){ rangeDays = Math.max(1, Math.round((t - f)/86400)); }
+      const repo = 'Zeroks77/Kret_Dota';
+      const title = encodeURIComponent(`Generate user report: ${name} (${aid})`);
+      const body = encodeURIComponent(`Please generate a user report.\n\nName: ${name}\nAccountId: ${aid}\nRangeDays: ${rangeDays}\n`);
+      const labels = encodeURIComponent('user-report');
+      const url = `https://github.com/${repo}/issues/new?title=${title}&labels=${labels}&body=${body}`;
+      window.open(url, '_blank', 'noopener');
+    }); }
+  }catch(_e){}
   quick.addEventListener('change', async ()=>{
     const v=quick.value;
     const now = Math.floor(Date.now()/1000);
@@ -1341,6 +1472,10 @@ async function main(){
     const pt = sp.get('to');
     const ptab = sp.get('tab');
   const plock = sp.get('lock') || sp.get('readonly') || sp.get('ui');
+  const paid = sp.get('aid') || sp.get('account') || sp.get('player');
+  __focusAid = paid ? Number(paid) : 0;
+  const uonly = sp.get('uonly') || sp.get('useronly') || sp.get('only');
+  __userOnlyAid = (__focusAid>0 && uonly && String(uonly).toLowerCase()!=='0' && String(uonly).toLowerCase()!=='false') ? __focusAid : 0;
     function parseDateish(s){ if(!s) return NaN; if(/^\d{10}$/.test(s)) return Number(s); const ms = Date.parse(s); return isNaN(ms)? NaN : Math.floor(ms/1000); }
     let fux = NaN, tux = NaN;
     if(pf||pt){ fux = parseDateish(pf); tux = parseDateish(pt); }
@@ -1356,8 +1491,11 @@ async function main(){
       to.value   = toLocalInput(now);
       quick.value='30';
     }
-    // Optional: open requested tab
-    if(ptab && window.__dvShowTab){ window.__dvShowTab(ptab); }
+  // Optional: open requested tab. If focusing a player, default to Players tab.
+  if(__focusAid>0 && window.__dvShowTab){ window.__dvShowTab('players'); }
+  else if(ptab && window.__dvShowTab){ window.__dvShowTab(ptab); }
+  // Preselect UI controls if provided
+  try{ const sel=document.getElementById('playerFilter'); if(sel && __focusAid>0){ sel.value=String(__focusAid); } }catch(_e){}
     // Optional: hide controls for read-only/locked monthly wrappers
     if(plock && String(plock).toLowerCase() !== '0' && String(plock).toLowerCase() !== 'false'){
       try{ const controls = document.querySelector('.card.controls'); if(controls) controls.style.display='none'; }catch(_e){}
@@ -1815,6 +1953,7 @@ function renderAwards(aw, heroMap, opts){
   const root = document.getElementById('awardsBody'); if(!root) return;
   window.__lastAwards = aw; // cache for re-render when toggling options
   const hideEmpty = !!(opts && opts.hideEmpty);
+  const filterAid = Number((opts && opts.filterAid) || 0) || 0;
   function nm(obj){ const id=Number(obj.account_id||obj.id||0); const label = obj.name || (id?`Player ${id}`:'Unknown'); const href = obj.profile || (id? OD_PLAYER_URL(id): '#'); return `<a href='${href}' target='_blank'>${label}</a>`; }
   function uniqueById(arr){
     const seen = new Set();
@@ -1991,7 +2130,11 @@ function renderAwards(aw, heroMap, opts){
     {t:'Yedi Master – force uses', k:'forceMaster', f:'plain'},
   ];
   defs.sort((a,b)=> a.t.localeCompare(b.t, undefined, {sensitivity:'base'}));
-  const tiles = defs.map(d=> list3(d.t, aw[d.k], d.f, d.k)).filter(s=> s && s.length>0);
+  const tiles = defs.map(d=>{
+    const src = aw[d.k];
+    const arr = (filterAid>0 && Array.isArray(src)) ? src.filter(x=> Number(x.account_id||x.id||0)===filterAid) : src;
+    return list3(d.t, arr, d.f, d.k);
+  }).filter(s=> s && s.length>0);
   // Chunk into rows of 3
   let html = '';
   for(let i=0;i<tiles.length;i+=3){

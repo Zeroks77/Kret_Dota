@@ -1,11 +1,11 @@
 ﻿{
-    "items": [
-        {
-            "title": "August 2025",
-            "href": "./2025-August-Report/",
-            "group": "monthly",
-            "time": "2025-09-01T00:00:00Z",
-            "sort": "2025-08"
-        }
-    ]
+    "items":  [
+                  {
+                      "title":  "August 2025",
+                      "href":  "2025-August-Report/",
+                      "group":  "monthly",
+                      "time":  "2025-09-01T10:44:54Z",
+                      "sort":  "2025-08"
+                  }
+              ]
 }
