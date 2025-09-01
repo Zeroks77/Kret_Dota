@@ -1408,6 +1408,8 @@ async function main(){
   let statsSubset = baseSubset;
   if(__userOnlyAid>0){ statsSubset = baseSubset.filter(m => hasAid(m, __userOnlyAid)); }
   __subsetCache = statsSubset; __rangeUnix = {from:f,to:t};
+  // Update header with match count to make empty selections obvious
+  try{ const hs=document.getElementById('headerSub'); if(hs){ hs.textContent = (hs.textContent||'') + ` · ${statsSubset.length} matches`; } }catch(_e){}
   // Init calendar cursor to month of 'to'
   const dTo = new Date(t*1000); __calCursor = {y:dTo.getUTCFullYear(), m:dTo.getUTCMonth()};
   const agg = aggregate(statsSubset, playerNames, teamNames);

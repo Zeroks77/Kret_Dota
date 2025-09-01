@@ -70,9 +70,9 @@ function Write-Wrapper([string]$outDir,[string]$title,[string]$query){
 <body>
   <div class='bar'>
     <div>$(ConvertTo-HtmlEncoded $title)<div class='sub'>Temporary user report (auto-deletes after $PersistDays days)</div></div>
-    <div><a href="../dynamic.html$query" target="_blank" rel="noopener">Open in new tab</a></div>
+    <div><a href="../../dynamic.html$query" target="_blank" rel="noopener">Open in new tab</a></div>
   </div>
-  <iframe src="../dynamic.html$query" loading="eager" referrerpolicy="no-referrer"></iframe>
+  <iframe src="../../dynamic.html$query" loading="eager" referrerpolicy="no-referrer"></iframe>
 </body>
 </html>
 "@
@@ -118,7 +118,7 @@ $stamp = $now.ToString('yyyyMMdd-HHmmss')
 $folder = "User-Reports/$stamp-$slug"
 $outDir = Join-Path $docs $folder
 $title = "User Report - $Name - " + $now.ToString('yyyy-MM-dd')
-$query = ("?from=$fromUnix" + "`&to=$toUnix" + "`&tab=highlights" + "`&lock=1" + "`&aid=$AccountId")
+$query = ("?from=$fromUnix" + "`&to=$toUnix" + "`&tab=highlights" + "`&lock=1" + "`&aid=$AccountId" + "`&uonly=1")
 Write-Wrapper -outDir $outDir -title $title -query $query
 Update-ReportsJson -docsRoot $docs -title $title -href ("{0}/" -f $folder) -group 'user' -when $now -sortKey $now.ToString('yyyy-MM-ddTHH:mm:ssZ')
 Write-Host "Created user report: $title -> $folder"

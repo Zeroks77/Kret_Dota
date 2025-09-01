@@ -17,6 +17,10 @@ jobs:
         shell: pwsh
         run: |
           ./scripts/fetch_opendota_data.ps1
+      - name: Cleanup old user reports (auto-prune)
+        shell: pwsh
+        run: |
+          ./scripts/create_user_report.ps1 -Cleanup -PersistDays 5
       - name: Commit and push
         if: ${{ success() }}
         run: |
@@ -25,5 +29,7 @@ jobs:
           git add -- data/cache/OpenDota/constants/*.json || true
           git add -- data/cache/OpenDota/matches/*.json || true
           git add -- data/heroes.json || true
-          git commit -m "chore(ci): daily OpenDota fetch" || echo "no changes"
+          git add -- docs/User-Reports || true
+          git add -- docs/reports.json || true
+          git commit -m "chore(ci): daily OpenDota fetch + cleanup" || echo "no changes"
           git push

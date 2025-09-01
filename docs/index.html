@@ -161,6 +161,14 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
   const patch = data.items.filter(it=> (it.group||'').toLowerCase()==='patch');
   const user = data.items.filter(it=> (it.group||'').toLowerCase()==='user');
 
+      // Helper to normalize hrefs coming from reports.json
+      function normHref(h){
+        if(!h) return '#';
+        const s = String(h).trim();
+        if(/^(https?:)?\/\//i.test(s) || s.startsWith('/') || s.startsWith('./')) return s;
+        return './'+s; // ensure relative links are rooted from docs/
+      }
+
       // Build Monthly: group by year -> months
       const byYear = new Map();
       for(const it of monthly){
@@ -181,7 +189,7 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
         for(const it of itemsY){
           const li = document.createElement('li'); li.className='leaf item';
           li.setAttribute('data-range','monthly'); li.setAttribute('data-time', String(safeDate(it)));
-          const a = document.createElement('a'); a.href = it.href||'#';
+          const a = document.createElement('a'); a.href = normHref(it.href||'#');
           const label = it._mm ? monthName(it._mm) : (it.title || 'Report');
           a.textContent = label;
           li.appendChild(a); ul.appendChild(li);
@@ -194,7 +202,7 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
       for(const it of patch){
         const li = document.createElement('li'); li.className='leaf item';
         li.setAttribute('data-range','patch'); li.setAttribute('data-time', String(safeDate(it)));
-        const a = document.createElement('a'); a.href = it.href||'#';
+  const a = document.createElement('a'); a.href = normHref(it.href||'#');
         const label = (it.title && !/^\s*$/.test(it.title)) ? it.title : (it.sort? `Patch ${it.sort}` : 'Patch Report');
         a.textContent = label;
         li.appendChild(a); ulPatch.appendChild(li);
@@ -205,7 +213,7 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
       for(const it of user){
         const li = document.createElement('li'); li.className='leaf item';
         li.setAttribute('data-range','user'); li.setAttribute('data-time', String(safeDate(it)));
-        const a = document.createElement('a'); a.href = it.href||'#';
+  const a = document.createElement('a'); a.href = normHref(it.href||'#');
         a.textContent = (it.title && !/^\s*$/.test(it.title)) ? it.title : 'User Report';
         li.appendChild(a); ulUser.appendChild(li);
       }
