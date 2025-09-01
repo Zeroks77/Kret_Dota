@@ -10,8 +10,9 @@ Thumbs.db
 # Node or other caches (just in case)
 node_modules/
 
-# Local data caches (not for repo)
-/data/cache/
+# Local data caches
+# By default we ignored /data/cache. If you want to commit cached OpenDota/Steam JSONs, comment the next line out or remove it.
+#/data/cache/
 /data/*.bak
 
 # Python caches, if any

@@ -1643,26 +1643,7 @@ $listHtml
         <a class='btn' id='openNew' target='_blank' rel='noopener'>Open in new tab</a>
       </div>
     </div>
-    <div class="grid3">
-      <div>
-        <h3>Most common teammates</h3>
-        <ul class="simple">
-$(if ($highAll -and $highAll.PSObject.Properties.Name -contains 'teammates' -and $highAll.teammates -and $highAll.teammates.Count -gt 0) { ($highAll.teammates | ForEach-Object { "<li><span><a href='$(HtmlEscape $_.profile1)' target='_blank'>$(HtmlEscape $_.name1)</a> + <a href='$(HtmlEscape $_.profile2)' target='_blank'>$(HtmlEscape $_.name2)</a></span><span class='badge'>x$($_.games)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no games</span></li>" })
-        </ul>
-      </div>
-      <div>
-        <h3>Most courier kills</h3>
-        <ul class="simple">
-$(if ($highAll -and $highAll.PSObject.Properties.Name -contains 'courierTop' -and $highAll.courierTop -and $highAll.courierTop.Count -gt 0) { ($highAll.courierTop | ForEach-Object { "<li><span><a href='$(HtmlEscape $_.profile)' target='_blank'>$(HtmlEscape $_.name)</a></span><span class='badge'>x$($_.count)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" })
-        </ul>
-      </div>
-      <div>
-        <h3>Most camps stacked</h3>
-        <ul class="simple">
-$(if ($highAll -and $highAll.PSObject.Properties.Name -contains 'stackTop' -and $highAll.stackTop -and $highAll.stackTop.Count -gt 0) { ($highAll.stackTop | ForEach-Object { "<li><span><a href='$(HtmlEscape $_.profile)' target='_blank'>$(HtmlEscape $_.name)</a></span><span class='badge'>x$($_.count)</span></li>" }) -join "`n" } else { "<li><span class='sub'>no data</span></li>" })
-        </ul>
-      </div>
-    </div>
+    
     <iframe id='frame' src='about:blank' loading='eager' referrerpolicy='no-referrer'></iframe>
   </main>
 
