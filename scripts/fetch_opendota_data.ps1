@@ -2,7 +2,12 @@ param(
   [int]$DelayMs = 1200,
   [int]$MaxRetries = 3,
   [switch]$UpdateConstants,
-  [switch]$FetchMatches
+  [switch]$FetchMatches,
+  [switch]$DiscoverMatches,         # Discover league matches via Steam if STEAM_API_KEY present
+  [switch]$UpdateShards,            # Write/merge simplified records into data/matches/YYYY-MM.json
+  [switch]$UpdateManifest,          # Rebuild data/manifest.json from shards
+  [switch]$RequestParse,            # Request OpenDota parse for up to -MaxParseRequests matches lacking enriched data
+  [int]$MaxParseRequests = 50
 )
 
 <#
@@ -27,6 +32,9 @@ function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot\.." | Select-Object -Expan
 function Get-DataPath(){ Join-Path (Get-RepoRoot) 'data' }
 function Ensure-Dir([string]$path){ $dir=[System.IO.Path]::GetDirectoryName($path); if($dir -and -not (Test-Path -LiteralPath $dir)){ New-Item -ItemType Directory -Path $dir -Force | Out-Null } }
 function Read-JsonFile([string]$path){ if(-not (Test-Path -LiteralPath $path)){ return $null } try{ Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json } catch { $null } }
+function Save-Json([object]$obj,[string]$path){ Ensure-Dir $path; ($obj | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $path -Encoding UTF8 }
+
+function Get-LeagueId(){ $info = Read-JsonFile (Join-Path (Get-DataPath) 'info.json'); try { return [int]$info.league_id } catch { return 0 } }
 
 function Invoke-Json([string]$Method,[string]$Uri){
   $backoff = 600
@@ -42,7 +50,7 @@ function Invoke-Json([string]$Method,[string]$Uri){
   }
 }
 
-function Save-Json([object]$obj,[string]$path){ Ensure-Dir $path; ($obj | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $path -Encoding UTF8 }
+function Write-Log([string]$msg){ Write-Host $msg }
 
 function Update-Constants(){
   $data = Get-DataPath
@@ -117,96 +125,174 @@ function Fetch-MissingMatches(){
   }
 }
 
+function Discover-MatchIdsFromSteam(){
+  $key = $env:STEAM_API_KEY
+  $leagueId = Get-LeagueId
+  if([string]::IsNullOrWhiteSpace($key) -or $leagueId -le 0){ Write-Log 'Skipping Steam discovery (missing STEAM_API_KEY or league_id)'; return @() }
+  Write-Log ("Discovering matches via Steam for league_id={0}" -f $leagueId)
+  $base = 'https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/'
+  $all = New-Object System.Collections.Generic.List[object]
+  $startAt = $null
+  for($page=1; $page -le 50; $page++){
+    $qs = @{ key=$key; league_id=$leagueId; matches_requested=100 }
+    if($startAt){ $qs.start_at_match_id = $startAt }
+    $uri = $base + '?' + ($qs.GetEnumerator() | ForEach-Object { [uri]::EscapeDataString($_.Name) + '=' + [uri]::EscapeDataString([string]$_.Value) } | Out-String).Trim().Replace("`r`n",'&')
+    try{
+      $resp = Invoke-Json -Method GET -Uri $uri
+      $matches = $resp.result.matches
+      if(-not $matches -or $matches.Count -eq 0){ break }
+      foreach($m in $matches){ $all.Add([int64]$m.match_id) | Out-Null }
+      $minId = ($matches | Measure-Object -Property match_id -Minimum).Minimum
+      if(-not $minId){ break }
+      $startAt = [int64]$minId - 1
+      Start-Sleep -Milliseconds $DelayMs
+    } catch {
+      Write-Warning ("Steam discovery failed on page {0}: {1}" -f $page, $_.Exception.Message)
+      break
+    }
+  }
+  $ids = $all.ToArray() | Sort-Object -Unique
+  Write-Log ("Discovered {0} match IDs via Steam" -f $ids.Count)
+  return $ids
+}
+
+function Get-CachedMatchObjects(){
+  $data = Get-DataPath
+  $dir = Join-Path $data 'cache/OpenDota/matches'
+  if(-not (Test-Path -LiteralPath $dir)){ return @() }
+  $list = New-Object System.Collections.Generic.List[object]
+  Get-ChildItem -LiteralPath $dir -Filter '*.json' | ForEach-Object {
+    try{ $obj = Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json; if($obj){ $list.Add($obj) | Out-Null } } catch {}
+  }
+  return $list.ToArray()
+}
+
+function To-ShardRecord($md){
+  try{
+    $rec = [ordered]@{}
+    $rec.match_id = [int64]$md.match_id
+    $rec.start_time = [int]$md.start_time
+    $rec.radiant_win = [bool]$md.radiant_win
+    $rec.radiant_team_id = [int]($md.radiant_team_id)
+    $rec.dire_team_id = [int]($md.dire_team_id)
+    $rec.radiant_name = if($md.radiant_name){ [string]$md.radiant_name } else { 'Radiant' }
+    $rec.dire_name = if($md.dire_name){ [string]$md.dire_name } else { 'Dire' }
+    $pls = @()
+    foreach($p in ($md.players|ForEach-Object { $_ })){
+      $pls += [ordered]@{
+        account_id = [int64]$p.account_id
+        hero_id    = [int]$p.hero_id
+        is_radiant = [bool]$p.isRadiant
+        personaname= if($p.personaname){ [string]$p.personaname } else { $null }
+        team_id    = if($p.isRadiant){ [int]$md.radiant_team_id } else { [int]$md.dire_team_id }
+      }
+    }
+    $rec.players = $pls
+    return $rec
+  } catch { return $null }
+}
+
+function Ensure-Record-InShard($md){
+  $rec = To-ShardRecord $md; if(-not $rec){ return $false }
+  $data = Get-DataPath
+  $dt = [DateTimeOffset]::FromUnixTimeSeconds([int64]$rec.start_time).UtcDateTime
+  $fn = ("{0}-{1}.json" -f $dt.Year, $dt.ToString('MM'))
+  $path = Join-Path (Join-Path $data 'matches') $fn
+  $arr = @()
+  if(Test-Path -LiteralPath $path){ try{ $arr = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json } catch { $arr=@() } }
+  if(-not ($arr | Where-Object { [int64]$_.match_id -eq [int64]$rec.match_id })){
+    $arr = @($arr) + @($rec)
+    $arr = $arr | Sort-Object start_time, match_id
+    Save-Json -obj $arr -path $path
+    Write-Log ("Updated shard: {0} (+1 match {1})" -f $fn, $rec.match_id)
+    return $true
+  }
+  return $false
+}
+
+function Rebuild-Manifest(){
+  $data = Get-DataPath
+  $dir = Join-Path $data 'matches'
+  $items = @()
+  if(Test-Path -LiteralPath $dir){
+    Get-ChildItem -LiteralPath $dir -Filter '*.json' | ForEach-Object {
+      try{
+        $month = [System.IO.Path]::GetFileNameWithoutExtension($_.Name)
+        $arr = Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+        $items += @{ month=$month; file=("matches/"+$_.Name); count=(@($arr)).Count }
+      } catch {}
+    }
+  }
+  $manifest = @{ updated = [int][DateTimeOffset]::UtcNow.ToUnixTimeSeconds(); months = $items | Sort-Object month }
+  Save-Json -obj $manifest -path (Join-Path $data 'manifest.json')
+  Write-Log 'Rebuilt data/manifest.json'
+}
+
+function Ensure-AllGamesParsed(){
+  $data = Get-DataPath
+  $dir = Join-Path $data 'matches'
+  $ids = New-Object System.Collections.Generic.List[int64]
+  if(Test-Path -LiteralPath $dir){
+    Get-ChildItem -LiteralPath $dir -Filter '*.json' | ForEach-Object {
+      try{
+        $arr = Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach($r in $arr){ try { [void]$ids.Add([int64]$r.match_id) } catch {} }
+      } catch {}
+    }
+  }
+  Save-Json -obj ($ids.ToArray() | Sort-Object -Unique) -path (Join-Path $data 'allgames_parsed.json')
+  Write-Log 'Wrote data/allgames_parsed.json'
+}
+
+function Request-Parse-ForMissing(){
+  $objs = Get-CachedMatchObjects
+  $reqs = 0
+  foreach($md in ($objs | Sort-Object match_id -Descending)){
+    if($reqs -ge $MaxParseRequests){ break }
+    $needs = $false
+    try {
+      $hasPlayers = $md.players -and $md.players.Count -gt 0
+      $hasObjectives = $md.objectives -and $md.objectives.Count -gt 0
+      $hasUsage = $false
+      if($hasPlayers){ foreach($p in $md.players){ if($p.purchase_log -or $p.item_uses -or $p.obs_killed -or $p.sen_killed){ $hasUsage = $true; break } } }
+      if(-not ($hasPlayers -and $hasObjectives -and $hasUsage)){ $needs=$true }
+    } catch { $needs=$true }
+    if($needs){
+      $mid = [int64]$md.match_id
+      try{ Invoke-Json -Method POST -Uri ("https://api.opendota.com/api/request/{0}" -f $mid) | Out-Null; Write-Log ("Requested parse for {0}" -f $mid); $reqs++ } catch { Write-Warning ("Parse request failed for {0}: {1}" -f $mid, $_.Exception.Message) }
+      Start-Sleep -Milliseconds $DelayMs
+    }
+  }
+  Write-Log ("Parse requests sent: {0}" -f $reqs)
+}
+
 # ===== Main =====
-$doConst = ($PSBoundParameters.ContainsKey('UpdateConstants') -and $UpdateConstants) -or (-not $PSBoundParameters.ContainsKey('UpdateConstants'))
-$doMatches = ($PSBoundParameters.ContainsKey('FetchMatches') -and $FetchMatches) -or (-not $PSBoundParameters.ContainsKey('FetchMatches'))
+
+$doConst    = ($PSBoundParameters.ContainsKey('UpdateConstants') -and $UpdateConstants) -or (-not $PSBoundParameters.ContainsKey('UpdateConstants'))
+$doMatches  = ($PSBoundParameters.ContainsKey('FetchMatches') -and $FetchMatches) -or (-not $PSBoundParameters.ContainsKey('FetchMatches'))
+$doDiscover = ($PSBoundParameters.ContainsKey('DiscoverMatches') -and $DiscoverMatches)
+$doShards   = ($PSBoundParameters.ContainsKey('UpdateShards') -and $UpdateShards)
+$doManifest = ($PSBoundParameters.ContainsKey('UpdateManifest') -and $UpdateManifest)
+$doParseReq = ($PSBoundParameters.ContainsKey('RequestParse') -and $RequestParse)
 
 if($doConst){ Update-Constants }
-if($doMatches){ Fetch-MissingMatches }
-
-Write-Host 'OpenDota data fetch complete.'
-param(
-  [int]$MaxConcurrency = 3,
-  [int]$DelayMs = 800
-)
-
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
-
-function Initialize-Directory([string]$p){ $d=[System.IO.Path]::GetDirectoryName($p); if($d -and -not (Test-Path $d)){ New-Item -ItemType Directory -Path $d -Force | Out-Null } }
-
-$Root = Resolve-Path "$PSScriptRoot\.." | Select-Object -ExpandProperty Path
-$Data = Join-Path $Root 'data'
-$Cache = Join-Path $Data 'cache\OpenDota'
-$ConstDir = Join-Path $Cache 'constants'
-$MatchDir = Join-Path $Cache 'matches'
-
-# Create dirs
-$null = New-Item -ItemType Directory -Force -Path $ConstDir, $MatchDir -ErrorAction SilentlyContinue
-
-function Invoke-FetchJson([string]$url){
-  try{
-    Write-Host "GET $url"
-    $r = Invoke-WebRequest -UseBasicParsing -Uri $url -Headers @{ 'Accept'='application/json'; 'User-Agent'='krets-ligascript/3.0 (+https://opendota.com)' } -TimeoutSec 60
-    if($r.StatusCode -lt 200 -or $r.StatusCode -ge 300){ return $null }
-    $txt = $r.Content
-    if([string]::IsNullOrWhiteSpace($txt)){ return $null }
-    return $txt
-  } catch {
-    return $null
+if($doDiscover){
+  $ids = Discover-MatchIdsFromSteam
+  if($ids -and $ids.Count -gt 0){
+    # Ensure we fetch details for any newly discovered IDs
+    $data = Get-DataPath
+    $cacheDir = Join-Path $data 'cache/OpenDota/matches'
+    $toFetch = @(); foreach($id in $ids){ if(-not (Test-Path -LiteralPath (Join-Path $cacheDir ("{0}.json" -f $id)))){ $toFetch += [int64]$id } }
+    if($toFetch.Count -gt 0){ Write-Log ("Newly discovered needing fetch: {0}" -f $toFetch.Count); foreach($mid in ($toFetch | Sort-Object)){
+        try{ $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid); if($obj){ Save-Json -obj $obj -path (Join-Path $cacheDir ("{0}.json" -f $mid)) } } catch { Write-Warning ("Fetch failed for {0}: {1}" -f $mid, $_.Exception.Message) }
+        Start-Sleep -Milliseconds $DelayMs
+      }
+    }
   }
 }
+if($doMatches){ Fetch-MissingMatches }
+if($doShards){ Get-CachedMatchObjects | ForEach-Object { try { [void](Ensure-Record-InShard $_) } catch {} } }
+if($doManifest){ Rebuild-Manifest; Ensure-AllGamesParsed }
+if($doParseReq){ Request-Parse-ForMissing }
 
-# Refresh constants (heroes, patch)
-$heroesTxt = Invoke-FetchJson 'https://api.opendota.com/api/constants/heroes'
-if($heroesTxt){ Initialize-Directory (Join-Path $ConstDir 'heroes.json'); Set-Content -Path (Join-Path $ConstDir 'heroes.json') -Value $heroesTxt -Encoding UTF8 }
-$patchTxt = Invoke-FetchJson 'https://api.opendota.com/api/constants/patch'
-if($patchTxt){ Initialize-Directory (Join-Path $ConstDir 'patch.json'); Set-Content -Path (Join-Path $ConstDir 'patch.json') -Value $patchTxt -Encoding UTF8 }
-
-# Collect match ids from data/matches/*.json
-$matchIdSet = New-Object 'System.Collections.Generic.HashSet[int64]'
-Get-ChildItem -Path (Join-Path $Data 'matches') -Filter '*.json' -File -ErrorAction SilentlyContinue | ForEach-Object {
-  try{
-    $arr = Get-Content -Raw -Path $_.FullName | ConvertFrom-Json -ErrorAction Stop
-    foreach($m in $arr){
-      $mid = 0
-      if($m.PSObject.Properties.Name -contains 'match_id'){ $mid = [int64]$m.match_id }
-      elseif($m.PSObject.Properties.Name -contains 'matchId'){ $mid = [int64]$m.matchId }
-      if($mid -gt 0){ [void]$matchIdSet.Add($mid) }
-    }
-  }catch{ }
-}
-
-$ids = $matchIdSet | Sort-Object
-
-Write-Host "Found $($ids.Count) match ids from shards."
-
-# Throttled parallel-ish fetch
-$sem = [System.Collections.Concurrent.ConcurrentQueue[int64]]::new()
-foreach($id in $ids){ $sem.Enqueue($id) }
-
-$jobs = @()
-for($i=0; $i -lt $MaxConcurrency; $i++){
-  $jobs += Start-Job -ScriptBlock {
-    param($q,$matchDir,$delay)
-    while($true){
-      $id = 0
-      $deq = $q.TryDequeue([ref]$id)
-      if(-not $deq){ break }
-      $outFile = Join-Path $matchDir ("{0}.json" -f $id)
-      if(Test-Path -LiteralPath $outFile){ Start-Sleep -Milliseconds 50; continue }
-      try{
-        $u = "https://api.opendota.com/api/matches/$id"
-        $txt = Invoke-WebRequest -UseBasicParsing -Uri $u -Headers @{ 'Accept'='application/json'; 'User-Agent'='krets-ligascript/3.0 (+https://opendota.com)' } -TimeoutSec 60
-        if($txt.StatusCode -ge 200 -and $txt.StatusCode -lt 300){ $body=$txt.Content; if($body){ Set-Content -Path $outFile -Value $body -Encoding UTF8 } }
-        Start-Sleep -Milliseconds $delay
-      }catch{ Start-Sleep -Milliseconds ($delay*2) }
-    }
-  } -ArgumentList $sem,$MatchDir,$DelayMs
-}
-
-Wait-Job -Job $jobs | Out-Null
-Receive-Job -Job $jobs | Out-Null
-Remove-Job -Job $jobs -Force -ErrorAction SilentlyContinue | Out-Null
-
-Write-Host "Done. Updated constants and fetched any missing match details."
+Write-Host 'OpenDota data fetch complete.'

@@ -159,7 +159,7 @@ if($GenerateMonthly){
   $monthName = Get-MonthName $ym.Month
   $folderName = "{0}-{1}-Report" -f $ym.Year, $monthName
   $outDir = Join-Path $rootDocs $folderName
-  $query = ("?from=$($r.FromUnix)" + "`&to=$($r.ToUnix)" + "`&tab=highlights")
+  $query = ("?from=$($r.FromUnix)" + "`&to=$($r.ToUnix)" + "`&tab=highlights" + "`&lock=1")
   Write-Dynamic-Wrapper -outDir $outDir -title "Monthly Report – $monthName $($ym.Year)" -query $query
   # Update index for sidebar
   $href = "./$folderName/"
@@ -176,7 +176,7 @@ if($GeneratePatch){
   $displayVer = if($ver){ $ver } else { 'Latest Patch' }
   $folderName = if($ver){ "Patch - $ver - Report" } else { "Patch - Latest - Report" }
   $outDir = Join-Path $rootDocs $folderName
-  $query = ("?from=$startUnix" + "`&to=$nowUnix" + "`&tab=highlights")
+  $query = ("?from=$startUnix" + "`&to=$nowUnix" + "`&tab=highlights" + "`&lock=1")
   Write-Dynamic-Wrapper -outDir $outDir -title "Patch Report – $displayVer" -query $query
   # Update index for sidebar
   $href = "./$folderName/"

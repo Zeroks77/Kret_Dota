@@ -1224,6 +1224,7 @@ async function main(){
     const pf = sp.get('from');
     const pt = sp.get('to');
     const ptab = sp.get('tab');
+  const plock = sp.get('lock') || sp.get('readonly') || sp.get('ui');
     function parseDateish(s){ if(!s) return NaN; if(/^\d{10}$/.test(s)) return Number(s); const ms = Date.parse(s); return isNaN(ms)? NaN : Math.floor(ms/1000); }
     let fux = NaN, tux = NaN;
     if(pf||pt){ fux = parseDateish(pf); tux = parseDateish(pt); }
@@ -1241,6 +1242,10 @@ async function main(){
     }
     // Optional: open requested tab
     if(ptab && window.__dvShowTab){ window.__dvShowTab(ptab); }
+    // Optional: hide controls for read-only/locked monthly wrappers
+    if(plock && String(plock).toLowerCase() !== '0' && String(plock).toLowerCase() !== 'false'){
+      try{ const controls = document.querySelector('.card.controls'); if(controls) controls.style.display='none'; }catch(_e){}
+    }
   })();
   // If quick change handler didn’t apply yet, do it now
   if(!__subsetCache.length) apply();
