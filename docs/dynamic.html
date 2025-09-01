@@ -126,6 +126,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
       <div style="display:flex;gap:6px;flex-wrap:wrap">
   <button id="apply">Apply</button>
   <button id="genUserReport" title="Generate a temporary user report under docs/User-Reports">Generate user report</button>
+  <span id="rangeMatchBadge" class="badge" title="Matches in selected period" style="align-self:center;display:none"></span>
       </div>
     </div>
   </div>
@@ -195,6 +196,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
           <div class="title" id="calTitle">-</div>
           <button class="tab" id="calNext">Next →</button>
         </div>
+  <div class="date" id="calMeta"></div>
         <div class="dow grid7">
           <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
         </div>
@@ -953,6 +955,11 @@ async function main(){
     loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({})),
     loadJsonWithFallback(`${relBase}/maps.json`, `${rawBase}/maps.json`).catch(()=>null)
   ]);
+  // Preload OpenDota item constants for cost filtering (used by Fast First Purchase >1k)
+  try{
+    const items = await fetch('https://api.opendota.com/api/constants/items', { cache: 'force-cache' }).then(r=>r.json());
+    if(items && typeof items==='object') window.__opendotaItems = items;
+  }catch(_e){ /* proceed without; cost-based awards will skip if unavailable */ }
   // Allow wrapper to override map patch via URL (?map=7.39 or ?patch=7.39 or ?mpatch=7_39)
   try{
     const sp = new URLSearchParams(location.search);
@@ -1007,11 +1014,14 @@ async function main(){
     }
   }catch(_e){}
 
+  // chatwheel/voiceline features removed
+
   const from = document.getElementById('from'), to = document.getElementById('to'), quick = document.getElementById('quick');
   // Keep last subset for calendar/nav
   let __subsetCache = [];
   let __rangeUnix = {from:0,to:0};
   let __calCursor = null; // {y,m}
+  let __partialCount = 0; // number of matches loaded via partial/skeleton
   // ---- Helpers to compute highlights client-side for any range ----
   function mapHeroTag(heroMap){ const out={}; try{ for(const k in heroMap){ const v=heroMap[k]; if(v && v.tag){ out[String(v.tag)] = Number(v.id||k); } } }catch(_e){} return out; }
   function getTeamByObjective(ev, md){
@@ -1030,34 +1040,85 @@ async function main(){
     const rel = `${relBase}/cache/OpenDota/matches/${id}.json`;
     const raw = `${rawBase}/cache/OpenDota/matches/${id}.json`;
     const isFile = (typeof location !== 'undefined' && location.protocol === 'file:');
-  const tryLoad = async (url)=>{ const v = await loadJson(url); return v||null; };
+    const tryLoad = async (url)=>{ const v = await loadJson(url); return v||null; };
     let md = null;
     // Try cached paths first (skip rel on file://)
     if(!isFile){ md = await tryLoad(rel); }
     if(!md){ md = await tryLoad(raw); }
-    // Determine if the cached JSON is incomplete (missing players/objectives or key per-player fields)
-    const insufficient = (obj)=>{
+    // Assess completeness to decide whether to attempt API enrichment (not rejection)
+    const isPartial = (obj)=>{
       if(!obj) return true;
       const hasPlayers = Array.isArray(obj.players) && obj.players.length>0;
       const hasObjectives = Array.isArray(obj.objectives);
-      let hasUsageFields = false;
-      let hasChat = Array.isArray(obj.chat) && obj.chat.length>0;
-      let hasLogs = false; // kills_log/deaths_log present for at least one player
+      let hasSomeLogs = false; // kills_log/deaths_log present for at least one player
+      let hasLifeState = false; // life_state present for at least one player
       if(hasPlayers){
         for(const p of obj.players){
-          if(p && (p.purchase_log || p.item_uses || p.obs_killed!==undefined || p.sen_killed!==undefined)) { hasUsageFields = true; }
-          if(p && (Array.isArray(p.kills_log) || Array.isArray(p.deaths_log))) { hasLogs = true; }
-          if(hasUsageFields && hasLogs) break;
+          if(!hasSomeLogs && p && (Array.isArray(p.kills_log) || Array.isArray(p.deaths_log))) { hasSomeLogs = true; }
+          if(!hasLifeState && p && p.life_state && (p.life_state['1']!==undefined || p.life_state['2']!==undefined)) { hasLifeState = true; }
+          if(hasSomeLogs && hasLifeState) break;
         }
       }
-      // Require chat and logs as well; these power several awards. If missing, we will try the live API.
-      return !(hasPlayers && hasObjectives && hasUsageFields && hasLogs && hasChat);
+      // Treat as partial if core arrays are missing OR if life_state is missing across players (needed for some awards)
+      return !(hasPlayers) || (!hasObjectives && !hasSomeLogs) || !hasLifeState;
     };
-    if(insufficient(md)){
+    // Helper: pick the more complete array between two
+    const pickArray = (a, b)=>{
+      const la = Array.isArray(a)? a.length:0; const lb = Array.isArray(b)? b.length:0; return lb>la ? (Array.isArray(b)? b:null) : (Array.isArray(a)? a:null);
+    };
+    // Helper: merge two match detail objects, preferring fields that are present/non-empty
+    const mergeDetails = (base, extra)=>{
+      if(!base) return extra||null; if(!extra) return base||null; const out = {...base, ...extra};
+      out.players     = pickArray(base.players, extra.players) || base.players || extra.players || [];
+      out.objectives  = pickArray(base.objectives, extra.objectives) || base.objectives || extra.objectives || [];
+      out.chat        = pickArray(base.chat, extra.chat) || base.chat || extra.chat || [];
+      out.picks_bans  = pickArray(base.picks_bans, extra.picks_bans) || base.picks_bans || extra.picks_bans || [];
+      out.radiant_gold_adv = Array.isArray(extra?.radiant_gold_adv) && extra.radiant_gold_adv.length ? extra.radiant_gold_adv
+                             : (Array.isArray(base?.radiant_gold_adv)? base.radiant_gold_adv : undefined);
+      return out;
+    };
+    // If partial or missing, try to enrich with live API
+    if(isPartial(md)){
+      __partialCount++;
       const api = await loadJson(`https://api.opendota.com/api/matches/${id}`);
-      if(api) md = api;
+      if(api){ md = mergeDetails(md, api); } else {
+        // No API; keep whatever we have (even if partial) to salvage any usable stats
+      }
     }
-    // If still missing, return a benign stub so downstream logic can skip gracefully
+    // If still nothing, build a minimal skeleton from monthly shards entry
+    if(!md){
+      try{
+        const src = (Array.isArray(allMatches)? allMatches: []).find(m => Number(m.match_id||m.matchId) === Number(id));
+        if(src){
+          const rPlayers = []; const dPlayers = [];
+          const players = Array.isArray(src.players)? src.players: [];
+          // Assign synthetic player_slot by side based on is_radiant
+          for(const p of players){
+            const aid = Number(p.account_id||0);
+            const hid = Number(p.hero_id||0);
+            const name = String(p.personaname||'');
+            const isRad = !!p.is_radiant;
+            const obj = { account_id: aid, hero_id: hid, personaname: name, isRadiant: isRad };
+            if(isRad){ rPlayers.push(obj); } else { dPlayers.push(obj); }
+          }
+          // Assign conventional slots 0-4 for Radiant, 128-132 for Dire
+          rPlayers.forEach((p,i)=> p.player_slot = i);
+          dPlayers.forEach((p,i)=> p.player_slot = 128+i);
+          md = {
+            match_id: Number(src.match_id)||Number(id)||0,
+            start_time: Number(src.start_time)||undefined,
+            radiant_win: !!src.radiant_win,
+            radiant_team_id: src.radiant_team_id,
+            dire_team_id: src.dire_team_id,
+            radiant_name: src.radiant_name,
+            dire_name: src.dire_name,
+            players: [...rPlayers, ...dPlayers],
+            objectives: [],
+          };
+        }
+      }catch(_e){}
+    }
+    // Final guard: if still missing, return a benign stub so downstream logic can skip gracefully
     if(!md) return { match_id:Number(id)||0, players:[], objectives:[] };
     return md;
   }
@@ -1095,14 +1156,23 @@ async function main(){
     function addMapCount(map, key, inc=1){ const k=String(key); map.set(k, (map.get(k)||0)+inc); }
     function addNestedCount(obj, side, matchId){ const m=obj[side]; const k=String(matchId); m.set(k, (m.get(k)||0)+1); }
     function playerName(aid, md){
-      aid=Number(aid)||0; if(!aid) return `Player ${aid}`; const p=(md.players||[]).find(pp=>(pp.account_id|0)===aid); return p&&p.personaname ? p.personaname : `Player ${aid}`;
+  aid=Number(aid)||0; if(!aid) return `Player ${aid}`; const p=players.find(pp=>(pp.account_id|0)===aid); return p&&p.personaname ? p.personaname : `Player ${aid}`;
     }
 
     for(const md of details){ if(!md) continue; const mid = Number(md.match_id||md.matchId||0); if(!(mid>0)) continue;
       try{
         // Per-match helpers for ward life pairing
         const placed=[], left=[]; const heroToAccount=new Map();
-        for(const p of (md.players||[])){
+        // Ensure player_slot exists; if missing, synthesize by isRadiant order
+        let players = Array.isArray(md.players)? md.players: [];
+        const hasSlots = players.some(p=>p && p.player_slot!==undefined);
+        if(!hasSlots){
+          const r=[]; const d=[]; for(const p of players){ if(p && (p.isRadiant===true || p.is_radiant===true)) r.push(p); else d.push(p); }
+          r.forEach((p,i)=> p.player_slot = i);
+          d.forEach((p,i)=> p.player_slot = 128+i);
+          players = [...r, ...d];
+        }
+        for(const p of players){
           const aid = Number(p.account_id||0); const prof = aid? OD_PLAYER_URL(aid): '#';
           // Multi-kills -> rampages
           const mk = p.multi_kills || {};
@@ -1161,16 +1231,16 @@ async function main(){
         for(const e of left){ const k=`${e.x},${e.y}`; if(!lBy.has(k)) lBy.set(k,[]); lBy.get(k).push(Number(e.time||0)); }
         for(const [k,pt] of pBy){ pt.sort((a,b)=>a-b); const lt=(lBy.get(k)||[]).sort((a,b)=>a-b); let j=0; for(let i=0;i<pt.length;i++){ const tP=pt[i]; while(j<lt.length && lt[j]<tP) j++; let life=480; if(j<lt.length){ life = Math.max(0, Number(lt[j]-tP)); j++; } const cur=wardLifeMax.get(k)||0; if(life>cur) wardLifeMax.set(k, life); } }
         // Lifetimes per player (avg)
-        for(const p of (md.players||[])){
+  for(const p of players){
           const aid=Number(p.account_id||0); if(!(aid>0)) continue; const obsLog=Array.isArray(p.obs_log)? p.obs_log:[]; const leftLog=Array.isArray(p.obs_left_log)? p.obs_left_log:[];
           const times=[]; const P=obsLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); const L=leftLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); let jj=0; for(let i=0;i<P.length;i++){ const tP=P[i]; while(jj<L.length && L[jj]<tP) jj++; let life=480; if(jj<L.length){ life = Math.max(0, L[jj]-tP); jj++; } times.push(life); }
           if(times.length){ const arr=lifeBy.get(aid)||[]; lifeBy.set(aid, arr.concat(times)); }
         }
         // Teammates per match, courier etc already counted per player; now pair counts
-        const rad=[], dire=[]; for(const p of (md.players||[])){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; (p.isRadiant?rad:dire).push(aid); }
+  const rad=[], dire=[]; for(const p of players){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; ((p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128)?rad:dire).push(aid); }
         const sides=[rad,dire]; for(const arr of sides){ for(let i=0;i<arr.length;i++){ for(let j=i+1;j<arr.length;j++){ const a=arr[i], b=arr[j]; const lo=Math.min(a,b), hi=Math.max(a,b); const key=`${lo}-${hi}`; addMapCount(pairCounts, key, 1); } } }
         // Lane duos (Safe=1, Off=3), use lane_role and lane_efficiency_pct
-        const bySide={Radiant:(md.players||[]).filter(p=>p.isRadiant), Dire:(md.players||[]).filter(p=>!p.isRadiant)};
+  const bySide={Radiant:players.filter(p=> (p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128)), Dire:players.filter(p=> !(p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128))};
         const duos={Safe:new Map(), Off:new Map()};
         for(const laneName of ['Safe','Off']){
           const code = laneName==='Safe'?1:3;
@@ -1193,26 +1263,26 @@ async function main(){
           for(const pb of pbs){ if(pb && pb.is_pick===false){ const hid = Number(pb.hero_id||0); if(hid>0) banCounts.set(hid, (banCounts.get(hid)||0)+1); } }
         }catch(_e){}
         // Objectives: Roshan, Aegis snatch, Tormentor
-        if(Array.isArray(md.objectives) && md.objectives.length){ objectivesSeen=true; for(const ev of md.objectives){ const t=String(ev.type||'');
+  if(Array.isArray(md.objectives) && md.objectives.length){ objectivesSeen=true; for(const ev of md.objectives){ const t=String(ev.type||'');
             if(/roshan_kill|CHAT_MESSAGE_ROSHAN_KILL/i.test(t)){
               const team = getTeamByObjective(ev, md);
               if(team){ roshanTeam[team]++; addNestedCount(roshPerMatch, team, mid); }
               const sec = Number(ev.time||0);
               const slot = ev.player_slot;
               let player=null;
-              if(slot!==undefined){ const pp=(md.players||[]).find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
+              if(slot!==undefined){ const pp=players.find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
               roshanEvents.push({match_id:mid,time:sec,team,player});
             }
-            if(/CHAT_MESSAGE_AEGIS_STOLEN/i.test(t)){ const team = getTeamByObjective(ev, md); const sec=Number(ev.time||0); const slot = ev.player_slot; let player=null; if(slot!==undefined){ const pp=(md.players||[]).find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
+            if(/CHAT_MESSAGE_AEGIS_STOLEN/i.test(t)){ const team = getTeamByObjective(ev, md); const sec=Number(ev.time||0); const slot = ev.player_slot; let player=null; if(slot!==undefined){ const pp=players.find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
               aegisSnatch.push({match_id:mid,time:sec,team,player}); }
             if(/tormentor|miniboss|CHAT_MESSAGE_TORMENTOR_KILL|CHAT_MESSAGE_MINIBOSS/i.test(t) || /tormentor|miniboss/i.test(String(ev.key||'')) || /tormentor|miniboss/i.test(String(ev.unit||'')) || /tormentor|miniboss/i.test(String(ev.msg||''))){
-              const team = getTeamByObjective(ev, md); const sec=Number(ev.time||0); const slot = ev.player_slot; let player=null; if(slot!==undefined){ const pp=(md.players||[]).find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
+              const team = getTeamByObjective(ev, md); const sec=Number(ev.time||0); const slot = ev.player_slot; let player=null; if(slot!==undefined){ const pp=players.find(p=>p.player_slot===slot); if(pp){ player={account_id:pp.account_id, name:pp.personaname||playerName(pp.account_id, md), profile: OD_PLAYER_URL(pp.account_id), hero: (heroMap[String(pp.hero_id)]||{}).name||''}; } }
               tormentor.push({match_id:mid,time:sec,team,player,confidence:'explicit'}); tormentorExplicitMids.add(mid); }
           } }
         // Fallback: derive Tormentor kills from per-player killed logs when explicit objective not present
         try{
           if(!tormentorExplicitMids.has(mid)){
-            for(const p of (md.players||[])){
+            for(const p of players){
               const killed = p && p.killed ? p.killed : null;
               if(!killed) continue;
               // sum keys that look like miniboss/tormentor
@@ -1249,7 +1319,7 @@ async function main(){
   function topNByCount(mp, n){ return Array.from(mp.entries()).map(([aid,c])=>({account_id:Number(aid), name: `Player ${aid}`, profile: OD_PLAYER_URL(aid), count:c})).sort((a,b)=> b.count-a.count).slice(0,n); }
     function namedTop(mp, n){ return topNByCount(mp, n).map(x=>{ x.name = x.name; return x; }); }
     // Resolve names for players we saw
-    const nameCache=new Map(); for(const md of details){ if(!md) continue; for(const p of (md.players||[])){ const aid=Number(p.account_id||0); if(aid>0 && p.personaname) nameCache.set(aid, p.personaname); } }
+  const nameCache=new Map(); for(const md of details){ if(!md) continue; const players=(Array.isArray(md.players)? md.players:[]); for(const p of players){ const aid=Number(p.account_id||0); if(aid>0 && p.personaname) nameCache.set(aid, p.personaname); } }
     function withNames(arr){ return (arr||[]).map(o=> ({...o, name: nameCache.get(Number(o.account_id)) || o.name})); }
     const mostPlaced = withNames(topNByCount(obsPlacedBy, 5));
     const mostDewards = withNames(topNByCount(dewardsBy, 5));
@@ -1265,7 +1335,7 @@ async function main(){
   function duosFromMap(mp){ return Array.from(mp.entries()).map(([key,v])=>{ const [a,b]=key.split('-').map(Number); const wr = v.games? v.wins/v.games : 0; return {a,b,games:v.games,wins:v.wins,winrate:wr}; }).sort((a,b)=> (b.winrate-a.winrate) || (b.games-a.games)).slice(0,5); }
     // We actually stored duos within scope above; recompute here by re-deriving from details for simplicity
     const duoAgg = {Safe:new Map(), Off:new Map()};
-    for(const md of details){ if(!md) continue; const bySide={Radiant:(md.players||[]).filter(p=>p.isRadiant), Dire:(md.players||[]).filter(p=>!p.isRadiant)};
+  for(const md of details){ if(!md) continue; const players=(Array.isArray(md.players)? md.players:[]); const bySide={Radiant:players.filter(p=>p.isRadiant), Dire:players.filter(p=>!p.isRadiant)};
       for(const laneName of ['Safe','Off']){ const code=laneName==='Safe'?1:3; const rL=bySide.Radiant.filter(p=>(p.lane_role|0)===code); const dL=bySide.Dire.filter(p=>(p.lane_role|0)===code); if(rL.length===2 && dL.length===2){ const rAvg=(Number(rL[0].lane_efficiency_pct||0)+Number(rL[1].lane_efficiency_pct||0))/2; const dAvg=(Number(dL[0].lane_efficiency_pct||0)+Number(dL[1].lane_efficiency_pct||0))/2; const rPair=[Number(rL[0].hero_id),Number(rL[1].hero_id)].sort((a,b)=>a-b); const dPair=[Number(dL[0].hero_id),Number(dL[1].hero_id)].sort((a,b)=>a-b);
         const rk=`${rPair[0]}-${rPair[1]}`, dk=`${dPair[0]}-${dPair[1]}`;
         const R=duoAgg.Safe, O=duoAgg.Off; const M = laneName==='Safe'?R:O;
@@ -1409,7 +1479,11 @@ async function main(){
   if(__userOnlyAid>0){ statsSubset = baseSubset.filter(m => hasAid(m, __userOnlyAid)); }
   __subsetCache = statsSubset; __rangeUnix = {from:f,to:t};
   // Update header with match count to make empty selections obvious
-  try{ const hs=document.getElementById('headerSub'); if(hs){ hs.textContent = (hs.textContent||'') + ` · ${statsSubset.length} matches`; } }catch(_e){}
+  try{
+    const hs=document.getElementById('headerSub'); if(hs){ hs.textContent = (hs.textContent||'') + ` · ${statsSubset.length} matches`; }
+    const badge = document.getElementById('rangeMatchBadge');
+    if(badge){ badge.textContent = `${statsSubset.length} matches`; badge.style.display='inline-block'; }
+  }catch(_e){}
   // Init calendar cursor to month of 'to'
   const dTo = new Date(t*1000); __calCursor = {y:dTo.getUTCFullYear(), m:dTo.getUTCMonth()};
   const agg = aggregate(statsSubset, playerNames, teamNames);
@@ -1514,15 +1588,15 @@ function computeAwardsFromDetails(details, heroMap){
     spaceCreator: [],
     objectiveGamer: [],
     earlyFarmer: [],
-    clutchKing: [], // kept in result shape but will stay empty (removed)
+  clutchKing: [],
     courierAssassin: [],
     visionMvp: [],
     stackMaster: [],
-    smokeCommander: [],
     runeController: [],
   aegisSnatcher: [],
   // Extended awards
   disablerSupreme: [],
+  throwMaster: [],
   ancientFarmer: [],
   medic: [],
   killLeader: [],
@@ -1580,17 +1654,69 @@ function computeAwardsFromDetails(details, heroMap){
   const nameCache = new Map();
   function sideOf(slot){ return (Number(slot)<128)? 'Radiant' : 'Dire'; }
   // Aggregates
+  // Heuristic ability name sets (lowercase) for ultimates and wave-clear spells
+  const ULT_SET = new Set([
+    'abaddon_borrowed_time','alchemist_chemical_rage','ancient_apparition_ice_blast','antimage_mana_void','axe_culling_blade','bane_fiends_grip','batrider_flaming_lasso','beastmaster_primal_roar','bloodseeker_rupture','brewmaster_primal_split','bristleback_warpath','broodmother_insatiable_hunger','centaur_hoof_stomp'? '': '',
+    'centaur_stampede','chaos_knight_phantasm','chen_hand_of_god','clinkz_burning_army','clockwerk_overclocking','crystal_maiden_freezing_field','dark_seer_wall_of_replica','dark_willow_bedlam','dawnbreaker_solar_guardian','dazzle_bad_juju','death_prophet_exorcism','disruptor_static_storm','doom_bringer_doom','dragon_knight_elder_dragon_form','drow_ranger_marksmanship','earthshaker_echo_slam','elder_titan_earth_splitter','ember_spirit_fire_remnant','enchantress_natures_attendants','enigma_black_hole','faceless_void_chronosphere','furion_wrath_of_nature','grimstroke_soulbind','gyrocopter_call_down','hoodwink_sharpshooter','huskar_life_break','invoker_cataclysm','jakiro_macropyre','juggernaut_omni_slash','keeper_of_the_light_will_o_wisp','kunkka_ghostship','legion_commander_duel','leshrac_pulse_nova','lich_chain_frost','life_stealer_infest','lina_laguna_blade','lion_finger_of_death','lone_druid_true_form','luna_eclipse','lycan_shapeshift','magnataur_reverse_polarity','mars_arena_of_blood','medusa_stone_gaze','meepo_divided_we_stand','monkey_king_wukongs_command','morphling_morph_replicate','muerta_pierce_the_veil','naga_siren_song_of_the_siren','necrolyte_reapers_scythe','nevermore_requiem','night_stalker_darkness','nyx_assassin_vendetta','ogre_magi_multicast','omniknight_guardian_angel','oracle_false_promise','obsidian_destroyer_sanity_eclipse','pangolier_rolling_thunder','phantom_assassin_phantom_strike'? '': '',
+    'phantom_assassin_fan_of_knives','phantom_lancer_wall_doppelganger'? '': '', 'phoenix_supernova','primal_beast_pulverize','puck_dream_coil','pudge_dismember','pugna_life_drain','queenofpain_sonic_wave','rattletrap_overclocking','razor_eye_of_the_storm','riki_smoke_screen'? '': '', 'rubick_spell_steal','sandking_epicenter','shadow_demon_demonic_purge','shadow_shaman_mass_serpent_ward','silencer_global_silence','skeleton_king_reincarnation','skywrath_mage_mystic_flare','slardar_corrosive_haze'? '': '', 'slark_shadow_dance','sniper_assassinate','spectre_haunt','spirit_breaker_nether_strike','storm_spirit_ball_lightning','sven_gods_strength','techies_remote_mines','templar_assassin_psionic_projection'? '': '', 'terrorblade_metamorphosis','tidehunter_ravage','tinker_rearm','tiny_grow','treant_overgrowth','troll_warlord_battle_trance','tusk_walrus_punch','undying_flesh_golem','ursa_enrage','vengefulspirit_nether_swap','venomancer_poison_nova','viper_viper_strike','visage_summon_familiars','void_spirit_astral_step','warlock_rain_of_chaos','weaver_time_lapse','windrunner_focusfire','winter_wyvern_winters_curse','witch_doctor_death_ward','zuus_thundergods_wrath'
+  ].filter(Boolean));
+  const WAVE_SET = new Set([
+    'nevermore_shadowraze1','nevermore_shadowraze2','nevermore_shadowraze3','lina_dragon_slave','crystal_maiden_crystal_nova','puck_illusory_orb','puck_waning_rift','queenofpain_scream_of_pain','keeper_of_the_light_illuminate','leshrac_split_earth','leshrac_pulse_nova','sandking_burrowstrike','sandking_sand_storm','tidehunter_anchor_smash','abyssal_underlord_firestorm','tinker_march_of_the_machines','jakiro_dual_breath','jakiro_macropyre','death_prophet_carrion_swarm','ember_spirit_sleight_of_fist','kunkka_torrent','gyrocopter_rocket_barrage','medusa_mystic_snake','bristleback_quill_spray','hoodwink_acorn_shot','storm_spirit_static_remnant','razor_plasma_field','magnataur_shockwave','pangolier_swashbuckle','underlord_firestorm','snapfire_scatterblast','zeus_arc_lightning'
+  ]);
   const deathsWon = new Map();               // aid -> total deaths in wins
   const deathsWonGames = new Map();          // aid -> [{match_id, deaths}]
   const towerDmg = new Map();                // aid -> sum tower_damage
   const roshPart = new Map();                // aid -> roshan participations
-  const smokeUses = new Map();               // aid -> smokes purchased
   const runesCount = new Map();              // aid -> total runes
   const courierKills = new Map();            // aid -> courier_kills
   const stacks = new Map();                  // aid -> camps_stacked
   const wardScore = new Map();               // aid -> warding + dewarding score
   const earlyBest = new Map();               // aid -> best networth @10
   const aegisStolen = new Map();             // aid -> aegis snatches
+  const dmgTaken = new Map();                // aid -> hero_damage_taken
+  const ultCastSum = new Map();              // total ultimate casts across matches
+  const zeroUltMatches = new Map();          // matches with 0 ult casts
+  const waveClear = new Map();               // heuristic wave-clear damage via AoE spells
+  // Clutch King accumulators
+  const clutchKA = new Map();                // aid -> sum of (kills+assists) in last 10%
+  const clutchTeamK = new Map();             // aid -> sum of team kills in same period (denominator)
+  // Missing awards aggregates
+  const bkbUses = new Map();                 // black_king_bar uses
+  const clarityUses = new Map();             // clarity uses
+  const creepVac = new Map();                // lane_kills + neutral_kills
+  const csPerMinBest = new Map();            // best CS/min across matches
+  const backpacker = new Map();              // total items in backpack slots at EoG
+  const comebackKing = new Map();            // matches with >=10k comeback wins
+  // Request: additional awards
+  const firstPurchase = new Map();           // earliest purchase time
+  const emptySlots = new Map();              // max empty slots at >=40m
+  const gemPurch = new Map();                // gems purchased
+  const highFive = new Map();                // high five uses
+  const illusionCasts = new Map();           // illusions from manta/abilities
+  const kdaBest = new Map();                 // best (K+A)/D per player
+  const mangoUses = new Map();               // mango uses
+  const midasUses = new Map();               // midas uses
+  const megaTier = new Map();                // max multi-kill tier (2..5)
+  // More requested awards
+  const rapierPurch = new Map();             // divine rapier purchases (purchases + logs)
+  const refresherUse = new Map();            // refresher and refresher shard uses
+  const rootCasts = new Map();               // casts of root-inducing abilities
+  const hasteRunes = new Map();              // haste rune pickups
+  const salveUse = new Map();                // healing salve uses
+  const soloNoAssistKills = new Map();       // kills in matches with 0 assists
+  const splitPush = new Map();               // barracks + tower damage
+  const swingBest = new Map();               // best (gold_delta + xp_delta) in any teamfight
+  const tipRecv = new Map();                 // tips received
+  const selfDestructDeaths = new Map();      // deaths to neutral creeps
+  const silenceCasts = new Map();            // casts of silence abilities
+  // Additional requested awards
+  const throwCount = new Map();              // matches with >=10k lead but lost (per player)
+  const healBlock = new Map();               // Spirit Vessel uses + AA Ice Blast casts
+  const laneFreeze10 = new Map();            // best denies at 10:00 (dn_t[10])
+  const laughMsgs = new Map();               // laugh-like chat messages
+  const lateFirst = new Map();               // latest first purchase time
+  const neutralActives = new Map();          // aid -> Set of distinct neutral items interacted with
+  // removed: pauses (award dropped)
   // Extended aggregates for additional awards
   const stunsSum = new Map();                // total stun duration
   const ancientSum = new Map();              // ancient kills for tiebreak
@@ -1616,13 +1742,16 @@ function computeAwardsFromDetails(details, heroMap){
   const sentryPurch = new Map();             // sentries purchased
   const observerPurch = new Map();           // observers purchased
   const shardGot = new Map();                // shard received w/o purchase
+  // Heuristic mapping of OpenDota permanent_buff ids that indicate owning Aghanim's Shard.
+  // Observed ids in this dataset include 12 and 13 (and occasionally 16). This may vary by patch.
+  const SHARD_BUFF_IDS = new Set([12, 13, 16]);
   const neutralKills = new Map();            // neutral kills
   const ancientKills = new Map();            // ancient kills
   const towerKillEvents = new Map();         // tower kills credited via objectives
   const firstBloods = new Map();             // first bloods via objectives
   const rampageCount = new Map();            // total rampages (5x multi-kills)
   const spreeMax = new Map();                // longest kill spree across matches
-  const streaksEnded = new Map();            // streaks ended
+  // removed: streaksEnded (award dropped)
   const spellDamage = new Map();             // spell damage
   const rightClickDmg = new Map();           // right-click damage
   const outpostCaptures = new Map();         // capture events (outpost etc)
@@ -1643,20 +1772,33 @@ function computeAwardsFromDetails(details, heroMap){
   const noTpCount = new Map();               // matches >30m with 0 TP
   const invisCount = new Map();              // invis actions: glimmer + sb + invis rune
   const bountyRunes = new Map();             // bounty runes picked
-  const maxDeathGap = new Map();             // longest single death duration approx
+  const maxDeathGap = new Map();             // longest single death duration approx (legacy)
+  const deadTimeTotal = new Map();           // total time spent dead across matches (seconds)
+  const deadTimeBest = new Map();            // longest time spent dead in a single match (seconds)
   const afkFarm = new Map();                 // matches with GPM>600 & hero_damage<10k
-  const tipCount = new Map();                // number of tips given
+  // removed: tipCount (award dropped)
+  // removed: voicelineCounts (chatwheel)
   const roshAllKillsKiller = new Map();      // matches where player killed all team roshes
   const fountainDeaths = new Map();          // deaths to enemy fountain
   const bottleUses = new Map();              // bottle item uses
   const jungleScore = new Map();             // neutral_kills + camps_stacked
 
   for(const md of details){ if(!md) continue; const isRadWin = !!md.radiant_win;
+    // Normalize players and synthesize player_slot if missing
+    let players = Array.isArray(md.players)? md.players: [];
+    const hasSlotsA = players.some(p=>p && p.player_slot!==undefined);
+    if(!hasSlotsA){
+      const rA=[]; const dA=[];
+      for(const p of players){ if(p && (p.isRadiant===true || p.is_radiant===true)) rA.push(p); else dA.push(p); }
+      rA.forEach((p,i)=> p.player_slot = i);
+      dA.forEach((p,i)=> p.player_slot = 128+i);
+      players = [...rA, ...dA];
+    }
     // Helpers per match
-    const slotToAid = new Map();
-    for(const p of (md.players||[])){ const aid=Number(p.account_id||0); if(aid>0) slotToAid.set(Number(p.player_slot), aid); }
+  const slotToAid = new Map();
+  for(const p of players){ const aid=Number(p.account_id||0); if(aid>0) slotToAid.set(Number(p.player_slot), aid); }
     const matchDuration = Number(md.duration||0);
-    for(const p of (md.players||[])){
+  for(const p of players){
       const aid = Number(p.account_id||0); if(!(aid>0)) continue;
       const side = sideOf(p.player_slot);
       // cache name
@@ -1666,24 +1808,152 @@ function computeAwardsFromDetails(details, heroMap){
       if(won){ const d = Number(p.deaths||0); if(d){ deathsWon.set(aid, (deathsWon.get(aid)||0)+d); if(!deathsWonGames.has(aid)) deathsWonGames.set(aid, []); deathsWonGames.get(aid).push({match_id:Number(md.match_id||0), deaths:d}); } }
       // tower damage
       towerDmg.set(aid, (towerDmg.get(aid)||0) + Number(p.tower_damage||0));
-      // warding score: place + deward
-      const ws = Number(p.obs_placed||0) + Number(p.sen_placed||0) + Number(p.obs_killed||0) + Number(p.sen_killed||0);
+      // warding score: place + deward (support multiple key variants and fallback to killed map)
+      const placedWs = Number(p.obs_placed||0) + Number(p.sen_placed||0);
+      let killedWs = 0;
+      if(p.obs_killed!=null || p.sen_killed!=null || p.obs_kills!=null || p.sen_kills!=null){
+        killedWs = Number(p.obs_killed||p.obs_kills||0) + Number(p.sen_killed||p.sen_kills||0);
+      } else {
+        try{
+          const kmap = p.killed || {};
+          killedWs = Number(kmap['npc_dota_observer_wards']||0) + Number(kmap['npc_dota_sentry_wards']||0);
+        }catch(_e){ killedWs = 0; }
+      }
+      const ws = placedWs + killedWs;
       if(ws) wardScore.set(aid, (wardScore.get(aid)||0) + ws);
       // early farmer: networth @10:00 (gold_t index 10)
       const gt = Array.isArray(p.gold_t)? p.gold_t : [];
       const nw10 = Number(gt[10]||0);
       if(nw10>0){ const prev = earlyBest.get(aid)||0; if(nw10>prev) earlyBest.set(aid, nw10); }
-      // smokes used (purchases)
-      const plog = Array.isArray(p.purchase_log)? p.purchase_log:[];
-      const smkCnt = plog.reduce((acc,it)=> acc + (String(it.key||'').toLowerCase()==='smoke_of_deceit'?1:0), 0);
-      if(smkCnt) smokeUses.set(aid, (smokeUses.get(aid)||0)+smkCnt);
+  // purchase_log loaded below into plog2 for purchase-derived metrics
+      const plog = Array.isArray(p.purchase_log)? p.purchase_log:[]; // retained for first/late purchase timings
+  // earliest first purchase (for Fast First Purchase) and latest (for Late Comer)
+  {
+    // Helper: return item cost from OpenDota constants if available
+    const itemCost = (key)=>{
+      try{
+        const items = window.__opendotaItems || (window.__opendotaConstants && window.__opendotaConstants.items);
+        const k = String(key||'').toLowerCase();
+        const rec = items && (items[k] || items[`item_${k}`]);
+        const c = rec && (rec.cost!=null ? Number(rec.cost) : Number(rec.item_cost));
+        return isFinite(c) ? c : null;
+      }catch(_e){ return null; }
+    };
+    const COST_THRESHOLD = 1000;
+    let tMin = Infinity;
+    if(plog.length){
+      for(const it of plog){
+        const k = String(it && it.key || '').toLowerCase();
+        if(!k) continue;
+        const c = itemCost(k);
+        if(c==null || c <= COST_THRESHOLD) continue;
+        const t = Number((it && (it.time!=null ? it.time : it.time_sec)) || Infinity);
+        if(isFinite(t) && t < tMin) tMin = t;
+      }
+    }
+    // Fallback A: use first_purchase_time object (filter by item cost)
+    if(!isFinite(tMin)){
+      const fpt = (p && (p.first_purchase_time || p.first_purchase_time2)) || null;
+      if(fpt && typeof fpt === 'object'){
+        for(const [k,v] of Object.entries(fpt)){
+          const c = itemCost(k);
+          if(c==null || c <= COST_THRESHOLD) continue;
+          const t = Number(v);
+          if(isFinite(t) && t < tMin) tMin = t;
+        }
+      }
+    }
+    // Fallback B: use purchase_time map if present (filter by item cost)
+    if(!isFinite(tMin)){
+      const pt = (p && p.purchase_time) || null;
+      if(pt && typeof pt === 'object'){
+        for(const [k,v] of Object.entries(pt)){
+          const c = itemCost(k);
+          if(c==null || c <= COST_THRESHOLD) continue;
+          const t = Number(v);
+          if(isFinite(t) && t < tMin) tMin = t;
+        }
+      }
+    }
+    if(isFinite(tMin)){
+      const prevMin = firstPurchase.get(aid);
+      if(prevMin==null || tMin<prevMin) firstPurchase.set(aid, tMin);
+      const prevMax = lateFirst.get(aid)||-Infinity;
+      if(tMin>prevMax) lateFirst.set(aid, tMin);
+    }
+  }
+  // BKB and Clarity uses
+  { const iu = p.item_uses||{}; const bkb = Number(iu.black_king_bar||0); if(bkb) bkbUses.set(aid, (bkbUses.get(aid)||0)+bkb); const cl = Number(iu.clarity||0); if(cl) clarityUses.set(aid, (clarityUses.get(aid)||0)+cl); }
+      // Mango & Midas uses
+      { const iu = p.item_uses||{}; const mg = Number(iu.enchanted_mango||0); if(mg) mangoUses.set(aid, (mangoUses.get(aid)||0)+mg); const mi = Number(iu.hand_of_midas||0); if(mi) midasUses.set(aid, (midasUses.get(aid)||0)+mi); }
+  // Heal Blocker proxy: Spirit Vessel uses + AA Ice Blast casts
+  { const iu = p.item_uses||{}; const au = p.ability_uses||{}; let hb = Number(iu.spirit_vessel||0); hb += Number(au.ancient_apparition_ice_blast||0) + Number(au.ancient_apparition_ice_blast_release||0); if(hb){ healBlock.set(aid, (healBlock.get(aid)||0)+hb); } }
+  // High five uses (prefer ability_uses.plus_high_five; also accept item_uses.high_five if present)
+  { const iu = p.item_uses||{}; const au = p.ability_uses||{}; const hf = Number(au.plus_high_five||0) + Number(iu.high_five||0); if(hf) highFive.set(aid, (highFive.get(aid)||0)+hf); }
+      // Gem purchases
+      { const purch = p.purchase||{}; const base = Number(purch.gem_of_true_sight||0); const extra = plog.reduce((a,it)=> a + ((String(it.key||'').toLowerCase().includes('gem')||String(it.key||'').toLowerCase()==='gem_of_true_sight')?1:0), 0); const tot = base + extra; if(tot) gemPurch.set(aid, (gemPurch.get(aid)||0)+tot); }
+      // Illusion commander: manta + abilities
+      { const iu = p.item_uses||{}; const au = p.ability_uses||{}; let val = Number(iu.manta||0); for(const k in (au||{})){ const lk = String(k||'').toLowerCase(); if(lk.includes('phantasm')||lk.includes('mirror_image')||lk.includes('doppel')||lk.includes('conjure_image')){ val += Number(au[k]||0); } } if(val) illusionCasts.set(aid, (illusionCasts.get(aid)||0)+val); }
+      // Rapier Gambler: Divine Rapier purchases
+      { const purch = p.purchase||{}; const base = Number(purch.divine_rapier||0); const plog = Array.isArray(p.purchase_log)? p.purchase_log:[]; const extra = plog.reduce((a,it)=> a + (String(it.key||'').toLowerCase()==='divine_rapier'?1:0), 0); const tot=base+extra; if(tot){ rapierPurch.set(aid, (rapierPurch.get(aid)||0)+tot); } }
+      // Refresher Fiend: refresher and refresher shard uses
+      { const iu = p.item_uses||{}; const val = Number(iu.refresher||0) + Number(iu.refresher_shard||0); if(val){ refresherUse.set(aid, (refresherUse.get(aid)||0)+val); } }
+      // Silence Master (ability casts that silence) and Root Lord (ability casts that root)
+      { const au = p.ability_uses||{}; let s=0, r=0; for(const [k,v] of Object.entries(au||{})){ const key=String(k||'').toLowerCase(); const val=Number(v||0); if(!val) continue; if(/silence|global_silence|last_word|ancient_seal|crippling_fear|drow_silence|trickshot_silence|arcane_curse/.test(key)) s+=val; if(/root|overgrowth|entangle|searing_chains|frostbite|ensnare|spirit_bear_entangle|rod_of_atos/.test(key)) r+=val; }
+        if(s) silenceCasts.set(aid,(silenceCasts.get(aid)||0)+s); if(r) rootCasts.set(aid,(rootCasts.get(aid)||0)+r); }
+      // Salve Savior: healing salve uses (support both keys 'healing_salve' and 'flask'; fall back to ability_uses and purchases if needed)
+      { const iu = p.item_uses||{}; const au = p.ability_uses||{};
+        let val = Number(iu.healing_salve||0) + Number(iu.flask||0);
+        if(!val){ val += Number(au.healing_salve||0) + Number(au.flask||0); }
+        if(!val){ const pl = Array.isArray(p.purchase_log)? p.purchase_log:[]; val = pl.reduce((a,it)=> a + (String(it.key||'').toLowerCase()==='flask'?1:0), 0); }
+        if(val){ salveUse.set(aid, (salveUse.get(aid)||0)+val); }
+      }
+      // KDA best per match
+      { const k = Number(p.kills||0), a = Number(p.assists||0), d = Math.max(1, Number(p.deaths||0)); const kda = (k+a)/d; if(k>0 || a>0){ const prev = kdaBest.get(aid)||0; if(kda>prev) kdaBest.set(aid, Number(kda.toFixed(2))); } }
+      // Mega Kill Maestro: highest tier seen
+      { const mk = p.multi_kills||{}; let tmax = 0; for(const t of ['5','4','3','2']){ if(Number(mk[t]||0)>0){ tmax = Math.max(tmax, Number(t)); break; } } if(tmax>0){ const prev = megaTier.get(aid)||0; if(tmax>prev) megaTier.set(aid, tmax); } }
+      // Lane Freezer: best denies @10:00 (dn_t[10] if available; fallback to total denies)
+      { let v = 0; if(Array.isArray(p.dn_t)) v = Number(p.dn_t[10]||0); else v = Number(p.denies||0); if(v>0){ const prev = laneFreeze10.get(aid)||0; if(v>prev) laneFreeze10.set(aid, v); } }
+      // Empty slots at >=40:00
+      { const dur = Number(md.duration||0)||0; if(dur>=2400){ const slots = [p.item_0,p.item_1,p.item_2,p.item_3,p.item_4,p.item_5]; const filled = slots.reduce((acc,it)=> acc + ((Number(it||0)>0)?1:0), 0); const empty = 6 - filled; if(empty>0){ const prev = emptySlots.get(aid)||0; if(empty>prev) emptySlots.set(aid, empty); } } }
+  // Split Pusher: tower + barracks damage
+  { const val = Number(p.tower_damage||0) + Number(p.barracks_damage||0); if(val){ splitPush.set(aid, (splitPush.get(aid)||0)+val); } }
+      // Neutral Item Juggler: count distinct neutral item interactions (active uses + final held)
+      { const iu = p.item_uses||{}; let set = neutralActives.get(aid); if(!set){ set = new Set(); neutralActives.set(aid, set); }
+        const activeNeutralKeys = ['trusty_shovel','pig_pole','flicker','ninja_gear','fallen_sky','mirror_shield','ex_machina','book_of_shadows','pirate_hat','seer_stone','ascetic_cap','trickster_cloak','stormcrafter','martyrs_plate','giants_ring','mind_breaker','telescope','repair_kit','woodland_striders','ballista','arcanist_armor','gladiator_helm','defiant_shell','dagger_of_ristul','force_boots','witless_shako','spell_prism','quicksilver_amulet','vampire_fangs','pupils_gift','philosophers_stone','misericorde','oracle_lens','eye_of_the_vizier','specialists_array','dandelion_amulet','nethershawl','penta_edged_sword','ogre_seal_totem'];
+        for(const k of activeNeutralKeys){ if(Number(iu[k]||0)>0) set.add(k); }
+        const nid = Number(p.item_neutral||0); if(nid>0) set.add('id:'+nid);
+      }
       // runes taken
       const runes = p.runes||{}; const sumRunes = Object.values(runes).reduce((a,b)=>a+Number(b||0),0);
       if(sumRunes) runesCount.set(aid, (runesCount.get(aid)||0)+sumRunes);
       // courier kills
       const ck = Number(p.courier_kills||0); if(ck) courierKills.set(aid, (courierKills.get(aid)||0)+ck);
+  // damage taken: prefer hero_damage_taken; fallback to sum of damage_taken from heroes
+  {
+    let hdt = Number(p.hero_damage_taken||0);
+    if(!hdt){
+      try{
+        const dt = p.damage_taken || {};
+        // Sum only damage from heroes (keys like npc_dota_hero_*)
+        hdt = Object.entries(dt).reduce((acc, [k, v])=> acc + (/npc_dota_hero_/i.test(String(k)) ? Number(v)||0 : 0), 0);
+      }catch(_e){ hdt = 0; }
+    }
+    if(hdt){ dmgTaken.set(aid, (dmgTaken.get(aid)||0) + hdt); }
+  }
+      // Heuristic ult casts this match and wave-clear damage
+      { const au = p.ability_uses||{}; let u=0; for(const [k,v] of Object.entries(au||{})){ const key=String(k||'').toLowerCase(); if(ULT_SET.has(key)) u += Number(v||0); }
+        if(u>0){ ultCastSum.set(aid, (ultCastSum.get(aid)||0)+u); } else { zeroUltMatches.set(aid, (zeroUltMatches.get(aid)||0)+1); }
+        const di = p.damage_inflictor||{}; let w=0; for(const [k,v] of Object.entries(di||{})){ const key=String(k||'').toLowerCase(); if(WAVE_SET.has(key)) w += Number(v||0); } if(w>0){ waveClear.set(aid, (waveClear.get(aid)||0)+w); }
+      }
       // stacks
       const st = Number(p.camps_stacked||0); if(st) stacks.set(aid, (stacks.get(aid)||0)+st);
+  // creep vacuum: lane + neutral kills
+  { const cv = Number(p.lane_kills||0) + Number(p.neutral_kills||0); if(cv) creepVac.set(aid, (creepVac.get(aid)||0)+cv); }
+  // CS per minute: last hits / minutes (best per player)
+  { const dur = Math.max(1, Number(md.duration||0)); const lhv = Number(p.last_hits||0); const rate = lhv / (dur/60); if(rate>0){ const prev = csPerMinBest.get(aid)||0; if(rate>prev) csPerMinBest.set(aid, rate); } }
+  // Backpacker: count non-empty backpack slots at EoG
+  { const b0 = p.backpack_0, b1=p.backpack_1, b2=p.backpack_2; const nonEmpty = [b0,b1,b2].reduce((acc,v)=> acc + ((v!==undefined && v!==null && Number(v)!==0)?1:0), 0); if(nonEmpty) backpacker.set(aid, (backpacker.get(aid)||0)+nonEmpty); }
   // ---- Extended aggregates ----
   // stuns
   const stunDur = Number(p.stuns||0); if(stunDur) stunsSum.set(aid, (stunsSum.get(aid)||0)+stunDur);
@@ -1707,17 +1977,33 @@ function computeAwardsFromDetails(details, heroMap){
   // wards placed/killed
   const placed = Number(p.obs_placed||0)+Number(p.sen_placed||0); if(placed) wardsPlaced.set(aid, (wardsPlaced.get(aid)||0)+placed);
   let killed = 0;
-  if(p.obs_killed!==undefined || p.sen_killed!==undefined){
-    killed = Number(p.obs_killed||0)+Number(p.sen_killed||0);
-  }else if(Array.isArray(p.wards)){ // some APIs expose a per-ward log; count removals
+  // Prefer explicit counters (support both *killed and *kills variants)
+  if(p.obs_killed!=null || p.sen_killed!=null || p.obs_kills!=null || p.sen_kills!=null){
+    killed = Number(p.obs_killed||p.obs_kills||0) + Number(p.sen_killed||p.sen_kills||0);
+  } else if(p && typeof p.killed === 'object' && p.killed){
+    // Fallback: derive from generic killed map
+    killed = Number(p.killed['npc_dota_observer_wards']||0) + Number(p.killed['npc_dota_sentry_wards']||0);
+  } else if(Array.isArray(p.wards)){
+    // Last resort: some APIs expose a per-ward log; count removals
     killed = p.wards.reduce((acc,w)=> acc + (String(w.type||'').includes('destroyed')?1:0), 0);
   }
   if(killed) wardsKilled.set(aid, (wardsKilled.get(aid)||0)+killed);
   // purchases/logs/uses
   const plog2 = Array.isArray(p.purchase_log)? p.purchase_log:[];
   const uses = p.item_uses||{}; const purch = p.purchase||{};
-  // dust purchases + uses
-  const dustP = plog2.reduce((acc,it)=> acc + (String(it.key||'').toLowerCase()==='dust_of_appearance'?1:0), 0) + Number(uses.dust_of_appearance||0);
+  // Rune: haste pickups
+  { const runes = p.runes||{}; const h = Number(runes['0']||runes.haste||0); if(h){ hasteRunes.set(aid, (hasteRunes.get(aid)||0)+h); } }
+  // dust purchases + uses (support both 'dust' and 'dust_of_appearance' variants)
+  const dustPurchases = plog2.reduce((acc,it)=>{
+    const k = String(it.key||'').toLowerCase();
+    return acc + ((k==='dust_of_appearance' || k==='dust') ? 1 : 0);
+  }, 0);
+  const aUses2 = p.ability_uses||{};
+  const dustItemUses = Number(uses.dust_of_appearance||0) + Number(uses.dust||0);
+  const dustAbilityUses = Number(aUses2.dust_of_appearance||0) + Number(aUses2.dust||0);
+  // Prefer item uses when available; otherwise fall back to ability uses to avoid double counting
+  const dustUses = dustItemUses>0 ? dustItemUses : dustAbilityUses;
+  const dustP = dustPurchases + dustUses;
   if(dustP) dustDetect.set(aid, (dustDetect.get(aid)||0)+dustP);
   // savior items uses (force/glimmer/lotus)
   const sav = Number(uses.force_staff||0)+Number(uses.glimmer_cape||0)+Number(uses.lotus_orb||0); if(sav) saviorUses.set(aid, (saviorUses.get(aid)||0)+sav);
@@ -1751,6 +2037,8 @@ function computeAwardsFromDetails(details, heroMap){
       { const d = Number(p.deaths||0); const prev = maxDeathsSingle.get(aid)||0; if(d>prev) maxDeathsSingle.set(aid, d); }
       // One Hit Wonder: 1 kill and win
       { const ok = (Number(p.kills||0)===1) && won; if(ok) oneKillWins.set(aid, (oneKillWins.get(aid)||0)+1); }
+  // Solo Artist: kills in matches with 0 assists
+  { const assists = Number(p.assists||0); if(assists===0){ const klog = Array.isArray(p.kills_log)? p.kills_log: []; const val = klog.length>0 ? klog.length : Number(p.kills||0); if(val){ soloNoAssistKills.set(aid, (soloNoAssistKills.get(aid)||0)+val); } } }
       // Assist Machine inputs
       totAssists.set(aid, (totAssists.get(aid)||0) + Number(p.assists||0));
       totDeaths.set(aid, (totDeaths.get(aid)||0) + Number(p.deaths||0));
@@ -1765,10 +2053,37 @@ function computeAwardsFromDetails(details, heroMap){
       { let val = 0; const runes2 = p.runes||{}; if(Object.keys(runes2).length){ val = Number(runes2['5']||0); }
         else if(Number(p.rune_pickups||0)>0 && Array.isArray(p.kills_log)){ /* no per-type map; skip */ }
         if(val){ bountyRunes.set(aid, (bountyRunes.get(aid)||0)+val); } }
-      // Die Hard: longest time between death and next death/end
+      // Die Hard (new): time spent dead in this match (prefer exact life_state, otherwise estimate)
+      { let dead=0; const ls = p.life_state||{}; if(ls && typeof ls==='object'){
+          const l1 = Number(ls['1'] ?? ls[1] ?? 0); const l2 = Number(ls['2'] ?? ls[2] ?? 0);
+          dead = (isFinite(l1)?l1:0) + (isFinite(l2)?l2:0);
+        }
+        // Fallback explicit counter if provided by parser
+        if(p.life_state_dead!=null){ const d2 = Number(p.life_state_dead)||0; if(d2>dead) dead = d2; }
+        // Estimation fallback when no life_state available
+        if(dead===0){
+          const dlog = Array.isArray(p.deaths_log)? p.deaths_log: [];
+          const estRespawnAt = (t)=>{ const m = Math.max(0, Math.min(100, (Number(t)||0)/60)); return Math.max(12, Math.min(95, Math.round(10 + m*1.6 + (m>30? (m-30)*0.7:0)))); };
+          if(dlog.length){ dead = dlog.reduce((acc,it)=> acc + estRespawnAt(it.time||it.time_stamp||0), 0); }
+          else{
+            const dcnt = Number(p.deaths||0); const m = Math.max(0, Number(matchDuration||0)/60);
+            const avg = Math.max(15, Math.min(80, Math.round(10 + m*1.2))); dead = dcnt * avg;
+          }
+        }
+        if(dead>0){
+          deadTimeTotal.set(aid, (deadTimeTotal.get(aid)||0)+dead);
+          const prev = deadTimeBest.get(aid)||0; if(dead>prev) deadTimeBest.set(aid, dead);
+        }
+      }
+      // Legacy longest gap (kept as reference)
       { const dl = Array.isArray(p.deaths_log)? p.deaths_log.map(e=>Number(e.time||0)).sort((a,b)=>a-b) : [];
-        if(dl.length){ let best=0; for(let i=0;i<dl.length;i++){ const cur = (i<dl.length-1) ? (dl[i+1]-dl[i]) : (matchDuration - dl[i]); if(cur>best) best=cur; }
-          const prev=maxDeathGap.get(aid)||0; if(best>prev) maxDeathGap.set(aid, best); } }
+        let best=0;
+        if(dl.length){ for(let i=0;i<dl.length;i++){ const cur = (i<dl.length-1) ? (dl[i+1]-dl[i]) : (matchDuration - dl[i]); if(cur>best) best=cur; } }
+        else if(p.firstblood_time!=null){ // rough fallback: time since first death to end
+          const fd = Number(p.firstblood_time)||0; if(matchDuration>fd) best = matchDuration - fd; }
+        else if(matchDuration>0){ // heuristic fallback: lower bound using evenly spaced deaths
+          const dcnt = Number(p.deaths||0); const segs = Math.max(1, dcnt+1); best = Math.max(best, Math.floor(matchDuration / segs)); }
+        if(best>0){ const prev=maxDeathGap.get(aid)||0; if(best>prev) maxDeathGap.set(aid, best); } }
       // AFK Farmer: GPM > 600 and hero_damage < 10k
       { const gpmv=Number(p.gold_per_min||0), hdv=Number(p.hero_damage||0); if(gpmv>600 && hdv<10000){ afkFarm.set(aid, (afkFarm.get(aid)||0)+1); } }
       // Bottle Hoarder: bottle uses
@@ -1799,14 +2114,17 @@ function computeAwardsFromDetails(details, heroMap){
   if(right) rightClickDmg.set(aid, (rightClickDmg.get(aid)||0)+right);
   // shard hunter heuristic
   const buffs = Array.isArray(p.permanent_buffs)? p.permanent_buffs:[];
-  const hasShardBuff = buffs.some(b=> Number(b.permanent_buff)===13 && Number(b.stack_count||0)>0);
+  // Do not rely on stack_count>0 — in observed data shard buff can have stack_count = 0.
+  // Recognize a set of possible ids to be resilient across patches.
+  const hasShardBuff = buffs.some(b=> SHARD_BUFF_IDS.has(Number(b.permanent_buff)));
   const boughtShard = plog2.some(it=> String(it.key||'').toLowerCase()==='aghanims_shard') || Number((purch||{}).aghanims_shard||0)>0;
   if(hasShardBuff && !boughtShard) shardGot.set(aid, (shardGot.get(aid)||0)+1);
     }
   // Roshan participation: credit all players on the killing team, and capture other objective events
   const objectivesArr = Array.isArray(md.objectives) ? md.objectives : (Array.isArray(md.objectives_events)? md.objectives_events: []);
   const roshByTeamKillers = {Radiant:new Set(), Dire:new Set()}; let roshCountTeam = {Radiant:0, Dire:0};
-  let sawTipEvent = false;
+  let hasCaptureObjective = false; // track if we saw explicit capture events to avoid double counting with fallback
+  // removed tips/pauses awards
   for(const ev of objectivesArr){
       const t = String(ev.type||ev.key||'');
       if(/roshan_kill|CHAT_MESSAGE_ROSHAN_KILL/i.test(t)){
@@ -1819,45 +2137,237 @@ function computeAwardsFromDetails(details, heroMap){
     const killerAid = slotToAid.get(slot)||0; if(killerAid){ roshByTeamKillers[team].add(killerAid); }
       }
       // Aegis snatch
-      if(/CHAT_MESSAGE_AEGIS_STOLEN/i.test(t)){ const slot=ev.player_slot; const p = (md.players||[]).find(x=>x.player_slot===slot); if(p){ const id=Number(p.account_id||0); if(id>0) aegisStolen.set(id, (aegisStolen.get(id)||0)+1); } }
+  if(/CHAT_MESSAGE_AEGIS_STOLEN/i.test(t)){ const slot=ev.player_slot; const p = players.find(x=>x.player_slot===slot); if(p){ const id=Number(p.account_id||0); if(id>0) aegisStolen.set(id, (aegisStolen.get(id)||0)+1); } }
+  // removed Tip Receiver
       // Tower kills credited to player
-  if(/CHAT_MESSAGE_TOWER_KILL|TOWER_KILL|building_kill/i.test(t)){ const slot=Number(ev.player_slot); const p=(md.players||[]).find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) towerKillEvents.set(id, (towerKillEvents.get(id)||0)+1); }
+  if(/CHAT_MESSAGE_TOWER_KILL|TOWER_KILL|building_kill/i.test(t)){ const slot=Number(ev.player_slot); const p=players.find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) towerKillEvents.set(id, (towerKillEvents.get(id)||0)+1); }
       // First blood event
-  if(/CHAT_MESSAGE_FIRSTBLOOD|FIRST_BLOOD/i.test(t)){ const slot=Number(ev.player_slot); const p=(md.players||[]).find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) firstBloods.set(id, (firstBloods.get(id)||0)+1); }
+  if(/CHAT_MESSAGE_FIRSTBLOOD|FIRST_BLOOD/i.test(t)){ const slot=Number(ev.player_slot); const p=players.find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) firstBloods.set(id, (firstBloods.get(id)||0)+1); }
       // Capture point (outpost etc)
-  if(/CHAT_MESSAGE_CAPTURE_POINT|CAPTURE_POINT|OUTPOST_CAPTURE|CAPTURE/i.test(t)){ const slot=Number(ev.player_slot); const p=(md.players||[]).find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) outpostCaptures.set(id, (outpostCaptures.get(id)||0)+1); }
-      // Tips given
-      if(/CHAT_MESSAGE_TIP/i.test(t)){ const slot=Number(ev.player_slot); const aid = slotToAid.get(slot)||0; if(aid){ tipCount.set(aid, (tipCount.get(aid)||0)+1); sawTipEvent=true; } }
+  if(/CHAT_MESSAGE_CAPTURE_POINT|CAPTURE_POINT|OUTPOST_CAPTURE|CAPTURE/i.test(t)){ const slot=Number(ev.player_slot); const p=players.find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) outpostCaptures.set(id, (outpostCaptures.get(id)||0)+1); hasCaptureObjective = true; }
+  // removed Tips and Pauses counting
+    }
+    // Fallback: if we couldn't attribute any captures via objective events, sum players' ability_capture from ability_uses
+    if(outpostCaptures.size===0){
+      for(const p of players){
+        const aid = Number(p.account_id||0); if(!(aid>0)) continue;
+        const au = p.ability_uses || {};
+        // Primary signal observed in cached matches
+        let cap = Number(au.ability_capture||0);
+        // Optional: be tolerant to variations like ability_capture_* keys
+        if(!cap){
+          try{
+            for(const [k,v] of Object.entries(au)){
+              if(/ability_capture/i.test(String(k||''))) cap += Number(v||0);
+            }
+          }catch(_e){}
+        }
+        if(cap>0){ outpostCaptures.set(aid, (outpostCaptures.get(aid)||0) + cap); }
+      }
     }
     // Roshan Tourist: unique killer for team across rosh kills
     for(const side of ['Radiant','Dire']){
-      if(roshCountTeam[side]>0 && roshByTeamKillers[side].size===1){ const aid = Array.from(roshByTeamKillers[side])[0]; roshAllKillsKiller.set(aid, (roshAllKillsKiller.get(aid)||0)+1); }
+      if(roshCountTeam[side]>0){
+        if(roshByTeamKillers[side].size===1){
+          const aid = Array.from(roshByTeamKillers[side])[0];
+          roshAllKillsKiller.set(aid, (roshAllKillsKiller.get(aid)||0)+1);
+        }else{
+          // Fallback per-side: objectives exist but didn't attribute a single killer; use per-player roshan_kills to infer sole killer
+          const totalTeam = roshCountTeam[side];
+          const killers = new Map();
+          for(const p of players){
+            const aid = Number(p.account_id||0); if(!(aid>0)) continue;
+            const pSide = ((Number(p.player_slot)<128)?'Radiant':'Dire');
+            if(pSide!==side) continue;
+            const rk = Number(p.roshan_kills||0); if(rk>0) killers.set(aid, (killers.get(aid)||0)+rk);
+          }
+          if(killers.size===1){
+            const aid = Array.from(killers.keys())[0];
+            roshAllKillsKiller.set(aid, (roshAllKillsKiller.get(aid)||0)+1);
+          }else if(killers.size>1){
+            // If one player matches the team's total count, credit them
+            for(const [aid,ct] of killers.entries()){
+              if(ct===totalTeam){ roshAllKillsKiller.set(aid, (roshAllKillsKiller.get(aid)||0)+1); break; }
+            }
+          }
+        }
+      }
     }
+    // Comeback King & Throw Master using radiant_gold_adv or fallback from gold_t sums
+    try{
+      let adv = Array.isArray(md.radiant_gold_adv)? md.radiant_gold_adv.map(Number) : [];
+      if(!adv.length){
+        // Fallback: compute advantage from per-player gold_t
+        const rGT=[]; const dGT=[];
+        for(const p of players){
+          const gt = Array.isArray(p.gold_t)? p.gold_t.map(Number):[];
+          if(gt.length){ ((p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128)? rGT : dGT).push(gt); }
+        }
+        const maxLen = Math.max(0, ...rGT.map(a=>a.length), ...dGT.map(a=>a.length));
+        if(maxLen>0){
+          const sumAt = (arr, i)=> arr.reduce((s,a)=> s + Number(a[Math.min(i, a.length-1)]||0), 0);
+          const tmp=[]; for(let i=0;i<maxLen;i++){ tmp.push(sumAt(rGT,i) - sumAt(dGT,i)); }
+          adv = tmp;
+        }
+      }
+      if(adv.length){
+        const minA = Math.min(...adv.filter(isFinite));
+        const maxA = Math.max(...adv.filter(isFinite));
+        if((minA<=-10000) && md.radiant_win){
+          for(const p of players){ if(p && Number(p.player_slot)<128){ const id=Number(p.account_id||0); if(id>0) comebackKing.set(id, (comebackKing.get(id)||0)+1); } }
+        }
+        if((maxA>=10000) && !md.radiant_win){
+          for(const p of players){ if(p && !(Number(p.player_slot)<128)){ const id=Number(p.account_id||0); if(id>0) comebackKing.set(id, (comebackKing.get(id)||0)+1); } }
+        }
+        // Throw Master: if team had >=10k lead at any point and still lost
+        if((maxA>=10000) && !md.radiant_win){
+          // Radiant had big lead but lost -> credit Radiant players
+          for(const p of players){
+            if(p && Number(p.player_slot)<128){ const id=Number(p.account_id||0); if(id>0) throwCount.set(id, (throwCount.get(id)||0)+1); }
+          }
+        }
+        if((minA<=-10000) && md.radiant_win){
+          // Dire had big lead but lost -> credit Dire players
+          for(const p of players){
+            if(p && !(Number(p.player_slot)<128)){ const id=Number(p.account_id||0); if(id>0) throwCount.set(id, (throwCount.get(id)||0)+1); }
+          }
+        }
+      }
+    }catch(_e){}
+    // First Blood fallback: if not detected via objectives, derive from earliest kills_log entry
+    try{
+      if(firstBloods.size===0){
+        let tMin = Infinity; let killerId = 0;
+        for(const p of players){
+          const aid = Number(p.account_id||0); if(!(aid>0)) continue; const kl = Array.isArray(p.kills_log)? p.kills_log:[];
+          if(kl.length){ const t = Number(kl[0].time||kl[0].time_stamp||kl[0].ts||0); if(isFinite(t) && t>=0 && t < tMin){ tMin=t; killerId=aid; } }
+        }
+        if(killerId>0 && Number.isFinite(tMin)) firstBloods.set(killerId, 1);
+      }
+    }catch(_e){}
     // Chat messages (Captain Obvious)
     try{
       const chat = Array.isArray(md.chat)? md.chat: [];
-      for(const c of chat){ const slot = Number(c.slot!=null? c.slot: c.player_slot); const aid = slotToAid.get(slot)||0; if(aid){ chatCount.set(aid, (chatCount.get(aid)||0)+1); } }
-    }catch(_e){}
-    // Tip Spammer fallback: some parses aggregate tips under players.actions.tip
-    if(!sawTipEvent){
-      for(const p of (md.players||[])){
-        const aid=Number(p.account_id||0); if(!(aid>0)) continue; const acts=p.actions||{}; const tips=Number(acts.tip||0); if(tips>0){ tipCount.set(aid, (tipCount.get(aid)||0)+tips); }
+      for(const c of chat){
+        const slot = Number(c.slot!=null? c.slot: c.player_slot);
+        const aid = slotToAid.get(slot)||0; if(!aid) continue;
+    const ctype = String(c.type||'').toLowerCase();
+    if(ctype==='chatwheel') continue; // exclude voiceline/chatwheel entries
+        chatCount.set(aid, (chatCount.get(aid)||0)+1);
+        const key = String(c.key||c.unit||c.text||'').toLowerCase();
+        if(key && /(lol|haha|lmao|rofl|xd)/i.test(key)){ laughMsgs.set(aid, (laughMsgs.get(aid)||0)+1); }
       }
-    }
-    // Roshan Tourist fallback: if objectives lacked explicit kills, use per-player roshan_kills grouped by team to detect a sole killer
+    }catch(_e){}
+    // removed Tip Spammer fallback
+  // Roshan Tourist fallback: if no objective kills at all, use per-player roshan_kills grouped by team to detect a sole killer
     if(roshCountTeam.Radiant===0 && roshCountTeam.Dire===0){
-      const killersByTeam={Radiant:new Map(), Dire:new Map()}; const totalByTeam={Radiant:0, Dire:0};
-      for(const p of (md.players||[])){
+  const killersByTeam={Radiant:new Map(), Dire:new Map()}; const totalByTeam={Radiant:0, Dire:0};
+  for(const p of players){
         const aid=Number(p.account_id||0); if(!(aid>0)) continue; const side = ((Number(p.player_slot)<128)?'Radiant':'Dire'); const rk = Number(p.roshan_kills||0); if(rk>0){ killersByTeam[side].set(aid, (killersByTeam[side].get(aid)||0)+rk); totalByTeam[side]+=rk; }
       }
+    // Tower kills fallback: if objectives didn't credit any, sum 'killed' tower entries per player
+    try{
+      if(towerKillEvents.size===0){
+        for(const p of players){
+          const aid=Number(p.account_id||0); if(!(aid>0)) continue;
+          const killed = p && p.killed ? p.killed : null; if(!killed) continue;
+          let ct=0; for(const k in killed){ if(/npc_dota_tower|tower/i.test(String(k||''))){ ct += Number(killed[k]||0); } }
+          if(ct>0) towerKillEvents.set(aid, (towerKillEvents.get(aid)||0)+ct);
+        }
+      }
+    }catch(_e){}
       for(const side of ['Radiant','Dire']){
         if(totalByTeam[side]>0 && killersByTeam[side].size===1){ const aid = Array.from(killersByTeam[side].keys())[0]; roshAllKillsKiller.set(aid, (roshAllKillsKiller.get(aid)||0)+1); }
       }
     }
     // Fountain Diver via killed_by
-    for(const p of (md.players||[])){
-      const aid = Number(p.account_id||0); if(!(aid>0)) continue; const kb = p.killed_by||{}; const val = Number(kb.npc_dota_fountain||0); if(val){ fountainDeaths.set(aid, (fountainDeaths.get(aid)||0)+val); }
+  for(const p of players){
+      const aid = Number(p.account_id||0); if(!(aid>0)) continue; const kb = p.killed_by||{};
+      // Primary sources: killed_by uses either 'dota_fountain' or 'npc_dota_fountain' depending on parser/version
+      let fCount = Number(kb.dota_fountain||0) + Number(kb.npc_dota_fountain||0);
+      // Fallback: scan deaths_log entries for fountain attacker
+      if(!fCount && Array.isArray(p.deaths_log)){
+        try{ fCount = p.deaths_log.reduce((acc, it)=> acc + (/dota_fountain|npc_dota_fountain/i.test(String(it.key||it.attackername||'')) ? 1 : 0), 0); }catch(_e){}
+      }
+      if(fCount){ fountainDeaths.set(aid, (fountainDeaths.get(aid)||0)+fCount); }
+    // Self-Destruct: deaths to neutrals
+    const neutralDeaths = Number(kb.npc_dota_neutral||0) + Object.entries(kb).reduce((acc,[k,v])=> acc + (/npc_dota_neutral|npc_dota_creep|neutral/i.test(String(k))? Number(v||0):0), 0);
+    if(neutralDeaths){ selfDestructDeaths.set(aid, (selfDestructDeaths.get(aid)||0)+neutralDeaths); }
     }
+  // Clutch King via teamfights in last 10% duration. Fallback: logs if no teamfights in late window.
+    try{
+      const dur = Number(md.duration||0) || 0; if(dur>0){
+        const cutoff = dur * 0.9;
+        const tfs = Array.isArray(md.teamfights) ? md.teamfights : [];
+        const use = tfs.filter(tf=>{
+          const s = Number(tf.start||tf.start_time||0); const e = Number(tf.end||tf.end_time||s);
+          return (s>=cutoff) || (e>=cutoff);
+        });
+        // Swing Fighter: track best positive swing (gold_delta + xp_delta)
+        for(const tf of (tfs||[])){
+          const tfPlayers = Array.isArray(tf.players) ? tf.players : [];
+          for(let i=0;i<tfPlayers.length;i++){
+            const pfi = tfPlayers[i]||{};
+            let slot = (pfi.player_slot!=null)? Number(pfi.player_slot) : null;
+            if(slot==null && md.players && md.players[i]) slot = Number(md.players[i].player_slot);
+            if(slot==null) continue;
+            const aid = slotToAid.get(slot)||0; if(!(aid>0)) continue;
+            const swing = Number(pfi.gold_delta||0) + Number(pfi.xp_delta||0);
+            if(swing>0){ const prev = swingBest.get(aid)||0; if(swing>prev) swingBest.set(aid, swing); }
+          }
+        }
+  if(use.length){
+          for(const tf of use){
+            const tfPlayers = Array.isArray(tf.players) ? tf.players : [];
+            // Compute team kills per side for this fight
+            let teamKills = {Radiant:0, Dire:0};
+            for(let i=0;i<tfPlayers.length;i++){
+              const pfi = tfPlayers[i]||{};
+              let slot = (pfi.player_slot!=null)? Number(pfi.player_slot) : null;
+              if(slot==null && md.players && md.players[i]) slot = Number(md.players[i].player_slot);
+              if(slot==null) continue;
+              const side = (slot<128)? 'Radiant' : 'Dire';
+              teamKills[side] += Number(pfi.kills||0);
+            }
+            // Attribute contributions and denominators per player
+            for(let i=0;i<tfPlayers.length;i++){
+              const pfi = tfPlayers[i]||{};
+              let slot = (pfi.player_slot!=null)? Number(pfi.player_slot) : null;
+              if(slot==null && md.players && md.players[i]) slot = Number(md.players[i].player_slot);
+              if(slot==null) continue;
+              const aid = slotToAid.get(slot)||0; if(!(aid>0)) continue;
+              const side = (slot<128)? 'Radiant' : 'Dire';
+              const contrib = Number(pfi.kills||0) + Number(pfi.assists||0);
+              if(contrib){ clutchKA.set(aid, (clutchKA.get(aid)||0)+contrib); }
+              const denom = Number(teamKills[side]||0);
+              if(denom>0){ clutchTeamK.set(aid, (clutchTeamK.get(aid)||0)+denom); }
+            }
+          }
+        } else {
+          // Fallback: use kill/assist logs in last 10% to estimate KP
+          // Build per-side team kills in last 10%
+          const sideKills = {Radiant:0, Dire:0};
+          const perAidKA = new Map();
+          for(const p of players){
+            const slot = Number(p.player_slot); const aid = slotToAid.get(slot)||0; if(!(aid>0)) continue;
+            const side = (slot<128)?'Radiant':'Dire';
+            const klog = Array.isArray(p.kills_log)? p.kills_log:[];
+            const alog = Array.isArray(p.assists_log)? p.assists_log:[]; // not always present
+            const lateK = klog.filter(e=> Number(e.time||0) >= cutoff).length;
+            // Approx assists: if no assists_log, use kills by others on same team while this player near deathless window; fallback to 0
+            let lateA = 0; if(alog.length){ lateA = alog.filter(e=> Number(e.time||0) >= cutoff).length; }
+            if(lateK||lateA){ perAidKA.set(aid, (perAidKA.get(aid)||0) + lateK + lateA); }
+            sideKills[side] += lateK;
+          }
+          for(const p of players){
+            const slot = Number(p.player_slot); const aid = slotToAid.get(slot)||0; if(!(aid>0)) continue;
+            const side = (slot<128)?'Radiant':'Dire'; const denom = Number(sideKills[side]||0);
+            const ka = Number(perAidKA.get(aid)||0);
+            if(ka>0 && denom>0){ clutchKA.set(aid, (clutchKA.get(aid)||0)+ka); clutchTeamK.set(aid, (clutchTeamK.get(aid)||0)+denom); }
+          }
+        }
+      }
+    }catch(_e){}
   }
 
   function topN(map, n){ return Array.from(map.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,n); }
@@ -1875,8 +2385,8 @@ function computeAwardsFromDetails(details, heroMap){
 
   // Objective Gamer: tower share (player td / team td on his side across games) + rosh participation
   const teamSums = new Map(); // id -> sum of his team's tower dmg across games he played
-  for(const md of details){ const sums={Radiant:0, Dire:0}; for(const p of (md.players||[])){ sums[sideOf(p.player_slot)] += Number(p.tower_damage||0); }
-    for(const p of (md.players||[])){ const id=Number(p.account_id||0); if(!(id>0)) continue; const side=sideOf(p.player_slot); teamSums.set(id, (teamSums.get(id)||0) + (sums[side]||0)); }
+  for(const md of details){ const players=(Array.isArray(md.players)? md.players:[]); const sums={Radiant:0, Dire:0}; for(const p of players){ sums[sideOf(p.player_slot)] += Number(p.tower_damage||0); }
+    for(const p of players){ const id=Number(p.account_id||0); if(!(id>0)) continue; const side=sideOf(p.player_slot); teamSums.set(id, (teamSums.get(id)||0) + (sums[side]||0)); }
   }
   const ogArr=[]; for(const [id,td] of towerDmg.entries()){ const teamTd = teamSums.get(id)||0; const share = teamTd>0 ? (td/teamTd) : 0; const rosh=roshPart.get(id)||0; ogArr.push({account_id:id, share, rosh, td, teamTd}); }
   res.objectiveGamer = withNames(ogArr.sort((a,b)=> (b.share-a.share) || (b.rosh-a.rosh)).slice(0,3));
@@ -1887,10 +2397,53 @@ function computeAwardsFromDetails(details, heroMap){
   // Other simple top 3s
   res.courierAssassin = withNames(topN(courierKills, 3));
   res.stackMaster    = withNames(topN(stacks, 3));
-  res.smokeCommander = withNames(topN(smokeUses, 3));
   res.runeController = withNames(topN(runesCount, 3));
   res.visionMvp      = withNames(topN(wardScore, 3));
   res.aegisSnatcher  = withNames(topN(aegisStolen, 3));
+  res.damageSponge        = withNames(topN(dmgTaken, 3));
+  // Newly added awards
+  res.bkbAbuser           = withNames(topN(bkbUses, 3));
+  res.clarityAddict       = withNames(topN(clarityUses, 3));
+  res.creepVacuum         = withNames(topN(creepVac, 3));
+  res.csPerMinMaster      = withNames(Array.from(csPerMinBest.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val.toFixed(1))})).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.backpacker          = withNames(topN(backpacker, 3));
+  res.comebackKing        = withNames(topN(comebackKing, 3));
+  res.fastFirstPurchase   = withNames(Array.from(firstPurchase.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> a.val-b.val).slice(0,3));
+  res.emptySlots          = withNames(topN(emptySlots, 3));
+  res.gemCollector        = withNames(topN(gemPurch, 3));
+  res.highFiveChamp       = withNames(topN(highFive, 3));
+  res.illusionCommander   = withNames(topN(illusionCasts, 3));
+  res.kdaGod              = withNames(Array.from(kdaBest.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.mangoManiac         = withNames(topN(mangoUses, 3));
+  res.midasEnjoyer        = withNames(topN(midasUses, 3));
+  res.megaKillMaestro     = withNames(Array.from(megaTier.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.rapierGambler       = withNames(topN(rapierPurch, 3));
+  res.refresherFiend      = withNames(topN(refresherUse, 3));
+  res.rootLord            = withNames(topN(rootCasts, 3));
+  res.runeHasteLover      = withNames(topN(hasteRunes, 3));
+  res.salveSavior         = withNames(topN(salveUse, 3));
+  res.silenceMaster       = withNames(topN(silenceCasts, 3));
+  res.soloArtist          = withNames(topN(soloNoAssistKills, 3));
+  res.splitPusher         = withNames(topN(splitPush, 3));
+  res.swingFighter        = withNames(topN(swingBest, 3));
+  // removed: tipReceiver (award dropped)
+  res.selfDestruct        = withNames(topN(selfDestructDeaths, 3));
+  res.healBlocker         = withNames(topN(healBlock, 3));
+  res.laneFreezer         = withNames(Array.from(laneFreeze10.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.laughMachine        = withNames(topN(laughMsgs, 3));
+  res.lateComer           = withNames(Array.from(lateFirst.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.neutralItemJuggler  = withNames(Array.from(neutralActives.entries()).map(([id,set])=>({account_id:Number(id), val: Array.isArray(set)? set.length : (set && set.size || 0)})).sort((a,b)=> b.val-a.val).slice(0,3));
+  // removed: pauseAbuser (award dropped)
+  // Clutch King: aggregate (kills+assists) / team kills over last 10% fights; require denom >0
+  {
+    const arr=[];
+    for(const [id,ka] of clutchKA.entries()){
+      const denom = Number(clutchTeamK.get(id)||0);
+      if(denom>0){ arr.push({account_id:Number(id), val: Number(((ka/denom)*100).toFixed(1))}); }
+    }
+    arr.sort((a,b)=> b.val-a.val);
+    res.clutchKing = withNames(arr.slice(0,3));
+  }
   // Extended awards
   res.disablerSupreme     = withNames(topN(stunsSum, 3));
   { const arr=[]; for(const [id,val] of ancientSum.entries()){ arr.push({account_id:Number(id), val:Number(val), neutral:Number(neutralSum.get(id)||0)}); } arr.sort((a,b)=> (b.val-a.val) || (b.neutral-a.neutral)); res.ancientFarmer = withNames(arr.slice(0,3)); }
@@ -1923,7 +2476,7 @@ function computeAwardsFromDetails(details, heroMap){
   res.firstBloodHunter    = withNames(topN(firstBloods, 3));
   res.rampageCollector    = withNames(Array.from(rampageCount.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).filter(o=>o.val>0).sort((a,b)=> b.val-a.val).slice(0,3));
   res.spreeLegend         = withNames(Array.from(spreeMax.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).filter(o=>o.val>0).sort((a,b)=> b.val-a.val).slice(0,3));
-  res.streakBreaker       = withNames(topN(streaksEnded, 3));
+  // removed: streakBreaker (award dropped)
   res.spellDamageSpecialist = withNames(topN(spellDamage, 3));
   res.rightClickRoyalty   = withNames(topN(rightClickDmg, 3));
   res.objectiveScout      = withNames(topN(outpostCaptures, 3));
@@ -1933,6 +2486,11 @@ function computeAwardsFromDetails(details, heroMap){
   res.glimmerGuardian     = withNames(topN(glimmerUses, 3));
   res.forceMaster         = withNames(topN(forceUses, 3));
   res.blinkJunkie         = withNames(topN(blinkUses, 3));
+  res.throwMaster         = withNames(topN(throwCount, 3));
+  // Heuristic ult awards and wave clear
+  res.ultHoarder          = withNames(topN(zeroUltMatches, 3));
+  res.ultSpammer          = withNames(topN(ultCastSum, 3));
+  res.waveClearer         = withNames(topN(waveClear, 3));
   // New extras
   res.feedingFrenzy       = withNames(Array.from(maxDeathsSingle.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,3));
   res.oneHitWonder        = withNames(topN(oneKillWins, 3));
@@ -1942,9 +2500,10 @@ function computeAwardsFromDetails(details, heroMap){
   res.noTpClub            = withNames(topN(noTpCount, 3));
   res.invisibleMan        = withNames(topN(invisCount, 3));
   res.bountyHunterIRL     = withNames(topN(bountyRunes, 3));
-  res.dieHard             = withNames(topN(maxDeathGap, 3));
+  res.dieHard             = withNames(topN(deadTimeTotal, 3));
   res.afkFarmer           = withNames(topN(afkFarm, 3));
-  res.tipSpammer          = withNames(topN(tipCount, 3));
+  // removed: tipSpammer (award dropped)
+  // removed: Voiceline Star (chatwheel)
   res.roshanTourist       = withNames(topN(roshAllKillsKiller, 3));
   res.fountainDiver       = withNames(topN(fountainDeaths, 3));
   res.bottleHoarder       = withNames(topN(bottleUses, 3));
@@ -1987,9 +2546,31 @@ function renderAwards(aw, heroMap, opts){
     courierAssassin: 'Total courier_kills across matches.',
     visionMvp: 'Observers placed + Sentries placed + Observer kills + Sentry kills.',
     stackMaster: 'Total camps_stacked.',
-    smokeCommander: 'Total Smokes of Deceit purchased.',
     runeController: 'Total runes picked up (sum of rune counters).',
     aegisSnatcher: 'Count of Aegis stolen events credited to the player.',
+  backpacker: 'Total number of items occupying backpack slots at end of games (requires replay-parse fields).',
+  bkbAbuser: 'Total Black King Bar uses (item_uses.black_king_bar).',
+  clarityAddict: 'Total Clarity uses (item_uses.clarity).',
+  comebackKing: 'Matches where your team was down by ≥10k networth and still won; credited to all winners on that side.',
+  creepVacuum: 'Lane creeps + neutral creeps killed (sum of lane_kills and neutral_kills).',
+  csPerMinMaster: 'Best CS per minute across matches (last hits divided by match minutes).',
+  damageSponge: 'Total hero damage taken.',
+  clutchKing: 'Kill participation share in the last 10% of game time (teamfight-based): (your kills+assists) / team kills in late fights.',
+  fastFirstPurchase: 'Earliest purchase of an item costing >1000 gold across purchase_log (min time; negative pre-game allowed). Fallback to first_purchase_time/purchase_time if logs missing. Lower is better.',
+  emptySlots: 'Max number of empty main item slots you had at end of games lasting 40+ minutes.',
+  gemCollector: 'Gem of True Sight acquisitions (from purchases and purchase logs).',
+  highFiveChamp: 'High Five uses (ability_uses.plus_high_five; fallback: item_uses.high_five).',
+  illusionCommander: 'Manta uses plus illusion-creating ability casts (Phantasm, Mirror Image, Doppelganger, Conjure Image).',
+  kdaGod: 'Best (Kills + Assists) / max(1, Deaths) ratio across matches.',
+  mangoManiac: 'Enchanted Mango uses.',
+  midasEnjoyer: 'Hand of Midas uses.',
+  megaKillMaestro: 'Highest multi-kill tier achieved (2=Double … 5=Rampage).',
+  healBlocker: 'Heals blocked via Spirit Vessel uses and Ancient Apparition Ice Blast casts.',
+  laneFreezer: 'Best denies at 10:00 (dn_t[10] if available; otherwise total denies).',
+  laughMachine: 'Chat messages with laughter patterns (lol, haha, lmao, rofl, xd).',
+  lateComer: 'Latest first purchase of an item costing >1000 gold (min per match; then max across matches). Uses purchase_log; falls back to first_purchase_time/purchase_time. Higher is worse.',
+  neutralItemJuggler: 'Distinct neutral items actively used or held across matches.',
+  
     disablerSupreme: 'Total stun duration (seconds).',
     medic: 'Total healing done to heroes (hero_healing).',
     killLeader: 'Total kills.',
@@ -2005,7 +2586,7 @@ function renderAwards(aw, heroMap, opts){
     wardArchitect: 'Observers + Sentries placed.',
     visionDenier: 'Observers + Sentries killed (dewards).',
     stackMasterPlus: 'Total camps stacked (same source as Stack Master).',
-    dustDetective: 'Dust purchases plus uses (dust_of_appearance).',
+  dustDetective: "Dust purchases plus uses ('dust' and 'dust_of_appearance').",
     saviorPlays: 'Uses of Force Staff, Glimmer Cape, and Lotus Orb combined.',
     spellSlinger: 'Total ability casts (sum of ability_uses values).',
     buybackBaron: 'Total buybacks (buyback_count).',
@@ -2020,10 +2601,11 @@ function renderAwards(aw, heroMap, opts){
     firstBloodHunter: 'Count of first blood events credited in objectives.',
     rampageCollector: 'Total Rampages (5x multi-kills).',
     spreeLegend: 'Longest kill spree reached across matches.',
-    streakBreaker: 'Number of kill streaks ended.',
+  throwMaster: 'Games where your team led by ≥10k at any time but still lost; credited to all players on that team.',
+    
     spellDamageSpecialist: 'Damage dealt by abilities (damage_inflictor minus right-click/generic).',
     rightClickRoyalty: 'Damage dealt by right-clicks (attack/generic buckets).',
-    objectiveScout: 'Capture/point control events (e.g., outposts).',
+  objectiveScout: 'Captures of Watchers/Outposts/Wisdom (objective events or ability_capture fallback).',
     bottleService: 'Bottles purchased/obtained.',
     urnSpiritMvp: 'Urn of Shadows + Spirit Vessel charges used.',
     lotusLawyer: 'Lotus Orb uses.',
@@ -2034,18 +2616,32 @@ function renderAwards(aw, heroMap, opts){
   feedingFrenzy: 'Most deaths in a single match (max per player).',
   oneHitWonder: 'Matches with exactly 1 kill where your team still won.',
   assistMachine: 'Highest Assist/Death ratio across the selected range (min. 10 assists total).',
-  captainObvious: 'Most chat messages (chat wheel or text) recorded in parsed matches.',
+  captainObvious: 'Most standard chat messages recorded in parsed matches.',
   shopaholic: 'Longest purchase_log length observed in a single match.',
   noTpClub: 'Matches over 30 minutes with 0 TP scroll uses.',
   invisibleMan: 'Glimmer Cape uses + Shadow Blade uses + Invisibility rune pickups.',
   bountyHunterIRL: 'Bounty runes picked up.',
-  dieHard: 'Approx. longest time between a death and the next death or match end.',
+  dieHard: 'Top 3 total time spent dead across the selected range.',
   afkFarmer: 'Matches with GPM > 600 and hero damage < 10k.',
-  tipSpammer: 'Number of tips given (chat objective events).',
+  
   roshanTourist: 'Credited as killer for every Roshan killed by your team in a match.',
   fountainDiver: 'Deaths to the enemy fountain.',
   bottleHoarder: 'Bottle uses.',
   jungleEnthusiast: 'Neutral kills + camps stacked (jungle activity indicator).'
+  ,rapierGambler: 'Divine Rapier purchases (from purchases and purchase logs).',
+  refresherFiend: 'Refresher Orb and Refresher Shard uses (item_uses.refresher + item_uses.refresher_shard).',
+  rootLord: 'Casts of root-inducing abilities (approximate proxy: Overgrowth, Entangle, Searing Chains, Frostbite, Ensare, etc.).',
+  runeHasteLover: 'Haste rune pickups (runes["0"] or runes.haste).',
+  salveSavior: 'Healing Salve uses.',
+  selfDestruct: 'Deaths to neutral creeps (from killed_by buckets).',
+  silenceMaster: 'Casts of silence abilities (Global Silence, Ancient Seal, Crippling Fear, etc.).',
+  soloArtist: 'Kills in matches where the player had 0 assists.',
+  splitPusher: 'Tower damage + Barracks damage combined.',
+  swingFighter: 'Best single teamfight swing (gold_delta + xp_delta) credited to the player.',
+  
+  ultHoarder: 'Matches with 0 casts of a recognized ultimate ability (heuristic).',
+  ultSpammer: 'Total casts of recognized ultimate abilities (heuristic).',
+  waveClearer: 'Damage dealt by common AoE wave-clear spells (heuristic).'
   };
   function list3(title, arr, fmtKey, key){
     if(!Array.isArray(arr) || arr.length===0){
@@ -2068,6 +2664,39 @@ function renderAwards(aw, heroMap, opts){
   }
   // Build all award tiles, sort alphabetically by title, and render in rows of 3
   const defs = [
+  {t:'Backpacker – items in backpack', k:'backpacker', f:'plain'},
+  {t:'BKB Abuser – BKB uses', k:'bkbAbuser', f:'plain'},
+  {t:'Clarity Addict – clarity uses', k:'clarityAddict', f:'plain'},
+  {t:'Comeback King – 10k deficit wins', k:'comebackKing', f:'plain'},
+  {t:'Creep Vacuum – lane+neutral kills', k:'creepVacuum', f:'plain'},
+  {t:'CS/min Master – best CS per minute', k:'csPerMinMaster', f:'plain'},
+  {t:'Clutch King – late fight KP%', k:'clutchKing', f:'pct'},
+  {t:'Heal Blocker – vessel/AA anti-heal', k:'healBlocker', f:'plain'},
+  {t:'Lane Freezer – denies @10:00', k:'laneFreezer', f:'plain'},
+  {t:'Laugh Machine – chat laughs', k:'laughMachine', f:'plain'},
+  {t:'Late Comer – latest first buy', k:'lateComer', f:'seconds'},
+  {t:'Neutral Item Juggler – distinct items', k:'neutralItemJuggler', f:'plain'},
+  
+  {t:'Rapier Gambler – rapier buys', k:'rapierGambler', f:'plain'},
+  {t:'Refresher Fiend – refresher uses', k:'refresherFiend', f:'plain'},
+  {t:'Root Lord – root casts', k:'rootLord', f:'plain'},
+  {t:'Rune Haste Lover – haste runes', k:'runeHasteLover', f:'plain'},
+  {t:'Salve Savior – salve uses', k:'salveSavior', f:'plain'},
+  {t:'Self Destruct – neutral deaths', k:'selfDestruct', f:'plain'},
+  {t:'Silence Master – silence casts', k:'silenceMaster', f:'plain'},
+  {t:'Solo Artist – kills with 0 assists', k:'soloArtist', f:'plain'},
+  {t:'Split Pusher – building damage', k:'splitPusher', f:'plain'},
+  {t:'Swing Fighter – best TF swing', k:'swingFighter', f:'plain'},
+  
+  {t:'Empty Slots – ≥40m empty item slots', k:'emptySlots', f:'plain'},
+  {t:'Fast First Purchase – earliest buy', k:'fastFirstPurchase', f:'seconds'},
+  {t:'Gem Collector – gems obtained', k:'gemCollector', f:'plain'},
+  {t:'High-Five Champ – high five uses', k:'highFiveChamp', f:'plain'},
+  {t:'Illusion Commander – illusion casts', k:'illusionCommander', f:'plain'},
+  {t:'KDA God – best (K+A)/D', k:'kdaGod', f:'plain'},
+  {t:'Mango Maniac – mango uses', k:'mangoManiac', f:'plain'},
+  {t:'Midas Enjoyer – midas uses', k:'midasEnjoyer', f:'plain'},
+  {t:'Mega Kill Maestro – highest tier', k:'megaKillMaestro', f:'tier'},
     {t:'AFK Farmer – high GPM, low dmg', k:'afkFarmer', f:'plain'},
     {t:'Aegis Snatcher – most snatches', k:'aegisSnatcher', f:'xval'},
     {t:'Ancient Annihilator – ancient kills', k:'ancientAnnihilator', f:'plain'},
@@ -2082,8 +2711,9 @@ function renderAwards(aw, heroMap, opts){
     {t:'Captain Obvious – most chat', k:'captainObvious', f:'plain'},
     {t:'Courier Assassin – most couriers', k:'courierAssassin', f:'xval'},
     {t:'Damage Dealer – hero damage', k:'damageDealer', f:'plain'},
+  {t:'Damage Sponge – damage taken', k:'damageSponge', f:'plain'},
     {t:'Deny Demon – denies', k:'denyDemon', f:'plain'},
-    {t:'Die Hard – longest death (approx)', k:'dieHard', f:'seconds'},
+  {t:'Die Hard – most time dead (range total)', k:'dieHard', f:'seconds'},
     {t:'Disabler Supreme – stun duration', k:'disablerSupreme', f:'seconds'},
     {t:'Dust Detective – dust uses', k:'dustDetective', f:'plain'},
     {t:'Early Farmer – net worth @10:00', k:'earlyFarmer', f:'early'},
@@ -2113,24 +2743,27 @@ function renderAwards(aw, heroMap, opts){
     {t:'Savior Plays – Force/Glimmer/Lotus', k:'saviorPlays', f:'plain'},
     {t:'Sentry CFO – sentries bought', k:'sentryCfo', f:'plain'},
     {t:'Shard Hunter – shards (no buy)', k:'shardHunter', f:'plain'},
-    {t:'Shopaholic – longest purchase log', k:'shopaholic', f:'plain'},
-    {t:'Smoke Commander – most smokes', k:'smokeCommander', f:'xval'},
+  {t:'Shopaholic – longest purchase log', k:'shopaholic', f:'plain'},
     {t:'Smoke Supplier – smokes bought', k:'smokeSupplier', f:'plain'},
     {t:'Space Creator – most deaths in wins', k:'spaceCreator', f:'deaths'},
     {t:'Spell Damage Specialist – spell dmg', k:'spellDamageSpecialist', f:'plain'},
     {t:'Spell Slinger – ability casts', k:'spellSlinger', f:'plain'},
     {t:'Spree Legend – longest kill streak', k:'spreeLegend', f:'plain'},
+  {t:'Throw Master – 10k lead, then loss', k:'throwMaster', f:'plain'},
     {t:'Stack Master – most stacks', k:'stackMaster', f:'xval'},
-    {t:'Streak Breaker – streaks ended', k:'streakBreaker', f:'plain'},
+    
     {t:'Tower Terminator – tower kills', k:'towerTerminator', f:'plain'},
     {t:'TP Traveler – teleports', k:'tpTraveler', f:'plain'},
-    {t:'Tip Spammer – most tips', k:'tipSpammer', f:'plain'},
+    
     {t:'Urn/Spirit MVP – charges used', k:'urnSpiritMvp', f:'plain'},
     {t:'Vision Denier – wards killed', k:'visionDenier', f:'plain'},
     {t:'Vision MVP – warding/dewarding', k:'visionMvp', f:'ward'},
     {t:'Ward Architect – wards placed', k:'wardArchitect', f:'plain'},
     {t:'XPM King – highest XPM', k:'xpmKing', f:'plain'},
     {t:'Yedi Master – force uses', k:'forceMaster', f:'plain'},
+    {t:'Ult Hoarder – 0-ult matches', k:'ultHoarder', f:'plain'},
+    {t:'Ult Spammer – ult casts', k:'ultSpammer', f:'plain'},
+    {t:'Wave Clearer – AoE spell dmg', k:'waveClearer', f:'plain'},
   ];
   defs.sort((a,b)=> a.t.localeCompare(b.t, undefined, {sensitivity:'base'}));
   const tiles = defs.map(d=>{
@@ -2179,6 +2812,17 @@ function renderCalendarMonth(subset, range, cursor){
     const first = new Date(Date.UTC(y,m,1,0,0,0));
     const last  = new Date(Date.UTC(y,m+1,0,23,59,59));
     title.textContent = first.toLocaleString('en-US',{month:'long', year:'numeric', timeZone:'UTC'}) + ' (UTC)';
+    // Meta: show how many matches are in this month (within selected period)
+    try{
+      const meta = document.getElementById('calMeta');
+      if(meta){
+        const monthCount = Array.isArray(subset) ? subset.reduce((acc, mrec)=>{
+          const d = new Date(Number(mrec.start_time||0)*1000);
+          return acc + ((d.getUTCFullYear()===y && d.getUTCMonth()===m) ? 1 : 0);
+        }, 0) : 0;
+        meta.textContent = monthCount>0 ? `${monthCount} matches in this month (within selected period)` : `No matches in this month (within selected period)`;
+      }
+    }catch(_e){}
     // Determine Monday-based start index
     let startDow = first.getUTCDay(); // 0=Sun
     startDow = (startDow+6)%7; // 0=Mon
