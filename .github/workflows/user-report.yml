@@ -2,7 +2,7 @@ name: Generate User Report
 
 on:
   issues:
-    types: [opened, labeled]
+    types: [opened]
 
 permissions:
   contents: write
@@ -14,19 +14,14 @@ concurrency:
 
 jobs:
   run:
-    # Run on:
-    # - opened: when title comes from Dynamic View
-    # - labeled: when someone manually adds the 'user-report' label (ignore bot-added labels)
-    if: >-
-      (
-        github.event.action == 'opened' && startsWith(github.event.issue.title, 'Generate user report:')
-      ) || (
-        github.event.action == 'labeled' && github.event.label.name == 'user-report' && github.actor != 'github-actions[bot]'
-      )
+    # Run only when created via Dynamic View button
+    if: startsWith(github.event.issue.title, 'Generate user report:')
     runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup PowerShell
         shell: pwsh
         run: echo "Using PowerShell"
@@ -60,14 +55,20 @@ jobs:
         run: |
           $ErrorActionPreference='Stop'
           ./scripts/create_user_report.ps1 -Name "${{ steps.parse.outputs.name }}" -AccountId ${{ steps.parse.outputs.account }} -RangeDays ${{ steps.parse.outputs.ranged }}
-      - name: Commit and push
+      - name: Commit and push with rebase + retry
         shell: pwsh
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git checkout main
+          git pull --rebase origin main || echo "Nothing to rebase"
           git add docs/User-Reports docs/reports.json
           git commit -m "ci(user-report): add report for ${{ steps.parse.outputs.name }} (${{ steps.parse.outputs.account }})" -m "Issue #${{ github.event.issue.number }}" || echo "Nothing to commit"
-          git push
+          $max=3; $ok=$false; for($i=1;$i -le $max;$i++){
+            try{ git push; $ok=$true; break } catch { Write-Host "Push failed, attempt $i/$max. Rebasing..."; git pull --rebase origin main || echo "Rebase failed" }
+            Start-Sleep -Seconds 2
+          }
+          if(-not $ok){ throw 'Failed to push after retries' }
       - name: Add label to issue
         if: always()
         uses: actions/github-script@v7
