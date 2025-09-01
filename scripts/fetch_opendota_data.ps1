@@ -1,13 +1,15 @@
 param(
   [int]$DelayMs = 1200,
   [int]$MaxRetries = 3,
-  [switch]$UpdateConstants,
-  [switch]$FetchMatches,
-  [switch]$DiscoverMatches,         # Discover league matches via Steam if STEAM_API_KEY present
-  [switch]$UpdateShards,            # Write/merge simplified records into data/matches/YYYY-MM.json
-  [switch]$UpdateManifest,          # Rebuild data/manifest.json from shards
-  [switch]$RequestParse,            # Request OpenDota parse for up to -MaxParseRequests matches lacking enriched data
-  [int]$MaxParseRequests = 50
+  [object]$UpdateConstants = $true,
+  [object]$FetchMatches    = $true,
+  [object]$DiscoverMatches = $false,    # Discover league matches via Steam if STEAM_API_KEY present
+  [object]$UpdateShards    = $false,    # Write/merge simplified records into data/matches/YYYY-MM.json
+  [object]$UpdateManifest  = $false,    # Rebuild data/manifest.json from shards
+  [object]$RequestParse    = $false,    # Request OpenDota parse for up to -MaxParseRequests matches lacking enriched data
+  [int]$MaxParseRequests = 50,
+  [object]$SanitizeCache   = $false,    # Rewrite cached files to drop image fields that trigger false positives
+  [ValidateSet('default','discover','full','sanitize')][string]$Mode = 'default'
 )
 
 <#
@@ -52,6 +54,20 @@ function Invoke-Json([string]$Method,[string]$Uri){
 
 function Write-Log([string]$msg){ Write-Host $msg }
 
+function To-Bool($v, [bool]$default){
+  if($null -eq $v){ return $default }
+  if($v -is [bool]){ return [bool]$v }
+  try{
+    $s = [string]$v
+    if([string]::IsNullOrWhiteSpace($s)){ return $default }
+    switch -Regex ($s.Trim().ToLowerInvariant()){
+      '^(true|1|yes|on)$'  { return $true }
+      '^(false|0|no|off)$' { return $false }
+      default { return $default }
+    }
+  } catch { return $default }
+}
+
 function Update-Constants(){
   $data = Get-DataPath
   $constDir = Join-Path $data 'cache/OpenDota/constants'
@@ -64,6 +80,45 @@ function Update-Constants(){
   Write-Host 'Fetching OpenDota constants: patch'
   $patch = Invoke-Json -Method GET -Uri 'https://api.opendota.com/api/constants/patch'
   if($patch){ Save-Json -obj $patch -path (Join-Path $constDir 'patch.json') }
+}
+
+function Remove-KeysByName($obj, [string[]]$names){
+  if($null -eq $obj){ return }
+  if($obj -is [System.Collections.IEnumerable] -and -not ($obj -is [string])){
+    foreach($it in @($obj)){ Remove-KeysByName -obj $it -names $names }
+    return
+  }
+  if($obj.PSObject){
+    foreach($n in $names){ if($obj.PSObject.Properties.Match($n).Count -gt 0){ try{ $null = $obj.PSObject.Properties.Remove($n) }catch{} } }
+    foreach($p in @($obj.PSObject.Properties.Name)){
+      try{ Remove-KeysByName -obj $obj.$p -names $names }catch{}
+    }
+  }
+}
+
+function Sanitize-MatchObject($obj){
+  # Remove image fields that contain long hex fingerprints to avoid false-positive secret scans
+  Remove-KeysByName -obj $obj -names @('image_path','image_inventory')
+  return $obj
+}
+
+function Sanitize-ExistingCache(){
+  $data = Get-DataPath
+  $dir = Join-Path $data 'cache/OpenDota/matches'
+  if(-not (Test-Path -LiteralPath $dir)){ return }
+  $files = Get-ChildItem -LiteralPath $dir -Filter '*.json' -File
+  $i=0; foreach($f in $files){
+    try{
+      $txt = Get-Content -LiteralPath $f.FullName -Raw -Encoding UTF8
+      if([string]::IsNullOrWhiteSpace($txt)){ continue }
+      $obj = $txt | ConvertFrom-Json
+      if($null -eq $obj){ continue }
+      $obj = Sanitize-MatchObject $obj
+      Save-Json -obj $obj -path $f.FullName
+      $i++
+    } catch {}
+  }
+  Write-Log ("Sanitized {0} cached match files" -f $i)
 }
 
 function Get-MatchIdCandidates(){
@@ -116,8 +171,8 @@ function Fetch-MissingMatches(){
     if(Test-Path -LiteralPath $outFile){ continue }
     Write-Host ("[{0}/{1}] Fetching match {2}" -f $i, $ids.Count, $id)
     try {
-      $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $id)
-      if($obj){ Save-Json -obj $obj -path $outFile }
+  $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $id)
+  if($obj){ $obj = Sanitize-MatchObject $obj; Save-Json -obj $obj -path $outFile }
     } catch {
       Write-Warning ("Failed to fetch match {0}: {1}" -f $id, $_.Exception.Message)
     }
@@ -268,12 +323,19 @@ function Request-Parse-ForMissing(){
 
 # ===== Main =====
 
-$doConst    = ($PSBoundParameters.ContainsKey('UpdateConstants') -and $UpdateConstants) -or (-not $PSBoundParameters.ContainsKey('UpdateConstants'))
-$doMatches  = ($PSBoundParameters.ContainsKey('FetchMatches') -and $FetchMatches) -or (-not $PSBoundParameters.ContainsKey('FetchMatches'))
-$doDiscover = ($PSBoundParameters.ContainsKey('DiscoverMatches') -and $DiscoverMatches)
-$doShards   = ($PSBoundParameters.ContainsKey('UpdateShards') -and $UpdateShards)
-$doManifest = ($PSBoundParameters.ContainsKey('UpdateManifest') -and $UpdateManifest)
-$doParseReq = ($PSBoundParameters.ContainsKey('RequestParse') -and $RequestParse)
+$doConst    = To-Bool $UpdateConstants $true
+$doMatches  = To-Bool $FetchMatches $true
+$doDiscover = To-Bool $DiscoverMatches $false
+$doShards   = To-Bool $UpdateShards $false
+$doManifest = To-Bool $UpdateManifest $false
+$doParseReq = To-Bool $RequestParse $false
+$doSanitize = To-Bool $SanitizeCache $false
+
+switch($Mode){
+  'discover' { $doDiscover=$true; $doMatches=$true; $doShards=$true; $doManifest=$true }
+  'full'     { $doDiscover=$true; $doMatches=$true; $doShards=$true; $doManifest=$true; $doParseReq=$true }
+  'sanitize' { $doSanitize=$true; $doConst=$false; $doMatches=$false; $doDiscover=$false; $doShards=$false; $doManifest=$false; $doParseReq=$false }
+}
 
 if($doConst){ Update-Constants }
 if($doDiscover){
@@ -284,7 +346,7 @@ if($doDiscover){
     $cacheDir = Join-Path $data 'cache/OpenDota/matches'
     $toFetch = @(); foreach($id in $ids){ if(-not (Test-Path -LiteralPath (Join-Path $cacheDir ("{0}.json" -f $id)))){ $toFetch += [int64]$id } }
     if($toFetch.Count -gt 0){ Write-Log ("Newly discovered needing fetch: {0}" -f $toFetch.Count); foreach($mid in ($toFetch | Sort-Object)){
-        try{ $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid); if($obj){ Save-Json -obj $obj -path (Join-Path $cacheDir ("{0}.json" -f $mid)) } } catch { Write-Warning ("Fetch failed for {0}: {1}" -f $mid, $_.Exception.Message) }
+  try{ $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid); if($obj){ $obj = Sanitize-MatchObject $obj; Save-Json -obj $obj -path (Join-Path $cacheDir ("{0}.json" -f $mid)) } } catch { Write-Warning ("Fetch failed for {0}: {1}" -f $mid, $_.Exception.Message) }
         Start-Sleep -Milliseconds $DelayMs
       }
     }
@@ -294,5 +356,6 @@ if($doMatches){ Fetch-MissingMatches }
 if($doShards){ Get-CachedMatchObjects | ForEach-Object { try { [void](Ensure-Record-InShard $_) } catch {} } }
 if($doManifest){ Rebuild-Manifest; Ensure-AllGamesParsed }
 if($doParseReq){ Request-Parse-ForMissing }
+if($doSanitize){ Sanitize-ExistingCache }
 
 Write-Host 'OpenDota data fetch complete.'
