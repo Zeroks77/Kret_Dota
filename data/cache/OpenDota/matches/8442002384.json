@@ -2270,7 +2270,7 @@
                                               "item_id":  17967,
                                               "name":  "Silverwurm Sacrifice - Weapon",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2021-08-17T00:00:00Z",
+                                              "creation_date":  "2021-08-17T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Silverwurm_Sacrifice__Weapon",
                                               "item_rarity":  "mythical",
@@ -2281,7 +2281,7 @@
                                               "item_id":  17968,
                                               "name":  "Silverwurm Sacrifice - Shoulder",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2021-08-17T00:00:00Z",
+                                              "creation_date":  "2021-08-17T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Silverwurm_Sacrifice__Shoulder",
                                               "item_rarity":  "mythical",
@@ -2292,7 +2292,7 @@
                                               "item_id":  17969,
                                               "name":  "Silverwurm Sacrifice - Off-Hand",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2021-08-17T00:00:00Z",
+                                              "creation_date":  "2021-08-17T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Silverwurm_Sacrifice__OffHand",
                                               "item_rarity":  "mythical",
@@ -2303,7 +2303,7 @@
                                               "item_id":  17998,
                                               "name":  "Silverwurm Sacrifice - Head",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2021-08-17T00:00:00Z",
+                                              "creation_date":  "2021-08-17T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Silverwurm_Sacrifice__Head",
                                               "item_rarity":  "mythical",
@@ -2314,7 +2314,7 @@
                                               "item_id":  17999,
                                               "name":  "Silverwurm Sacrifice - Dragon Form",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2021-08-17T00:00:00Z",
+                                              "creation_date":  "2021-08-17T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Silverwurm_Sacrifice__Dragon_Form",
                                               "item_rarity":  "mythical",
@@ -2325,7 +2325,7 @@
                                               "item_id":  18000,
                                               "name":  "Silverwurm Sacrifice - Back",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2021-08-17T00:00:00Z",
+                                              "creation_date":  "2021-08-17T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Silverwurm_Sacrifice__Back",
                                               "item_rarity":  "mythical",
@@ -2336,7 +2336,7 @@
                                               "item_id":  18001,
                                               "name":  "Silverwurm Sacrifice - Arms",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2021-08-17T00:00:00Z",
+                                              "creation_date":  "2021-08-17T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Silverwurm_Sacrifice__Arms",
                                               "item_rarity":  "mythical",
@@ -2347,31 +2347,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  333,
-                                                                "pct":  0.07917109458023379
+                                                                "pct":  0.08140133951571354
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  339,
-                                                              "pct":  0.04197662061636557
+                                                              "pct":  0.03915507470376095
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0.0558139534883721,
-                                                                 "pct":  0.10467587672688629
+                                                                 "pct":  0.11798042246264812
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  5.469767441860465,
-                                                                     "pct":  0.41870350690754515
+                                                                     "pct":  0.4482225656877898
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  448.9674418604651,
-                                                                       "pct":  0.2895855472901169
+                                                                       "pct":  0.3029366306027821
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  0,
-                                                                        "pct":  0.9729011689691818
+                                                                        "pct":  0.9582689335394127
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  0,
-                                                                "pct":  0.07917109458023379
+                                                                "pct":  0.0844925296239052
                                                             }
                                        }
                     },
@@ -3596,7 +3596,7 @@
                                               "item_id":  8061,
                                               "name":  "Taunt: Giddy Up!",
                                               "prefab":  "taunt",
-                                              "creation_date":  "2015-02-26T00:00:00Z",
+                                              "creation_date":  "2015-02-26T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Taunt_Giddy_Up",
                                               "item_name":  "#DOTA_Item_Taunt_Giddy_Up",
                                               "item_rarity":  "rare",
@@ -3607,7 +3607,7 @@
                                               "item_id":  9521,
                                               "name":  "Staff of Perplex",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2015-06-30T00:00:00Z",
+                                              "creation_date":  "2015-06-30T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Force_of_the_Magus",
                                               "item_name":  "#DOTA_Item_Staff_of_Perplex",
                                               "item_rarity":  "immortal",
@@ -3618,7 +3618,7 @@
                                               "item_id":  10699,
                                               "name":  "Stone Bound Watcher",
                                               "prefab":  "ward",
-                                              "creation_date":  "2014-06-17T00:00:00Z",
+                                              "creation_date":  "2014-06-17T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Stone_Bound_Watcher",
                                               "item_rarity":  "rare",
@@ -3629,7 +3629,7 @@
                                               "item_id":  12392,
                                               "name":  "Crux of Perplex",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2018-08-01T00:00:00Z",
+                                              "creation_date":  "2018-08-01T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Crux_of_Perplex",
                                               "item_name":  "#DOTA_Item_Crux_of_Perplex",
                                               "item_rarity":  "immortal",
@@ -3640,7 +3640,7 @@
                                               "item_id":  12427,
                                               "name":  "Voice of the Magus Cypher",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2018-12-19T00:00:00Z",
+                                              "creation_date":  "2018-12-19T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Voice_of_the_Magus_Cypher",
                                               "item_name":  "#DOTA_Item_Voice_of_the_Magus_Cypher",
                                               "item_rarity":  "legendary",
@@ -3651,7 +3651,7 @@
                                               "item_id":  12451,
                                               "name":  "The Magus Cypher",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2018-12-19T00:00:00Z",
+                                              "creation_date":  "2018-12-19T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_The_Magus_Cypher",
                                               "item_name":  "#DOTA_Item_The_Magus_Cypher",
                                               "item_rarity":  "arcana",
@@ -3662,7 +3662,7 @@
                                               "item_id":  28119,
                                               "name":  "Secondhand Sorcery - Head",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Secondhand_Sorcery__Head",
                                               "item_rarity":  "mythical",
@@ -3673,7 +3673,7 @@
                                               "item_id":  28122,
                                               "name":  "Secondhand Sorcery - Weapon",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Secondhand_Sorcery__Weapon",
                                               "item_rarity":  "mythical",
@@ -3684,7 +3684,7 @@
                                               "item_id":  28123,
                                               "name":  "Secondhand Sorcery - Shoulder",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Secondhand_Sorcery__Shoulder",
                                               "item_rarity":  "mythical",
@@ -3695,31 +3695,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  282,
-                                                                "pct":  0.08776595744680851
+                                                                "pct":  0.07996953541507996
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  337,
-                                                              "pct":  0.05851063829787234
+                                                              "pct":  0.05483625285605483
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0,
-                                                                 "pct":  0.026595744680851064
+                                                                 "pct":  0.02760853008377761
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  3.795348837209302,
-                                                                     "pct":  0.7622749590834698
+                                                                     "pct":  0.7412414318354913
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  654.8093023255815,
-                                                                       "pct":  0.6943535188216039
+                                                                       "pct":  0.6892612338156893
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  0,
-                                                                        "pct":  0.46685761047463176
+                                                                        "pct":  0.48267326732673266
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  35,
-                                                                "pct":  0.23915711947626841
+                                                                "pct":  0.2162985529322163
                                                             }
                                        }
                     },
@@ -5074,7 +5074,7 @@
                                               "item_id":  10195,
                                               "name":  "Itsy",
                                               "prefab":  "courier",
-                                              "creation_date":  "2013-05-24T00:00:00Z",
+                                              "creation_date":  "2013-05-24T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Itsy",
                                               "item_name":  "#DOTA_Item_Itsy",
                                               "item_rarity":  "legendary",
@@ -5085,7 +5085,7 @@
                                               "item_id":  10349,
                                               "name":  "Celestial Observatory",
                                               "prefab":  "ward",
-                                              "creation_date":  "2013-10-03T00:00:00Z",
+                                              "creation_date":  "2013-10-03T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Celestial_Observatory",
                                               "item_name":  "#DOTA_Item_Celestial_Observatory",
                                               "item_rarity":  "rare",
@@ -5096,7 +5096,7 @@
                                               "item_id":  13816,
                                               "name":  "Fire Kill Streak Effect",
                                               "prefab":  "streak_effect",
-                                              "creation_date":  "2020-05-25T00:00:00Z",
+                                              "creation_date":  "2020-05-25T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Fire_Kill_Streak_Effect",
                                               "item_rarity":  "mythical",
@@ -5107,7 +5107,7 @@
                                               "item_id":  14383,
                                               "name":  "Keeper of the Nether-Lens - Weapon",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-04-18T00:00:00Z",
+                                              "creation_date":  "2024-04-18T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Keeper_of_the_NetherLens__Weapon",
                                               "item_rarity":  "rare",
@@ -5118,7 +5118,7 @@
                                               "item_id":  14384,
                                               "name":  "Keeper of the Nether-Lens - Ward",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-04-18T00:00:00Z",
+                                              "creation_date":  "2024-04-18T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Keeper_of_the_NetherLens__Ward",
                                               "item_rarity":  "rare",
@@ -5129,7 +5129,7 @@
                                               "item_id":  14385,
                                               "name":  "Keeper of the Nether-Lens - Shoulder",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-04-18T00:00:00Z",
+                                              "creation_date":  "2024-04-18T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Keeper_of_the_NetherLens__Shoulder",
                                               "item_rarity":  "rare",
@@ -5140,7 +5140,7 @@
                                               "item_id":  14386,
                                               "name":  "Keeper of the Nether-Lens - Head",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-04-18T00:00:00Z",
+                                              "creation_date":  "2024-04-18T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Keeper_of_the_NetherLens__Head",
                                               "item_rarity":  "rare",
@@ -5151,7 +5151,7 @@
                                               "item_id":  14387,
                                               "name":  "Keeper of the Nether-Lens - Belt",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-04-18T00:00:00Z",
+                                              "creation_date":  "2024-04-18T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Keeper_of_the_NetherLens__Belt",
                                               "item_rarity":  "rare",
@@ -5162,7 +5162,7 @@
                                               "item_id":  14388,
                                               "name":  "Keeper of the Nether-Lens - Back",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-04-18T00:00:00Z",
+                                              "creation_date":  "2024-04-18T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Keeper_of_the_NetherLens__Back",
                                               "item_rarity":  "rare",
@@ -5173,7 +5173,7 @@
                                               "item_id":  14389,
                                               "name":  "Keeper of the Nether-Lens - Arms",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-04-18T00:00:00Z",
+                                              "creation_date":  "2024-04-18T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Keeper_of_the_NetherLens__Arms",
                                               "item_rarity":  "rare",
@@ -5184,31 +5184,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  184,
-                                                                "pct":  0.009236752552260573
+                                                                "pct":  0.00938337801608579
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  284,
-                                                              "pct":  0.038405444822557123
+                                                              "pct":  0.035746201966041107
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0,
-                                                                 "pct":  0.0374331550802139
+                                                                 "pct":  0.03127792672028597
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  1.5069767441860467,
-                                                                     "pct":  0.23091881380651433
+                                                                     "pct":  0.22966934763181412
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  363.2930232558139,
-                                                                       "pct":  0.11861934856587263
+                                                                       "pct":  0.11215370866845398
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  33.48837209302326,
-                                                                        "pct":  0.23918327661643168
+                                                                        "pct":  0.2457551385165326
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  1231,
-                                                                "pct":  0.1964025279533301
+                                                                "pct":  0.2131367292225201
                                                             }
                                        }
                     },
@@ -6239,7 +6239,7 @@
                                               "item_id":  10295,
                                               "name":  "Tinkbot",
                                               "prefab":  "courier",
-                                              "creation_date":  "2013-07-20T00:00:00Z",
+                                              "creation_date":  "2013-07-20T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Tinkbot",
                                               "item_name":  "#DOTA_Item_Tinkbot",
                                               "item_rarity":  "mythical",
@@ -6250,31 +6250,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  227,
-                                                                "pct":  0.035110533159947985
+                                                                "pct":  0.021683673469387755
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  246,
-                                                              "pct":  0.0377113133940182
+                                                              "pct":  0.029336734693877552
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0,
-                                                                 "pct":  0.02990897269180754
+                                                                 "pct":  0.026785714285714284
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  2.7906976744186047,
-                                                                     "pct":  0.20546163849154747
+                                                                     "pct":  0.1913265306122449
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  311.106976744186,
-                                                                       "pct":  0.1222366710013004
+                                                                       "pct":  0.10586734693877552
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  0,
-                                                                        "pct":  0.9336801040312094
+                                                                        "pct":  0.9349489795918368
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  0,
-                                                                "pct":  0.19505851755526657
+                                                                "pct":  0.20535714285714285
                                                             }
                                        }
                     },
@@ -7673,7 +7673,7 @@
                                               "item_id":  5090,
                                               "name":  "Warcog Body Armor",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2014-10-16T00:00:00Z",
+                                              "creation_date":  "2014-10-16T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Warcog_Body_Armor",
                                               "item_rarity":  null,
@@ -7684,7 +7684,7 @@
                                               "item_id":  7123,
                                               "name":  "Warcog Metal Mask",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2014-10-16T00:00:00Z",
+                                              "creation_date":  "2014-10-16T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Warcog_Metal_Mask",
                                               "item_name":  "#DOTA_Item_Warcog_Metal_Mask",
                                               "item_rarity":  "rare",
@@ -7695,7 +7695,7 @@
                                               "item_id":  7125,
                                               "name":  "Warcog Electro Zapper",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2014-10-16T00:00:00Z",
+                                              "creation_date":  "2014-10-16T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Warcog_Electro_Zapper",
                                               "item_rarity":  "mythical",
@@ -7706,7 +7706,7 @@
                                               "item_id":  12947,
                                               "name":  "Sentinels of Ruin",
                                               "prefab":  "ward",
-                                              "creation_date":  "2019-03-21T00:00:00Z",
+                                              "creation_date":  "2019-03-21T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Sentinels_of_Ruin",
                                               "item_name":  "#DOTA_Item_Sentinels_of_Ruin",
                                               "item_rarity":  "immortal",
@@ -7717,7 +7717,7 @@
                                               "item_id":  14992,
                                               "name":  "Rabid Watchcog",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2020-09-16T00:00:00Z",
+                                              "creation_date":  "2020-09-16T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Rabid_Watchcog",
                                               "item_name":  "#DOTA_Item_Rabid_Watchcog",
                                               "item_rarity":  "immortal",
@@ -7728,7 +7728,7 @@
                                               "item_id":  19328,
                                               "name":  "Lefty",
                                               "prefab":  "courier",
-                                              "creation_date":  "2021-08-18T00:00:00Z",
+                                              "creation_date":  "2021-08-18T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Lefty",
                                               "item_name":  "#DOTA_Item_Lefty",
                                               "item_rarity":  "mythical",
@@ -7739,31 +7739,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  173,
-                                                                "pct":  0.004867872044506259
+                                                                "pct":  0.003215434083601286
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  190,
-                                                              "pct":  0.011126564673157162
+                                                              "pct":  0.006430868167202572
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0.0558139534883721,
-                                                                 "pct":  0.14812239221140472
+                                                                 "pct":  0.17106109324758842
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  0.613953488372093,
-                                                                     "pct":  0.07162726008344923
+                                                                     "pct":  0.05980707395498392
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  256.74418604651163,
-                                                                       "pct":  0.037552155771905425
+                                                                       "pct":  0.04180064308681672
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  0,
-                                                                        "pct":  0.6036161335187761
+                                                                        "pct":  0.6038585209003215
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  0,
-                                                                "pct":  0.2760778859527121
+                                                                "pct":  0.284887459807074
                                                             }
                                        }
                     },
@@ -9043,7 +9043,7 @@
                                               "item_id":  6996,
                                               "name":  "Demon Eater",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2014-09-25T00:00:00Z",
+                                              "creation_date":  "2014-09-25T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Demon_Eater",
                                               "item_name":  "#DOTA_Item_Demon_Eater",
                                               "item_rarity":  "arcana",
@@ -9054,7 +9054,7 @@
                                               "item_id":  8072,
                                               "name":  "Taunt: Fiendish Swag!",
                                               "prefab":  "taunt",
-                                              "creation_date":  "2015-02-28T00:00:00Z",
+                                              "creation_date":  "2015-02-28T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Taunt_Fiendish_Swag",
                                               "item_name":  "#DOTA_Item_Taunt_Fiendish_Swag",
                                               "item_rarity":  "rare",
@@ -9065,7 +9065,7 @@
                                               "item_id":  24900,
                                               "name":  "Taffied Transport",
                                               "prefab":  "courier",
-                                              "creation_date":  "2022-10-21T00:00:00Z",
+                                              "creation_date":  "2022-10-21T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Taffied_Transport",
                                               "item_rarity":  "legendary",
@@ -9076,31 +9076,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  527,
-                                                                "pct":  0.31209362808842656
+                                                                "pct":  0.31917978458989227
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  586,
-                                                              "pct":  0.17598612917208495
+                                                              "pct":  0.17792046396023198
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0.16744186046511628,
-                                                                 "pct":  0.31686172518422195
+                                                                 "pct":  0.3287075393537697
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  8.651162790697676,
-                                                                     "pct":  0.7605114867793672
+                                                                     "pct":  0.756006628003314
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  470.2325581395349,
-                                                                       "pct":  0.1668833983528392
+                                                                       "pct":  0.1688069594034797
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  0,
-                                                                        "pct":  0.8957520589510186
+                                                                        "pct":  0.90016570008285
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  848,
-                                                                "pct":  0.2856523623753793
+                                                                "pct":  0.28500414250207123
                                                             }
                                        }
                     },
@@ -10368,31 +10368,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  469,
-                                                                "pct":  0.7180019371800194
+                                                                "pct":  0.7136517880448969
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  595,
-                                                              "pct":  0.46990452469904526
+                                                              "pct":  0.4678935003915427
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0.5023255813953489,
-                                                                 "pct":  0.9634703196347032
+                                                                 "pct":  0.9588880187940485
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  4.186046511627907,
-                                                                     "pct":  0.8015774180157742
+                                                                     "pct":  0.7988775776559645
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  637.953488372093,
-                                                                       "pct":  0.674830496748305
+                                                                       "pct":  0.6752806055860089
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  0,
-                                                                        "pct":  0.80628199806282
+                                                                        "pct":  0.8117984860349778
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  68,
-                                                                "pct":  0.3046907430469074
+                                                                "pct":  0.30827460193161055
                                                             }
                                        }
                     },
@@ -11455,7 +11455,7 @@
                                               "item_id":  4939,
                                               "name":  "Stinger of the Ancient Sovereign",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2013-04-30T00:00:00Z",
+                                              "creation_date":  "2013-04-30T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Stinger_of_the_Ancient_Sovereign",
                                               "item_name":  "#DOTA_Item_Stinger_of_the_Ancient_Sovereign",
                                               "item_rarity":  "uncommon",
@@ -11466,7 +11466,7 @@
                                               "item_id":  4940,
                                               "name":  "Sandworn Visage of the Ancient Sovereign",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2013-04-30T00:00:00Z",
+                                              "creation_date":  "2013-04-30T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Sandworn_Visage_of_the_Ancient_Sovereign",
                                               "item_name":  "#DOTA_Item_Sandworn_Visage_of_the_Ancient_Sovereign",
                                               "item_rarity":  "rare",
@@ -11477,7 +11477,7 @@
                                               "item_id":  4941,
                                               "name":  "Claw of the Ancient Sovereign",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2013-04-30T00:00:00Z",
+                                              "creation_date":  "2013-04-30T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Claw_of_the_Ancient_Sovereign",
                                               "item_name":  "#DOTA_Item_Claw_of_the_Ancient_Sovereign",
                                               "item_rarity":  null,
@@ -11488,7 +11488,7 @@
                                               "item_id":  4942,
                                               "name":  "Crawlers of the Ancient Sovereign",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2013-04-30T00:00:00Z",
+                                              "creation_date":  "2013-04-30T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Crawlers_of_the_Ancient_Sovereign",
                                               "item_name":  "#DOTA_Item_Crawlers_of_the_Ancient_Sovereign",
                                               "item_rarity":  "uncommon",
@@ -11499,7 +11499,7 @@
                                               "item_id":  4943,
                                               "name":  "Vestigial Wings of the Ancient Sovereign",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2013-04-30T00:00:00Z",
+                                              "creation_date":  "2013-04-30T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Vestigial_Wings_of_the_Ancient_Sovereign",
                                               "item_name":  "#DOTA_Item_Vestigial_Wings_of_the_Ancient_Sovereign",
                                               "item_rarity":  "rare",
@@ -11510,7 +11510,7 @@
                                               "item_id":  19004,
                                               "name":  "Pouches",
                                               "prefab":  "courier",
-                                              "creation_date":  "2021-06-04T00:00:00Z",
+                                              "creation_date":  "2021-06-04T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Pouches",
                                               "item_name":  "#DOTA_Item_Pouches",
                                               "item_rarity":  "mythical",
@@ -11521,31 +11521,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  394,
-                                                                "pct":  0.22573363431151242
+                                                                "pct":  0.23268698060941828
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  442,
-                                                              "pct":  0.15349887133182843
+                                                              "pct":  0.14058171745152354
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0.1116279069767442,
-                                                                 "pct":  0.3047404063205418
+                                                                 "pct":  0.29293628808864264
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  4.688372093023256,
-                                                                     "pct":  0.49209932279909707
+                                                                     "pct":  0.47853185595567865
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  520.0744186046512,
-                                                                       "pct":  0.29721595184349137
+                                                                       "pct":  0.3047091412742382
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  0,
-                                                                        "pct":  0.9164785553047404
+                                                                        "pct":  0.8981994459833795
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  597,
-                                                                "pct":  0.580887885628292
+                                                                "pct":  0.5595567867036011
                                                             }
                                        }
                     },
@@ -12979,7 +12979,7 @@
                                               "item_id":  13122,
                                               "name":  "Dolfrat and Roshinante Scholar Edition",
                                               "prefab":  "courier",
-                                              "creation_date":  "2021-03-23T00:00:00Z",
+                                              "creation_date":  "2021-03-23T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Copy_of_Dolfrat_and_Roshinante",
                                               "item_name":  "#DOTA_Item_Dolfrat_and_Roshinante_Scholar_Edition",
                                               "item_rarity":  "mythical",
@@ -12990,7 +12990,7 @@
                                               "item_id":  26699,
                                               "name":  "Seam Ripper Snuggle Time - Back",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Seam_Ripper_Snuggle_Time__Back",
                                               "item_rarity":  "mythical",
@@ -13001,7 +13001,7 @@
                                               "item_id":  26700,
                                               "name":  "Seam Ripper Snuggle Time - Belt",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Seam_Ripper_Snuggle_Time__Belt",
                                               "item_rarity":  "mythical",
@@ -13012,7 +13012,7 @@
                                               "item_id":  26701,
                                               "name":  "Seam Ripper Snuggle Time - Pyro Plush",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Seam_Ripper_Snuggle_Time__Pyro_Plush",
                                               "item_rarity":  "mythical",
@@ -13023,7 +13023,7 @@
                                               "item_id":  26702,
                                               "name":  "Seam Ripper Snuggle Time - Head",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Seam_Ripper_Snuggle_Time__Head",
                                               "item_rarity":  "mythical",
@@ -13034,7 +13034,7 @@
                                               "item_id":  26704,
                                               "name":  "Seam Ripper Snuggle Time - Offhand Weapon",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Seam_Ripper_Snuggle_Time__Offhand_Weapon",
                                               "item_rarity":  "mythical",
@@ -13045,7 +13045,7 @@
                                               "item_id":  26705,
                                               "name":  "Seam Ripper Snuggle Time - Shoulder",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Seam_Ripper_Snuggle_Time__Shoulder",
                                               "item_rarity":  "mythical",
@@ -13056,7 +13056,7 @@
                                               "item_id":  26706,
                                               "name":  "Seam Ripper Snuggle Time - Weapon",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Seam_Ripper_Snuggle_Time__Weapon",
                                               "item_rarity":  "mythical",
@@ -13067,7 +13067,7 @@
                                               "item_id":  26707,
                                               "name":  "Seam Ripper Snuggle Time - Arms",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2024-10-01T00:00:00Z",
+                                              "creation_date":  "2024-10-01T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Seam_Ripper_Snuggle_Time__Arms",
                                               "item_rarity":  "mythical",
@@ -13078,7 +13078,7 @@
                                               "item_id":  34243,
                                               "name":  "Seasonal Reward Line Fall 2025 Effects",
                                               "prefab":  "tool",
-                                              "creation_date":  "2025-06-05T00:00:00Z",
+                                              "creation_date":  "2025-06-05T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Seasonal_Reward_Line_Fall_2025_Effects",
                                               "item_rarity":  "mythical",
@@ -13089,31 +13089,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  326,
-                                                                "pct":  0.1991739329967875
+                                                                "pct":  0.194515852613539
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  488,
-                                                              "pct":  0.3744837081229922
+                                                              "pct":  0.3680377035132819
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0.2232558139534884,
-                                                                 "pct":  0.9077558513079395
+                                                                 "pct":  0.9078834618680377
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  1.5627906976744186,
-                                                                     "pct":  0.1445617255621845
+                                                                     "pct":  0.13967437874892888
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  679.2558139534883,
-                                                                       "pct":  0.7094997705369436
+                                                                       "pct":  0.7112253641816624
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  290.4,
-                                                                        "pct":  0.8893988067921065
+                                                                        "pct":  0.8727506426735219
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  476,
-                                                                "pct":  0.2069756769160165
+                                                                "pct":  0.21422450728363324
                                                             }
                                        }
                     },
@@ -14572,7 +14572,7 @@
                                               "item_id":  7501,
                                               "name":  "Acolyte Priest\u0027s Guard",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2015-01-19T00:00:00Z",
+                                              "creation_date":  "2015-01-19T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Acolyte_Priests_Guard",
                                               "item_rarity":  null,
@@ -14583,7 +14583,7 @@
                                               "item_id":  7502,
                                               "name":  "Acolyte Priest\u0027s Robes",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2015-01-19T00:00:00Z",
+                                              "creation_date":  "2015-01-19T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Acolyte_Priests_Robes",
                                               "item_rarity":  "uncommon",
@@ -14594,7 +14594,7 @@
                                               "item_id":  7504,
                                               "name":  "Acolyte Priest\u0027s Fur",
                                               "prefab":  "wearable",
-                                              "creation_date":  "2015-01-19T00:00:00Z",
+                                              "creation_date":  "2015-01-19T00:00:00.000Z",
                                               "item_description":  null,
                                               "item_name":  "#DOTA_Item_Acolyte_Priests_Fur",
                                               "item_rarity":  "rare",
@@ -14605,7 +14605,7 @@
                                               "item_id":  11384,
                                               "name":  "Smeevil\u0027s Penance",
                                               "prefab":  "ward",
-                                              "creation_date":  "2016-05-16T00:00:00Z",
+                                              "creation_date":  "2016-05-16T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_Smeevils_Penance",
                                               "item_name":  "#DOTA_Item_Smeevils_Penance",
                                               "item_rarity":  "immortal",
@@ -14616,7 +14616,7 @@
                                               "item_id":  27298,
                                               "name":  "10th Anniversary Dolfrat and Roshinante",
                                               "prefab":  "courier",
-                                              "creation_date":  "2023-08-04T00:00:00Z",
+                                              "creation_date":  "2023-08-04T00:00:00.000Z",
                                               "item_description":  "#DOTA_Item_Desc_10th_anniversary_Dolfrat_and_Roshinante",
                                               "item_name":  "#DOTA_Item_10th_Anniversary_Dolfrat_and_Roshinante",
                                               "item_rarity":  "mythical",
@@ -14627,31 +14627,31 @@
                         "benchmarks":  {
                                            "gold_per_min":  {
                                                                 "raw":  285,
-                                                                "pct":  0.24788902291917975
+                                                                "pct":  0.24795799299883314
                                                             },
                                            "xp_per_min":  {
                                                               "raw":  404,
-                                                              "pct":  0.19059107358262967
+                                                              "pct":  0.19253208868144692
                                                           },
                                            "kills_per_min":  {
                                                                  "raw":  0.27906976744186046,
-                                                                 "pct":  0.9529553679131484
+                                                                 "pct":  0.9369894982497082
                                                              },
                                            "last_hits_per_min":  {
                                                                      "raw":  1.172093023255814,
-                                                                     "pct":  0.3383594692400482
+                                                                     "pct":  0.3249708284714119
                                                                  },
                                            "hero_damage_per_min":  {
                                                                        "raw":  389.9720930232558,
-                                                                       "pct":  0.7448733413751508
+                                                                       "pct":  0.7281213535589265
                                                                    },
                                            "hero_healing_per_min":  {
                                                                         "raw":  265.4511627906977,
-                                                                        "pct":  0.5392038600723763
+                                                                        "pct":  0.5285880980163361
                                                                     },
                                            "tower_damage":  {
                                                                 "raw":  0,
-                                                                "pct":  0.17852834740651388
+                                                                "pct":  0.17677946324387397
                                                             }
                                        }
                     }

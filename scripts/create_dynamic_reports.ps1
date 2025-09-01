@@ -162,9 +162,7 @@ if($GenerateMonthly){
   $query = ("?from=$($r.FromUnix)" + "`&to=$($r.ToUnix)" + "`&tab=highlights" + "`&lock=1")
   Write-Dynamic-Wrapper -outDir $outDir -title "Monthly Report – $monthName $($ym.Year)" -query $query
   # Update index for sidebar
-  $href = "./$folderName/"
-  $now = (Get-Date).ToUniversalTime()
-  Update-ReportsJson -docsRoot $rootDocs -title "${monthName} $($ym.Year)" -href $href -group 'monthly' -when $now -sortKey ("$($ym.Year)-$($ym.Month.ToString('00'))")
+  Update-ReportsJson -docsRoot $rootDocs -title "${monthName} $($ym.Year)" -href ("{0}/" -f $folderName) -group 'monthly' -when ((Get-Date).ToUniversalTime()) -sortKey ("$($ym.Year)-$($ym.Month.ToString('00'))")
 }
 
 if($GeneratePatch){
@@ -179,7 +177,5 @@ if($GeneratePatch){
   $query = ("?from=$startUnix" + "`&to=$nowUnix" + "`&tab=highlights" + "`&lock=1")
   Write-Dynamic-Wrapper -outDir $outDir -title "Patch Report – $displayVer" -query $query
   # Update index for sidebar
-  $href = "./$folderName/"
-  $now = (Get-Date).ToUniversalTime()
-  Update-ReportsJson -docsRoot $rootDocs -title "Patch $displayVer" -href $href -group 'patch' -when $now -sortKey $displayVer
+  Update-ReportsJson -docsRoot $rootDocs -title "$displayVer" -href ("{0}/" -f $folderName) -group 'patch' -when ((Get-Date).ToUniversalTime()) -sortKey $displayVer
 }

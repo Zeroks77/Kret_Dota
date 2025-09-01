@@ -11,7 +11,7 @@ body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, tran
 a{color:var(--accent)}
 .wrapper{max-width:1180px;margin:0 auto;padding:16px}
 .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:12px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:12px;overflow:visible}
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
 .controls .field{display:flex;flex-direction:column;gap:6px}
 input,select,button{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)}
@@ -35,8 +35,9 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .sub{color:var(--muted);font-size:12px}
 .title{font-weight:600;margin-bottom:6px}
 .has-hover{position:relative}
-.has-hover .hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:10;background:rgba(10,16,34,.96);border:1px solid var(--border);border-radius:10px;padding:8px;min-width:220px;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.has-hover .hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:10000;background:rgba(10,16,34,.96);border:1px solid var(--border);border-radius:10px;padding:8px;min-width:220px;box-shadow:0 8px 20px rgba(0,0,0,.4);pointer-events:auto}
 .has-hover:hover .hovercard{display:block}
+.has-hover.open .hovercard{display:block}
 .ramp-badge{background:#23305f}
 /* Ward map */
 .wardgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;align-items:start}
@@ -58,6 +59,11 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .summary-card li{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
 .summary-card li:last-child{border-bottom:0}
 .summary-card img{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)}
+/* Awards layout */
+.aw-toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:-4px 0 8px}
+.aw-tile{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column;height:100%}
+.aw-tile h3{margin:0 0 6px;font-size:15px;color:var(--muted)}
+.aw-tile ul.simple{flex:1}
 /* Stacked badge lines */
 .stack .row{display:block;margin-top:4px}
 .stack .row .badge{margin-right:6px}
@@ -135,7 +141,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Players</h2>
       <table class="table sortable" id="playersTable"><thead><tr>
-        <th data-type="text">Name</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th><th data-type="text">Top 3 heroes</th>
+        <th data-type="text">Name</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th><th data-type="num">Hero pool</th>
       </tr></thead><tbody></tbody></table>
     </section>
   </div>
@@ -161,6 +167,9 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
   <div id="pane-awards" class="tabpane" style="display:none">
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">🏆 Awards</h2>
+      <div class="aw-toolbar">
+        <label class="sub" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="awHideEmpty"> Hide empty awards</label>
+      </div>
       <div id="awardsBody" class="sub">Select a range and Apply to compute awards.</div>
     </section>
   </div>
@@ -264,13 +273,15 @@ function aggregate(matches, playerNames, teamNames){
       const id=Number(p.account_id||0); if(!(id>0)) continue;
       if(!players.has(id)){
         const nm = p.personaname || playerNames[String(id)] || `Player ${id}`;
-        players.set(id,{account_id:id,name:nm,games:0,wins:0,roles:{},heroes:{},profile:OD_PLAYER_URL(id)});
+        players.set(id,{account_id:id,name:nm,games:0,wins:0,roles:{},heroes:{},heroWins:{},profile:OD_PLAYER_URL(id)});
       }
       const ps=players.get(id); ps.games++;
       const won = p.is_radiant ? radWin : !radWin; if(won) ps.wins++;
       ps.roles['Unknown'] = (ps.roles['Unknown']||0)+1;
       const hid = p.hero_id|0; if(hid>0){
-        ps.heroes[String(hid)] = (ps.heroes[String(hid)]||0)+1;
+        const key = String(hid);
+        ps.heroes[key] = (ps.heroes[key]||0)+1;
+        ps.heroWins[key] = (ps.heroWins[key]||0) + (won?1:0);
         let hs=heroStats.get(hid); if(!hs){ hs={picks:0,wins:0,bans:0}; heroStats.set(hid,hs);} hs.picks++; if(won) hs.wins++;
         if(!heroPlayerAgg.has(hid)) heroPlayerAgg.set(hid,new Map());
         if(!heroPlayerAgg.get(hid).has(id)) heroPlayerAgg.get(hid).set(id,{account_id:id,name:ps.name,games:0,wins:0,profile:ps.profile});
@@ -290,19 +301,54 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
   // Players
   const playerRows = Array.from(players.values()).map(p=>{
     const wr = p.games>0 ? p.wins/p.games : 0;
-    const heroes = Object.entries(p.heroes).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([hid,cnt])=>{
-      const meta=heroMap[hid]||{name:`Hero ${hid}`,img:''};
-      return `<div class='hero' title='${meta.name}'><img src='${meta.img}' alt='${meta.name}'><div>${meta.name}<br><span class='badge'>x${cnt}</span></div></div>`;
+    // Build hero breakdown list
+    const poolSize = Object.keys(p.heroes||{}).length;
+    const listId = `hp-${p.account_id}`;
+    const heroList = Object.entries(p.heroes||{}).map(([hid,cnt])=>{
+      const wins = Number(p.heroWins && p.heroWins[hid] || 0);
+      const wrH = cnt>0 ? (wins/cnt) : 0;
+      const meta = heroMap[String(hid)] || {name:`Hero ${hid}`,img:''};
+      return `<div style='display:flex;align-items:center;gap:8px;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)'><span style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' class='logo'><span>${meta.name}</span></span><span><span class='badge'>x${cnt}</span><span class='badge'>WR ${fmtPct(wrH)}</span></span></div>`;
+    }).sort((a,b)=>{
+      // Sort by games desc by extracting xNN in the string; fallback to name
+      const ax = (a.match(/x(\d+)/)||[])[1]|0; const bx = (b.match(/x(\d+)/)||[])[1]|0; return bx-ax;
     }).join('');
+    const heroes = `<div class='has-hover' data-pop='${listId}' style='display:inline-block'>
+      <button class='badge' data-action='toggle-pop' data-target='${listId}' title='Show per-hero breakdown'>Hero pool: <strong>${poolSize}</strong></button>
+      <div id='${listId}' class='hovercard' style='min-width:320px'>
+        <div class='title'>Per-hero breakdown</div>
+        ${heroList || `<div class='sub'>no heroes</div>`}
+      </div>
+    </div>`;
     return `<tr>
       <td data-sort="${p.name.toLowerCase()}"><a href='${p.profile}' target='_blank' rel='noopener'>${p.name}</a></td>
       <td data-sort="${p.games}">${p.games}</td>
       <td data-sort="${p.wins/(p.games||1)}"><span class='win'>${p.wins}</span>-<span class='loss'>${p.games-p.wins}</span></td>
       <td data-sort="${wr}">${fmtPct(wr)}</td>
-      <td>${`<div class='heroes'>${heroes||'<span class="badge">-</span>'}</div>`}</td>
+      <td data-sort="${poolSize}">${`<div class='heroes'>${heroes}</div>`}</td>
     </tr>`;
   }).join('');
   document.querySelector('#playersTable tbody').innerHTML = playerRows;
+  // Wire up click-to-toggle for hero pool popovers
+  try{
+    document.querySelectorAll('[data-action="toggle-pop"]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        const id = btn.getAttribute('data-target');
+        const wrapper = btn.closest('.has-hover');
+        if(!id||!wrapper) return;
+        // Close others
+        document.querySelectorAll('.has-hover.open').forEach(n=>{ if(n!==wrapper) n.classList.remove('open'); });
+        wrapper.classList.toggle('open');
+      });
+    });
+    // Close when clicking elsewhere
+    document.addEventListener('click', (e)=>{
+      document.querySelectorAll('.has-hover.open').forEach(n=>{
+        if(!n.contains(e.target)) n.classList.remove('open');
+      });
+    });
+  }catch(_e){}
 
   // Teams
   const teamRows = Array.from(teams.values()).map(t=>{
@@ -387,13 +433,13 @@ function renderSummary(subsetAgg, heroMap){
   function heroRow(h){ return h? `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.meta.img||''}' alt=''><span class='name'>${h.meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.wr)}</strong></span></span></li>` : `<li><span class='sub'>no data</span></li>`; }
 
   grid.innerHTML = `
-    <div class='summary-card'>
+    <div class='summary-card' id='sum-top-picked'>
       <h3>Top 3 most picked heroes</h3>
-      <ul>${topPicked.map(liPicked).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+      <ul id='ul-top-picked'>${topPicked.map(liPicked).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
     </div>
-    <div class='summary-card'>
+    <div class='summary-card' id='sum-top-banned'>
       <h3>Top 3 most banned heroes</h3>
-      <ul>${topBanned.map(liBanned).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+      <ul id='ul-top-banned'>${topBanned.map(liBanned).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
     </div>
     <div class='summary-card'>
       <h3>Top 3 players (WR, > ${minGamesTopPlayer} games)</h3>
@@ -815,7 +861,7 @@ async function main(){
   // Load from root-level data/ via relative path (local) or raw.githubusercontent.com (GitHub Pages)
   const REPO='Zeroks77/Kret_Dota'; const BRANCH='main';
   const relBase='../data'; const rawBase=`https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
-  const [manifest, heroes, info, mapConf] = await Promise.all([
+  const [manifest, heroesRaw, info, mapConf] = await Promise.all([
     loadJsonWithFallback(`${relBase}/manifest.json`, `${rawBase}/manifest.json`),
     loadJsonWithFallback(`${relBase}/heroes.json`, `${rawBase}/heroes.json`),
     loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({})),
@@ -826,6 +872,24 @@ async function main(){
   const files = months.map(m => ({rel: `${relBase}/${m.file}`, raw: `${rawBase}/${m.file}`}));
   const shards = await Promise.all(files.map(p => loadJsonWithFallback(p.rel, p.raw).catch(()=>[])));
   let allMatches = shards.flat();
+  // Build hero map with absolute images and friendly names
+  const heroes = (function buildHeroMap(src){
+    const out = {};
+    if(src && typeof src === 'object'){
+      const cdn = 'https://cdn.cloudflare.steamstatic.com';
+      for(const k in src){
+        const h = src[k]||{};
+        const id = String(h.id||k);
+        const tag = String(h.name||'').replace(/^npc_dota_hero_/,'');
+        const loc = h.localized_name || tag || ('#'+id);
+        let img = String(h.img||'');
+        if(img && img.startsWith('/')) img = cdn + img;
+        const icon = h.icon ? (h.icon.startsWith('/')? (cdn + h.icon) : h.icon) : img;
+        out[id] = { id:Number(id), name:loc, img, icon, tag };
+      }
+    }
+    return out;
+  })(heroesRaw);
   // Names aren’t shipped separately in shards; derive names from matches where available
   const playerNames = {}; const teamNames = {};
   for(const m of allMatches){
@@ -842,7 +906,7 @@ async function main(){
   let __rangeUnix = {from:0,to:0};
   let __calCursor = null; // {y,m}
   // ---- Helpers to compute highlights client-side for any range ----
-  function mapHeroTag(heroMap){ const out={}; try{ for(const k in heroMap){ const v=heroMap[k]; if(v && v.tag) out[String(v.tag)] = Number(v.id||k); } }catch(_e){} return out; }
+  function mapHeroTag(heroMap){ const out={}; try{ for(const k in heroMap){ const v=heroMap[k]; if(v && v.tag){ out[String(v.tag)] = Number(v.id||k); } } }catch(_e){} return out; }
   function getTeamByObjective(ev, md){
     // Prefer explicit team on event; fallback to player_slot if present
   try{
@@ -903,8 +967,9 @@ async function main(){
     const pairCounts = new Map();      // "aid1-aid2" -> games
     const courierKillsBy = new Map();  // aid -> total
     const campsStackedBy = new Map();  // aid -> total
-    const rapierBy = new Map();        // aid -> total rapiers bought
+  const rapierBy = new Map();        // aid -> total rapiers bought
     const gemBy = new Map();           // aid -> total gems bought
+  const banCounts = new Map();       // hid -> bans
   const roshanTeam = {Radiant:0, Dire:0};
     const roshPerMatch = {Radiant:new Map(), Dire:new Map()};
   const roshanEvents = [];
@@ -1008,6 +1073,11 @@ async function main(){
             M.get(rk).games++; M.get(dk).games++; if((rAvg-dAvg)>=0) M.get(rk).wins++; else M.get(dk).wins++;
           }
         }
+        // Picks/Bans aggregation
+        try{
+          const pbs = Array.isArray(md.picks_bans)? md.picks_bans : [];
+          for(const pb of pbs){ if(pb && pb.is_pick===false){ const hid = Number(pb.hero_id||0); if(hid>0) banCounts.set(hid, (banCounts.get(hid)||0)+1); } }
+        }catch(_e){}
         // Objectives: Roshan, Aegis snatch, Tormentor
         if(Array.isArray(md.objectives) && md.objectives.length){ objectivesSeen=true; for(const ev of md.objectives){ const t=String(ev.type||'');
             if(/roshan_kill|CHAT_MESSAGE_ROSHAN_KILL/i.test(t)){
@@ -1130,7 +1200,7 @@ async function main(){
     // Duration lists
     const durationLongest = durList.slice().sort((a,b)=> b.duration-a.duration).slice(0,3);
     const durationShortest = durList.slice().sort((a,b)=> a.duration-b.duration).slice(0,3);
-    return {
+  return {
   rampages: rampList,
   rampagesBySide: { Radiant: rampListRadiant, Dire: rampListDire },
       wardSpots: wardTop,
@@ -1155,7 +1225,8 @@ async function main(){
       tormentor,
       objectivesSeen,
       durationLongest,
-      durationShortest
+  durationShortest,
+  banCounts
     };
   }
 
@@ -1169,9 +1240,19 @@ async function main(){
   const details = (await pMap(ids, 4, id=> fetchMatchDetail(id))).filter(Boolean);
   const high = computeHighlightsFromDetails(details, heroMap);
   renderHighlights(high, heroMap, mapConf, label);
+  // Update Top Banned summary from detailed banCounts
+  try{
+    const ul = document.getElementById('ul-top-banned');
+    if(ul && high && high.banCounts){
+      const arr = Array.from(high.banCounts.entries()).map(([hid,cnt])=>({hid:Number(hid), bans:Number(cnt)})).sort((a,b)=> b.bans-a.bans).slice(0,3);
+      const html = arr.map(h=>{ const meta = heroMap[String(h.hid)]||{}; return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${meta.img||''}' alt=''><span class='name'>${meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Bans: ${h.bans}</span></span></li>`; }).join('');
+      ul.innerHTML = html || `<li><span class='sub'>no data</span></li>`;
+    }
+  }catch(_e){}
   // Compute awards in parallel with same details
   const awards = computeAwardsFromDetails(details, heroMap);
-  renderAwards(awards, heroMap);
+  const hideEmpty = !!(document.getElementById('awHideEmpty') && document.getElementById('awHideEmpty').checked);
+  renderAwards(awards, heroMap, { hideEmpty });
   }
 
   function apply(){
@@ -1199,6 +1280,13 @@ async function main(){
   // Render calendar for current cursor
   renderCalendarMonth(__subsetCache, __rangeUnix, __calCursor);
   }
+  // Wire hide-empty persistence and change handler
+  try{
+    const cb = document.getElementById('awHideEmpty');
+    const key = 'dv_aw_hide_empty';
+    const saved = localStorage.getItem(key);
+    if(cb){ cb.checked = saved===null ? true : (saved==='1'); cb.addEventListener('change', ()=>{ localStorage.setItem(key, cb.checked?'1':'0'); if(typeof __lastAwards==='object'){ renderAwards(__lastAwards, heroes, { hideEmpty: cb.checked }); } }); }
+  }catch(_e){}
   document.getElementById('apply').addEventListener('click', apply);
   quick.addEventListener('change', async ()=>{
     const v=quick.value;
@@ -1303,6 +1391,22 @@ function computeAwardsFromDetails(details, heroMap){
   glimmerGuardian: [],
   forceMaster: [],
   blinkJunkie: [],
+  // Fun extras
+  feedingFrenzy: [],
+  oneHitWonder: [],
+  assistMachine: [],
+  captainObvious: [],
+  shopaholic: [],
+  noTpClub: [],
+  invisibleMan: [],
+  bountyHunterIRL: [],
+  dieHard: [],
+  afkFarmer: [],
+  tipSpammer: [],
+  roshanTourist: [],
+  fountainDiver: [],
+  bottleHoarder: [],
+  jungleEnthusiast: [],
   };
   const nameCache = new Map();
   function sideOf(slot){ return (Number(slot)<128)? 'Radiant' : 'Dire'; }
@@ -1360,8 +1464,29 @@ function computeAwardsFromDetails(details, heroMap){
   const glimmerUses = new Map();             // glimmer cape uses
   const forceUses = new Map();               // force staff uses
   const blinkUses = new Map();               // blink uses
+  // --- New aggregates for extra awards ---
+  const maxDeathsSingle = new Map();         // highest deaths in a single match
+  const oneKillWins = new Map();             // matches with exactly 1 kill and win
+  const totAssists = new Map();              // total assists (for A/D ratio)
+  const totDeaths = new Map();               // total deaths (for A/D ratio)
+  const chatCount = new Map();               // chat messages per player
+  const maxPurchases = new Map();            // max purchase_log length per player
+  const noTpCount = new Map();               // matches >30m with 0 TP
+  const invisCount = new Map();              // invis actions: glimmer + sb + invis rune
+  const bountyRunes = new Map();             // bounty runes picked
+  const maxDeathGap = new Map();             // longest single death duration approx
+  const afkFarm = new Map();                 // matches with GPM>600 & hero_damage<10k
+  const tipCount = new Map();                // number of tips given
+  const roshAllKillsKiller = new Map();      // matches where player killed all team roshes
+  const fountainDeaths = new Map();          // deaths to enemy fountain
+  const bottleUses = new Map();              // bottle item uses
+  const jungleScore = new Map();             // neutral_kills + camps_stacked
 
   for(const md of details){ if(!md) continue; const isRadWin = !!md.radiant_win;
+    // Helpers per match
+    const slotToAid = new Map();
+    for(const p of (md.players||[])){ const aid=Number(p.account_id||0); if(aid>0) slotToAid.set(Number(p.player_slot), aid); }
+    const matchDuration = Number(md.duration||0);
     for(const p of (md.players||[])){
       const aid = Number(p.account_id||0); if(!(aid>0)) continue;
       const side = sideOf(p.player_slot);
@@ -1452,6 +1577,33 @@ function computeAwardsFromDetails(details, heroMap){
   const gliU = Number(uses.glimmer_cape||0); if(gliU) glimmerUses.set(aid, (glimmerUses.get(aid)||0)+gliU);
   const forU = Number(uses.force_staff||0); if(forU) forceUses.set(aid, (forceUses.get(aid)||0)+forU);
   const bliU = Number(uses.blink||0)+Number(uses.blink_dagger||0); if(bliU) blinkUses.set(aid, (blinkUses.get(aid)||0)+bliU);
+      // New awards collection
+      // Feeding Frenzy: highest single-game deaths
+      { const d = Number(p.deaths||0); const prev = maxDeathsSingle.get(aid)||0; if(d>prev) maxDeathsSingle.set(aid, d); }
+      // One Hit Wonder: 1 kill and win
+      { const ok = (Number(p.kills||0)===1) && won; if(ok) oneKillWins.set(aid, (oneKillWins.get(aid)||0)+1); }
+      // Assist Machine inputs
+      totAssists.set(aid, (totAssists.get(aid)||0) + Number(p.assists||0));
+      totDeaths.set(aid, (totDeaths.get(aid)||0) + Number(p.deaths||0));
+      // Shopaholic: track max purchase_log length seen
+      { const len = Array.isArray(p.purchase_log)? p.purchase_log.length : 0; const prev = maxPurchases.get(aid)||0; if(len>prev) maxPurchases.set(aid, len); }
+      // No TP Club: game > 30m and 0 tp
+      { let tpv2 = Number(p.tp_count||0); if(!tpv2){ const iu=p.item_uses||{}; tpv2 = Number(iu.tpscroll||0); }
+        if(matchDuration>1800 && tpv2===0){ noTpCount.set(aid, (noTpCount.get(aid)||0)+1); } }
+      // Invisible Man: glimmer + shadow blade uses + invis rune pickups
+      { const iu = p.item_uses||{}; const runes2 = p.runes||{}; const val = Number(iu.glimmer_cape||0) + Number(iu.invis_sword||0) + Number(runes2['3']||0); if(val){ invisCount.set(aid, (invisCount.get(aid)||0)+val); } }
+      // Bounty Hunter IRL: bounty runes (id '5')
+      { const runes2 = p.runes||{}; const val = Number(runes2['5']||0); if(val){ bountyRunes.set(aid, (bountyRunes.get(aid)||0)+val); } }
+      // Die Hard: longest time between death and next death/end
+      { const dl = Array.isArray(p.deaths_log)? p.deaths_log.map(e=>Number(e.time||0)).sort((a,b)=>a-b) : [];
+        if(dl.length){ let best=0; for(let i=0;i<dl.length;i++){ const cur = (i<dl.length-1) ? (dl[i+1]-dl[i]) : (matchDuration - dl[i]); if(cur>best) best=cur; }
+          const prev=maxDeathGap.get(aid)||0; if(best>prev) maxDeathGap.set(aid, best); } }
+      // AFK Farmer: GPM > 600 and hero_damage < 10k
+      { const gpmv=Number(p.gold_per_min||0), hdv=Number(p.hero_damage||0); if(gpmv>600 && hdv<10000){ afkFarm.set(aid, (afkFarm.get(aid)||0)+1); } }
+      // Bottle Hoarder: bottle uses
+      { const iu = p.item_uses||{}; const b = Number(iu.bottle||0); if(b){ bottleUses.set(aid, (bottleUses.get(aid)||0)+b); } }
+      // Jungle Enthusiast: neutral kills + camps stacked
+      { const score = Number(p.neutral_kills||0) + Number(p.camps_stacked||0); if(score){ jungleScore.set(aid, (jungleScore.get(aid)||0)+score); } }
       // rampages (5x multi-kills)
       const mk = p.multi_kills||{};
       const ramps = Number(mk['5']||0);
@@ -1480,15 +1632,19 @@ function computeAwardsFromDetails(details, heroMap){
   const boughtShard = plog2.some(it=> String(it.key||'').toLowerCase()==='aghanims_shard') || Number((purch||{}).aghanims_shard||0)>0;
   if(hasShardBuff && !boughtShard) shardGot.set(aid, (shardGot.get(aid)||0)+1);
     }
-    // Roshan participation: credit all players on the killing team, and capture other objective events
-    const objectivesArr = Array.isArray(md.objectives) ? md.objectives : (Array.isArray(md.objectives_events)? md.objectives_events: []);
-    for(const ev of objectivesArr){
+  // Roshan participation: credit all players on the killing team, and capture other objective events
+  const objectivesArr = Array.isArray(md.objectives) ? md.objectives : (Array.isArray(md.objectives_events)? md.objectives_events: []);
+  const roshByTeamKillers = {Radiant:new Set(), Dire:new Set()}; let roshCountTeam = {Radiant:0, Dire:0};
+  for(const ev of objectivesArr){
       const t = String(ev.type||ev.key||'');
       if(/roshan_kill|CHAT_MESSAGE_ROSHAN_KILL/i.test(t)){
         const team = (Number(ev.team)===2||Number(ev.team)===0)? 'Radiant' : 'Dire';
         for(const p of (md.players||[])){
           if(p && ((Number(p.player_slot)<128)?'Radiant':'Dire')===team){ const id=Number(p.account_id||0); if(id>0) roshPart.set(id, (roshPart.get(id)||0)+1); }
         }
+    roshCountTeam[team]++;
+    const slot = Number(ev.player_slot);
+    const killerAid = slotToAid.get(slot)||0; if(killerAid){ roshByTeamKillers[team].add(killerAid); }
       }
       // Aegis snatch
       if(/CHAT_MESSAGE_AEGIS_STOLEN/i.test(t)){ const slot=ev.player_slot; const p = (md.players||[]).find(x=>x.player_slot===slot); if(p){ const id=Number(p.account_id||0); if(id>0) aegisStolen.set(id, (aegisStolen.get(id)||0)+1); } }
@@ -1498,6 +1654,21 @@ function computeAwardsFromDetails(details, heroMap){
   if(/CHAT_MESSAGE_FIRSTBLOOD|FIRST_BLOOD/i.test(t)){ const slot=Number(ev.player_slot); const p=(md.players||[]).find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) firstBloods.set(id, (firstBloods.get(id)||0)+1); }
       // Capture point (outpost etc)
   if(/CHAT_MESSAGE_CAPTURE_POINT|CAPTURE_POINT|OUTPOST_CAPTURE|CAPTURE/i.test(t)){ const slot=Number(ev.player_slot); const p=(md.players||[]).find(x=>Number(x.player_slot)===slot); const id=p?Number(p.account_id||0):0; if(id>0) outpostCaptures.set(id, (outpostCaptures.get(id)||0)+1); }
+      // Tips given
+      if(/CHAT_MESSAGE_TIP/i.test(t)){ const slot=Number(ev.player_slot); const aid = slotToAid.get(slot)||0; if(aid){ tipCount.set(aid, (tipCount.get(aid)||0)+1); } }
+    }
+    // Roshan Tourist: unique killer for team across rosh kills
+    for(const side of ['Radiant','Dire']){
+      if(roshCountTeam[side]>0 && roshByTeamKillers[side].size===1){ const aid = Array.from(roshByTeamKillers[side])[0]; roshAllKillsKiller.set(aid, (roshAllKillsKiller.get(aid)||0)+1); }
+    }
+    // Chat messages (Captain Obvious)
+    try{
+      const chat = Array.isArray(md.chat)? md.chat: [];
+      for(const c of chat){ const slot = Number(c.slot!=null? c.slot: c.player_slot); const aid = slotToAid.get(slot)||0; if(aid){ chatCount.set(aid, (chatCount.get(aid)||0)+1); } }
+    }catch(_e){}
+    // Fountain Diver via killed_by
+    for(const p of (md.players||[])){
+      const aid = Number(p.account_id||0); if(!(aid>0)) continue; const kb = p.killed_by||{}; const val = Number(kb.npc_dota_fountain||0); if(val){ fountainDeaths.set(aid, (fountainDeaths.get(aid)||0)+val); }
     }
   }
 
@@ -1574,11 +1745,29 @@ function computeAwardsFromDetails(details, heroMap){
   res.glimmerGuardian     = withNames(topN(glimmerUses, 3));
   res.forceMaster         = withNames(topN(forceUses, 3));
   res.blinkJunkie         = withNames(topN(blinkUses, 3));
+  // New extras
+  res.feedingFrenzy       = withNames(Array.from(maxDeathsSingle.entries()).map(([id,val])=>({account_id:Number(id), val:Number(val)})).sort((a,b)=> b.val-a.val).slice(0,3));
+  res.oneHitWonder        = withNames(topN(oneKillWins, 3));
+  res.assistMachine       = (function(){ const arr=[]; for(const [id,ass] of totAssists.entries()){ if(ass>=10){ const deaths = Math.max(1, Number(totDeaths.get(id)||0)); const ratio = ass/deaths; arr.push({account_id:Number(id), val:Number(ratio.toFixed(2))}); } } return withNames(arr.sort((a,b)=> b.val-a.val).slice(0,3)); })();
+  res.captainObvious      = withNames(topN(chatCount, 3));
+  res.shopaholic          = withNames(topN(maxPurchases, 3));
+  res.noTpClub            = withNames(topN(noTpCount, 3));
+  res.invisibleMan        = withNames(topN(invisCount, 3));
+  res.bountyHunterIRL     = withNames(topN(bountyRunes, 3));
+  res.dieHard             = withNames(topN(maxDeathGap, 3));
+  res.afkFarmer           = withNames(topN(afkFarm, 3));
+  res.tipSpammer          = withNames(topN(tipCount, 3));
+  res.roshanTourist       = withNames(topN(roshAllKillsKiller, 3));
+  res.fountainDiver       = withNames(topN(fountainDeaths, 3));
+  res.bottleHoarder       = withNames(topN(bottleUses, 3));
+  res.jungleEnthusiast    = withNames(topN(jungleScore, 3));
   return res;
 }
 
-function renderAwards(aw, heroMap){
+function renderAwards(aw, heroMap, opts){
   const root = document.getElementById('awardsBody'); if(!root) return;
+  window.__lastAwards = aw; // cache for re-render when toggling options
+  const hideEmpty = !!(opts && opts.hideEmpty);
   function nm(obj){ const id=Number(obj.account_id||obj.id||0); const label = obj.name || (id?`Player ${id}`:'Unknown'); const href = obj.profile || (id? OD_PLAYER_URL(id): '#'); return `<a href='${href}' target='_blank'>${label}</a>`; }
   function uniqueById(arr){
     const seen = new Set();
@@ -1651,15 +1840,42 @@ function renderAwards(aw, heroMap){
     lotusLawyer: 'Lotus Orb uses.',
     glimmerGuardian: 'Glimmer Cape uses.',
     forceMaster: 'Force Staff uses.',
-    blinkJunkie: 'Blink uses (blink/blink_dagger).'
+  blinkJunkie: 'Blink uses (blink/blink_dagger).',
+  // New fun awards
+  feedingFrenzy: 'Most deaths in a single match (max per player).',
+  oneHitWonder: 'Matches with exactly 1 kill where your team still won.',
+  assistMachine: 'Highest Assist/Death ratio across the selected range (min. 10 assists total).',
+  captainObvious: 'Most chat messages (chat wheel or text) recorded in parsed matches.',
+  shopaholic: 'Longest purchase_log length observed in a single match.',
+  noTpClub: 'Matches over 30 minutes with 0 TP scroll uses.',
+  invisibleMan: 'Glimmer Cape uses + Shadow Blade uses + Invisibility rune pickups.',
+  bountyHunterIRL: 'Bounty runes picked up.',
+  dieHard: 'Approx. longest time between a death and the next death or match end.',
+  afkFarmer: 'Matches with GPM > 600 and hero damage < 10k.',
+  tipSpammer: 'Number of tips given (chat objective events).',
+  roshanTourist: 'Credited as killer for every Roshan killed by your team in a match.',
+  fountainDiver: 'Deaths to the enemy fountain.',
+  bottleHoarder: 'Bottle uses.',
+  jungleEnthusiast: 'Neutral kills + camps stacked (jungle activity indicator).'
   };
   function list3(title, arr, fmtKey, key){
-    if(!Array.isArray(arr) || arr.length===0) return `<div><h3>${title}</h3><ul class='simple'><li><span class='sub'>no data</span></li></ul></div>`;
+    if(!Array.isArray(arr) || arr.length===0){
+      if(hideEmpty) return '';
+      return `<div class='aw-tile'><h3>${title}</h3><ul class='simple'><li><span class='sub'>no data</span></li></ul></div>`;
+    }
     const fmt = fmtMap[fmtKey] || (function(o){ var v=(o&&('val' in o))?o.val:''; return String(v==null? '': v); });
     const list = uniqueById(arr).slice(0,3);
     const items = list.map(o=> `<li class='has-hover'><span>${nm(o)}</span><span class='badge'>${fmt(o)}</span>${(title.startsWith('Space Creator') && o.games && o.games.length) ? (`<div class='hovercard'><div class='title'>Deaths by match</div>` + o.games.map(g=>`<div><a class='badge' target='_blank' href='${OD_MATCH_URL(g.match_id)}'>M${g.match_id}</a><span class='badge'>x${g.deaths}</span></div>`).join('') + `</div>`) : ''}${(title.startsWith('Objective Gamer') && (o.td!=null) && (o.teamTd!=null)) ? (`<div class='hovercard'><div class='title'>Share breakdown</div><div><span class='badge'>Your tower dmg: ${o.td}</span><span class='badge'>Team total: ${o.teamTd}</span><span class='badge'>Share: ${(o.share*100).toFixed(1)}%</span></div></div>`) : ''}</li>`).join('');
-    const info = key && desc[key] ? `<span class='badge' style='margin-left:6px' title='${desc[key].replace(/'/g,"&#39;")}'>&#9432;</span>` : '';
-    return `<div><h3>${title}${info}</h3><ul class='simple'>${items}</ul></div>`;
+    const info = (function(){
+      if(!(key && desc[key])) return '';
+      const hid = `inf-${key}`;
+      const text = desc[key].replace(/'/g,"&#39;");
+      return `<span class='has-hover' style='margin-left:6px'>
+        <button class='badge' data-action='toggle-pop' data-target='${hid}' aria-haspopup='dialog' aria-expanded='false' title='Details'>&#9432;</button>
+        <div id='${hid}' class='hovercard' role='dialog' aria-label='${title} – info' style='max-width:360px'>${text}</div>
+      </span>`;
+    })();
+    return `<div class='aw-tile'><h3>${title}${info}</h3><ul class='simple'>${items}</ul></div>`;
   }
   const html = `
     <div class='grid3'>
@@ -1745,8 +1961,56 @@ function renderAwards(aw, heroMap){
   ${list3('Glimmer Guardian – glimmer uses', aw.glimmerGuardian, 'plain', 'glimmerGuardian')}
   ${list3('Yedi Master – force uses', aw.forceMaster, 'plain', 'forceMaster')}
   ${list3('Blink Junkie – blink uses', aw.blinkJunkie, 'plain', 'blinkJunkie')}
-    </div>`;
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Feeding Frenzy – most deaths (single game)', aw.feedingFrenzy, 'plain', 'feedingFrenzy')}
+  ${list3('One Hit Wonder – 1 kill, team won', aw.oneHitWonder, 'plain', 'oneHitWonder')}
+  ${list3('Assist Machine – best A/D (≥10A)', aw.assistMachine, 'plain', 'assistMachine')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Captain Obvious – most chat', aw.captainObvious, 'plain', 'captainObvious')}
+  ${list3('Shopaholic – longest purchase log', aw.shopaholic, 'plain', 'shopaholic')}
+  ${list3('No TP Club – 30m+, 0 TP', aw.noTpClub, 'plain', 'noTpClub')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Invisible Man – invis actions', aw.invisibleMan, 'plain', 'invisibleMan')}
+  ${list3('Bounty Hunter IRL – bounty runes', aw.bountyHunterIRL, 'plain', 'bountyHunterIRL')}
+  ${list3('Die Hard – longest death (approx)', aw.dieHard, 'seconds', 'dieHard')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('AFK Farmer – high GPM, low dmg', aw.afkFarmer, 'plain', 'afkFarmer')}
+  ${list3('Tip Spammer – most tips', aw.tipSpammer, 'plain', 'tipSpammer')}
+  ${list3('Roshan Tourist – all team rosh kills (killer)', aw.roshanTourist, 'plain', 'roshanTourist')}
+    </div>
+    <div class='grid3' style='margin-top:8px'>
+  ${list3('Fountain Diver – fountain deaths', aw.fountainDiver, 'plain', 'fountainDiver')}
+  ${list3('Bottle Hoarder – bottle uses', aw.bottleHoarder, 'plain', 'bottleHoarder')}
+  ${list3('Jungle Enthusiast – jungle activity', aw.jungleEnthusiast, 'plain', 'jungleEnthusiast')}
+  </div>`;
   root.innerHTML = html;
+  // Wire info popovers in awards
+  try{
+    const scope = root;
+    scope.querySelectorAll('[data-action="toggle-pop"]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        const id = btn.getAttribute('data-target');
+        const wrapper = btn.closest('.has-hover');
+        if(!id||!wrapper) return;
+        // Close others under awards only
+        scope.querySelectorAll('.has-hover.open').forEach(n=>{ if(n!==wrapper) n.classList.remove('open'); });
+        const nowOpen = !wrapper.classList.contains('open');
+        wrapper.classList.toggle('open', nowOpen);
+        btn.setAttribute('aria-expanded', nowOpen ? 'true' : 'false');
+      });
+    });
+    document.addEventListener('click', (e)=>{
+      // Close any open popovers when clicking outside awards area
+      if(!root.contains(e.target)){
+        root.querySelectorAll('.has-hover.open').forEach(n=> n.classList.remove('open'));
+      }
+    });
+  }catch(_e){}
 }
 
 // ===== Calendar rendering =====

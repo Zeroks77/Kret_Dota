@@ -161,8 +161,10 @@ function Fetch-MissingMatches(){
   $cacheDir = Join-Path $data 'cache/OpenDota/matches'
   if(-not (Test-Path -LiteralPath $cacheDir)){ New-Item -ItemType Directory -Path $cacheDir -Force | Out-Null }
 
-  $ids = Get-MatchIdCandidates
-  Write-Host ("Found {0} candidate match IDs" -f $ids.Count)
+  $ids = @(Get-MatchIdCandidates)
+  $count = ($ids | Measure-Object).Count
+  Write-Host ("Found {0} candidate match IDs" -f $count)
+  if($count -le 0){ return }
 
   $i=0
   foreach($id in $ids){
@@ -339,13 +341,13 @@ switch($Mode){
 
 if($doConst){ Update-Constants }
 if($doDiscover){
-  $ids = Discover-MatchIdsFromSteam
-  if($ids -and $ids.Count -gt 0){
+  $ids = @(Discover-MatchIdsFromSteam)
+  if((($ids | Measure-Object).Count) -gt 0){
     # Ensure we fetch details for any newly discovered IDs
     $data = Get-DataPath
     $cacheDir = Join-Path $data 'cache/OpenDota/matches'
     $toFetch = @(); foreach($id in $ids){ if(-not (Test-Path -LiteralPath (Join-Path $cacheDir ("{0}.json" -f $id)))){ $toFetch += [int64]$id } }
-    if($toFetch.Count -gt 0){ Write-Log ("Newly discovered needing fetch: {0}" -f $toFetch.Count); foreach($mid in ($toFetch | Sort-Object)){
+    if((($toFetch | Measure-Object).Count) -gt 0){ Write-Log ("Newly discovered needing fetch: {0}" -f (($toFetch | Measure-Object).Count)); foreach($mid in ($toFetch | Sort-Object)){
   try{ $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid); if($obj){ $obj = Sanitize-MatchObject $obj; Save-Json -obj $obj -path (Join-Path $cacheDir ("{0}.json" -f $mid)) } } catch { Write-Warning ("Fetch failed for {0}: {1}" -f $mid, $_.Exception.Message) }
         Start-Sleep -Milliseconds $DelayMs
       }
