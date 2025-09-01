@@ -1439,6 +1439,7 @@ async function main(){
       const f = parseLocalInput(document.getElementById('from').value);
       const t = parseLocalInput(document.getElementById('to').value);
       let rangeDays = 30; if(f && t && t>f){ rangeDays = Math.max(1, Math.round((t - f)/86400)); }
+      // Open a prefilled GitHub issue in a new tab
       const repo = 'Zeroks77/Kret_Dota';
       const title = encodeURIComponent(`Generate user report: ${name} (${aid})`);
       const body = encodeURIComponent(`Please generate a user report.\n\nName: ${name}\nAccountId: ${aid}\nRangeDays: ${rangeDays}\n`);
