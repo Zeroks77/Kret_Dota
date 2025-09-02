@@ -1,9 +1,7 @@
 param(
-  [int]$DelayMs = 1200,
+  [int]$DelayMs = 1000,
   [int]$MaxRetries = 3,
   [int]$HttpTimeoutSec = 30,
-  [bool]$UseHttpClient = $true,
-  [int]$HardRequestTimeoutSec = 45,
   [string]$SteamApiKey,
   [bool]$PromptForSteamKey = $false,
   [object]$UpdateConstants = $true,
@@ -13,9 +11,15 @@ param(
   [object]$UpdateManifest  = $true,     # Rebuild data/manifest.json from shards
   [object]$RequestParse    = $false,    # Request OpenDota parse for up to -MaxParseRequests matches lacking enriched data
   [int]$MaxParseRequests = 50,
+  [int]$ParseAttemptsPerMatch = 0,      # If >0, attempt this many parse requests per match that needs it
+  [int]$ParseDelaySec = 30,             # Delay between parse attempts per match
   [int]$TeamDiscoveryRecentMonths = 2,  # Limit team discovery to the most recent N month shards
   [int]$TeamDiscoveryMaxTeams = 24,     # Cap number of teams to query via team endpoints
   [object]$SanitizeCache   = $false,    # Rewrite cached files to drop image fields that trigger false positives
+  [bool]$DiscoverViaSteam = $true,
+  [bool]$DiscoverViaOpenDota = $true,
+  [bool]$DiscoverViaTeams = $true,
+  [bool]$ForceRefetch = $false,
   [ValidateSet('default','discover','full','sanitize')][string]$Mode = 'default'
 )
 
@@ -40,8 +44,6 @@ $ErrorActionPreference = 'Stop'
 # Ensure TLS 1.2 to avoid handshake glitches
 try{ [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 }catch{}
 
-# Initialize script-scoped HttpClient holder for StrictMode
-$script:__httpClient = $null
 
 function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot\.." | Select-Object -ExpandProperty Path) }
 function Get-DataPath(){ Join-Path (Get-RepoRoot) 'data' }
@@ -51,64 +53,11 @@ function Save-Json([object]$obj,[string]$path){ Ensure-Dir $path; ($obj | Conver
 
 function Get-LeagueId(){ $info = Read-JsonFile (Join-Path (Get-DataPath) 'info.json'); try { return [int]$info.league_id } catch { return 0 } }
 
-function Get-HttpClient(){
-  $client = $null
-  try{ $client = Get-Variable -Name __httpClient -Scope Script -ValueOnly -ErrorAction SilentlyContinue }catch{}
-  if(-not $client){
-    try{
-      $handler = New-Object System.Net.Http.HttpClientHandler
-      $client = [System.Net.Http.HttpClient]::new($handler)
-      $client.Timeout = [TimeSpan]::FromSeconds([double]$HttpTimeoutSec)
-      $client.DefaultRequestHeaders.Accept.Clear() | Out-Null
-      [void]$client.DefaultRequestHeaders.Accept.Add([System.Net.Http.Headers.MediaTypeWithQualityHeaderValue]::new('application/json'))
-      [void]$client.DefaultRequestHeaders.UserAgent.ParseAdd('kret-dota-fetcher/1.0')
-      Set-Variable -Name __httpClient -Scope Script -Value $client -Force | Out-Null
-    } catch {}
-  }
-  return $client
-}
-
 function Invoke-Json([string]$Method,[string]$Uri){
   $backoff = 600
   for($i=1; $i -le $MaxRetries; $i++){
     try {
-      if($UseHttpClient){
-        $client = Get-HttpClient
-        if(-not $client){ throw 'HttpClient initialization failed' }
-        $m = $Method.ToUpperInvariant()
-        $req = [System.Net.Http.HttpRequestMessage]::new([System.Net.Http.HttpMethod]::new($m), $Uri)
-        if($m -eq 'POST' -and -not $req.Content){ $req.Content = New-Object System.Net.Http.StringContent '' }
-        try{
-          $cts = New-Object System.Threading.CancellationTokenSource ([TimeSpan]::FromSeconds([double]$HttpTimeoutSec))
-          $resp = $client.SendAsync($req, $cts.Token).GetAwaiter().GetResult()
-          $resp.EnsureSuccessStatusCode() | Out-Null
-          $txt = $resp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
-          if([string]::IsNullOrWhiteSpace($txt)){ return $null }
-          return ($txt | ConvertFrom-Json)
-        } finally { $req.Dispose() }
-      } else {
-        if($HardRequestTimeoutSec -gt 0){
-          # Run the request in a background job to enforce a hard timeout even if Invoke-RestMethod hangs
-          $sb = {
-            param($Method,$Uri,$HttpTimeoutSec)
-            Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
-          }
-          $job = Start-Job -ScriptBlock $sb -ArgumentList $Method,$Uri,$HttpTimeoutSec
-          try{
-            if(Wait-Job -Job $job -Timeout $HardRequestTimeoutSec){
-              $res = Receive-Job -Job $job -ErrorAction Stop
-              return $res
-            } else {
-              throw ("Hard timeout after {0}s for {1} {2}" -f $HardRequestTimeoutSec, $Method, (Sanitize-Uri $Uri))
-            }
-          } finally {
-            try{ Stop-Job -Job $job -Force -ErrorAction SilentlyContinue | Out-Null }catch{}
-            try{ Remove-Job -Job $job -Force -ErrorAction SilentlyContinue | Out-Null }catch{}
-          }
-        } else {
-          return Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
-        }
-      }
+  return Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
     } catch {
       $logUri = Sanitize-Uri $Uri
       Write-Warning ("HTTP {0} {1} failed (attempt {2}/{3}): {4}" -f $Method, $logUri, $i, $MaxRetries, (Format-HttpError $_))
@@ -169,6 +118,7 @@ function Update-Constants(){
   } catch {
     Write-Warning ("Failed to fetch constants: heroes: {0}" -f (Format-HttpError $_))
   }
+  Start-Sleep -Milliseconds $DelayMs
 
   Write-Host 'Fetching OpenDota constants: patch'
   try{
@@ -509,7 +459,12 @@ function Request-Parse-ForMissing(){
     } catch { $needs=$true }
     if($needs){
       $mid = [int64]$md.match_id
-      try{ Invoke-Json -Method POST -Uri ("https://api.opendota.com/api/request/{0}" -f $mid) | Out-Null; Write-Log ("Requested parse for {0}" -f $mid); $reqs++ } catch { Write-Warning ("Parse request failed for {0}: {1}" -f $mid, $_.Exception.Message) }
+      $attempts = [Math]::Max(1, [int]$ParseAttemptsPerMatch)
+      for($a=1; $a -le $attempts; $a++){
+        if($reqs -ge $MaxParseRequests){ break }
+        try{ Invoke-Json -Method POST -Uri ("https://api.opendota.com/api/request/{0}" -f $mid) | Out-Null; Write-Log ("Requested parse for {0} (attempt {1}/{2})" -f $mid, $a, $attempts); $reqs++ } catch { Write-Warning ("Parse request failed for {0} (attempt {1}): {2}" -f $mid, $a, $_.Exception.Message) }
+        if($a -lt $attempts){ Start-Sleep -Seconds ([int]$ParseDelaySec) }
+      }
       Start-Sleep -Milliseconds $DelayMs
     }
   }
@@ -548,16 +503,18 @@ try{
 if($doConst){ Update-Constants }
 if($doDiscover){
   $ids = @()
-  # Try Steam first (if key present), then merge OpenDota discovery
-  $ids += @(Discover-MatchIdsFromSteam)
-  $ids += @(Discover-MatchIdsFromOpenDota)
-  $ids += @(Discover-MatchIdsFromTeams)
+  # Discover sources based on toggles
+  if($DiscoverViaSteam){ $ids += @(Discover-MatchIdsFromSteam) }
+  if($DiscoverViaOpenDota){ $ids += @(Discover-MatchIdsFromOpenDota) }
+  if($DiscoverViaTeams){ $ids += @(Discover-MatchIdsFromTeams) }
   $ids = $ids | Sort-Object -Unique
   if((($ids | Measure-Object).Count) -gt 0){
     # Ensure we fetch details for any newly discovered IDs
     $data = Get-DataPath
     $cacheDir = Join-Path $data 'cache/OpenDota/matches'
-    $toFetch = @(); foreach($id in $ids){ if(-not (Test-Path -LiteralPath (Join-Path $cacheDir ("{0}.json" -f $id)))){ $toFetch += [int64]$id } }
+    $toFetch = @()
+    if($ForceRefetch){ $toFetch = @($ids | ForEach-Object { [int64]$_ }) }
+    else { foreach($id in $ids){ if(-not (Test-Path -LiteralPath (Join-Path $cacheDir ("{0}.json" -f $id)))){ $toFetch += [int64]$id } } }
     if((($toFetch | Measure-Object).Count) -gt 0){
       Write-Log ("Newly discovered needing fetch: {0}" -f (($toFetch | Measure-Object).Count))
       foreach($mid in ($toFetch | Sort-Object)){
