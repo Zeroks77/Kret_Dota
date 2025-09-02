@@ -1,6 +1,6 @@
 param(
-  [Parameter(Mandatory=$true)][string]$Name,
-  [Parameter(Mandatory=$true)][int]$AccountId,
+  [Parameter(Mandatory=$false)][string]$Name,
+  [Parameter(Mandatory=$false)][long]$AccountId,
   [int]$RangeDays = 30,
   [string]$DocsRoot = "$PSScriptRoot\..\docs",
   [int]$PersistDays = 5,
@@ -108,6 +108,11 @@ if($Cleanup){
 }
 
 # Create new user report
+$needName = [string]::IsNullOrWhiteSpace($Name)
+$needAid = ($AccountId -eq $null -or [string]::IsNullOrWhiteSpace("$AccountId") -or $AccountId -eq 0)
+if($needName -or $needAid){
+  throw "Name and AccountId are required unless -Cleanup is specified. Example: -Name 'Gary-the-Carry' -AccountId 123456789"
+}
 $docs = Get-DocsRoot
 $now = (Get-Date).ToUniversalTime()
 $toUnix = [int][math]::Floor([datetimeoffset]::new($now).ToUnixTimeSeconds())
