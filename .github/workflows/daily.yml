@@ -18,7 +18,7 @@ jobs:
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
-          ./scripts/fetch_opendota_data.ps1 -Mode discover
+          ./scripts/fetch_opendota_data.ps1 -Mode discover -DelayMs 900 -HttpTimeoutSec 30 -UseHttpClient:$false
       - name: Cleanup old user reports (auto-prune)
         shell: pwsh
         run: |

@@ -2,6 +2,9 @@ param(
   [int]$DelayMs = 1200,
   [int]$MaxRetries = 3,
   [int]$HttpTimeoutSec = 30,
+  [bool]$UseHttpClient = $true,
+  [string]$SteamApiKey,
+  [bool]$PromptForSteamKey = $false,
   [object]$UpdateConstants = $true,
   [object]$FetchMatches    = $true,
   [object]$DiscoverMatches = $true,     # Discover league matches (Steam if STEAM_API_KEY present; fallback to OpenDota)
@@ -33,6 +36,12 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# Ensure TLS 1.2 to avoid handshake glitches
+try{ [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 }catch{}
+
+# Initialize script-scoped HttpClient holder for StrictMode
+$script:__httpClient = $null
+
 function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot\.." | Select-Object -ExpandProperty Path) }
 function Get-DataPath(){ Join-Path (Get-RepoRoot) 'data' }
 function Ensure-Dir([string]$path){ $dir=[System.IO.Path]::GetDirectoryName($path); if($dir -and -not (Test-Path -LiteralPath $dir)){ New-Item -ItemType Directory -Path $dir -Force | Out-Null } }
@@ -41,26 +50,47 @@ function Save-Json([object]$obj,[string]$path){ Ensure-Dir $path; ($obj | Conver
 
 function Get-LeagueId(){ $info = Read-JsonFile (Join-Path (Get-DataPath) 'info.json'); try { return [int]$info.league_id } catch { return 0 } }
 
+function Get-HttpClient(){
+  $client = $null
+  try{ $client = Get-Variable -Name __httpClient -Scope Script -ValueOnly -ErrorAction SilentlyContinue }catch{}
+  if(-not $client){
+    try{
+      $handler = New-Object System.Net.Http.HttpClientHandler
+      $client = [System.Net.Http.HttpClient]::new($handler)
+      $client.Timeout = [TimeSpan]::FromSeconds([double]$HttpTimeoutSec)
+      $client.DefaultRequestHeaders.Accept.Clear() | Out-Null
+      [void]$client.DefaultRequestHeaders.Accept.Add([System.Net.Http.Headers.MediaTypeWithQualityHeaderValue]::new('application/json'))
+      [void]$client.DefaultRequestHeaders.UserAgent.ParseAdd('kret-dota-fetcher/1.0')
+      Set-Variable -Name __httpClient -Scope Script -Value $client -Force | Out-Null
+    } catch {}
+  }
+  return $client
+}
+
 function Invoke-Json([string]$Method,[string]$Uri){
   $backoff = 600
   for($i=1; $i -le $MaxRetries; $i++){
     try {
-    $resp = Invoke-Json -Method GET -Uri $uri
-      $job = Start-Job -ScriptBlock {
-        param($Method,$Uri,$Headers,$Timeout)
-        Invoke-RestMethod -Method $Method -Uri $Uri -Headers $Headers -TimeoutSec $Timeout -ErrorAction Stop
-      } -ArgumentList @($Method,$Uri,@{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' },$HttpTimeoutSec)
-      try{
-        if(-not (Wait-Job -Job $job -Timeout $HttpTimeoutSec)){
-          Stop-Job -Job $job -Force | Out-Null
-          throw "HTTP request timed out after $HttpTimeoutSec seconds"
-        }
-        $resp = Receive-Job -Job $job -ErrorAction Stop
-        return $resp
-      } finally {
-        Remove-Job -Job $job -Force -ErrorAction SilentlyContinue | Out-Null
+      if($UseHttpClient){
+        $client = Get-HttpClient
+        if(-not $client){ throw 'HttpClient initialization failed' }
+        $m = $Method.ToUpperInvariant()
+        $req = [System.Net.Http.HttpRequestMessage]::new([System.Net.Http.HttpMethod]::new($m), $Uri)
+        if($m -eq 'POST' -and -not $req.Content){ $req.Content = New-Object System.Net.Http.StringContent '' }
+        try{
+          $cts = New-Object System.Threading.CancellationTokenSource ([TimeSpan]::FromSeconds([double]$HttpTimeoutSec))
+          $resp = $client.SendAsync($req, $cts.Token).GetAwaiter().GetResult()
+          $resp.EnsureSuccessStatusCode() | Out-Null
+          $txt = $resp.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+          if([string]::IsNullOrWhiteSpace($txt)){ return $null }
+          return ($txt | ConvertFrom-Json)
+        } finally { $req.Dispose() }
+      } else {
+        return Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
       }
     } catch {
+      $logUri = Sanitize-Uri $Uri
+      Write-Warning ("HTTP {0} {1} failed (attempt {2}/{3}): {4}" -f $Method, $logUri, $i, $MaxRetries, (Format-HttpError $_))
       if ($i -ge $MaxRetries) { throw }
       Start-Sleep -Milliseconds $backoff
       $backoff = [Math]::Min($backoff*2, 5000)
@@ -255,8 +285,9 @@ function Discover-MatchIdsFromSteam(){
       break
     }
   }
-  $ids = $all.ToArray() | Sort-Object -Unique
-  Write-Log ("Discovered {0} match IDs via Steam" -f $ids.Count)
+  $ids = @($all.ToArray() | Sort-Object -Unique)
+  $cnt = (($ids | Measure-Object).Count)
+  Write-Log ("Discovered {0} match IDs via Steam" -f $cnt)
   return $ids
 }
 
@@ -281,10 +312,7 @@ function Discover-MatchIdsFromOpenDota(){
   Write-Log ("Discovering matches via OpenDota for league_id={0}" -f $leagueId)
   $uri = ("https://api.opendota.com/api/leagues/{0}/matches" -f $leagueId)
   try{
-    $resp = Invoke-Json -Method GET -Uri $uri
-    $logUri = Sanitize-Uri $Uri
-    Write-Warning ("HTTP {0} {1} failed (attempt {2}/{3}): {4}" -f $Method, $logUri, $i, $MaxRetries, (Format-HttpError $_))
-    if ($i -ge $MaxRetries) { throw }
+  $resp = Invoke-Json -Method GET -Uri $uri
     $cut = Get-LatestShardStartTime
     $ids = New-Object System.Collections.Generic.List[int64]
     foreach($m in $resp){
@@ -311,18 +339,18 @@ function Get-KnownTeamIds(){
   $dir = Join-Path $data 'matches'
   $set = New-Object System.Collections.Generic.HashSet[int]
   if(Test-Path -LiteralPath $dir){
-  # Read only the most recent N month shards to keep CI runs fast
-  $files = Get-ChildItem -LiteralPath $dir -Filter '*.json' | Sort-Object Name -Descending
-  if($TeamDiscoveryRecentMonths -gt 0){ $files = $files | Select-Object -First $TeamDiscoveryRecentMonths }
-  foreach($file in $files){
+    # Read only the most recent N month shards to keep CI runs fast
+    $files = Get-ChildItem -LiteralPath $dir -Filter '*.json' | Sort-Object Name -Descending
+    if($TeamDiscoveryRecentMonths -gt 0){ $files = $files | Select-Object -First $TeamDiscoveryRecentMonths }
+    foreach($file in $files){
       try{
-    $arr = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+        $arr = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
         foreach($r in $arr){
           try{ [void]$set.Add([int]$r.radiant_team_id) }catch{}
           try{ [void]$set.Add([int]$r.dire_team_id) }catch{}
         }
       } catch {}
-  }
+    }
   }
   $out = New-Object System.Collections.Generic.List[int]
   foreach($v in $set){ if($v -gt 0){ [void]$out.Add([int]$v) } }
@@ -482,6 +510,19 @@ switch($Mode){
   'full'     { $doDiscover=$true; $doMatches=$true; $doShards=$true; $doManifest=$true; $doParseReq=$true }
   'sanitize' { $doSanitize=$true; $doConst=$false; $doMatches=$false; $doDiscover=$false; $doShards=$false; $doManifest=$false; $doParseReq=$false }
 }
+
+# Optionally set STEAM_API_KEY from parameter or secure prompt
+try{
+  $needKey = [string]::IsNullOrWhiteSpace($env:STEAM_API_KEY)
+  $keyFromParam = if([string]::IsNullOrWhiteSpace($SteamApiKey)) { $null } else { $SteamApiKey }
+  if($keyFromParam){ $env:STEAM_API_KEY = $keyFromParam; Write-Log ("Using STEAM discovery (key length {0})" -f $keyFromParam.Length) }
+  elseif($PromptForSteamKey -and $needKey -and $doDiscover){
+    try{
+      $sec = Read-Host -AsSecureString -Prompt 'Enter STEAM_API_KEY (input hidden)'
+      if($sec){ $k = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec)); if(-not [string]::IsNullOrWhiteSpace($k)){ $env:STEAM_API_KEY = $k; Write-Log ("Using STEAM discovery (key length {0})" -f $k.Length) } }
+    } catch {}
+  }
+} catch {}
 
 if($doConst){ Update-Constants }
 if($doDiscover){
