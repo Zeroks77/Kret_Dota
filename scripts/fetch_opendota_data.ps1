@@ -1,6 +1,7 @@
 param(
   [int]$DelayMs = 1200,
   [int]$MaxRetries = 3,
+  [int]$HttpTimeoutSec = 30,
   [object]$UpdateConstants = $true,
   [object]$FetchMatches    = $true,
   [object]$DiscoverMatches = $true,     # Discover league matches (Steam if STEAM_API_KEY present; fallback to OpenDota)
@@ -44,7 +45,7 @@ function Invoke-Json([string]$Method,[string]$Uri){
   $backoff = 600
   for($i=1; $i -le $MaxRetries; $i++){
     try {
-      $resp = Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -ErrorAction Stop
+  $resp = Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
       return $resp
     } catch {
       if ($i -ge $MaxRetries) { throw }
@@ -453,6 +454,7 @@ if($doDiscover){
       Write-Log ("Newly discovered needing fetch: {0}" -f (($toFetch | Measure-Object).Count))
       foreach($mid in ($toFetch | Sort-Object)){
         try{
+          Write-Log ("Fetching discovered match {0}" -f $mid)
           $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid)
           if($obj){
             $obj = Sanitize-MatchObject $obj
