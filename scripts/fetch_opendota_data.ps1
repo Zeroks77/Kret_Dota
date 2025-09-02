@@ -45,8 +45,21 @@ function Invoke-Json([string]$Method,[string]$Uri){
   $backoff = 600
   for($i=1; $i -le $MaxRetries; $i++){
     try {
-  $resp = Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
-      return $resp
+    $resp = Invoke-Json -Method GET -Uri $uri
+      $job = Start-Job -ScriptBlock {
+        param($Method,$Uri,$Headers,$Timeout)
+        Invoke-RestMethod -Method $Method -Uri $Uri -Headers $Headers -TimeoutSec $Timeout -ErrorAction Stop
+      } -ArgumentList @($Method,$Uri,@{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' },$HttpTimeoutSec)
+      try{
+        if(-not (Wait-Job -Job $job -Timeout $HttpTimeoutSec)){
+          Stop-Job -Job $job -Force | Out-Null
+          throw "HTTP request timed out after $HttpTimeoutSec seconds"
+        }
+        $resp = Receive-Job -Job $job -ErrorAction Stop
+        return $resp
+      } finally {
+        Remove-Job -Job $job -Force -ErrorAction SilentlyContinue | Out-Null
+      }
     } catch {
       if ($i -ge $MaxRetries) { throw }
       Start-Sleep -Milliseconds $backoff
@@ -56,6 +69,28 @@ function Invoke-Json([string]$Method,[string]$Uri){
 }
 
 function Write-Log([string]$msg){ Write-Host $msg }
+function Sanitize-Uri([string]$u){
+  if([string]::IsNullOrWhiteSpace($u)){ return $u }
+  try{ return ($u -replace '(?i)(key=)([^&]+)','$1***') }catch{ return $u }
+}
+
+function Format-HttpError($err){
+  try{
+    $msg = ''
+    try{ $msg = [string]$err.Exception.Message }catch{}
+    $status = $null; $reason = $null
+    try{ if($err.Exception.Response -and $err.Exception.Response.StatusCode){ $status = [int]$err.Exception.Response.StatusCode } }catch{}
+    try{ if($err.Exception.Response -and $err.Exception.Response.StatusDescription){ $reason = [string]$err.Exception.Response.StatusDescription } }catch{}
+    $detail = $null
+    try{ if($err.ErrorDetails -and $err.ErrorDetails.Message){ $detail = ($err.ErrorDetails.Message -replace '\s+',' '); if($detail.Length -gt 300){ $detail = $detail.Substring(0,300)+'…' } } }catch{}
+    $parts = @()
+    if($status){ $parts += ("status="+$status) }
+    if($reason){ $parts += ("reason='"+$reason+"'") }
+    if($msg){ $parts += ("msg='"+$msg+"'") }
+    if($detail){ $parts += ("detail='"+$detail+"'") }
+    return ($parts -join ', ')
+  } catch { return '' }
+}
 
 function To-Bool($v, [bool]$default){
   if($null -eq $v){ return $default }
@@ -77,12 +112,20 @@ function Update-Constants(){
   if(-not (Test-Path -LiteralPath $constDir)){ New-Item -ItemType Directory -Path $constDir -Force | Out-Null }
 
   Write-Host 'Fetching OpenDota constants: heroes'
-  $heroes = Invoke-Json -Method GET -Uri 'https://api.opendota.com/api/constants/heroes'
-  if($heroes){ Save-Json -obj $heroes -path (Join-Path $constDir 'heroes.json'); Set-Content -LiteralPath (Join-Path $data 'heroes.json') -Value (($heroes | ConvertTo-Json -Depth 50)) -Encoding UTF8 }
+  try{
+    $heroes = Invoke-Json -Method GET -Uri 'https://api.opendota.com/api/constants/heroes'
+    if($heroes){ Save-Json -obj $heroes -path (Join-Path $constDir 'heroes.json'); Set-Content -LiteralPath (Join-Path $data 'heroes.json') -Value (($heroes | ConvertTo-Json -Depth 50)) -Encoding UTF8 }
+  } catch {
+    Write-Warning ("Failed to fetch constants: heroes: {0}" -f (Format-HttpError $_))
+  }
 
   Write-Host 'Fetching OpenDota constants: patch'
-  $patch = Invoke-Json -Method GET -Uri 'https://api.opendota.com/api/constants/patch'
-  if($patch){ Save-Json -obj $patch -path (Join-Path $constDir 'patch.json') }
+  try{
+    $patch = Invoke-Json -Method GET -Uri 'https://api.opendota.com/api/constants/patch'
+    if($patch){ Save-Json -obj $patch -path (Join-Path $constDir 'patch.json') }
+  } catch {
+    Write-Warning ("Failed to fetch constants: patch: {0}" -f (Format-HttpError $_))
+  }
 }
 
 function Remove-KeysByName($obj, [string[]]$names){
@@ -176,10 +219,11 @@ function Fetch-MissingMatches(){
     if(Test-Path -LiteralPath $outFile){ continue }
     Write-Host ("[{0}/{1}] Fetching match {2}" -f $i, $ids.Count, $id)
     try {
-  $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $id)
+    $uri = ("https://api.opendota.com/api/matches/{0}" -f $id)
+    $obj = Invoke-Json -Method GET -Uri $uri
   if($obj){ $obj = Sanitize-MatchObject $obj; Save-Json -obj $obj -path $outFile }
     } catch {
-      Write-Warning ("Failed to fetch match {0}: {1}" -f $id, $_.Exception.Message)
+    Write-Warning ("Failed to fetch match {0} (uri={1}): {2}" -f $id, (Sanitize-Uri $uri), (Format-HttpError $_))
     }
     Start-Sleep -Milliseconds $DelayMs
   }
@@ -207,7 +251,7 @@ function Discover-MatchIdsFromSteam(){
       $startAt = [int64]$minId - 1
       Start-Sleep -Milliseconds $DelayMs
     } catch {
-      Write-Warning ("Steam discovery failed on page {0}: {1}" -f $page, $_.Exception.Message)
+      Write-Warning ("Steam discovery failed on page {0} (uri={1}): {2}" -f $page, (Sanitize-Uri $uri), (Format-HttpError $_))
       break
     }
   }
@@ -238,7 +282,9 @@ function Discover-MatchIdsFromOpenDota(){
   $uri = ("https://api.opendota.com/api/leagues/{0}/matches" -f $leagueId)
   try{
     $resp = Invoke-Json -Method GET -Uri $uri
-    if(-not $resp){ return @() }
+    $logUri = Sanitize-Uri $Uri
+    Write-Warning ("HTTP {0} {1} failed (attempt {2}/{3}): {4}" -f $Method, $logUri, $i, $MaxRetries, (Format-HttpError $_))
+    if ($i -ge $MaxRetries) { throw }
     $cut = Get-LatestShardStartTime
     $ids = New-Object System.Collections.Generic.List[int64]
     foreach($m in $resp){
@@ -255,7 +301,7 @@ function Discover-MatchIdsFromOpenDota(){
     Write-Log ("OpenDota discovery returned {0} candidates (cutoff={1})" -f $arr.Count, $cut)
     return $arr
   } catch {
-    Write-Warning ("OpenDota league discovery failed: {0}" -f $_.Exception.Message)
+    Write-Warning ("OpenDota league discovery failed (uri={0}): {1}" -f (Sanitize-Uri $uri), (Format-HttpError $_))
     return @()
   }
 }
@@ -296,13 +342,13 @@ function Discover-MatchIdsFromTeams(){
   $list = New-Object System.Collections.Generic.List[int64]
   foreach($tid in $teamIds){
     $uri = ("https://api.opendota.com/api/teams/{0}/matches" -f $tid)
-    try{
-    $resp = Invoke-Json -Method GET -Uri $uri
+  try{
+  $resp = Invoke-Json -Method GET -Uri $uri
     $resp = @($resp)
     foreach($m in ($resp | Where-Object { $_.leagueid -eq $leagueId })){
         try{ $mid = [int64]$m.match_id; if($mid -gt 0){ [void]$list.Add($mid) } }catch{}
       }
-    } catch { Write-Warning ("Team matches fetch failed for team {0}: {1}" -f $tid, $_.Exception.Message) }
+  } catch { Write-Warning ("Team matches fetch failed for team {0} (uri={1}): {2}" -f $tid, (Sanitize-Uri $uri), (Format-HttpError $_)) }
     Start-Sleep -Milliseconds $DelayMs
   }
   $ids = $list.ToArray() | Sort-Object -Unique
@@ -455,13 +501,14 @@ if($doDiscover){
       foreach($mid in ($toFetch | Sort-Object)){
         try{
           Write-Log ("Fetching discovered match {0}" -f $mid)
-          $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid)
+          $uri = ("https://api.opendota.com/api/matches/{0}" -f $mid)
+          $obj = Invoke-Json -Method GET -Uri $uri
           if($obj){
             $obj = Sanitize-MatchObject $obj
             Save-Json -obj $obj -path (Join-Path $cacheDir ("{0}.json" -f $mid))
             if($doShards){ try{ [void](Ensure-Record-InShard $obj) } catch {} }
           }
-        } catch { Write-Warning ("Fetch failed for {0}: {1}" -f $mid, $_.Exception.Message) }
+        } catch { Write-Warning ("Fetch failed for {0} (uri={1}): {2}" -f $mid, (Sanitize-Uri $uri), (Format-HttpError $_)) }
         Start-Sleep -Milliseconds $DelayMs
       }
       if($doManifest){ Rebuild-Manifest; Ensure-AllGamesParsed }
