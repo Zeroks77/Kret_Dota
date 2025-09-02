@@ -3,9 +3,9 @@ param(
   [int]$MaxRetries = 3,
   [object]$UpdateConstants = $true,
   [object]$FetchMatches    = $true,
-  [object]$DiscoverMatches = $false,    # Discover league matches via Steam if STEAM_API_KEY present
-  [object]$UpdateShards    = $false,    # Write/merge simplified records into data/matches/YYYY-MM.json
-  [object]$UpdateManifest  = $false,    # Rebuild data/manifest.json from shards
+  [object]$DiscoverMatches = $true,     # Discover league matches (Steam if STEAM_API_KEY present; fallback to OpenDota)
+  [object]$UpdateShards    = $true,     # Write/merge simplified records into data/matches/YYYY-MM.json
+  [object]$UpdateManifest  = $true,     # Rebuild data/manifest.json from shards
   [object]$RequestParse    = $false,    # Request OpenDota parse for up to -MaxParseRequests matches lacking enriched data
   [int]$MaxParseRequests = 50,
   [object]$SanitizeCache   = $false,    # Rewrite cached files to drop image fields that trigger false positives
@@ -213,6 +213,94 @@ function Discover-MatchIdsFromSteam(){
   return $ids
 }
 
+function Get-LatestShardStartTime(){
+  $data = Get-DataPath
+  $dir = Join-Path $data 'matches'
+  $latest = 0
+  if(Test-Path -LiteralPath $dir){
+    Get-ChildItem -LiteralPath $dir -Filter '*.json' | ForEach-Object {
+      try{
+        $arr = Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach($r in $arr){ $st = 0; try { $st = [int64]$r.start_time } catch { $st = 0 } if($st -gt $latest){ $latest = $st } }
+      } catch {}
+    }
+  }
+  return [int64]$latest
+}
+
+function Discover-MatchIdsFromOpenDota(){
+  $leagueId = Get-LeagueId
+  if($leagueId -le 0){ return @() }
+  Write-Log ("Discovering matches via OpenDota for league_id={0}" -f $leagueId)
+  $uri = ("https://api.opendota.com/api/leagues/{0}/matches" -f $leagueId)
+  try{
+    $resp = Invoke-Json -Method GET -Uri $uri
+    if(-not $resp){ return @() }
+    $cut = Get-LatestShardStartTime
+    $ids = New-Object System.Collections.Generic.List[int64]
+    foreach($m in $resp){
+      try{
+        $mid = 0; try { $mid = [int64]$m.match_id } catch { $mid = 0 }
+        $st  = 0; try { $st = [int64]$m.start_time } catch { $st = 0 }
+        # If start_time missing, include; otherwise include only newer than cutoff
+        if($mid -gt 0 -and ($st -eq 0 -or $cut -le 0 -or $st -gt $cut)){
+          [void]$ids.Add($mid)
+        }
+      } catch {}
+    }
+    $arr = $ids.ToArray() | Sort-Object -Unique
+    Write-Log ("OpenDota discovery returned {0} candidates (cutoff={1})" -f $arr.Count, $cut)
+    return $arr
+  } catch {
+    Write-Warning ("OpenDota league discovery failed: {0}" -f $_.Exception.Message)
+    return @()
+  }
+}
+
+function Get-KnownTeamIds(){
+  $data = Get-DataPath
+  $dir = Join-Path $data 'matches'
+  $set = New-Object System.Collections.Generic.HashSet[int]
+  if(Test-Path -LiteralPath $dir){
+    Get-ChildItem -LiteralPath $dir -Filter '*.json' | ForEach-Object {
+      try{
+        $arr = Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach($r in $arr){
+          try{ [void]$set.Add([int]$r.radiant_team_id) }catch{}
+          try{ [void]$set.Add([int]$r.dire_team_id) }catch{}
+        }
+      } catch {}
+    }
+  }
+  $out = New-Object System.Collections.Generic.List[int]
+  foreach($v in $set){ if($v -gt 0){ [void]$out.Add([int]$v) } }
+  return $out.ToArray() | Sort-Object -Unique
+}
+
+function Discover-MatchIdsFromTeams(){
+  $leagueId = Get-LeagueId
+  if($leagueId -le 0){ return @() }
+  $teamIds = @(Get-KnownTeamIds)
+  if((($teamIds | Measure-Object).Count) -eq 0){ return @() }
+  Write-Log ("Discovering matches via team endpoints for {0} teams (league_id={1})" -f (($teamIds | Measure-Object).Count), $leagueId)
+  $list = New-Object System.Collections.Generic.List[int64]
+  foreach($tid in $teamIds){
+    $uri = ("https://api.opendota.com/api/teams/{0}/matches" -f $tid)
+    try{
+    $resp = Invoke-Json -Method GET -Uri $uri
+    $resp = @($resp)
+    foreach($m in ($resp | Where-Object { $_.leagueid -eq $leagueId })){
+        try{ $mid = [int64]$m.match_id; if($mid -gt 0){ [void]$list.Add($mid) } }catch{}
+      }
+    } catch { Write-Warning ("Team matches fetch failed for team {0}: {1}" -f $tid, $_.Exception.Message) }
+    Start-Sleep -Milliseconds $DelayMs
+  }
+  $ids = $list.ToArray() | Sort-Object -Unique
+  $idsCount = (($ids | Measure-Object).Count)
+  Write-Log ("Team discovery returned {0} candidates" -f $idsCount)
+  return $ids
+}
+
 function Get-CachedMatchObjects(){
   $data = Get-DataPath
   $dir = Join-Path $data 'cache/OpenDota/matches'
@@ -341,16 +429,44 @@ switch($Mode){
 
 if($doConst){ Update-Constants }
 if($doDiscover){
-  $ids = @(Discover-MatchIdsFromSteam)
+  $ids = @()
+  # Try Steam first (if key present), then merge OpenDota discovery
+  $ids += @(Discover-MatchIdsFromSteam)
+  $ids += @(Discover-MatchIdsFromOpenDota)
+  $ids += @(Discover-MatchIdsFromTeams)
+  $ids = $ids | Sort-Object -Unique
   if((($ids | Measure-Object).Count) -gt 0){
     # Ensure we fetch details for any newly discovered IDs
     $data = Get-DataPath
     $cacheDir = Join-Path $data 'cache/OpenDota/matches'
     $toFetch = @(); foreach($id in $ids){ if(-not (Test-Path -LiteralPath (Join-Path $cacheDir ("{0}.json" -f $id)))){ $toFetch += [int64]$id } }
-    if((($toFetch | Measure-Object).Count) -gt 0){ Write-Log ("Newly discovered needing fetch: {0}" -f (($toFetch | Measure-Object).Count)); foreach($mid in ($toFetch | Sort-Object)){
-  try{ $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid); if($obj){ $obj = Sanitize-MatchObject $obj; Save-Json -obj $obj -path (Join-Path $cacheDir ("{0}.json" -f $mid)) } } catch { Write-Warning ("Fetch failed for {0}: {1}" -f $mid, $_.Exception.Message) }
+    if((($toFetch | Measure-Object).Count) -gt 0){
+      Write-Log ("Newly discovered needing fetch: {0}" -f (($toFetch | Measure-Object).Count))
+      foreach($mid in ($toFetch | Sort-Object)){
+        try{
+          $obj = Invoke-Json -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid)
+          if($obj){
+            $obj = Sanitize-MatchObject $obj
+            Save-Json -obj $obj -path (Join-Path $cacheDir ("{0}.json" -f $mid))
+            if($doShards){ try{ [void](Ensure-Record-InShard $obj) } catch {} }
+          }
+        } catch { Write-Warning ("Fetch failed for {0}: {1}" -f $mid, $_.Exception.Message) }
         Start-Sleep -Milliseconds $DelayMs
       }
+      if($doManifest){ Rebuild-Manifest; Ensure-AllGamesParsed }
+    }
+    # Also ensure shard entries for discovered IDs already in cache
+    $existing = @(); foreach($id in $ids){ if(Test-Path -LiteralPath (Join-Path $cacheDir ("{0}.json" -f $id))){ $existing += [int64]$id } }
+    if((($existing | Measure-Object).Count) -gt 0){
+      Write-Log ("Ensuring shard records for existing cached: {0}" -f (($existing | Measure-Object).Count))
+      foreach($mid in ($existing | Sort-Object)){
+        try{
+          $path = Join-Path $cacheDir ("{0}.json" -f $mid)
+          $obj = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json
+          if($obj){ if($doShards){ try{ [void](Ensure-Record-InShard $obj) } catch {} } }
+        } catch {}
+      }
+      if($doManifest){ Rebuild-Manifest; Ensure-AllGamesParsed }
     }
   }
 }

@@ -13,10 +13,12 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch OpenDota data (constants + matches)
+      - name: Fetch OpenDota data (constants + matches via Steam discovery)
         shell: pwsh
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
-          ./scripts/fetch_opendota_data.ps1
+          ./scripts/fetch_opendota_data.ps1 -Mode discover
       - name: Cleanup old user reports (auto-prune)
         shell: pwsh
         run: |
@@ -28,8 +30,11 @@ jobs:
           git config user.email "github-actions@github.com"
           git add -- data/cache/OpenDota/constants/*.json || true
           git add -- data/cache/OpenDota/matches/*.json || true
+          git add -- data/matches/*.json || true
+          git add -- data/manifest.json || true
+          git add -- data/allgames_parsed.json || true
           git add -- data/heroes.json || true
           git add -- docs/User-Reports || true
           git add -- docs/reports.json || true
-          git commit -m "chore(ci): daily OpenDota fetch + cleanup" || echo "no changes"
+          git commit -m "chore(ci): daily OpenDota fetch (Steam discovery) + cleanup" || echo "no changes"
           git push
