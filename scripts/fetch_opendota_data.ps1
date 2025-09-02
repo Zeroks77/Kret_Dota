@@ -3,6 +3,7 @@ param(
   [int]$MaxRetries = 3,
   [int]$HttpTimeoutSec = 30,
   [bool]$UseHttpClient = $true,
+  [int]$HardRequestTimeoutSec = 45,
   [string]$SteamApiKey,
   [bool]$PromptForSteamKey = $false,
   [object]$UpdateConstants = $true,
@@ -86,7 +87,27 @@ function Invoke-Json([string]$Method,[string]$Uri){
           return ($txt | ConvertFrom-Json)
         } finally { $req.Dispose() }
       } else {
-        return Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
+        if($HardRequestTimeoutSec -gt 0){
+          # Run the request in a background job to enforce a hard timeout even if Invoke-RestMethod hangs
+          $sb = {
+            param($Method,$Uri,$HttpTimeoutSec)
+            Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
+          }
+          $job = Start-Job -ScriptBlock $sb -ArgumentList $Method,$Uri,$HttpTimeoutSec
+          try{
+            if(Wait-Job -Job $job -Timeout $HardRequestTimeoutSec){
+              $res = Receive-Job -Job $job -ErrorAction Stop
+              return $res
+            } else {
+              throw ("Hard timeout after {0}s for {1} {2}" -f $HardRequestTimeoutSec, $Method, (Sanitize-Uri $Uri))
+            }
+          } finally {
+            try{ Stop-Job -Job $job -Force -ErrorAction SilentlyContinue | Out-Null }catch{}
+            try{ Remove-Job -Job $job -Force -ErrorAction SilentlyContinue | Out-Null }catch{}
+          }
+        } else {
+          return Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
+        }
       }
     } catch {
       $logUri = Sanitize-Uri $Uri
@@ -272,11 +293,11 @@ function Discover-MatchIdsFromSteam(){
     if($startAt){ $qs.start_at_match_id = $startAt }
     $uri = $base + '?' + ($qs.GetEnumerator() | ForEach-Object { [uri]::EscapeDataString($_.Name) + '=' + [uri]::EscapeDataString([string]$_.Value) } | Out-String).Trim().Replace("`r`n",'&')
     try{
-      $resp = Invoke-Json -Method GET -Uri $uri
-      $matches = $resp.result.matches
-      if(-not $matches -or $matches.Count -eq 0){ break }
-      foreach($m in $matches){ $all.Add([int64]$m.match_id) | Out-Null }
-      $minId = ($matches | Measure-Object -Property match_id -Minimum).Minimum
+  $resp = Invoke-Json -Method GET -Uri $uri
+  $pageMatches = $resp.result.matches
+  if(-not $pageMatches -or $pageMatches.Count -eq 0){ break }
+  foreach($m in $pageMatches){ $all.Add([int64]$m.match_id) | Out-Null }
+  $minId = ($pageMatches | Measure-Object -Property match_id -Minimum).Minimum
       if(-not $minId){ break }
       $startAt = [int64]$minId - 1
       Start-Sleep -Milliseconds $DelayMs
