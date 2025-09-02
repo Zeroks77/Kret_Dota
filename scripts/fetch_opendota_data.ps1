@@ -8,6 +8,8 @@ param(
   [object]$UpdateManifest  = $true,     # Rebuild data/manifest.json from shards
   [object]$RequestParse    = $false,    # Request OpenDota parse for up to -MaxParseRequests matches lacking enriched data
   [int]$MaxParseRequests = 50,
+  [int]$TeamDiscoveryRecentMonths = 2,  # Limit team discovery to the most recent N month shards
+  [int]$TeamDiscoveryMaxTeams = 24,     # Cap number of teams to query via team endpoints
   [object]$SanitizeCache   = $false,    # Rewrite cached files to drop image fields that trigger false positives
   [ValidateSet('default','discover','full','sanitize')][string]$Mode = 'default'
 )
@@ -262,15 +264,18 @@ function Get-KnownTeamIds(){
   $dir = Join-Path $data 'matches'
   $set = New-Object System.Collections.Generic.HashSet[int]
   if(Test-Path -LiteralPath $dir){
-    Get-ChildItem -LiteralPath $dir -Filter '*.json' | ForEach-Object {
+  # Read only the most recent N month shards to keep CI runs fast
+  $files = Get-ChildItem -LiteralPath $dir -Filter '*.json' | Sort-Object Name -Descending
+  if($TeamDiscoveryRecentMonths -gt 0){ $files = $files | Select-Object -First $TeamDiscoveryRecentMonths }
+  foreach($file in $files){
       try{
-        $arr = Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+    $arr = Get-Content -LiteralPath $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
         foreach($r in $arr){
           try{ [void]$set.Add([int]$r.radiant_team_id) }catch{}
           try{ [void]$set.Add([int]$r.dire_team_id) }catch{}
         }
       } catch {}
-    }
+  }
   }
   $out = New-Object System.Collections.Generic.List[int]
   foreach($v in $set){ if($v -gt 0){ [void]$out.Add([int]$v) } }
@@ -282,6 +287,10 @@ function Discover-MatchIdsFromTeams(){
   if($leagueId -le 0){ return @() }
   $teamIds = @(Get-KnownTeamIds)
   if((($teamIds | Measure-Object).Count) -eq 0){ return @() }
+  # Hard-cap number of teams to query to keep runtime bounded
+  if($TeamDiscoveryMaxTeams -gt 0 -and (($teamIds | Measure-Object).Count) -gt $TeamDiscoveryMaxTeams){
+    $teamIds = $teamIds | Select-Object -First $TeamDiscoveryMaxTeams
+  }
   Write-Log ("Discovering matches via team endpoints for {0} teams (league_id={1})" -f (($teamIds | Measure-Object).Count), $leagueId)
   $list = New-Object System.Collections.Generic.List[int64]
   foreach($tid in $teamIds){
@@ -471,7 +480,11 @@ if($doDiscover){
   }
 }
 if($doMatches){ Fetch-MissingMatches }
-if($doShards){ Get-CachedMatchObjects | ForEach-Object { try { [void](Ensure-Record-InShard $_) } catch {} } }
+# Avoid the expensive full-shard ensure pass during discovery-focused runs; we've already
+# ensured shard entries for newly discovered and existing discovered IDs above.
+if($doShards -and ($Mode -eq 'default' -or $Mode -eq 'full')){
+  Get-CachedMatchObjects | ForEach-Object { try { [void](Ensure-Record-InShard $_) } catch {} }
+}
 if($doManifest){ Rebuild-Manifest; Ensure-AllGamesParsed }
 if($doParseReq){ Request-Parse-ForMissing }
 if($doSanitize){ Sanitize-ExistingCache }
