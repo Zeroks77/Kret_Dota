@@ -1,19 +1,19 @@
 {
-  "updated": 1757820094,
+  "updated": 1757906723,
   "months": [
     {
-      "count": 8,
       "file": "matches/2025-07.json",
+      "count": 8,
       "month": "2025-07"
     },
     {
-      "count": 19,
       "file": "matches/2025-08.json",
+      "count": 19,
       "month": "2025-08"
     },
     {
-      "count": 1,
       "file": "matches/2025-09.json",
+      "count": 1,
       "month": "2025-09"
     }
   ]
