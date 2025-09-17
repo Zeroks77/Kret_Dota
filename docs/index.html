@@ -63,6 +63,10 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
         <summary>👤 User Reports</summary>
         <ul class="children" id="tree-user"></ul>
       </details></li>
+      <li class="node" id="node-league"><details open>
+        <summary>🏆 Leagues</summary>
+        <ul class="children" id="tree-league"></ul>
+      </details></li>
     </ul>
   <div class='sub' style='margin-top:8px;opacity:.9'>Data and imagery powered by <a href='https://www.opendota.com/' target='_blank' rel='noopener'>OpenDota</a>.</div>
   </aside>
@@ -154,12 +158,14 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
       const ulMonthly = document.getElementById('tree-monthly');
       const ulPatch = document.getElementById('tree-patch');
   const ulUser = document.getElementById('tree-user');
-  ulMonthly.innerHTML=''; ulPatch.innerHTML=''; ulUser.innerHTML='';
+  const ulLeague = document.getElementById('tree-league');
+  ulMonthly.innerHTML=''; ulPatch.innerHTML=''; ulUser.innerHTML=''; ulLeague.innerHTML='';
       function safeDate(x){ const t = Date.parse(x?.time||''); return isFinite(t)?t:0; }
 
   const monthly = data.items.filter(it=> (it.group||'').toLowerCase()==='monthly');
   const patch = data.items.filter(it=> (it.group||'').toLowerCase()==='patch');
   const user = data.items.filter(it=> (it.group||'').toLowerCase()==='user');
+  const league = data.items.filter(it=> (it.group||'').toLowerCase()==='league');
 
       // Helper to normalize hrefs coming from reports.json
       function normHref(h){
@@ -216,6 +222,18 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
   const a = document.createElement('a'); a.href = normHref(it.href||'#');
         a.textContent = (it.title && !/^\s*$/.test(it.title)) ? it.title : 'User Report';
         li.appendChild(a); ulUser.appendChild(li);
+      }
+
+      // Build League Reports (sort newest first by time, then sort key)
+      league.sort((a,b)=> {
+        const dt = safeDate(b) - safeDate(a); if (dt!==0) return dt; return String((b.sort||'')).localeCompare(String(a.sort||''));
+      });
+      for(const it of league){
+        const li = document.createElement('li'); li.className='leaf item';
+        li.setAttribute('data-range','league'); li.setAttribute('data-time', String(safeDate(it)));
+        const a = document.createElement('a'); a.href = normHref(it.href||'#');
+        a.textContent = (it.title && !/^\s*$/.test(it.title)) ? it.title : 'League';
+        li.appendChild(a); ulLeague.appendChild(li);
       }
 
       // Refresh clickable leaves and list for navigation

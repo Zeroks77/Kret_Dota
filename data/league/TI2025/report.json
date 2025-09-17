@@ -1,0 +1,1927 @@
+﻿{
+    "league":  {
+                   "from":  1756973096,
+                   "to":  1757887218,
+                   "name":  "The International 2025",
+                   "id":  18324,
+                   "slug":  "TI2025"
+               },
+    "generated":  1758037147,
+    "highlights":  {
+                       "duos":  {
+                                    "safelane":  [
+                                                     {
+                                                         "a":  46,
+                                                         "b":  87,
+                                                         "games":  3,
+                                                         "wins":  2,
+                                                         "winrate":  0.66666666666666663,
+                                                         "a_name":  "Templar Assassin",
+                                                         "b_name":  "Disruptor"
+                                                     },
+                                                     {
+                                                         "a":  87,
+                                                         "b":  69,
+                                                         "games":  4,
+                                                         "wins":  2,
+                                                         "winrate":  0.5,
+                                                         "a_name":  "Disruptor",
+                                                         "b_name":  "Doom"
+                                                     },
+                                                     {
+                                                         "a":  16,
+                                                         "b":  123,
+                                                         "games":  4,
+                                                         "wins":  2,
+                                                         "winrate":  0.5,
+                                                         "a_name":  "Sand King",
+                                                         "b_name":  "Hoodwink"
+                                                     },
+                                                     {
+                                                         "a":  72,
+                                                         "b":  75,
+                                                         "games":  3,
+                                                         "wins":  1,
+                                                         "winrate":  0.33333333333333331,
+                                                         "a_name":  "Gyrocopter",
+                                                         "b_name":  "Silencer"
+                                                     },
+                                                     {
+                                                         "a":  129,
+                                                         "b":  138,
+                                                         "games":  4,
+                                                         "wins":  1,
+                                                         "winrate":  0.25,
+                                                         "a_name":  "Mars",
+                                                         "b_name":  "Muerta"
+                                                     }
+                                                 ],
+                                    "offlane":  [
+                                                    {
+                                                        "a":  96,
+                                                        "b":  128,
+                                                        "games":  3,
+                                                        "wins":  3,
+                                                        "winrate":  1,
+                                                        "a_name":  "Centaur Warrunner",
+                                                        "b_name":  "Snapfire"
+                                                    },
+                                                    {
+                                                        "a":  129,
+                                                        "b":  128,
+                                                        "games":  3,
+                                                        "wins":  3,
+                                                        "winrate":  1,
+                                                        "a_name":  "Mars",
+                                                        "b_name":  "Snapfire"
+                                                    },
+                                                    {
+                                                        "a":  7,
+                                                        "b":  128,
+                                                        "games":  3,
+                                                        "wins":  2,
+                                                        "winrate":  0.66666666666666663,
+                                                        "a_name":  "Earthshaker",
+                                                        "b_name":  "Snapfire"
+                                                    },
+                                                    {
+                                                        "a":  53,
+                                                        "b":  3,
+                                                        "games":  3,
+                                                        "wins":  2,
+                                                        "winrate":  0.66666666666666663,
+                                                        "a_name":  "Nature\u0027s Prophet",
+                                                        "b_name":  "Bane"
+                                                    },
+                                                    {
+                                                        "a":  55,
+                                                        "b":  19,
+                                                        "games":  3,
+                                                        "wins":  2,
+                                                        "winrate":  0.66666666666666663,
+                                                        "a_name":  "Dark Seer",
+                                                        "b_name":  "Tiny"
+                                                    },
+                                                    {
+                                                        "a":  95,
+                                                        "b":  45,
+                                                        "games":  5,
+                                                        "wins":  3,
+                                                        "winrate":  0.6,
+                                                        "a_name":  "Troll Warlord",
+                                                        "b_name":  "Pugna"
+                                                    },
+                                                    {
+                                                        "a":  123,
+                                                        "b":  99,
+                                                        "games":  4,
+                                                        "wins":  2,
+                                                        "winrate":  0.5,
+                                                        "a_name":  "Hoodwink",
+                                                        "b_name":  "Bristleback"
+                                                    },
+                                                    {
+                                                        "a":  41,
+                                                        "b":  87,
+                                                        "games":  5,
+                                                        "wins":  2,
+                                                        "winrate":  0.4,
+                                                        "a_name":  "Faceless Void",
+                                                        "b_name":  "Disruptor"
+                                                    }
+                                                ]
+                                },
+                       "heroes":  {
+                                      "all":  [
+                                                  {
+                                                      "hero_id":  138,
+                                                      "picks":  15,
+                                                      "wins":  7,
+                                                      "winrate":  0.46666666666666667
+                                                  },
+                                                  {
+                                                      "hero_id":  137,
+                                                      "picks":  13,
+                                                      "wins":  7,
+                                                      "winrate":  0.53846153846153844
+                                                  },
+                                                  {
+                                                      "hero_id":  136,
+                                                      "picks":  20,
+                                                      "wins":  10,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  135,
+                                                      "picks":  22,
+                                                      "wins":  7,
+                                                      "winrate":  0.31818181818181818
+                                                  },
+                                                  {
+                                                      "hero_id":  131,
+                                                      "picks":  7,
+                                                      "wins":  2,
+                                                      "winrate":  0.2857142857142857
+                                                  },
+                                                  {
+                                                      "hero_id":  129,
+                                                      "picks":  38,
+                                                      "wins":  20,
+                                                      "winrate":  0.52631578947368418
+                                                  },
+                                                  {
+                                                      "hero_id":  128,
+                                                      "picks":  48,
+                                                      "wins":  26,
+                                                      "winrate":  0.54166666666666663
+                                                  },
+                                                  {
+                                                      "hero_id":  126,
+                                                      "picks":  20,
+                                                      "wins":  12,
+                                                      "winrate":  0.6
+                                                  },
+                                                  {
+                                                      "hero_id":  123,
+                                                      "picks":  39,
+                                                      "wins":  18,
+                                                      "winrate":  0.46153846153846156
+                                                  },
+                                                  {
+                                                      "hero_id":  121,
+                                                      "picks":  8,
+                                                      "wins":  4,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  120,
+                                                      "picks":  20,
+                                                      "wins":  10,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  119,
+                                                      "picks":  5,
+                                                      "wins":  1,
+                                                      "winrate":  0.2
+                                                  },
+                                                  {
+                                                      "hero_id":  114,
+                                                      "picks":  29,
+                                                      "wins":  17,
+                                                      "winrate":  0.58620689655172409
+                                                  },
+                                                  {
+                                                      "hero_id":  112,
+                                                      "picks":  2,
+                                                      "wins":  1,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  111,
+                                                      "picks":  6,
+                                                      "wins":  3,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  110,
+                                                      "picks":  18,
+                                                      "wins":  11,
+                                                      "winrate":  0.61111111111111116
+                                                  },
+                                                  {
+                                                      "hero_id":  109,
+                                                      "picks":  13,
+                                                      "wins":  4,
+                                                      "winrate":  0.30769230769230771
+                                                  },
+                                                  {
+                                                      "hero_id":  108,
+                                                      "picks":  10,
+                                                      "wins":  5,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  107,
+                                                      "picks":  1,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  106,
+                                                      "picks":  12,
+                                                      "wins":  5,
+                                                      "winrate":  0.41666666666666669
+                                                  },
+                                                  {
+                                                      "hero_id":  103,
+                                                      "picks":  10,
+                                                      "wins":  8,
+                                                      "winrate":  0.8
+                                                  },
+                                                  {
+                                                      "hero_id":  102,
+                                                      "picks":  17,
+                                                      "wins":  8,
+                                                      "winrate":  0.47058823529411764
+                                                  },
+                                                  {
+                                                      "hero_id":  100,
+                                                      "picks":  20,
+                                                      "wins":  12,
+                                                      "winrate":  0.6
+                                                  },
+                                                  {
+                                                      "hero_id":  99,
+                                                      "picks":  19,
+                                                      "wins":  10,
+                                                      "winrate":  0.52631578947368418
+                                                  },
+                                                  {
+                                                      "hero_id":  98,
+                                                      "picks":  9,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  97,
+                                                      "picks":  17,
+                                                      "wins":  5,
+                                                      "winrate":  0.29411764705882354
+                                                  },
+                                                  {
+                                                      "hero_id":  96,
+                                                      "picks":  16,
+                                                      "wins":  10,
+                                                      "winrate":  0.625
+                                                  },
+                                                  {
+                                                      "hero_id":  95,
+                                                      "picks":  15,
+                                                      "wins":  11,
+                                                      "winrate":  0.73333333333333328
+                                                  },
+                                                  {
+                                                      "hero_id":  94,
+                                                      "picks":  14,
+                                                      "wins":  9,
+                                                      "winrate":  0.6428571428571429
+                                                  },
+                                                  {
+                                                      "hero_id":  93,
+                                                      "picks":  4,
+                                                      "wins":  3,
+                                                      "winrate":  0.75
+                                                  },
+                                                  {
+                                                      "hero_id":  91,
+                                                      "picks":  2,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  90,
+                                                      "picks":  4,
+                                                      "wins":  2,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  89,
+                                                      "picks":  10,
+                                                      "wins":  6,
+                                                      "winrate":  0.6
+                                                  },
+                                                  {
+                                                      "hero_id":  88,
+                                                      "picks":  3,
+                                                      "wins":  1,
+                                                      "winrate":  0.33333333333333331
+                                                  },
+                                                  {
+                                                      "hero_id":  87,
+                                                      "picks":  53,
+                                                      "wins":  24,
+                                                      "winrate":  0.45283018867924529
+                                                  },
+                                                  {
+                                                      "hero_id":  86,
+                                                      "picks":  6,
+                                                      "wins":  2,
+                                                      "winrate":  0.33333333333333331
+                                                  },
+                                                  {
+                                                      "hero_id":  85,
+                                                      "picks":  21,
+                                                      "wins":  9,
+                                                      "winrate":  0.42857142857142855
+                                                  },
+                                                  {
+                                                      "hero_id":  84,
+                                                      "picks":  8,
+                                                      "wins":  3,
+                                                      "winrate":  0.375
+                                                  },
+                                                  {
+                                                      "hero_id":  82,
+                                                      "picks":  2,
+                                                      "wins":  2,
+                                                      "winrate":  1
+                                                  },
+                                                  {
+                                                      "hero_id":  81,
+                                                      "picks":  1,
+                                                      "wins":  1,
+                                                      "winrate":  1
+                                                  },
+                                                  {
+                                                      "hero_id":  80,
+                                                      "picks":  3,
+                                                      "wins":  2,
+                                                      "winrate":  0.66666666666666663
+                                                  },
+                                                  {
+                                                      "hero_id":  79,
+                                                      "picks":  21,
+                                                      "wins":  13,
+                                                      "winrate":  0.61904761904761907
+                                                  },
+                                                  {
+                                                      "hero_id":  78,
+                                                      "picks":  2,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  77,
+                                                      "picks":  26,
+                                                      "wins":  15,
+                                                      "winrate":  0.57692307692307687
+                                                  },
+                                                  {
+                                                      "hero_id":  75,
+                                                      "picks":  24,
+                                                      "wins":  11,
+                                                      "winrate":  0.45833333333333331
+                                                  },
+                                                  {
+                                                      "hero_id":  74,
+                                                      "picks":  21,
+                                                      "wins":  12,
+                                                      "winrate":  0.5714285714285714
+                                                  },
+                                                  {
+                                                      "hero_id":  73,
+                                                      "picks":  11,
+                                                      "wins":  6,
+                                                      "winrate":  0.54545454545454541
+                                                  },
+                                                  {
+                                                      "hero_id":  72,
+                                                      "picks":  11,
+                                                      "wins":  7,
+                                                      "winrate":  0.63636363636363635
+                                                  },
+                                                  {
+                                                      "hero_id":  71,
+                                                      "picks":  5,
+                                                      "wins":  4,
+                                                      "winrate":  0.8
+                                                  },
+                                                  {
+                                                      "hero_id":  70,
+                                                      "picks":  20,
+                                                      "wins":  14,
+                                                      "winrate":  0.7
+                                                  },
+                                                  {
+                                                      "hero_id":  69,
+                                                      "picks":  21,
+                                                      "wins":  8,
+                                                      "winrate":  0.38095238095238093
+                                                  },
+                                                  {
+                                                      "hero_id":  68,
+                                                      "picks":  5,
+                                                      "wins":  2,
+                                                      "winrate":  0.4
+                                                  },
+                                                  {
+                                                      "hero_id":  67,
+                                                      "picks":  1,
+                                                      "wins":  1,
+                                                      "winrate":  1
+                                                  },
+                                                  {
+                                                      "hero_id":  66,
+                                                      "picks":  12,
+                                                      "wins":  7,
+                                                      "winrate":  0.58333333333333337
+                                                  },
+                                                  {
+                                                      "hero_id":  65,
+                                                      "picks":  21,
+                                                      "wins":  9,
+                                                      "winrate":  0.42857142857142855
+                                                  },
+                                                  {
+                                                      "hero_id":  63,
+                                                      "picks":  8,
+                                                      "wins":  3,
+                                                      "winrate":  0.375
+                                                  },
+                                                  {
+                                                      "hero_id":  62,
+                                                      "picks":  4,
+                                                      "wins":  2,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  61,
+                                                      "picks":  4,
+                                                      "wins":  4,
+                                                      "winrate":  1
+                                                  },
+                                                  {
+                                                      "hero_id":  60,
+                                                      "picks":  6,
+                                                      "wins":  5,
+                                                      "winrate":  0.83333333333333337
+                                                  },
+                                                  {
+                                                      "hero_id":  59,
+                                                      "picks":  1,
+                                                      "wins":  1,
+                                                      "winrate":  1
+                                                  },
+                                                  {
+                                                      "hero_id":  58,
+                                                      "picks":  15,
+                                                      "wins":  8,
+                                                      "winrate":  0.53333333333333333
+                                                  },
+                                                  {
+                                                      "hero_id":  56,
+                                                      "picks":  2,
+                                                      "wins":  1,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  55,
+                                                      "picks":  10,
+                                                      "wins":  5,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  54,
+                                                      "picks":  6,
+                                                      "wins":  4,
+                                                      "winrate":  0.66666666666666663
+                                                  },
+                                                  {
+                                                      "hero_id":  53,
+                                                      "picks":  27,
+                                                      "wins":  11,
+                                                      "winrate":  0.40740740740740738
+                                                  },
+                                                  {
+                                                      "hero_id":  52,
+                                                      "picks":  16,
+                                                      "wins":  9,
+                                                      "winrate":  0.5625
+                                                  },
+                                                  {
+                                                      "hero_id":  51,
+                                                      "picks":  20,
+                                                      "wins":  10,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  50,
+                                                      "picks":  2,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  49,
+                                                      "picks":  14,
+                                                      "wins":  6,
+                                                      "winrate":  0.42857142857142855
+                                                  },
+                                                  {
+                                                      "hero_id":  48,
+                                                      "picks":  3,
+                                                      "wins":  1,
+                                                      "winrate":  0.33333333333333331
+                                                  },
+                                                  {
+                                                      "hero_id":  46,
+                                                      "picks":  24,
+                                                      "wins":  11,
+                                                      "winrate":  0.45833333333333331
+                                                  },
+                                                  {
+                                                      "hero_id":  45,
+                                                      "picks":  40,
+                                                      "wins":  18,
+                                                      "winrate":  0.45
+                                                  },
+                                                  {
+                                                      "hero_id":  43,
+                                                      "picks":  2,
+                                                      "wins":  1,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  41,
+                                                      "picks":  16,
+                                                      "wins":  7,
+                                                      "winrate":  0.4375
+                                                  },
+                                                  {
+                                                      "hero_id":  39,
+                                                      "picks":  22,
+                                                      "wins":  14,
+                                                      "winrate":  0.63636363636363635
+                                                  },
+                                                  {
+                                                      "hero_id":  38,
+                                                      "picks":  22,
+                                                      "wins":  10,
+                                                      "winrate":  0.45454545454545453
+                                                  },
+                                                  {
+                                                      "hero_id":  37,
+                                                      "picks":  16,
+                                                      "wins":  8,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  36,
+                                                      "picks":  1,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  35,
+                                                      "picks":  2,
+                                                      "wins":  2,
+                                                      "winrate":  1
+                                                  },
+                                                  {
+                                                      "hero_id":  34,
+                                                      "picks":  6,
+                                                      "wins":  3,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  33,
+                                                      "picks":  12,
+                                                      "wins":  8,
+                                                      "winrate":  0.66666666666666663
+                                                  },
+                                                  {
+                                                      "hero_id":  29,
+                                                      "picks":  2,
+                                                      "wins":  2,
+                                                      "winrate":  1
+                                                  },
+                                                  {
+                                                      "hero_id":  28,
+                                                      "picks":  7,
+                                                      "wins":  3,
+                                                      "winrate":  0.42857142857142855
+                                                  },
+                                                  {
+                                                      "hero_id":  27,
+                                                      "picks":  15,
+                                                      "wins":  6,
+                                                      "winrate":  0.4
+                                                  },
+                                                  {
+                                                      "hero_id":  26,
+                                                      "picks":  6,
+                                                      "wins":  3,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  23,
+                                                      "picks":  3,
+                                                      "wins":  1,
+                                                      "winrate":  0.33333333333333331
+                                                  },
+                                                  {
+                                                      "hero_id":  22,
+                                                      "picks":  5,
+                                                      "wins":  3,
+                                                      "winrate":  0.6
+                                                  },
+                                                  {
+                                                      "hero_id":  21,
+                                                      "picks":  7,
+                                                      "wins":  3,
+                                                      "winrate":  0.42857142857142855
+                                                  },
+                                                  {
+                                                      "hero_id":  20,
+                                                      "picks":  1,
+                                                      "wins":  1,
+                                                      "winrate":  1
+                                                  },
+                                                  {
+                                                      "hero_id":  19,
+                                                      "picks":  18,
+                                                      "wins":  9,
+                                                      "winrate":  0.5
+                                                  },
+                                                  {
+                                                      "hero_id":  18,
+                                                      "picks":  22,
+                                                      "wins":  9,
+                                                      "winrate":  0.40909090909090912
+                                                  },
+                                                  {
+                                                      "hero_id":  17,
+                                                      "picks":  20,
+                                                      "wins":  5,
+                                                      "winrate":  0.25
+                                                  },
+                                                  {
+                                                      "hero_id":  16,
+                                                      "picks":  32,
+                                                      "wins":  15,
+                                                      "winrate":  0.46875
+                                                  },
+                                                  {
+                                                      "hero_id":  15,
+                                                      "picks":  2,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  14,
+                                                      "picks":  5,
+                                                      "wins":  3,
+                                                      "winrate":  0.6
+                                                  },
+                                                  {
+                                                      "hero_id":  13,
+                                                      "picks":  35,
+                                                      "wins":  16,
+                                                      "winrate":  0.45714285714285713
+                                                  },
+                                                  {
+                                                      "hero_id":  12,
+                                                      "picks":  2,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  11,
+                                                      "picks":  28,
+                                                      "wins":  15,
+                                                      "winrate":  0.5357142857142857
+                                                  },
+                                                  {
+                                                      "hero_id":  10,
+                                                      "picks":  13,
+                                                      "wins":  6,
+                                                      "winrate":  0.46153846153846156
+                                                  },
+                                                  {
+                                                      "hero_id":  9,
+                                                      "picks":  5,
+                                                      "wins":  2,
+                                                      "winrate":  0.4
+                                                  },
+                                                  {
+                                                      "hero_id":  8,
+                                                      "picks":  5,
+                                                      "wins":  2,
+                                                      "winrate":  0.4
+                                                  },
+                                                  {
+                                                      "hero_id":  7,
+                                                      "picks":  41,
+                                                      "wins":  22,
+                                                      "winrate":  0.53658536585365857
+                                                  },
+                                                  {
+                                                      "hero_id":  5,
+                                                      "picks":  1,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  4,
+                                                      "picks":  2,
+                                                      "wins":  2,
+                                                      "winrate":  1
+                                                  },
+                                                  {
+                                                      "hero_id":  3,
+                                                      "picks":  42,
+                                                      "wins":  23,
+                                                      "winrate":  0.54761904761904767
+                                                  },
+                                                  {
+                                                      "hero_id":  2,
+                                                      "picks":  8,
+                                                      "wins":  3,
+                                                      "winrate":  0.375
+                                                  },
+                                                  {
+                                                      "hero_id":  1,
+                                                      "picks":  11,
+                                                      "wins":  7,
+                                                      "winrate":  0.63636363636363635
+                                                  },
+                                                  {
+                                                      "hero_id":  6,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  25,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  30,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  31,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  32,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  40,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  42,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  44,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  47,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  57,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  64,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  76,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  83,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  92,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  101,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  104,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  105,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  113,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  },
+                                                  {
+                                                      "hero_id":  145,
+                                                      "picks":  0,
+                                                      "wins":  0,
+                                                      "winrate":  0
+                                                  }
+                                              ],
+                                      "worst":  [
+                                                    {
+                                                        "hero_id":  98,
+                                                        "picks":  9,
+                                                        "wins":  0,
+                                                        "winrate":  0
+                                                    },
+                                                    {
+                                                        "hero_id":  119,
+                                                        "picks":  5,
+                                                        "wins":  1,
+                                                        "winrate":  0.2
+                                                    },
+                                                    {
+                                                        "hero_id":  17,
+                                                        "picks":  20,
+                                                        "wins":  5,
+                                                        "winrate":  0.25
+                                                    },
+                                                    {
+                                                        "hero_id":  131,
+                                                        "picks":  7,
+                                                        "wins":  2,
+                                                        "winrate":  0.2857142857142857
+                                                    },
+                                                    {
+                                                        "hero_id":  97,
+                                                        "picks":  17,
+                                                        "wins":  5,
+                                                        "winrate":  0.29411764705882354
+                                                    },
+                                                    {
+                                                        "hero_id":  109,
+                                                        "picks":  13,
+                                                        "wins":  4,
+                                                        "winrate":  0.30769230769230771
+                                                    },
+                                                    {
+                                                        "hero_id":  135,
+                                                        "picks":  22,
+                                                        "wins":  7,
+                                                        "winrate":  0.31818181818181818
+                                                    },
+                                                    {
+                                                        "hero_id":  86,
+                                                        "picks":  6,
+                                                        "wins":  2,
+                                                        "winrate":  0.33333333333333331
+                                                    },
+                                                    {
+                                                        "hero_id":  63,
+                                                        "picks":  8,
+                                                        "wins":  3,
+                                                        "winrate":  0.375
+                                                    },
+                                                    {
+                                                        "hero_id":  84,
+                                                        "picks":  8,
+                                                        "wins":  3,
+                                                        "winrate":  0.375
+                                                    }
+                                                ],
+                                      "best":  [
+                                                   {
+                                                       "hero_id":  60,
+                                                       "picks":  6,
+                                                       "wins":  5,
+                                                       "winrate":  0.83333333333333337
+                                                   },
+                                                   {
+                                                       "hero_id":  103,
+                                                       "picks":  10,
+                                                       "wins":  8,
+                                                       "winrate":  0.8
+                                                   },
+                                                   {
+                                                       "hero_id":  71,
+                                                       "picks":  5,
+                                                       "wins":  4,
+                                                       "winrate":  0.8
+                                                   },
+                                                   {
+                                                       "hero_id":  95,
+                                                       "picks":  15,
+                                                       "wins":  11,
+                                                       "winrate":  0.73333333333333328
+                                                   },
+                                                   {
+                                                       "hero_id":  70,
+                                                       "picks":  20,
+                                                       "wins":  14,
+                                                       "winrate":  0.7
+                                                   },
+                                                   {
+                                                       "hero_id":  33,
+                                                       "picks":  12,
+                                                       "wins":  8,
+                                                       "winrate":  0.66666666666666663
+                                                   },
+                                                   {
+                                                       "hero_id":  54,
+                                                       "picks":  6,
+                                                       "wins":  4,
+                                                       "winrate":  0.66666666666666663
+                                                   },
+                                                   {
+                                                       "hero_id":  94,
+                                                       "picks":  14,
+                                                       "wins":  9,
+                                                       "winrate":  0.6428571428571429
+                                                   },
+                                                   {
+                                                       "hero_id":  39,
+                                                       "picks":  22,
+                                                       "wins":  14,
+                                                       "winrate":  0.63636363636363635
+                                                   },
+                                                   {
+                                                       "hero_id":  1,
+                                                       "picks":  11,
+                                                       "wins":  7,
+                                                       "winrate":  0.63636363636363635
+                                                   }
+                                               ]
+                                  },
+                       "wards":  {
+                                     "allSpots":  [
+
+                                                  ],
+                                     "mostDewards":  [
+
+                                                     ],
+                                     "worstSpots":  [
+
+                                                    ],
+                                     "bestSpots":  [
+
+                                                   ]
+                                 },
+                       "players":  {
+                                       "all":  [
+                                                   {
+                                                       "account_id":  321580662,
+                                                       "name":  "[TSpirit] Yatoro",
+                                                       "games":  14,
+                                                       "wins":  5,
+                                                       "losses":  9,
+                                                       "winrate":  0.35714285714285715
+                                                   },
+                                                   {
+                                                       "account_id":  152168157,
+                                                       "name":  "[NGX] OmaR",
+                                                       "games":  24,
+                                                       "wins":  11,
+                                                       "losses":  13,
+                                                       "winrate":  0.45833333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  101356886,
+                                                       "name":  "[NGX] GH",
+                                                       "games":  24,
+                                                       "wins":  11,
+                                                       "losses":  13,
+                                                       "winrate":  0.45833333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  317880638,
+                                                       "name":  "[BB] Save-",
+                                                       "games":  23,
+                                                       "wins":  14,
+                                                       "losses":  9,
+                                                       "winrate":  0.60869565217391308
+                                                   },
+                                                   {
+                                                       "account_id":  111114687,
+                                                       "name":  "[TT] y`",
+                                                       "games":  16,
+                                                       "wins":  8,
+                                                       "losses":  8,
+                                                       "winrate":  0.5
+                                                   },
+                                                   {
+                                                       "account_id":  392565237,
+                                                       "name":  "[BOOM] JACKBOYS",
+                                                       "games":  12,
+                                                       "wins":  4,
+                                                       "losses":  8,
+                                                       "winrate":  0.33333333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  201358612,
+                                                       "name":  "[Liquid] Nisha",
+                                                       "games":  16,
+                                                       "wins":  7,
+                                                       "losses":  9,
+                                                       "winrate":  0.4375
+                                                   },
+                                                   {
+                                                       "account_id":  157475523,
+                                                       "name":  "[XG] XinQ",
+                                                       "games":  26,
+                                                       "wins":  18,
+                                                       "losses":  8,
+                                                       "winrate":  0.69230769230769229
+                                                   },
+                                                   {
+                                                       "account_id":  835864135,
+                                                       "name":  "[NAVI] pma",
+                                                       "games":  13,
+                                                       "wins":  5,
+                                                       "losses":  8,
+                                                       "winrate":  0.38461538461538464
+                                                   },
+                                                   {
+                                                       "account_id":  124801257,
+                                                       "name":  "[Aurora] Nightfall",
+                                                       "games":  13,
+                                                       "wins":  7,
+                                                       "losses":  6,
+                                                       "winrate":  0.53846153846153844
+                                                   },
+                                                   {
+                                                       "account_id":  256156323,
+                                                       "name":  "[Aurora] Mira",
+                                                       "games":  13,
+                                                       "wins":  7,
+                                                       "losses":  6,
+                                                       "winrate":  0.53846153846153844
+                                                   },
+                                                   {
+                                                       "account_id":  131303632,
+                                                       "name":  "[Heroic] 4nalog丶01",
+                                                       "games":  19,
+                                                       "wins":  11,
+                                                       "losses":  8,
+                                                       "winrate":  0.57894736842105265
+                                                   },
+                                                   {
+                                                       "account_id":  1044002267,
+                                                       "name":  "[PV] Satanic",
+                                                       "games":  23,
+                                                       "wins":  15,
+                                                       "losses":  8,
+                                                       "winrate":  0.65217391304347827
+                                                   },
+                                                   {
+                                                       "account_id":  160119017,
+                                                       "name":  "Fayde",
+                                                       "games":  13,
+                                                       "wins":  4,
+                                                       "losses":  9,
+                                                       "winrate":  0.30769230769230771
+                                                   },
+                                                   {
+                                                       "account_id":  113331514,
+                                                       "name":  "[TSpirit] Miposhka",
+                                                       "games":  14,
+                                                       "wins":  5,
+                                                       "losses":  9,
+                                                       "winrate":  0.35714285714285715
+                                                   },
+                                                   {
+                                                       "account_id":  77490514,
+                                                       "name":  "[Liquid] Boxi",
+                                                       "games":  16,
+                                                       "wins":  7,
+                                                       "losses":  9,
+                                                       "winrate":  0.4375
+                                                   },
+                                                   {
+                                                       "account_id":  164532005,
+                                                       "name":  "[BOOM] Armel",
+                                                       "games":  12,
+                                                       "wins":  4,
+                                                       "losses":  8,
+                                                       "winrate":  0.33333333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  331855530,
+                                                       "name":  "[BB] Pure",
+                                                       "games":  23,
+                                                       "wins":  14,
+                                                       "losses":  9,
+                                                       "winrate":  0.60869565217391308
+                                                   },
+                                                   {
+                                                       "account_id":  81306398,
+                                                       "name":  "[Heroic] KingJungles",
+                                                       "games":  19,
+                                                       "wins":  11,
+                                                       "losses":  8,
+                                                       "winrate":  0.57894736842105265
+                                                   },
+                                                   {
+                                                       "account_id":  898754153,
+                                                       "name":  "[XG] Ame",
+                                                       "games":  26,
+                                                       "wins":  18,
+                                                       "losses":  8,
+                                                       "winrate":  0.69230769230769229
+                                                   },
+                                                   {
+                                                       "account_id":  90423751,
+                                                       "name":  "Bignum",
+                                                       "games":  13,
+                                                       "wins":  4,
+                                                       "losses":  9,
+                                                       "winrate":  0.30769230769230771
+                                                   },
+                                                   {
+                                                       "account_id":  957204049,
+                                                       "name":  "[NAVI] gotthejuice",
+                                                       "games":  13,
+                                                       "wins":  5,
+                                                       "losses":  8,
+                                                       "winrate":  0.38461538461538464
+                                                   },
+                                                   {
+                                                       "account_id":  132309493,
+                                                       "name":  "[NMSS] raven",
+                                                       "games":  10,
+                                                       "wins":  2,
+                                                       "losses":  8,
+                                                       "winrate":  0.2
+                                                   },
+                                                   {
+                                                       "account_id":  86698277,
+                                                       "name":  "[Tundra] 33",
+                                                       "games":  21,
+                                                       "wins":  8,
+                                                       "losses":  13,
+                                                       "winrate":  0.38095238095238093
+                                                   },
+                                                   {
+                                                       "account_id":  100471531,
+                                                       "name":  "[BOOM] Jabz",
+                                                       "games":  12,
+                                                       "wins":  4,
+                                                       "losses":  8,
+                                                       "winrate":  0.33333333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  139031324,
+                                                       "name":  "[YB] Beyond",
+                                                       "games":  16,
+                                                       "wins":  6,
+                                                       "losses":  10,
+                                                       "winrate":  0.375
+                                                   },
+                                                   {
+                                                       "account_id":  54580962,
+                                                       "name":  "[Liquid] Insania",
+                                                       "games":  16,
+                                                       "wins":  7,
+                                                       "losses":  9,
+                                                       "winrate":  0.4375
+                                                   },
+                                                   {
+                                                       "account_id":  183719386,
+                                                       "name":  "[FLCN] AMMAR_THE_F",
+                                                       "games":  29,
+                                                       "wins":  19,
+                                                       "losses":  10,
+                                                       "winrate":  0.65517241379310343
+                                                   },
+                                                   {
+                                                       "account_id":  140288368,
+                                                       "name":  "[Tundra] Tobi",
+                                                       "games":  21,
+                                                       "wins":  8,
+                                                       "losses":  13,
+                                                       "winrate":  0.38095238095238093
+                                                   },
+                                                   {
+                                                       "account_id":  157989498,
+                                                       "name":  "[Heroic] Scofield",
+                                                       "games":  19,
+                                                       "wins":  11,
+                                                       "losses":  8,
+                                                       "winrate":  0.57894736842105265
+                                                   },
+                                                   {
+                                                       "account_id":  111030315,
+                                                       "name":  "[NAVI] KG_Zayac",
+                                                       "games":  13,
+                                                       "wins":  5,
+                                                       "losses":  8,
+                                                       "winrate":  0.38461538461538464
+                                                   },
+                                                   {
+                                                       "account_id":  101259972,
+                                                       "name":  "[YB] Oli~",
+                                                       "games":  16,
+                                                       "wins":  6,
+                                                       "losses":  10,
+                                                       "winrate":  0.375
+                                                   },
+                                                   {
+                                                       "account_id":  168028715,
+                                                       "name":  "[YB] flyfly",
+                                                       "games":  16,
+                                                       "wins":  6,
+                                                       "losses":  10,
+                                                       "winrate":  0.375
+                                                   },
+                                                   {
+                                                       "account_id":  219755398,
+                                                       "name":  "[NMSS] Jîng",
+                                                       "games":  10,
+                                                       "wins":  2,
+                                                       "losses":  8,
+                                                       "winrate":  0.2
+                                                   },
+                                                   {
+                                                       "account_id":  100598959,
+                                                       "name":  "[NMSS] Erice",
+                                                       "games":  10,
+                                                       "wins":  2,
+                                                       "losses":  8,
+                                                       "winrate":  0.2
+                                                   },
+                                                   {
+                                                       "account_id":  155494381,
+                                                       "name":  "[BOOM] TIMS",
+                                                       "games":  12,
+                                                       "wins":  4,
+                                                       "losses":  8,
+                                                       "winrate":  0.33333333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  480412663,
+                                                       "name":  "[BB] gpk~",
+                                                       "games":  23,
+                                                       "wins":  14,
+                                                       "losses":  9,
+                                                       "winrate":  0.60869565217391308
+                                                   },
+                                                   {
+                                                       "account_id":  106305042,
+                                                       "name":  "[TSpirit] Larl",
+                                                       "games":  14,
+                                                       "wins":  5,
+                                                       "losses":  9,
+                                                       "winrate":  0.35714285714285715
+                                                   },
+                                                   {
+                                                       "account_id":  164199202,
+                                                       "name":  "[PV] 9Class",
+                                                       "games":  23,
+                                                       "wins":  15,
+                                                       "losses":  8,
+                                                       "winrate":  0.65217391304347827
+                                                   },
+                                                   {
+                                                       "account_id":  431770905,
+                                                       "name":  "[Aurora] TORONTOTOKYO",
+                                                       "games":  13,
+                                                       "wins":  7,
+                                                       "losses":  6,
+                                                       "winrate":  0.53846153846153844
+                                                   },
+                                                   {
+                                                       "account_id":  130991304,
+                                                       "name":  "[NAVI] Riddys",
+                                                       "games":  13,
+                                                       "wins":  5,
+                                                       "losses":  8,
+                                                       "winrate":  0.38461538461538464
+                                                   },
+                                                   {
+                                                       "account_id":  320252024,
+                                                       "name":  "[TT] shiro",
+                                                       "games":  16,
+                                                       "wins":  8,
+                                                       "losses":  8,
+                                                       "winrate":  0.5
+                                                   },
+                                                   {
+                                                       "account_id":  126212866,
+                                                       "name":  "[Liquid] Saberlight",
+                                                       "games":  16,
+                                                       "wins":  7,
+                                                       "losses":  9,
+                                                       "winrate":  0.4375
+                                                   },
+                                                   {
+                                                       "account_id":  898455820,
+                                                       "name":  "[FLCN] Malr1ne",
+                                                       "games":  29,
+                                                       "wins":  19,
+                                                       "losses":  10,
+                                                       "winrate":  0.65517241379310343
+                                                   },
+                                                   {
+                                                       "account_id":  847565596,
+                                                       "name":  "[TSpirit] rue",
+                                                       "games":  14,
+                                                       "wins":  5,
+                                                       "losses":  9,
+                                                       "winrate":  0.35714285714285715
+                                                   },
+                                                   {
+                                                       "account_id":  10366616,
+                                                       "name":  "[FLCN] Sneyking",
+                                                       "games":  29,
+                                                       "wins":  19,
+                                                       "losses":  10,
+                                                       "winrate":  0.65517241379310343
+                                                   },
+                                                   {
+                                                       "account_id":  104512126,
+                                                       "name":  "[NMSS] Mac",
+                                                       "games":  10,
+                                                       "wins":  2,
+                                                       "losses":  8,
+                                                       "winrate":  0.2
+                                                   },
+                                                   {
+                                                       "account_id":  196878136,
+                                                       "name":  "[BB] Kataomi`",
+                                                       "games":  23,
+                                                       "wins":  14,
+                                                       "losses":  9,
+                                                       "winrate":  0.60869565217391308
+                                                   },
+                                                   {
+                                                       "account_id":  94296097,
+                                                       "name":  "[XG] xNova",
+                                                       "games":  26,
+                                                       "wins":  18,
+                                                       "losses":  8,
+                                                       "winrate":  0.69230769230769229
+                                                   },
+                                                   {
+                                                       "account_id":  103735745,
+                                                       "name":  "[Tundra] Saksa",
+                                                       "games":  21,
+                                                       "wins":  8,
+                                                       "losses":  13,
+                                                       "winrate":  0.38095238095238093
+                                                   },
+                                                   {
+                                                       "account_id":  150961567,
+                                                       "name":  "[TT] planet",
+                                                       "games":  16,
+                                                       "wins":  8,
+                                                       "losses":  8,
+                                                       "winrate":  0.5
+                                                   },
+                                                   {
+                                                       "account_id":  100058342,
+                                                       "name":  "[FLCN] skiter",
+                                                       "games":  29,
+                                                       "wins":  19,
+                                                       "losses":  10,
+                                                       "winrate":  0.65517241379310343
+                                                   },
+                                                   {
+                                                       "account_id":  302214028,
+                                                       "name":  "[TSpirit] Collapse",
+                                                       "games":  14,
+                                                       "wins":  5,
+                                                       "losses":  9,
+                                                       "winrate":  0.35714285714285715
+                                                   },
+                                                   {
+                                                       "account_id":  25907144,
+                                                       "name":  "[FLCN] Cr1t-",
+                                                       "games":  29,
+                                                       "wins":  19,
+                                                       "losses":  10,
+                                                       "winrate":  0.65517241379310343
+                                                   },
+                                                   {
+                                                       "account_id":  173978074,
+                                                       "name":  "[TT] NothingToSay",
+                                                       "games":  16,
+                                                       "wins":  8,
+                                                       "losses":  8,
+                                                       "winrate":  0.5
+                                                   },
+                                                   {
+                                                       "account_id":  73401082,
+                                                       "name":  "[PV] Dukalis",
+                                                       "games":  23,
+                                                       "wins":  15,
+                                                       "losses":  8,
+                                                       "winrate":  0.65217391304347827
+                                                   },
+                                                   {
+                                                       "account_id":  140297552,
+                                                       "name":  "[NGX] No!ob™",
+                                                       "games":  24,
+                                                       "wins":  11,
+                                                       "losses":  13,
+                                                       "winrate":  0.45833333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  154974246,
+                                                       "name":  "[4A] RCY",
+                                                       "games":  13,
+                                                       "wins":  4,
+                                                       "losses":  9,
+                                                       "winrate":  0.30769230769230771
+                                                   },
+                                                   {
+                                                       "account_id":  858106446,
+                                                       "name":  "[Aurora] kiyotaka",
+                                                       "games":  13,
+                                                       "wins":  7,
+                                                       "losses":  6,
+                                                       "winrate":  0.53846153846153844
+                                                   },
+                                                   {
+                                                       "account_id":  56351509,
+                                                       "name":  "[PV] DM",
+                                                       "games":  23,
+                                                       "wins":  15,
+                                                       "losses":  8,
+                                                       "winrate":  0.65217391304347827
+                                                   },
+                                                   {
+                                                       "account_id":  137129583,
+                                                       "name":  "[XG] Xm",
+                                                       "games":  26,
+                                                       "wins":  18,
+                                                       "losses":  8,
+                                                       "winrate":  0.69230769230769229
+                                                   },
+                                                   {
+                                                       "account_id":  81475303,
+                                                       "name":  "Yamsun",
+                                                       "games":  13,
+                                                       "wins":  4,
+                                                       "losses":  9,
+                                                       "winrate":  0.30769230769230771
+                                                   },
+                                                   {
+                                                       "account_id":  330534326,
+                                                       "name":  "[NMSS] Akashi",
+                                                       "games":  10,
+                                                       "wins":  2,
+                                                       "losses":  8,
+                                                       "winrate":  0.2
+                                                   },
+                                                   {
+                                                       "account_id":  93618577,
+                                                       "name":  "[Tundra] bzm",
+                                                       "games":  21,
+                                                       "wins":  8,
+                                                       "losses":  13,
+                                                       "winrate":  0.38095238095238093
+                                                   },
+                                                   {
+                                                       "account_id":  108958769,
+                                                       "name":  "[Aurora] panto",
+                                                       "games":  13,
+                                                       "wins":  7,
+                                                       "losses":  6,
+                                                       "winrate":  0.53846153846153844
+                                                   },
+                                                   {
+                                                       "account_id":  111620041,
+                                                       "name":  "[NGX] SumaiL-",
+                                                       "games":  24,
+                                                       "wins":  11,
+                                                       "losses":  13,
+                                                       "winrate":  0.45833333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  152962063,
+                                                       "name":  "[Liquid] m1CKe",
+                                                       "games":  16,
+                                                       "wins":  7,
+                                                       "losses":  9,
+                                                       "winrate":  0.4375
+                                                   },
+                                                   {
+                                                       "account_id":  191362875,
+                                                       "name":  "[WC] Speeed",
+                                                       "games":  13,
+                                                       "wins":  4,
+                                                       "losses":  9,
+                                                       "winrate":  0.30769230769230771
+                                                   },
+                                                   {
+                                                       "account_id":  202217968,
+                                                       "name":  "[YB] Emo",
+                                                       "games":  16,
+                                                       "wins":  6,
+                                                       "losses":  10,
+                                                       "winrate":  0.375
+                                                   },
+                                                   {
+                                                       "account_id":  207829314,
+                                                       "name":  "[YB] BoBoKa",
+                                                       "games":  16,
+                                                       "wins":  6,
+                                                       "losses":  10,
+                                                       "winrate":  0.375
+                                                   },
+                                                   {
+                                                       "account_id":  129958758,
+                                                       "name":  "[XG] Xxs",
+                                                       "games":  26,
+                                                       "wins":  18,
+                                                       "losses":  8,
+                                                       "winrate":  0.69230769230769229
+                                                   },
+                                                   {
+                                                       "account_id":  185590374,
+                                                       "name":  "[NAVI] Niku",
+                                                       "games":  13,
+                                                       "wins":  5,
+                                                       "losses":  8,
+                                                       "winrate":  0.38461538461538464
+                                                   },
+                                                   {
+                                                       "account_id":  206642367,
+                                                       "name":  "[NGX] Ghost",
+                                                       "games":  24,
+                                                       "wins":  11,
+                                                       "losses":  13,
+                                                       "winrate":  0.45833333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  165564598,
+                                                       "name":  "[BB] MieRo",
+                                                       "games":  23,
+                                                       "wins":  14,
+                                                       "losses":  9,
+                                                       "winrate":  0.60869565217391308
+                                                   },
+                                                   {
+                                                       "account_id":  118134220,
+                                                       "name":  "[TT] Bach",
+                                                       "games":  16,
+                                                       "wins":  8,
+                                                       "losses":  8,
+                                                       "winrate":  0.5
+                                                   },
+                                                   {
+                                                       "account_id":  106573901,
+                                                       "name":  "[PV] No[o]ne-",
+                                                       "games":  23,
+                                                       "wins":  15,
+                                                       "losses":  8,
+                                                       "winrate":  0.65217391304347827
+                                                   },
+                                                   {
+                                                       "account_id":  177203952,
+                                                       "name":  "[Heroic] Yuma",
+                                                       "games":  19,
+                                                       "wins":  11,
+                                                       "losses":  8,
+                                                       "winrate":  0.57894736842105265
+                                                   },
+                                                   {
+                                                       "account_id":  148526973,
+                                                       "name":  "[BOOM] Jaunuel",
+                                                       "games":  12,
+                                                       "wins":  4,
+                                                       "losses":  8,
+                                                       "winrate":  0.33333333333333331
+                                                   },
+                                                   {
+                                                       "account_id":  292921272,
+                                                       "name":  "[Heroic] Wisper",
+                                                       "games":  19,
+                                                       "wins":  11,
+                                                       "losses":  8,
+                                                       "winrate":  0.57894736842105265
+                                                   },
+                                                   {
+                                                       "account_id":  127617979,
+                                                       "name":  "[Tundra] Crystallis",
+                                                       "games":  21,
+                                                       "wins":  8,
+                                                       "losses":  13,
+                                                       "winrate":  0.38095238095238093
+                                                   }
+                                               ],
+                                       "rapiers":  [
+                                                       {
+                                                           "account_id":  331855530,
+                                                           "name":  "[BB] Pure",
+                                                           "count":  4,
+                                                           "matches":  [
+                                                                           8449730523,
+                                                                           8459739606,
+                                                                           8460339590,
+                                                                           8460471023
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "account_id":  320252024,
+                                                           "name":  "[TT] shiro",
+                                                           "count":  3,
+                                                           "matches":  [
+                                                                           8447908059,
+                                                                           8449030528,
+                                                                           8449465357
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "account_id":  177203952,
+                                                           "name":  "[Heroic] Yuma",
+                                                           "count":  3,
+                                                           "matches":  [
+                                                                           8446415005,
+                                                                           8448069484,
+                                                                           8449262800
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "account_id":  1044002267,
+                                                           "name":  "[PV] Satanic",
+                                                           "count":  2,
+                                                           "matches":  [
+                                                                           8449730523,
+                                                                           8461254706
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "account_id":  100058342,
+                                                           "name":  "[FLCN] skiter",
+                                                           "count":  2,
+                                                           "matches":  [
+                                                                           8447703577,
+                                                                           8451547891
+                                                                       ]
+                                                       },
+                                                       {
+                                                           "account_id":  202217968,
+                                                           "name":  "[YB] Emo",
+                                                           "count":  1,
+                                                           "matches":  8446312823
+                                                       },
+                                                       {
+                                                           "account_id":  321580662,
+                                                           "name":  "[TSpirit] Yatoro",
+                                                           "count":  1,
+                                                           "matches":  8451547891
+                                                       },
+                                                       {
+                                                           "account_id":  480412663,
+                                                           "name":  "[BB] gpk~",
+                                                           "count":  1,
+                                                           "matches":  8449730523
+                                                       },
+                                                       {
+                                                           "account_id":  86698277,
+                                                           "name":  "[Tundra] 33",
+                                                           "count":  1,
+                                                           "matches":  8451320602
+                                                       },
+                                                       {
+                                                           "account_id":  160119017,
+                                                           "name":  "Fayde",
+                                                           "count":  1,
+                                                           "matches":  8451015743
+                                                       }
+                                                   ],
+                                       "aegisSnatch":  [
+
+                                                       ],
+                                       "rampages":  [
+                                                        {
+                                                            "account_id":  206642367,
+                                                            "name":  "[NGX] Ghost",
+                                                            "count":  1,
+                                                            "matches":  8447726611
+                                                        },
+                                                        {
+                                                            "account_id":  321580662,
+                                                            "name":  "[TSpirit] Yatoro",
+                                                            "count":  1,
+                                                            "matches":  8446311513
+                                                        },
+                                                        {
+                                                            "account_id":  331855530,
+                                                            "name":  "[BB] Pure",
+                                                            "count":  1,
+                                                            "matches":  8447659966
+                                                        }
+                                                    ]
+                                   }
+                   },
+    "placements":  [
+                       {
+                           "team_id":  9247354,
+                           "name":  "Team Falcons",
+                           "games":  29,
+                           "wins":  19,
+                           "losses":  10,
+                           "winrate":  0.65517241379310343,
+                           "place":  1
+                       },
+                       {
+                           "team_id":  8261500,
+                           "name":  "Xtreme Gaming",
+                           "games":  26,
+                           "wins":  18,
+                           "losses":  8,
+                           "winrate":  0.69230769230769229,
+                           "place":  2
+                       },
+                       {
+                           "team_id":  9572001,
+                           "name":  "PVISION",
+                           "games":  23,
+                           "wins":  15,
+                           "losses":  8,
+                           "winrate":  0.65217391304347827,
+                           "place":  3
+                       },
+                       {
+                           "team_id":  8255888,
+                           "name":  "BB Team",
+                           "games":  23,
+                           "wins":  14,
+                           "losses":  9,
+                           "winrate":  0.60869565217391308,
+                           "place":  4
+                       },
+                       {
+                           "team_id":  9303484,
+                           "name":  "HEROIC",
+                           "games":  19,
+                           "wins":  11,
+                           "losses":  8,
+                           "winrate":  0.57894736842105265,
+                           "place":  5
+                       },
+                       {
+                           "team_id":  7554697,
+                           "name":  "Nigma Galaxy",
+                           "games":  24,
+                           "wins":  11,
+                           "losses":  13,
+                           "winrate":  0.45833333333333331,
+                           "place":  6
+                       },
+                       {
+                           "team_id":  9640842,
+                           "name":  "Team Tidebound",
+                           "games":  16,
+                           "wins":  8,
+                           "losses":  8,
+                           "winrate":  0.5,
+                           "place":  7
+                       },
+                       {
+                           "team_id":  8291895,
+                           "name":  "Tundra Esports",
+                           "games":  21,
+                           "wins":  8,
+                           "losses":  13,
+                           "winrate":  0.38095238095238093,
+                           "place":  8
+                       },
+                       {
+                           "team_id":  9467224,
+                           "name":  "Aurora Gaming",
+                           "games":  13,
+                           "wins":  7,
+                           "losses":  6,
+                           "winrate":  0.53846153846153844,
+                           "place":  9
+                       },
+                       {
+                           "team_id":  2163,
+                           "name":  "Team Liquid",
+                           "games":  16,
+                           "wins":  7,
+                           "losses":  9,
+                           "winrate":  0.4375,
+                           "place":  10
+                       },
+                       {
+                           "team_id":  9351740,
+                           "name":  "Yakutou Brothers",
+                           "games":  16,
+                           "wins":  6,
+                           "losses":  10,
+                           "winrate":  0.375,
+                           "place":  11
+                       },
+                       {
+                           "team_id":  36,
+                           "name":  "Natus Vincere",
+                           "games":  13,
+                           "wins":  5,
+                           "losses":  8,
+                           "winrate":  0.38461538461538464,
+                           "place":  12
+                       },
+                       {
+                           "team_id":  7119388,
+                           "name":  "Team Spirit",
+                           "games":  14,
+                           "wins":  5,
+                           "losses":  9,
+                           "winrate":  0.35714285714285715,
+                           "place":  13
+                       },
+                       {
+                           "team_id":  7732977,
+                           "name":  "BOOM Esports",
+                           "games":  12,
+                           "wins":  4,
+                           "losses":  8,
+                           "winrate":  0.33333333333333331,
+                           "place":  14
+                       },
+                       {
+                           "team_id":  9651185,
+                           "name":  "Wildcard",
+                           "games":  13,
+                           "wins":  4,
+                           "losses":  9,
+                           "winrate":  0.30769230769230771,
+                           "place":  15
+                       },
+                       {
+                           "team_id":  9691969,
+                           "name":  "Team Nemesis",
+                           "games":  10,
+                           "wins":  2,
+                           "losses":  8,
+                           "winrate":  0.2,
+                           "place":  16
+                       }
+                   ]
+}

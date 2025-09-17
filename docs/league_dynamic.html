@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>League Dynamic Viewer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23121834'/%3E%3Cpath d='M3 11l2.8-6h1.8L11 11H9.1L8.5 9.5H5.5L4.9 11H3zm3-3h2L6.9 6.6 6 8z' fill='%239ec7ff'/%3E%3C/svg%3E"/>
+<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
+<style>
+/* Expanded design tokens */
+:root{--bg:#0b1020;--panel:#121b34;--panel-alt:#182246;--grad:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));--muted:#93a0b4;--text:#eef3fb;--accent:#6eadff;--accent-glow:#3693ff;--chip:#1a2544;--border:rgba(255,255,255,.08);--success:#34d399;--danger:#ef6363;--warn:#f7b955;--radius:14px;--radius-sm:8px;--shadow:0 4px 12px -4px rgba(0,0,0,.4),0 2px 4px -2px rgba(0,0,0,.3)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #1a2b59, transparent 60%), radial-gradient(900px 500px at 90% 110%, #16203d, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrapper{max-width:1180px;margin:0 auto;padding:16px}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.card{background:var(--grad);backdrop-filter:blur(3px);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;overflow:visible;position:relative;box-shadow:var(--shadow)}
+.card:before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(120deg,rgba(255,255,255,.18),rgba(255,255,255,0) 35%,rgba(255,255,255,.12) 70%,rgba(255,255,255,0));mask:linear-gradient(#fff,#fff) content-box,linear-gradient(#fff,#fff);-webkit-mask:linear-gradient(#fff,#fff) content-box,linear-gradient(#fff,#fff);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.35}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.controls .field{display:flex;flex-direction:column;gap:6px}
+input,button{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)}
+select{padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.25);background:#ffffff;color:#000000}
+select option{background:#ffffff;color:#000000}
+select:disabled{background:#f2f2f2;color:#666;opacity:1}
+#quick{background:#ffffff;color:#000000;border-color:rgba(0,0,0,.25)}
+button{cursor:pointer}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+.table th{text-align:left;color:var(--muted);font-weight:600}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--text);font-size:12px}
+.win{color:#7be495} .loss{color:#ff8b8b}
+.logo{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.1);margin-right:6px}
+.tabs{display:flex;gap:6px;margin:6px 0 8px}
+.tab{padding:6px 12px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));border-radius:12px;color:var(--text);cursor:pointer;font-size:12px;letter-spacing:.4px;transition:.18s all ease}
+.tab:hover{border-color:rgba(255,255,255,.18);background:linear-gradient(180deg,rgba(255,255,255,.15),rgba(255,255,255,.04))}
+.tab.active{background:linear-gradient(160deg,rgba(110,180,255,.35),rgba(110,175,255,.08));border-color:rgba(110,180,255,.55);box-shadow:0 0 0 1px rgba(110,180,255,.35),0 0 0 3px rgba(110,180,255,.15)}
+.tabpane{margin-top:6px}
+ul.simple{list-style:none;margin:0;padding:0}
+ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.title{font-weight:600;margin-bottom:6px}
+.sub{color:var(--muted);font-size:12px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:4px}
+.duo-pair img{box-shadow:0 0 0 1px rgba(255,255,255,.18),0 2px 4px -1px rgba(0,0,0,.5);transition:.2s transform}
+.duo-pair img:hover{transform:translateY(-3px)}
+.duo-wrapper{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:4px}
+.duo-list{list-style:none;margin:0;padding:0}
+.duo-list li{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.duo-list li:last-child{border-bottom:0}
+.duo-pair{display:grid;grid-template-columns:42px auto 14px 42px auto;align-items:center;gap:6px;font-size:13px;font-weight:600;letter-spacing:.3px}
+.duo-pair img{width:42px;height:26px;border-radius:8px;object-fit:cover;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 2px 4px -1px rgba(0,0,0,.5)}
+.duo-col-head{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;padding:2px 0}
+.duo-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.duo-badges{display:flex;gap:6px}
+.badge.wr{min-width:58px;text-align:center}
+.duo-meta{display:flex;gap:4px;align-items:center}
+.badge{position:relative;overflow:hidden}
+.badge.winrate-high{background:rgba(52,211,153,.18);color:#5af0b9}
+.badge.winrate-mid{background:rgba(250,204,21,.18);color:#facc15}
+.badge.winrate-low{background:rgba(239,99,99,.18);color:#ff8d8d}
+.hl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:6px}
+.hl-block{display:flex;flex-direction:column;gap:10px}
+.subhead{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+.subhead:before{content:"";width:20px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
+.chipline{display:flex;flex-wrap:wrap;gap:6px}
+.mini-badge{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px;font-size:11px;letter-spacing:.3px}
+.compact .card{padding:10px 12px}
+.compact ul.simple li{padding:6px 0}
+.toolbar-btn{background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.02));border:1px solid var(--border);color:var(--text);padding:6px 10px;font-size:11px;border-radius:8px;cursor:pointer;letter-spacing:.5px;display:inline-flex;align-items:center;gap:6px}
+.toolbar-btn:hover{border-color:rgba(255,255,255,.2);background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.04))}
+.layout-toolbar{display:flex;gap:8px;margin-left:auto}
+.section-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:4px 0 8px;display:flex;align-items:center;gap:6px}
+.section-label:before{content:"";width:34px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
+.title{font-weight:600;margin-bottom:6px;font-size:15px;letter-spacing:.2px}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.summary-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px}
+.summary-card h3{margin:0 0 6px;font-size:15px;color:var(--muted)}
+.summary-card ul{list-style:none;margin:0;padding:0}
+.summary-card li{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.summary-card li:last-child{border-bottom:0}
+
+/* Placement section */
+#placementsTable th,#placementsTable td{font-size:13px}
+
+/* Added hero icon + ward map styles */
+.hero{display:inline-flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;width:64px}
+.hero img{width:64px;height:36px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
+.wardmap{margin:8px 0 0;position:relative;width:100%;aspect-ratio:1/1;min-height:300px;background:url('https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg') center/cover no-repeat;border:1px solid var(--border);border-radius:12px}
+.wardmap svg{position:absolute;inset:0;width:100%;height:100%}
+.wardmap .spot{fill:rgba(255,255,255,.18);stroke:rgba(255,255,255,.5);stroke-width:1;transition:all .15s}
+.wardmap .spot.best{fill:rgba(52,211,153,.25);stroke:#34d399;stroke-width:1.5}
+.wardmap .spot.worst{fill:rgba(255,107,107,.25);stroke:#ff6b6b;stroke-width:1.5}
+.wardmap .spot.neutral{fill:rgba(255,255,255,.18);stroke:rgba(255,255,255,.45);stroke-width:1}
+.wardmap.enhanced svg .spot{transition:opacity .15s ease,fill .15s ease,stroke .15s ease}
+.wardmap.enhanced svg .spot.best.hl{filter:drop-shadow(0 0 8px rgba(52,211,153,.6));stroke-width:2 !important}
+.wardmap.enhanced svg .spot.worst.hl{filter:drop-shadow(0 0 8px rgba(255,107,107,.6));stroke-width:2 !important}
+.wardmap.enhanced svg .spot.hl:not(.longest){ fill: rgba(52,211,153,.14) !important; stroke:#34d399 !important; filter: drop-shadow(0 0 10px rgba(52,211,153,.7)); stroke-width:2.2 !important; opacity:1 !important }
+.wardmap.enhanced.highlighting svg .spot:not(.hl){opacity:.28}
+.wardmap.enhanced svg .spot.longest{stroke:#ff6b6b;fill:rgba(255,107,107,.25)}
+.wardmap.enhanced svg .spot.longest.hl{filter:drop-shadow(0 0 10px rgba(255,107,107,.75));stroke-width:2.2 !important}
+/* Wards layout: map + lists side-by-side (responsive) */
+.wardgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;align-items:start}
+@media (max-width: 980px){.wardgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <h1 id="leagueTitle" style="margin:0;font-size:22px">League Viewer</h1>
+    <div class="badge">Client-side</div>
+  </div>
+  <div class="sub" id="headerSub" style="margin:-8px 0 8px 2px"></div>
+
+  <div class="tabs" id="mainTabs" style="margin-top:12px">
+    <button class="tab active" data-tab="highlights">Highlights</button>
+  <button class="tab" data-tab="players">Players</button>
+    <button class="tab" data-tab="heroes">Heroes</button>
+    <button class="tab" data-tab="teams">Teams</button>
+    <button class="tab" data-tab="placements">Placements</button>
+  <button class="tab" data-tab="wards">Wards</button>
+  </div>
+
+  <div id="pane-highlights" class="tabpane active">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Highlights</h2>
+      <div class="sub" style="margin-bottom:8px">League-specific spotlight (Duos, Hero Performance, Wards, Player Events).</div>
+      <div id="highlightsBody" class="sub">Loading…</div>
+    </section>
+  </div>
+  <div id="pane-wards" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Ward Spots</h2>
+      <div class="sub" style="margin-bottom:8px">Best / Worst Platzierungen nach durchschnittlicher Lebensdauer. Fallback: neutrale Gesamtspots (Top 40 nach Häufigkeit).</div>
+      <div class="wardgrid">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin:6px 0 6px;flex-wrap:wrap">
+            <div class="section-label" style="margin:0">Ansicht</div>
+            <div id="wardViewTabs" class="tabs" style="margin:0">
+              <button class="tab active" data-wmode="best">Best</button>
+              <button class="tab" data-wmode="worst">Worst</button>
+            </div>
+            <label class="sub" style="display:flex;align-items:center;gap:6px;margin-left:auto">
+              Team:
+              <select id="wardTeamFilter" style="min-width:180px"></select>
+            </label>
+          </div>
+          <div id="wardMapContainer">
+            <div class="wardmap enhanced" id="wardMap"><svg></svg></div>
+            <div class="sub" id="wardMapLegend" style="margin-top:6px">Green = Best avg lifetime, Red = Worst.</div>
+            <div class="sub" id="wardStatus" style="margin-top:4px;opacity:.85"></div>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+              <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="toggleWardOverlay" checked style="vertical-align:middle;margin-right:6px">Overlay</label>
+              <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="toggleWardGrid" style="vertical-align:middle;margin-right:6px">Grid</label>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div id="wardLists" style="display:flex;flex-direction:column;gap:12px;margin-top:6px">
+            <div>
+              <div class="title" style="margin:0 0 6px">Best Spots</div>
+              <div id="wl-best" class="sub">(leer)</div>
+            </div>
+            <div>
+              <div class="title" style="margin:0 0 6px">Worst Spots</div>
+              <div id="wl-worst" class="sub">(leer)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="pane-players" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Players</h2>
+      <table class="table" id="playersTable"><thead><tr><th>Name</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody></tbody></table>
+    </section>
+  </div>
+  <div id="pane-heroes" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Heroes</h2>
+      <table class="table" id="heroesTable"><thead><tr><th>Hero</th><th>Picks</th><th>Wins</th><th>WR</th></tr></thead><tbody></tbody></table>
+    </section>
+  </div>
+  <div id="pane-teams" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Teams</h2>
+      <table class="table" id="teamsTable"><thead><tr><th>Team</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody></tbody></table>
+    </section>
+  </div>
+  <div id="pane-placements" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Placements</h2>
+      <div class="sub" style="margin-bottom:6px">Final placement (approx; based on series / match wins currently).</div>
+      <table class="table" id="placementsTable"><thead><tr><th>#</th><th>Team</th><th>Games</th><th>Wins</th><th>Losses</th><th>Winrate</th></tr></thead><tbody></tbody></table>
+    </section>
+  </div>
+</div>
+<script>
+async function loadJson(url){ try{ const r=await fetch(url,{cache:'no-store'}); if(!r.ok) return null; return await r.json(); }catch(_e){ return null; } }
+function fmtPct(x){ if(!isFinite(x)) return '0.0%'; return (x*100).toFixed(1)+'%'; }
+function qs(k){ const u=new URL(location.href); return u.searchParams.get(k); }
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+// Ensure ward map background loads from local asset if available
+async function ensureWardMapBackground(){
+  const el=document.getElementById('wardMap'); if(!el) return;
+  // Prefer configured map asset from MAP_CONF, then fall back to local defaults / OpenDota
+  const candidates=(function(){
+    const arr=[]; try{
+      const mc = MAP_CONF||{}; const asset = (mc.major && mc.current && mc.major[mc.current]) ? mc.major[mc.current] : null;
+      if(asset && asset.src){ arr.push(asset.src); }
+    }catch(_e){}
+    arr.push('img/7_39/Game_map_7.39.jpg','../img/7_39/Game_map_7.39.jpg','/img/7_39/Game_map_7.39.jpg','https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg');
+    return arr;
+  })();
+  function probe(url){ return new Promise(r=>{ const im=new Image(); im.onload=()=>r(url); im.onerror=()=>r(null); im.src=url; }); }
+  for(const url of candidates){ const ok=await probe(url); if(ok){ el.style.backgroundImage = `url('${ok}')`; break; } }
+}
+
+function renderPlacements(list){ const tb=document.querySelector('#placementsTable tbody'); if(!tb) return; tb.innerHTML = (list||[]).map(p=>`<tr><td>${p.place}</td><td>${esc(p.name)}</td><td>${p.games}</td><td>${p.wins}</td><td>${p.losses}</td><td>${fmtPct(p.winrate)}</td></tr>`).join(''); }
+
+// Hero constants loader (reuse heroes.json from data)
+let HERO_DATA=null;
+let MAP_CONF=null;
+async function loadHeroes(){
+  if(HERO_DATA) return HERO_DATA;
+  const probes=[
+    '../data/heroes.json','../../data/heroes.json','../../../data/heroes.json','/data/heroes.json',
+    '../data/constants/heroes.json','../../data/constants/heroes.json','../../../data/constants/heroes.json','/data/constants/heroes.json'
+  ];
+  for(const p of probes){
+    const j=await loadJson(p);
+    if(j){
+      // Accept either {data:{}} shape or direct id->object mapping
+      if(j.data){ HERO_DATA=j.data; break; }
+      const keys=Object.keys(j);
+      if(keys.length && keys.every(k=> j[k] && typeof j[k]==='object' && 'localized_name' in j[k])){ HERO_DATA=j; break; }
+    }
+  }
+  return HERO_DATA||{};
+}
+async function loadMapConf(){
+  if(MAP_CONF) return MAP_CONF;
+  const probes=['../data/maps.json','../../data/maps.json','../../../data/maps.json','/data/maps.json'];
+  for(const p of probes){ const j=await loadJson(p); if(j){ MAP_CONF=j; break; } }
+  // Optional URL override (?map=7.39 or ?patch=7.39 or ?mpatch=7_39)
+  try{
+    const sp=new URLSearchParams(location.search); const pMap=sp.get('map')||sp.get('patch')||sp.get('mpatch');
+    if(MAP_CONF && pMap){ const key=String(pMap).replace('_','.'); if(MAP_CONF.major && MAP_CONF.major[key]){ MAP_CONF.current=key; } }
+  }catch(_e){}
+  return MAP_CONF||{};
+}
+function heroSlug(id){ const h=(HERO_DATA||{})[id]; if(!h) return null; return (h.localized_name||h.name||'').toLowerCase().replace(/ /g,'-').replace(/[^a-z0-9\-]/g,''); }
+function heroImg(id){ const h=(HERO_DATA||{})[id]; if(!h) return ''; const name=(h.name||'').replace(/^npc_dota_hero_/,''); return `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${name}.png`; }
+function heroLabel(id){ const h=(HERO_DATA||{})[id]; return h? h.localized_name || h.name || ('#'+id): ('#'+id); }
+
+function renderHeroListWithIcons(arr){
+  if(!Array.isArray(arr)||!arr.length) return `<div class='sub'>no heroes</div>`;
+  return `<ul class='simple'>`+arr.map(h=>{
+    return `<li><span style='display:flex;align-items:center;gap:6px'><img src='${heroImg(h.hero_id)}' alt='' style='width:36px;height:20px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.15)'><span>${esc(heroLabel(h.hero_id))}</span></span><span><span class='badge'>P ${h.picks}</span><span class='badge'>WR ${fmtPct(h.winrate)}</span></span></li>`;
+  }).join('')+`</ul>`;
+}
+
+function renderWardMap(best, worst, all){
+  const wrap=document.getElementById('wardMapContainer'); const map=document.getElementById('wardMap'); if(!wrap||!map) return;
+  const svg=map.querySelector('svg'); if(!svg) return;
+  let spots=[...(best||[]).map(s=>({...s,_cls:'best'})), ...(worst||[]).map(s=>({...s,_cls:'worst'}))];
+  if(!spots.length && Array.isArray(all) && all.length){
+    // fallback: show a capped neutral set (top by count)
+    const sorted=[...all].sort((a,b)=> b.count-a.count).slice(0,40);
+    spots = sorted.map(s=>({...s,_cls:'neutral'}));
+    const lg=document.getElementById('wardMapLegend'); if(lg) lg.textContent = 'Neutral = ward placements (fallback)';
+  }
+  wrap.style.display='';
+  svg.innerHTML='';
+  if(!spots.length){
+    const legend=document.getElementById('wardMapLegend'); if(legend) legend.textContent = 'Keine Ward-Daten für diese Ansicht.'; return;
+  }
+  // Map config (bounds, invertY, radius pct) like dynamic view
+  const mc = MAP_CONF||{}; const asset = (mc.major && mc.current && mc.major[mc.current]) ? mc.major[mc.current] : null;
+  const hasBounds = asset && asset.minX!=null && asset.minY!=null && asset.maxX!=null && asset.maxY!=null && asset.maxX>asset.minX && asset.maxY>asset.minY;
+  const invertY = !!(asset && asset.invertY);
+  // Determine dynamic scale from observed coordinates if no bounds
+  const observedMax = spots.reduce((acc,s)=>({mx:Math.max(acc.mx, Number(s.x||0)), my:Math.max(acc.my, Number(s.y||0))}), {mx:0,my:0});
+  const dynScale = Math.max(1, Number(asset && asset.scale || 0), observedMax.mx, observedMax.my, Number(mc && mc.defaultScale || 0));
+  // Observer radius percentage: prefer configured value; auto only if no config present
+  const cellUnits = Number((asset && asset.cellUnits) || (mc && mc.defaultCellUnits) || 128);
+  const obsUnits  = Number((asset && asset.obsRadiusUnits) || (mc && mc.defaultObsRadiusUnits) || 1600);
+  let obsPct = (asset && asset.obsRadiusPct!=null) ? Number(asset.obsRadiusPct)
+             : (mc && mc.defaultObsRadiusPct!=null ? Number(mc.defaultObsRadiusPct) : NaN);
+  let pctMethod = isFinite(obsPct) ? 'asset' : 'auto';
+  if(!isFinite(obsPct)){
+    const denom = hasBounds ? (cellUnits * (Number(asset && asset.maxX)||0 - Number(asset && asset.minX)||0)) : (cellUnits * dynScale);
+    const calc = denom>0 ? (obsUnits/denom)*100 : NaN;
+    obsPct = isFinite(calc) && calc>0 ? Math.round(calc*100)/100 : 10;
+  }
+  // Longest mark
+  let longest = null; spots.forEach(s=>{ if(!longest || (s.avgSeconds||0) > (longest.avgSeconds||0)) longest = s; });
+  // Helper to append two circles: big range + small center dot
+  function appendSpot(cx,cy, s, isLongest){
+    const cls = 'spot '+s._cls + (isLongest? ' longest':'');
+    const big=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    big.setAttribute('cx',cx+'%'); big.setAttribute('cy',cy+'%'); big.setAttribute('r',String(obsPct));
+    big.setAttribute('class',cls); big.setAttribute('data-spot',s.spot||''); big.setAttribute('data-avg',String(s.avgSeconds||0));
+    big.setAttribute('title',`${s.spot} avg ${(s.avgSeconds/60).toFixed(1)}m (${s.count}x)`);
+    svg.appendChild(big);
+    const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx',cx+'%'); dot.setAttribute('cy',cy+'%'); dot.setAttribute('r','1.0');
+    // Center dot color roughly matching class
+    const stroke = s._cls==='best' ? '#34d399' : (s._cls==='worst' ? '#ff6b6b' : 'rgba(255,215,0,0.85)');
+    dot.setAttribute('fill', stroke);
+    dot.setAttribute('opacity','0.9');
+    svg.appendChild(dot);
+  }
+  // Render all spots
+  spots.forEach(s=>{
+    let X=Number(s.x||0), Y=Number(s.y||0);
+    let cx, cy;
+    if(hasBounds){
+      const minX=asset.minX, maxX=asset.maxX, minY=asset.minY, maxY=asset.maxY;
+      const clX = Math.max(minX, Math.min(maxX, X));
+      const clY = Math.max(minY, Math.min(maxY, Y));
+      const cx0 = (clX - minX) / (maxX - minX);
+      let cy0 = (clY - minY) / (maxY - minY);
+      if(invertY) cy0 = 1 - cy0;
+      cx = Math.round(cx0*10000)/100; cy = Math.round(cy0*10000)/100;
+    } else {
+      const cx0 = Math.max(0, Math.min(dynScale, X)) / dynScale;
+      let cy0 = Math.max(0, Math.min(dynScale, Y)) / dynScale;
+      if(invertY) cy0 = 1 - cy0;
+      cx = Math.round(cx0*10000)/100; cy = Math.round(cy0*10000)/100;
+    }
+    appendSpot(cx, cy, s, !!(longest && s.spot===longest.spot));
+  });
+  // Optional debug grid
+  try{
+    const wantGrid = !!window.__WARD_DEBUG_GRID__;
+    if(wantGrid){
+      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('data-role','grid');
+      for(let i=0;i<=10;i++){
+        const p = i*10;
+        const v1=document.createElementNS('http://www.w3.org/2000/svg','line'); v1.setAttribute('x1',p+'%'); v1.setAttribute('y1','0%'); v1.setAttribute('x2',p+'%'); v1.setAttribute('y2','100%'); v1.setAttribute('stroke','rgba(255,255,255,.08)'); v1.setAttribute('stroke-width','0.3'); g.appendChild(v1);
+        const v2=document.createElementNS('http://www.w3.org/2000/svg','line'); v2.setAttribute('x1','0%'); v2.setAttribute('y1',p+'%'); v2.setAttribute('x2','100%'); v2.setAttribute('y2',p+'%'); v2.setAttribute('stroke','rgba(255,255,255,.08)'); v2.setAttribute('stroke-width','0.3'); g.appendChild(v2);
+      }
+      svg.insertBefore(g, svg.firstChild);
+    }
+    // Update status with radius details
+  const st=document.getElementById('wardStatus'); if(st){ const base = st.dataset && st.dataset.base ? st.dataset.base : (st.textContent||''); st.textContent = `${base} | r=${obsPct}% (${pctMethod}) · bounds:${hasBounds?'yes':'no'} invY:${invertY?'yes':'no'}`; }
+    // Wire toggles
+    const ov=document.getElementById('toggleWardOverlay'); if(ov){ svg.style.display = ov.checked ? '' : 'none'; }
+    const tg=document.getElementById('toggleWardGrid'); if(tg){ tg.checked = !!window.__WARD_DEBUG_GRID__; }
+  }catch(_e){}
+  // Hover highlight binding
+  function bindList(containerId){
+    const c=document.getElementById(containerId); if(!c) return; c.querySelectorAll('li[data-spot]').forEach(li=>{
+      li.addEventListener('mouseenter',()=>{ const spot=li.getAttribute('data-spot'); svg.closest('.wardmap').classList.add('highlighting'); svg.querySelectorAll('.spot').forEach(n=>{ if(n.getAttribute('data-spot')===spot) n.classList.add('hl'); }); });
+      li.addEventListener('mouseleave',()=>{ svg.closest('.wardmap').classList.remove('highlighting'); svg.querySelectorAll('.spot.hl').forEach(n=> n.classList.remove('hl')); });
+    });
+  }
+  bindList('wl-best'); bindList('wl-worst');
+}
+
+// Override renderHighlights to inject hero icons and ward map
+function renderHighlights(data){ const el=document.getElementById('highlightsBody'); if(!el) return; if(!data){ el.textContent='No data'; return; }
+  const du = data.duos||{}; const hp = data.heroes||{}; const wd=data.wards||{}; const pl=data.players||{};
+  function duoList(arr,label){ if(!Array.isArray(arr)||!arr.length) return `<div class='sub'>Keine ${label} (Threshold)</div>`;
+    return `<ul class='duo-list'>`+arr.map(d=>{
+      const aLabel = d.a_name || heroLabel(d.a) || d.a; const bLabel = d.b_name || heroLabel(d.b) || d.b;
+      const aImg = heroImg(d.a); const bImg = heroImg(d.b);
+      const wrCls = d.winrate>=0.7? 'winrate-high' : (d.winrate>=0.5? 'winrate-mid':'winrate-low');
+      const tip = `WR ${(d.winrate*100).toFixed(1)}% | G ${d.games}`;
+      return `<li title='${esc(tip)}'>
+        <span class='duo-pair'><img src='${aImg}'><span>${esc(aLabel)}</span><span style='opacity:.4;font-weight:400;text-align:center'>+</span><img src='${bImg}'><span>${esc(bLabel)}</span></span>
+        <span class='badge'>G ${d.games}</span>
+        <span class='badge wr ${wrCls}'>${fmtPct(d.winrate)}</span>
+      </li>`;
+    }).join('')+`</ul>`;
+  }
+  function heroList(arr,label){ return renderHeroListWithIcons(arr); }
+  function wardSpotList(arr,label){ if(!Array.isArray(arr)||!arr.length) return `<div class='sub'>no ${label}</div>`; return `<ul class='simple'>`+arr.map(w=>`<li data-spot='${w.spot}'><span>${w.spot}</span><span><span class='badge'>x${w.count}</span><span class='badge'>avg ${(w.avgSeconds/60).toFixed(1)}m</span></span></li>`).join('')+`</ul>`; }
+  function playerList(arr,label){ if(!Array.isArray(arr)||!arr.length) return `<div class='sub'>no ${label}</div>`; return `<ul class='simple'>`+arr.map(p=>`<li><span>${esc(p.name)}</span><span class='badge'>x${p.count}</span></li>`).join('')+`</ul>`; }
+  el.innerHTML = `
+    <div class='layout-toolbar' style='margin-bottom:4px'>
+      <button class='toolbar-btn' id='toggleCompact' type='button'>Compact</button>
+    </div>
+    <div class='hl-grid'>
+      <div class='hl-block'>
+        <div class='subhead'>Duos</div>
+        <div class='duo-wrapper'>
+          <div>
+            <div class='title' style='margin:0 0 4px'>Offlane</div>
+            ${duoList(du.offlane,'Offlane Duos')}
+          </div>
+            <div>
+            <div class='title' style='margin:0 0 4px'>Safelane</div>
+            ${duoList(du.safelane,'Safelane Duos')}
+          </div>
+        </div>
+      </div>
+      <div class='hl-block'>
+        <div class='subhead'>Best Heroes (>=5)</div>
+        ${heroList(hp.best,'best heroes')}
+        <div class='subhead'>Worst Heroes (>=5)</div>
+        ${heroList(hp.worst,'worst heroes')}
+      </div>
+      <div class='hl-block'>
+        <div class='subhead' style='margin-top:4px'>Player Events</div>
+        <div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px'>
+          <div><div class='title' style='margin:0 0 4px'>Rampages</div>${playerList(pl.rampages,'rampages')}</div>
+          <div><div class='title' style='margin:0 0 4px'>Rapiers</div>${playerList(pl.rapiers,'rapiers')}</div>
+          <div><div class='title' style='margin:0 0 4px'>Aegis</div>${playerList(pl.aegisSnatch,'aegis snatch')}</div>
+        </div>
+      </div>
+    </div>`;
+  const btn=document.getElementById('toggleCompact'); if(btn){ btn.addEventListener('click',()=>{ document.body.classList.toggle('compact'); btn.textContent = document.body.classList.contains('compact')? 'Comfort': 'Compact'; }); }
+  window.__REPORT_WARD_DATA__ = wd; // store for wards tab
+}
+
+// Client-side ward computation (matches.json) with fallback to server aggregated
+let WARD_COMPUTED=false; let WARD_SOURCE='';
+// Cache stores base spots with per-side/per-team aggregates and a list of teams
+let __WARD_CACHE__ = { all:[], teams:[] };
+let __WARD_MODE__ = 'best';
+let __WARD_TEAM_FILTER__ = '';
+window.__WARD_DEBUG_GRID__ = false;
+async function computeWardsClient(report){
+  if(WARD_COMPUTED && WARD_SOURCE) return; // allow one retry if first run had no source
+  // Only set WARD_COMPUTED true once we actually tried with a report or matches
+  const slug=qs('league')||'';
+  const probes=[
+    `../data/league/${slug}/matches.json`,
+    `../../data/league/${slug}/matches.json`,
+    `../../../data/league/${slug}/matches.json`,
+    `${location.origin}/data/league/${slug}/matches.json`
+  ];
+  let matches=null; for(const p of probes){ matches=await loadJson(p); if(matches) break; }
+  let all=[]; const teamSet=new Map();
+  if(matches && Array.isArray(matches)){
+    // If matches.json lacks obs logs, try to fetch per-match details from cache
+  const hasLogs = matches.some(m=> Array.isArray(m.obs_log) || Array.isArray(m.obs_left_log) || (Array.isArray(m.players) && m.players.some(p=> Array.isArray(p?.obs_log) || Array.isArray(p?.obs_left_log))));
+    const wardStats=new Map();
+    async function consumeMatch(detail){
+      if(!detail) return; const dur=detail.duration||0;
+      // Collect removals from either top-level or players[*]
+      const left=[]; if(Array.isArray(detail.obs_left_log)) left.push(...detail.obs_left_log);
+      (detail.players||[]).forEach(pl=>{ if(Array.isArray(pl?.obs_left_log)) left.push(...pl.obs_left_log); });
+      left.sort((a,b)=> (a.time||0)-(b.time||0));
+      // For team attribution
+      const rTeamId = Number(detail.radiant_team_id||0)||0; const dTeamId = Number(detail.dire_team_id||0)||0;
+      const rTeamName = detail.radiant_name || (rTeamId?`Team ${rTeamId}`:'Radiant');
+      const dTeamName = detail.dire_name || (dTeamId?`Team ${dTeamId}`:'Dire');
+      if(rTeamId) teamSet.set('T'+rTeamId, {id:rTeamId, name:rTeamName});
+      if(dTeamId) teamSet.set('T'+dTeamId, {id:dTeamId, name:dTeamName});
+      // Iterate each player's placements to attribute to side/team
+      for(const pl of (detail.players||[])){
+        if(!pl || !Array.isArray(pl.obs_log) || pl.obs_log.length===0) continue;
+        const isRad = !!(pl.is_radiant || Number(pl.player_slot)<128);
+        const side = isRad ? 'Radiant' : 'Dire';
+        const teamId = isRad ? rTeamId : dTeamId; const teamName = isRad ? rTeamName : dTeamName;
+        const obs = pl.obs_log.slice().sort((a,b)=> (a.time||0)-(b.time||0));
+        for(const o of obs){
+          const start = Math.max(0, o.time||0);
+          // find first matching removal
+          let removal=null; for(const l of left){ if(l.used) continue; if(l.x===o.x&&l.y===o.y&&(l.time||0)>=start){ removal=l; l.used=true; break; } }
+          let life=0; if(removal) life=(removal.time||0)-start; else life=Math.max(0, Math.min(dur,420)-start);
+          const keyStr = (typeof o.key==='string' && o.key) ? o.key.replace(/\[|\]|\s/g,'') : `${Math.round(o.x||0)},${Math.round(o.y||0)}`;
+          const ws=wardStats.get(keyStr)||{spot:keyStr,x:o.x,y:o.y,count:0,total:0, bySide:{Radiant:{count:0,total:0}, Dire:{count:0,total:0}}, byTeam:{}};
+          ws.count++; ws.total+=life; ws.x=o.x; ws.y=o.y;
+          ws.bySide[side].count++; ws.bySide[side].total += life;
+          if(teamId){ const t = ws.byTeam[teamId] || {id:teamId,name:teamName,count:0,total:0}; t.count++; t.total+=life; ws.byTeam[teamId]=t; }
+          wardStats.set(keyStr,ws);
+        }
+      }
+    }
+    if(hasLogs){
+      for(const m of matches){ await consumeMatch(m); }
+      WARD_SOURCE='client-matches';
+    } else {
+      // Fetch details from cache; limit to 400 matches to avoid UI freeze
+      const ids = matches.map(m=>m.match_id).filter(Boolean);
+      const maxN = Math.min(ids.length, 400);
+      const bases = [
+        `../data/cache/OpenDota/matches/`,
+        `../../data/cache/OpenDota/matches/`,
+        `../../../data/cache/OpenDota/matches/`,
+        `/data/cache/OpenDota/matches/`
+      ];
+      async function fetchDetail(id){
+        for(const b of bases){ const j=await loadJson(`${b}${id}.json`); if(j) return j; }
+        return null;
+      }
+      // Simple concurrency
+      const concurrency=8; let idx=0; let ok=0;
+      async function worker(){ while(idx<maxN){ const i=idx++; const id=ids[i]; const d=await fetchDetail(id); if(d){ ok++; await consumeMatch(d); } } }
+      await Promise.all(Array.from({length:concurrency},()=>worker()));
+      WARD_SOURCE = ok>0 ? 'client-cache' : '';
+    }
+    all=[...wardStats.entries()].map(([k,v])=>({spot:k,x:v.x,y:v.y,
+      count:v.count, total:v.total,
+      bySide:v.bySide, byTeam:v.byTeam,
+      avgSeconds:v.count?Math.floor(v.total/v.count):0
+    }));
+    if(all.length){ const lg=document.getElementById('wardMapLegend'); if(lg) lg.textContent='Green = Best avg lifetime, Red = Worst.'; }
+  } else if(report && report.highlights && report.highlights.wards){
+    const wd=report.highlights.wards; // Server path lacks team attribution
+    all=(wd.allSpots||[]).map(s=>({...s, total:(s.avgSeconds||0)*(s.count||0), bySide:{Radiant:{count:0,total:0},Dire:{count:0,total:0}}, byTeam:{}}));
+    WARD_SOURCE='server';
+  }
+  __WARD_CACHE__ = { all, teams: Array.from(teamSet.values()) };
+  try{ console.info('WARD_SOURCE', WARD_SOURCE||'(none)', {all:all.length, teams: __WARD_CACHE__.teams.length}); }catch(_e){}
+  function listify(arr){
+    if(!arr.length) return `<div class='sub'>Keine Daten</div>`;
+    return `<ul class='simple'>`+arr.map((s,idx)=>{
+      const mm = s.avgSeconds? Math.floor((s.avgSeconds||0)/60):0; const ss = s.avgSeconds? (s.avgSeconds%60):0;
+      const coords = (s.spot||'').replace(/\[|\]|\s/g,'');
+      return `<li data-spot='${s.spot||''}'>
+        <span style='display:flex;align-items:center;gap:8px'>
+          <span class='badge' style='min-width:54px;text-align:center'>Ward ${idx+1}</span>
+          <span class='sub' style='opacity:.8'>${coords}</span>
+        </span>
+        <span style='display:flex;gap:6px'>
+          ${s.avgSeconds!==undefined?`<span class='badge'>avg ${mm}m ${ss}s</span>`:''}
+          ${s.count? `<span class='badge'>x${s.count}</span>`:''}
+        </span>
+      </li>`;
+    }).join('')+`</ul>`;
+  }
+  // Populate team filter select
+  try{
+    const sel=document.getElementById('wardTeamFilter');
+    if(sel){
+      const opts=["<option value=''>All</option>","<option value='Radiant'>Radiant</option>","<option value='Dire'>Dire</option>"];
+      const teams=(__WARD_CACHE__.teams||[]).slice().sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
+      for(const t of teams){ opts.push(`<option value='team:${t.id}'>${esc(t.name||('Team '+t.id))}</option>`); }
+      sel.innerHTML = opts.join(''); sel.value = __WARD_TEAM_FILTER__ || '';
+      if(!sel.__wired){ sel.__wired=true; sel.addEventListener('change',()=>{ __WARD_TEAM_FILTER__ = sel.value||''; renderWardByMode(__WARD_MODE__); }); }
+    }
+  }catch(_e){}
+  // Initial render
+  renderWardByMode(__WARD_MODE__);
+  const st=document.getElementById('wardStatus'); if(st){ const base=`Source: ${WARD_SOURCE||'none'} | spots:${all.length}`; st.textContent = base; st.dataset.base = base; }
+  WARD_COMPUTED=true; // mark after attempt so a second call won't repeat unless forced
+  // Wire overlay/grid toggles once
+  try{
+    const ov=document.getElementById('toggleWardOverlay'); const tg=document.getElementById('toggleWardGrid');
+    if(ov && !ov.__wired){ ov.__wired=true; ov.addEventListener('change',()=>{ const svg=document.querySelector('#wardMap svg'); if(svg){ svg.style.display = ov.checked ? '' : 'none'; } }); }
+    if(tg && !tg.__wired){ tg.__wired=true; tg.addEventListener('change',()=>{ window.__WARD_DEBUG_GRID__ = !!tg.checked; renderWardByMode(__WARD_MODE__); }); }
+  }catch(_e){}
+}
+
+function renderWardByMode(mode){
+  __WARD_MODE__ = mode || __WARD_MODE__;
+  const btns = document.querySelectorAll('#wardViewTabs .tab');
+  btns.forEach(b=> b.classList.toggle('active', (b.dataset.wmode||'')===__WARD_MODE__));
+  const base = (__WARD_CACHE__ && __WARD_CACHE__.all) ? __WARD_CACHE__.all : [];
+  // Build filtered view arrays from base according to team filter
+  function pick(s){
+    const val = __WARD_TEAM_FILTER__;
+    if(!val){ return {count:s.count, total:s.total}; }
+    if(val==='Radiant' || val==='Dire'){
+      const side = s.bySide && s.bySide[val] || {count:0,total:0}; return {count:side.count||0, total:side.total||0};
+    }
+    if(val.startsWith('team:')){ const id=Number(val.split(':')[1]||0); const t = s.byTeam && s.byTeam[id]; return {count:(t&&t.count)||0, total:(t&&t.total)||0}; }
+    return {count:s.count, total:s.total};
+  }
+  const derived = base.map(s=>{ const v=pick(s); const avg = v.count? Math.floor(v.total/v.count):0; return {spot:s.spot,x:s.x,y:s.y,count:v.count,avgSeconds:avg}; });
+  // Performance threshold: at least 2 occurrences
+  const perf = derived.filter(s=> s.count>=2);
+  // Build best/worst lists (15 each); exclude zero-minute entries from worst entirely
+  let best = [], worst = [], all = derived;
+  if(__WARD_MODE__==='best'){
+    best = perf.slice().sort((a,b)=> (b.avgSeconds-a.avgSeconds) || (b.count-a.count)).slice(0,15);
+    worst = [];
+  } else if(__WARD_MODE__==='worst'){
+    const wsrc = perf.slice().filter(s=> (s.avgSeconds||0) > 0);
+    worst = wsrc.sort((a,b)=> (a.avgSeconds-b.avgSeconds) || (b.count-a.count)).slice(0,15);
+    best = [];
+  }
+  renderWardMap(best, worst, all);
+  // Update lists
+  function listify(arr){
+    if(!arr.length) return `<div class='sub'>Keine Daten</div>`;
+    return `<ul class='simple'>`+arr.map((s,idx)=>{
+      const mm = s.avgSeconds? Math.floor((s.avgSeconds||0)/60):0; const ss = s.avgSeconds? (s.avgSeconds%60):0;
+      const coords = (s.spot||'').replace(/\[|\]|\s/g,'');
+      return `<li data-spot='${s.spot||''}'>
+        <span style='display:flex;align-items:center;gap:8px'>
+          <span class='badge' style='min-width:54px;text-align:center'>Ward ${idx+1}</span>
+          <span class='sub' style='opacity:.8'>${coords}</span>
+        </span>
+        <span style='display:flex;gap:6px'>
+          ${s.avgSeconds!==undefined?`<span class='badge'>avg ${mm}m ${ss}s</span>`:''}
+          ${s.count? `<span class='badge'>x${s.count}</span>`:''}
+        </span>
+      </li>`;
+    }).join('')+`</ul>`;
+  }
+  const bestEl=document.getElementById('wl-best'); if(bestEl) bestEl.innerHTML = listify(best);
+  const worstEl=document.getElementById('wl-worst'); if(worstEl) worstEl.innerHTML = listify(worst);
+}
+
+// Extend computeBasicTables to show hero icons
+function makeSortable(table){
+  if(!table) return; const ths=table.querySelectorAll('th'); let sortState={col:0,dir:1};
+  ths.forEach((th,i)=>{ th.style.cursor='pointer'; th.addEventListener('click',()=>{
+    const tbody=table.querySelector('tbody'); const rows=[...tbody.querySelectorAll('tr')];
+    if(sortState.col===i){ sortState.dir*=-1 } else { sortState.col=i; sortState.dir=1 }
+    rows.sort((a,b)=>{
+      const av=a.children[i].getAttribute('data-sort')||a.children[i].textContent.trim();
+      const bv=b.children[i].getAttribute('data-sort')||b.children[i].textContent.trim();
+      const numA=parseFloat(av); const numB=parseFloat(bv); const isNum=!isNaN(numA)&&!isNaN(numB);
+      if(isNum){ return (numA-numB)*sortState.dir }
+      return av.localeCompare(bv,undefined,{sensitivity:'base'})*sortState.dir;
+    });
+    rows.forEach(r=>tbody.appendChild(r));
+  }); });
+}
+
+async function computeBasicTables(report){
+  await loadHeroes();
+  // Heroes full list straight from report.highlights.heroes.all
+  const allHeroes=(report.highlights.heroes.all||[]).slice();
+  allHeroes.sort((a,b)=> heroLabel(a.hero_id).localeCompare(heroLabel(b.hero_id),'de',{sensitivity:'base'}));
+  const heroRows = allHeroes.map(h=>{
+    const wr = h.picks? h.wins/h.picks:0; return `<tr><td data-sort='${esc(heroLabel(h.hero_id))}' style='display:flex;align-items:center;gap:8px'><img src='${heroImg(h.hero_id)}' style='width:42px;height:24px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.12)'><span>${esc(heroLabel(h.hero_id))}</span></td><td data-sort='${h.picks}'>${h.picks}</td><td data-sort='${h.wins}'>${h.wins}</td><td data-sort='${wr.toFixed(4)}'>${fmtPct(wr)}</td></tr>`; }).join('');
+  document.querySelector('#heroesTable tbody').innerHTML = heroRows;
+  makeSortable(document.getElementById('heroesTable'));
+
+  // Players full list
+  const allPlayers=(report.highlights.players.all||[]).slice();
+  allPlayers.sort((a,b)=> a.name.localeCompare(b.name,'de',{sensitivity:'base'}));
+  const playerRows = allPlayers.map(p=>{
+    const wr=p.games? p.wins/p.games:0; return `<tr><td data-sort='${esc(p.name)}'>${esc(p.name)}</td><td data-sort='${p.games}'>${p.games}</td><td data-sort='${p.wins - p.losses}'>${p.wins}-${p.losses}</td><td data-sort='${wr.toFixed(4)}'>${fmtPct(wr)}</td></tr>`; }).join('');
+  document.querySelector('#playersTable tbody').innerHTML = playerRows;
+  makeSortable(document.getElementById('playersTable'));
+
+  // Teams full list (use placements for totals)
+  const placements = (report.placements||[]).slice();
+  const teamRows = placements.map(t=>{
+    const wr = t.games? t.wins/t.games:0;
+    return `<tr>
+      <td data-sort='${esc(t.name||"")}'><span>${esc(t.name||'')}</span></td>
+      <td data-sort='${t.games||0}'>${t.games||0}</td>
+      <td data-sort='${(t.wins||0) - (t.losses||0)}'>${t.wins||0}-${t.losses||0}</td>
+      <td data-sort='${wr.toFixed(4)}'>${fmtPct(wr)}</td>
+    </tr>`;
+  }).join('');
+  const teamsTb = document.querySelector('#teamsTable tbody');
+  if(teamsTb){ teamsTb.innerHTML = teamRows || `<tr><td colspan='4' class='sub'>Keine Team-Daten</td></tr>`; makeSortable(document.getElementById('teamsTable')); }
+}
+
+async function main(){
+  await loadHeroes();
+  await loadMapConf();
+  const slug=qs('league')||''; const from=qs('from'); const to=qs('to');
+  document.getElementById('leagueTitle').textContent = `League Viewer - ${slug}`;
+  document.getElementById('headerSub').textContent = `Range: ${from||'?'} - ${to||'?'} UTC | League ${slug}`;
+  ensureWardMapBackground();
+  const probes = [
+    `../data/league/${slug}/report.json`,
+    `../../data/league/${slug}/report.json`,
+    `../../../data/league/${slug}/report.json`,
+    `${location.origin}/data/league/${slug}/report.json`
+  ];
+  let report=null; for(const p of probes){ report = await loadJson(p); if(report) break; }
+  if(!report){ document.getElementById('highlightsBody').textContent='Failed to load report.json'; return; }
+  window.__REPORT_REPORT__ = report; // store full report
+  renderHighlights(report.highlights);
+  renderPlacements(report.placements);
+  computeBasicTables(report);
+  // Precompute wards so tab isn't empty on first open
+  computeWardsClient(report);
+}
+main();
+// Main Tab logic (scope to header tabs only)
+const mTabs=document.querySelectorAll('#mainTabs .tab');
+const panes={}; document.querySelectorAll('.tabpane').forEach(p=> panes[p.id.replace('pane-','')] = p);
+mTabs.forEach(t=> t.addEventListener('click',()=>{ mTabs.forEach(x=>x.classList.remove('active')); t.classList.add('active'); const id=t.dataset.tab; document.querySelectorAll('.tabpane').forEach(p=>p.style.display='none'); const pane=document.getElementById('pane-'+id); if(pane) pane.style.display=''; if(id==='wards'){ computeWardsClient(window.__REPORT_REPORT__); } }));
+// Wire ward view tabs
+document.querySelectorAll('#wardViewTabs .tab').forEach(b=>{
+  b.addEventListener('click',()=>{ const mode=b.dataset && b.dataset.wmode ? b.dataset.wmode : 'best'; renderWardByMode(mode); });
+});
+</script>
+</body>
+</html>
