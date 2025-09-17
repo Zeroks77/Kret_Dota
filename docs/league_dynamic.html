@@ -5,6 +5,7 @@
 <title>League Dynamic Viewer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23121834'/%3E%3Cpath d='M3 11l2.8-6h1.8L11 11H9.1L8.5 9.5H5.5L4.9 11H3zm3-3h2L6.9 6.6 6 8z' fill='%239ec7ff'/%3E%3C/svg%3E"/>
 <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
+<script defer src="js/ward_viewer.js"></script>
 <style>
 /* Expanded design tokens */
 :root{--bg:#0b1020;--panel:#121b34;--panel-alt:#182246;--grad:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));--muted:#93a0b4;--text:#eef3fb;--accent:#6eadff;--accent-glow:#3693ff;--chip:#1a2544;--border:rgba(255,255,255,.08);--success:#34d399;--danger:#ef6363;--warn:#f7b955;--radius:14px;--radius-sm:8px;--shadow:0 4px 12px -4px rgba(0,0,0,.4),0 2px 4px -2px rgba(0,0,0,.3)}
@@ -135,59 +136,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:1
     </section>
   </div>
   <div id="pane-wards" class="tabpane" style="display:none">
-    <section class="card">
-      <h2 style="margin:0 0 8px;font-size:18px">Ward Spots</h2>
-      <div class="sub" style="margin-bottom:8px">Best / Worst Platzierungen nach durchschnittlicher Lebensdauer. Fallback: neutrale Gesamtspots (Top 40 nach Häufigkeit).</div>
-      <div class="wardgrid">
-        <div>
-          <div style="display:flex;align-items:center;gap:8px;margin:6px 0 6px;flex-wrap:wrap">
-            <div class="section-label" style="margin:0">Ansicht</div>
-            <div id="wardViewTabs" class="tabs" style="margin:0">
-              <button class="tab active" data-wmode="best">Best</button>
-              <button class="tab" data-wmode="worst">Worst</button>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px">
-              <div class="sub" style="opacity:.85">Zeitfenster</div>
-              <div id="wardTimeSeg" class="segmented" role="tablist" aria-label="Zeitfenster">
-                <button class="seg" data-time="">All</button>
-                <button class="seg" data-time="early">Early</button>
-                <button class="seg" data-time="mid">Mid</button>
-                <button class="seg" data-time="earlylate">Early Late</button>
-                <button class="seg" data-time="late">Late</button>
-                <button class="seg" data-time="superlate">Super Late</button>
-              </div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px;margin-left:auto">
-              <div class="sub" style="opacity:.85">Team</div>
-              <div id="wardTeamSeg" class="chip-row" aria-label="Team Filter">
-                <!-- Chips inserted by JS -->
-              </div>
-            </div>
-          </div>
-          <div id="wardMapContainer">
-            <div class="wardmap enhanced" id="wardMap"><svg></svg></div>
-            <div class="sub" id="wardMapLegend" style="margin-top:6px">Green = Best avg lifetime, Red = Worst.</div>
-            <div class="sub" id="wardStatus" style="margin-top:4px;opacity:.85"></div>
-            <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
-              <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="toggleWardOverlay" checked style="vertical-align:middle;margin-right:6px">Overlay</label>
-              <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="toggleWardGrid" style="vertical-align:middle;margin-right:6px">Grid</label>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div id="wardLists" style="display:flex;flex-direction:column;gap:12px;margin-top:6px">
-            <div>
-              <div class="title" style="margin:0 0 6px">Best Spots</div>
-              <div id="wl-best" class="sub">(leer)</div>
-            </div>
-            <div>
-              <div class="title" style="margin:0 0 6px">Worst Spots</div>
-              <div id="wl-worst" class="sub">(leer)</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <div id="wardMount"></div>
   </div>
 
   <div id="pane-players" class="tabpane" style="display:none">
@@ -264,21 +213,8 @@ function applyHeaderFromMeta(report, slug){
     if(name){ document.title = `${name} - League Dynamic Viewer`; }
   }catch(_e){ /* noop */ }
 }
-// Ensure ward map background loads from local asset if available
-async function ensureWardMapBackground(){
-  const el=document.getElementById('wardMap'); if(!el) return;
-  // Prefer configured map asset from MAP_CONF, then fall back to local defaults / OpenDota
-  const candidates=(function(){
-    const arr=[]; try{
-      const mc = MAP_CONF||{}; const asset = (mc.major && mc.current && mc.major[mc.current]) ? mc.major[mc.current] : null;
-      if(asset && asset.src){ arr.push(asset.src); }
-    }catch(_e){}
-    arr.push('img/7_39/Game_map_7.39.jpg','../img/7_39/Game_map_7.39.jpg','/img/7_39/Game_map_7.39.jpg','https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg');
-    return arr;
-  })();
-  function probe(url){ return new Promise(r=>{ const im=new Image(); im.onload=()=>r(url); im.onerror=()=>r(null); im.src=url; }); }
-  for(const url of candidates){ const ok=await probe(url); if(ok){ el.style.backgroundImage = `url('${ok}')`; break; } }
-}
+// Back-compat: noop now that WardViewer sets its own background
+async function ensureWardMapBackground(){ /* no-op */ }
 
 function renderPlacements(list){ const tb=document.querySelector('#placementsTable tbody'); if(!tb) return; tb.innerHTML = (list||[]).map(p=>`<tr><td>${p.place}</td><td>${esc(p.name)}</td><td>${p.games}</td><td>${p.wins}</td><td>${p.losses}</td><td>${fmtPct(p.winrate)}</td></tr>`).join(''); }
 
@@ -494,9 +430,20 @@ async function computeWardsClient(report){
   const relMatches = `${REL_BASE}/league/${slug}/matches.json`;
   const rawMatches = `${RAW_BASE}/league/${slug}/matches.json`;
   let matches = await loadJsonWithFallback(relMatches, rawMatches);
-  let all=[]; const teamSet=new Map();
+  let all=[]; const teamSet=new Map(); const playerMap=new Map();
+  const reg = (window.__REG_NAME_MAP__ instanceof Map) ? window.__REG_NAME_MAP__ : new Map();
   if(matches && Array.isArray(matches)){
-    // If matches.json lacks obs logs, try to fetch per-match details from cache
+    // Pre-collect player names from match summaries (even if they lack logs)
+    try{
+      for(const m of matches){
+        if(!m || !Array.isArray(m.players)) continue;
+        for(const pl of m.players){
+          if(!pl) continue; const aid=Number(pl.account_id||0)||0; const pname = reg.get(aid) || pl.personaname || pl.name || '';
+          if(aid && pname && !playerMap.has(aid)) playerMap.set(aid, pname);
+        }
+      }
+    }catch(_e){}
+    // If matches.json lacks per-player obs logs, try to fetch per-match details from cache
   const hasLogs = matches.some(m=> Array.isArray(m.obs_log) || Array.isArray(m.obs_left_log) || (Array.isArray(m.players) && m.players.some(p=> Array.isArray(p?.obs_log) || Array.isArray(p?.obs_left_log))));
     const wardStats=new Map();
   async function consumeMatch(detail){
@@ -514,6 +461,8 @@ async function computeWardsClient(report){
       // Iterate each player's placements to attribute to side/team
       for(const pl of (detail.players||[])){
         if(!pl || !Array.isArray(pl.obs_log) || pl.obs_log.length===0) continue;
+  const aid = Number(pl.account_id)||0; const pname = reg.get(aid) || pl.personaname || pl.name || (aid?('#'+aid):'Unknown');
+        if(aid && !playerMap.has(aid)) playerMap.set(aid, pname);
         const isRad = !!(pl.is_radiant || Number(pl.player_slot)<128);
         const side = isRad ? 'Radiant' : 'Dire';
         const teamId = isRad ? rTeamId : dTeamId; const teamName = isRad ? rTeamName : dTeamName;
@@ -522,33 +471,40 @@ async function computeWardsClient(report){
           const start = Math.max(0, o.time||0);
           // find first matching removal
           let removal=null; for(const l of left){ if(l.used) continue; if(l.x===o.x&&l.y===o.y&&(l.time||0)>=start){ removal=l; l.used=true; break; } }
-          let life=0; if(removal) life=(removal.time||0)-start; else life=Math.max(0, Math.min(dur,420)-start);
+          let life=0; if(removal) life=(removal.time||0)-start; else life=Math.max(0, Math.min(dur,360)-start);
+          if(life>360) life=360;
           const keyStr = (typeof o.key==='string' && o.key) ? o.key.replace(/\[|\]|\s/g,'') : `${Math.round(o.x||0)},${Math.round(o.y||0)}`;
           const ws=wardStats.get(keyStr)||{spot:keyStr,x:o.x,y:o.y,count:0,total:0, bySide:{Radiant:{count:0,total:0}, Dire:{count:0,total:0}}, byTeam:{}, samples:[]};
           ws.count++; ws.total+=life; ws.x=o.x; ws.y=o.y;
           ws.bySide[side].count++; ws.bySide[side].total += life;
           if(teamId){ const t = ws.byTeam[teamId] || {id:teamId,name:teamName,count:0,total:0}; t.count++; t.total+=life; ws.byTeam[teamId]=t; }
           // Keep per-placement sample for time-filtered views
-          ws.samples.push({ t:start, life:life, side:side, teamId:teamId||0 });
+          ws.samples.push({ t:start, life:life, side:side, teamId:teamId||0, aid: aid||0 });
           wardStats.set(keyStr,ws);
         }
       }
     }
     if(hasLogs){
       for(const m of matches){ await consumeMatch(m); }
-      WARD_SOURCE='client-matches';
+      if(wardStats.size>0){
+        WARD_SOURCE='client-matches';
+      } else {
+        // Fallback to cached details if no samples produced
+        const ids = matches.map(m=>m.match_id).filter(Boolean);
+        const maxN = Math.min(ids.length, 400);
+        const bases = [ `${REL_BASE}/cache/OpenDota/matches/`, `${RAW_BASE}/cache/OpenDota/matches/` ];
+        async function fetchDetail(id){ for(const b of bases){ const url = `${b}${id}.json`; const j = await loadJson(url); if(j) return j; } return null; }
+        const concurrency=8; let idx=0; let ok=0; async function worker(){ while(idx<maxN){ const i=idx++; const id=ids[i]; const d=await fetchDetail(id); if(d){ ok++; await consumeMatch(d); } } }
+        await Promise.all(Array.from({length:concurrency},()=>worker()));
+        WARD_SOURCE = ok>0 ? 'client-cache' : '';
+      }
     } else {
       // Fetch details from cache; limit to 400 matches to avoid UI freeze
       const ids = matches.map(m=>m.match_id).filter(Boolean);
       const maxN = Math.min(ids.length, 400);
       const bases = [ `${REL_BASE}/cache/OpenDota/matches/`, `${RAW_BASE}/cache/OpenDota/matches/` ];
-      async function fetchDetail(id){
-        for(const b of bases){ const url = `${b}${id}.json`; const j = await loadJson(url); if(j) return j; }
-        return null;
-      }
-      // Simple concurrency
-      const concurrency=8; let idx=0; let ok=0;
-      async function worker(){ while(idx<maxN){ const i=idx++; const id=ids[i]; const d=await fetchDetail(id); if(d){ ok++; await consumeMatch(d); } } }
+      async function fetchDetail(id){ for(const b of bases){ const url = `${b}${id}.json`; const j = await loadJson(url); if(j) return j; } return null; }
+      const concurrency=8; let idx=0; let ok=0; async function worker(){ while(idx<maxN){ const i=idx++; const id=ids[i]; const d=await fetchDetail(id); if(d){ ok++; await consumeMatch(d); } } }
       await Promise.all(Array.from({length:concurrency},()=>worker()));
       WARD_SOURCE = ok>0 ? 'client-cache' : '';
     }
@@ -564,7 +520,7 @@ async function computeWardsClient(report){
     all=(wd.allSpots||[]).map(s=>({...s, total:(s.avgSeconds||0)*(s.count||0), bySide:{Radiant:{count:0,total:0},Dire:{count:0,total:0}}, byTeam:{}, samples: [] }));
     WARD_SOURCE='server';
   }
-  __WARD_CACHE__ = { all, teams: Array.from(teamSet.values()) };
+  __WARD_CACHE__ = { all, teams: Array.from(teamSet.values()), players: Array.from(playerMap.entries()).map(([id,name])=>({id, name})) };
   try{ console.info('WARD_SOURCE', WARD_SOURCE||'(none)', {all:all.length, teams: __WARD_CACHE__.teams.length}); }catch(_e){}
   function listify(arr){
     if(!arr.length) return `<div class='sub'>Keine Daten</div>`;
@@ -757,23 +713,56 @@ async function main(){
   let report = await loadJsonWithFallback(relReport, rawReport);
   if(!report){ document.getElementById('highlightsBody').textContent='Failed to load report.json'; return; }
   window.__REPORT_REPORT__ = report; // store full report
+  // Build a map of registered names from report for consistent naming (prefer over Steam personaname)
+  try{
+    const reg = new Map();
+    const ppl = report && report.highlights && report.highlights.players && Array.isArray(report.highlights.players.all)
+      ? report.highlights.players.all : [];
+    for(const p of ppl){
+      const aid = Number(p.account_id || p.id || p.aid || 0);
+      const nm = String(p.name || '').trim();
+      if(aid>0 && nm) reg.set(aid, nm);
+    }
+    window.__REG_NAME_MAP__ = reg;
+  }catch(_e){ window.__REG_NAME_MAP__ = new Map(); }
   // Apply meta-based header (name/from/to) if available
   applyHeaderFromMeta(report, slug);
   renderHighlights(report.highlights);
   renderPlacements(report.placements);
   computeBasicTables(report);
-  // Precompute wards so tab isn't empty on first open
-  computeWardsClient(report);
+  // Prepare data for shared WardViewer module
+  await computeWardsClient(report);
+  try{
+    const container = document.getElementById('wardMount');
+    if(container && window.WardViewer){
+      const teams = Array.from(new Map((report.placements||[]).map(t=>['T'+(t.team_id||t.id), {id: t.team_id||t.id, name: t.name}])).values()).filter(t=>t.id);
+      const reg = (window.__REG_NAME_MAP__ instanceof Map) ? window.__REG_NAME_MAP__ : new Map();
+      let players = (__WARD_CACHE__ && Array.isArray(__WARD_CACHE__.players)) ? __WARD_CACHE__.players.map(p=>({ id: Number(p.id), name: reg.get(Number(p.id)) || p.name })) : [];
+      if(!players.length){
+        // derive from ward samples
+        const ids=new Map();
+        for(const s of ((__WARD_CACHE__&&__WARD_CACHE__.all)||[])){
+          const sm=Array.isArray(s.samples)? s.samples: [];
+          for(const o of sm){ const aid=Number(o.aid||0); if(aid>0 && !ids.has(aid)) ids.set(aid, aid); }
+        }
+        // try to resolve names via pre-collected playerMap (from computeWardsClient)
+        const nameMap = new Map((__WARD_CACHE__ && Array.isArray(__WARD_CACHE__.players) ? __WARD_CACHE__.players : []).map(p=>[Number(p.id), p.name]));
+        players = Array.from(ids.keys()).map(id=>({id, name: reg.get(Number(id)) || nameMap.get(Number(id)) || `Player ${id}`}));
+      }
+      window.WardViewer.mount(container, {
+        mapConf: MAP_CONF,
+        data: { spots: (__WARD_CACHE__&&__WARD_CACHE__.all)||[], teams, players },
+        options: { modeDefault: 'best', showExtras: false }
+      });
+    }
+  }catch(_e){}
 }
 main();
 // Main Tab logic (scope to header tabs only)
 const mTabs=document.querySelectorAll('#mainTabs .tab');
 const panes={}; document.querySelectorAll('.tabpane').forEach(p=> panes[p.id.replace('pane-','')] = p);
 mTabs.forEach(t=> t.addEventListener('click',()=>{ mTabs.forEach(x=>x.classList.remove('active')); t.classList.add('active'); const id=t.dataset.tab; document.querySelectorAll('.tabpane').forEach(p=>p.style.display='none'); const pane=document.getElementById('pane-'+id); if(pane) pane.style.display=''; if(id==='wards'){ computeWardsClient(window.__REPORT_REPORT__); } }));
-// Wire ward view tabs
-document.querySelectorAll('#wardViewTabs .tab').forEach(b=>{
-  b.addEventListener('click',()=>{ const mode=b.dataset && b.dataset.wmode ? b.dataset.wmode : 'best'; renderWardByMode(mode); });
-});
+// (ward tabs now handled by WardViewer)
 </script>
 </body>
 </html>

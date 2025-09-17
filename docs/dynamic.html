@@ -64,6 +64,17 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .summary-card li{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
 .summary-card li:last-child{border-bottom:0}
 .summary-card img{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)}
+/* Performance cards */
+.perf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (max-width: 720px){.perf-grid{grid-template-columns:1fr}}
+.perf-card{display:flex;align-items:center;justify-content:space-between;padding:10px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025))}
+.perf-left{display:flex;align-items:center;gap:10px}
+.perf-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:radial-gradient(22px 22px at 30% 30%, rgba(158,199,255,.45), rgba(158,199,255,.12));border:1px solid rgba(158,199,255,.25);font-size:16px}
+.perf-meta{display:flex;flex-direction:column;line-height:1.15}
+.perf-label{font-size:12px;color:var(--muted)}
+.perf-player a{color:var(--text)}
+.perf-value{font-weight:700;font-size:18px}
+.perf-actions{display:flex;gap:6px;align-items:center}
 /* Awards layout */
 .aw-toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:-4px 0 8px}
 .aw-tile{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column;height:100%}
@@ -82,6 +93,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .cal .matches{display:flex;flex-wrap:wrap;gap:4px}
 .cal .matches a{display:inline-block;background:var(--chip);color:var(--text);border-radius:999px;font-size:11px;padding:2px 6px}
 </style>
+<script defer src="js/ward_viewer.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -134,6 +146,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
   <!-- Main tabs like in All-time report -->
   <div class="tabs" id="mainTabs" style="margin-top:12px">
     <button class="tab active" data-tab="highlights">Highlights</button>
+  <button class="tab" data-tab="wards">Wards</button>
     <button class="tab" data-tab="players">Players</button>
     <button class="tab" data-tab="heroes">Heroes</button>
     <button class="tab" data-tab="teams">Teams</button>
@@ -147,8 +160,19 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
         <h2 style="margin:0 0 0;font-size:18px">Highlights</h2>
   <div class="sub">Auto-switches with quick range (30/60/120 days, Patch, All)</div>
       </div>
-      <div id="highlightsBody"></div>
+      <div id="highlightsBody">
+      </div>
     </div>
+  </div>
+
+  <div id="pane-wards" class="tabpane" style="display:none">
+    <section class="card" style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <h2 style="margin:0 0 0;font-size:18px">Wards</h2>
+        <div class="sub">Best/Worst by time window and team filter</div>
+      </div>
+      <div id="dvWardMount"></div>
+    </section>
   </div>
 
   <div id="pane-players" class="tabpane" style="display:none">
@@ -638,12 +662,30 @@ function renderHighlights(high, heroMap, mapConf, label){
   }
   // Top single-match performances
   const ts = high.topSingle||{};
-  const topHtml = ['gpm','kills','assists','networth'].map(k=>{
-    const p = ts[k]; if(!p) return '';
-    const name=esc(p.name||'Player'); const profile=esc(p.profile||'#'); const val = esc(p.value); const mid = esc(p.match_id||'');
-    const label = k==='gpm'?'Highest GPM':k==='kills'?'Highest Kills':k==='assists'?'Highest Assists':'Highest Net Worth';
-    return `<li><span><a href='${profile}' target='_blank'>${name}</a></span><span class='badge'>${label}: <strong>${val}</strong></span><a class='badge' target='_blank' href='${OD_MATCH_URL(mid)}'>Match</a></li>`;
-  }).filter(Boolean).join('') || `<li><span class='sub'>no games</span></li>`;
+  const topPerfHtml = (()=>{
+    const order = ['gpm','kills','assists','networth'];
+    const icon = (k)=> k==='gpm'?'💰':k==='kills'?'⚔️':k==='assists'?'🤝':'💎';
+    const label = (k)=> k==='gpm'?'Highest GPM':k==='kills'?'Highest Kills':k==='assists'?'Highest Assists':'Highest Net Worth';
+    const cards = order.map(k=>{
+      const p = ts[k]; if(!p) return '';
+      const name=esc(p.name||'Player'); const profile=esc(p.profile||'#'); const val = esc(p.value); const mid = esc(p.match_id||'');
+      return `<div class='perf-card'>
+        <div class='perf-left'>
+          <div class='perf-icon'>${icon(k)}</div>
+          <div class='perf-meta'>
+            <div class='perf-label'>${label(k)}</div>
+            <div class='perf-player'><a href='${profile}' target='_blank' rel='noopener'>${name}</a></div>
+          </div>
+        </div>
+        <div class='perf-actions'>
+          <div class='perf-value'>${val}</div>
+          <a class='badge' target='_blank' rel='noopener' href='${OD_MATCH_URL(mid)}'>Match</a>
+        </div>
+      </div>`;
+    }).filter(Boolean);
+    if(!cards.length) return `<div class='sub'>no games</div>`;
+    return `<div class='perf-grid'>${cards.join('')}</div>`;
+  })();
   // Durations
   function durList(arr){
     if(!Array.isArray(arr) || !arr.length) return `<li><span class='sub'>no games</span></li>`;
@@ -665,138 +707,7 @@ function renderHighlights(high, heroMap, mapConf, label){
       return `<li><span>${aN} + ${bN}</span><span class='badge'>WR: <strong>${fmtPct(wr)}</strong></span><span class='badge'>G: ${d.games||0}</span></li>`;
     }).join('');
   }
-  // Ward map rendering (popular spots + longest + player stats)
-  function wardHtml(){
-  // Always render the ward map container; if there is no data, we'll just show an empty overlay and "no games" lists
-  const map = mapConf || {};
-    const asset = (map.major && map.current && map.major[map.current]) ? map.major[map.current] : null;
-  let bg = asset && asset.src ? asset.src : (map.default || 'https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg');
-  const bgUrls = [];
-  if(asset && asset.src) bgUrls.push(asset.src);
-  if(map && map.default) bgUrls.push(map.default);
-  const bgCss = bgUrls.length ? bgUrls.map(u=>`url('${esc(u)}')`).join(', ') : `url('${esc(bg)}')`;
-  const mapScale = asset && asset.scale ? Number(asset.scale) : Number(map.defaultScale||127);
-    const invertY = !!(asset && asset.invertY);
-  // Bounds mapping like 30-day report (minX/minY/maxX/maxY) when available
-  const minX = asset && asset.minX!=null ? Number(asset.minX) : null;
-  const minY = asset && asset.minY!=null ? Number(asset.minY) : null;
-  const maxX = asset && asset.maxX!=null ? Number(asset.maxX) : null;
-  const maxY = asset && asset.maxY!=null ? Number(asset.maxY) : null;
-  const hasBounds = (minX!=null && minY!=null && maxX!=null && maxY!=null && maxX>minX && maxY>minY);
-  // Derive dynamic scale from observed ward coordinates to avoid clamping when scale is outdated
-  const observedMax = (function(){ let mx=0,my=0; for(const ev of (high.wardEvents||[])){ const x=Number(ev.x); const y=Number(ev.y); if(isFinite(x)) mx=Math.max(mx,x); if(isFinite(y)) my=Math.max(my,y); } return {mx,my}; })();
-  const dynScale = Math.max(isFinite(mapScale)?mapScale:0, observedMax.mx, observedMax.my, 1);
-    // radii (percent of width) - prefer units or asset-specific pct
-    const cellUnits = (asset && asset.cellUnits) ? Number(asset.cellUnits) : Number(map.defaultCellUnits||128);
-    const obsUnits  = (asset && asset.obsRadiusUnits) ? Number(asset.obsRadiusUnits) : Number(map.defaultObsRadiusUnits||1600);
-    let obsPct = (asset && asset.obsRadiusPct!=null) ? Number(asset.obsRadiusPct) : (map.defaultObsRadiusPct!=null ? Number(map.defaultObsRadiusPct) : 10);
-    // Only auto-compute radius when not explicitly provided in asset/defaults
-    const shouldAuto = !(asset && asset.obsRadiusPct!=null) && !(map.defaultObsRadiusPct!=null);
-    if(shouldAuto && obsUnits && cellUnits){
-      if(hasBounds){ const calc = (obsUnits/(cellUnits*(maxX-minX)))*100; if(isFinite(calc)&&calc>0){ obsPct = Math.round(calc*100)/100; } }
-      else if(dynScale){ const calc = (obsUnits/(cellUnits*dynScale))*100; if(isFinite(calc)&&calc>0){ obsPct = Math.round(calc*100)/100; } }
-    }
-    if(!isFinite(obsPct) || obsPct<=0) obsPct = 10;
-  // Prefer local asset; if missing, fall back to OpenDota default
-  if((!asset || !asset.src) && map.default){ bg = map.default; }
-    // Build SVG circles for ranked spots and longest-lived
-  const spotMap = new Map();
-  for(const e of (high.wardEvents||[])){
-      const k = `${e.x},${e.y}`; const info = spotMap.get(k)||{obs:false,sen:false};
-      if(e.type==='obs') info.obs=true; if(e.type==='sen') info.sen=true; spotMap.set(k,info);
-    }
-    function norm(x,y){
-      const X = Number(x||0), Y = Number(y||0);
-      if(hasBounds){
-        const clX = Math.max(minX, Math.min(maxX, X));
-        const clY = Math.max(minY, Math.min(maxY, Y));
-        // For a 0..127 grid, this reduces to clX/127 and clY/127; keep generic for other grids
-        const cx0 = (clX - minX) / (maxX - minX);
-        let cy0 = (clY - minY) / (maxY - minY);
-        if(invertY) cy0 = 1 - cy0;
-        return { cx: Math.round(cx0*10000)/100, cy: Math.round(cy0*10000)/100 };
-      } else {
-        // Fallback to observed scale
-        let cx0 = Math.max(0, Math.min(dynScale, X)) / dynScale;
-        let cy0 = Math.max(0, Math.min(dynScale, Y)) / dynScale;
-        if(invertY) cy0 = 1 - cy0;
-        return { cx: Math.round(cx0*10000)/100, cy: Math.round(cy0*10000)/100 };
-      }
-    }
-    function svgFor(list, longest){
-      return list.map((s, idx)=>{
-        const k = String(s.spot||''); if(!k) return '';
-        const [x,y] = k.split(',').map(Number); const {cx,cy} = norm(x,y);
-        const info = spotMap.get(k)||{obs:false,sen:false}; if(!info.obs) return '';
-        const id = s.spotId ? String(s.spotId) : '';
-        const cnt = Number(s.count||0);
-        const mx = Number(s.maxSeconds||0); const mm = Math.floor(mx/60), ss = mx%60;
-        const nlabel = `Ward ${idx+1}`;
-    const title = longest ? `${nlabel} — (${k}, norm ${cx}%, ${cy}%) • Longest life: ${mm}m ${ss}s • Placements: ${cnt}` : `${nlabel} — (${k}, norm ${cx}%, ${cy}%) • Placements: ${cnt}`;
-        const klass = longest ? 'spot longest' : 'spot';
-        const stroke = longest ? 'rgba(86,227,150,0.55)' : 'rgba(255,215,0,0.65)';
-        const fill = longest ? 'rgba(86,227,150,0.06)' : 'rgba(255,215,0,0.08)';
-        const idAttr = id ? ` id='${id}'` : '';
-        return `<circle${idAttr} class='${klass}' cx='${cx}%' cy='${cy}%' r='${obsPct}' fill='${fill}' stroke='${stroke}' stroke-width='0.8' opacity='0.8'>\n<title>${esc(title)}</title>\n</circle>\n<circle cx='${cx}%' cy='${cy}%' r='1.0' fill='${stroke}' opacity='0.85' />`;
-      }).join('\n');
-    }
-  const svgSpots = svgFor(high.wardSpots||[], false);
-    const svgLongest = svgFor(high.wardLongest||[], true);
-  // Debug grid (10x10) to verify projection
-  const grid = (function(){ const lines=[]; for(let i=0;i<=10;i++){ const p=i*10; lines.push(`<line x1='${p}%' y1='0%' x2='${p}%' y2='100%' stroke='rgba(255,255,255,.08)' stroke-width='0.3'/>`); lines.push(`<line x1='0%' y1='${p}%' x2='100%' y2='${p}%' stroke='rgba(255,255,255,.08)' stroke-width='0.3'/>`);} return lines.join(''); })();
-    // Lists
-    function wardList(arr){ if(!Array.isArray(arr)||!arr.length) return `<li><span class='sub'>no games</span></li>`;
-      return arr.map((s, idx)=>{ const sid = s.spotId? String(s.spotId):''; const mx = Number(s.maxSeconds||0); const mm=Math.floor(mx/60), ss=mx%60; const cnt = Number(s.count||0); const [x,y] = String(s.spot||'').split(',').map(Number); const coords = (isFinite(x)&&isFinite(y)) ? `${Math.round(x)},${Math.round(y)}` : String(s.spot||''); const nlabel = `Ward ${idx+1}`; return `<li data-spot='${sid}' title='${esc(coords)}'><span>${nlabel}</span>`+(mx?`<span class='badge'>${mm}m ${ss}s</span>`:'')+`<span class='badge'>x${cnt}</span></li>`; }).join(''); }
-    function wardPlayersList(arr, unit){ if(!Array.isArray(arr)||!arr.length) return `<li><span class='sub'>no data</span></li>`; return arr.map(p=>`<li><span>${linkPlayer(p)}</span><span class='badge'>x${Number(p.count||0)}</span></li>`).join(''); }
-    const players = high.wardPlayers||{};
-  return `
-    <h3>Ward Spots</h3>
-    <div class='wardgrid'>
-      <div class='wardleft'>
-        <div class='sub' style='margin:-4px 0 8px'>${esc(label||'Period')} | Number = count of observer placements at spot | Circle = observer vision radius (~1600u).</div>
-  <div class='wardmap' id='dvWardMap' style="background-image: ${bgCss}">
-          <svg id='dvWardSvg' viewBox='0 0 100 100' preserveAspectRatio='none' width='100%' height='100%'>
-            <g id='dv-ov-debug' style='display:none'>${grid}</g>
-            <g id='dv-ov-spots'>${svgSpots||''}</g>
-            <g id='dv-ov-longest' style='display:none'>${svgLongest||''}</g>
-          </svg>
-        </div>
-        <div style='display:flex;align-items:center;gap:10px;margin-top:10px'>
-          <label style='font-size:13px;color:var(--muted)'><input id='dvToggleSpots' type='checkbox' checked style='vertical-align:middle;margin-right:6px'>Show ward overlay</label>
-          <label style='font-size:13px;color:var(--muted)'><input id='dvToggleDebug' type='checkbox' style='vertical-align:middle;margin-right:6px'>Show debug grid</label>
-        </div>
-      </div>
-      <div class='wardright'>
-        <div class='tabs'>
-          <button class='tab active' data-tab='spots'>Most popular spots</button>
-          <button class='tab' data-tab='players'>Players</button>
-          <button class='tab' data-tab='longest'>Longest-lived spots (min 3 placements)</button>
-        </div>
-        <div id='dv-tab-spots' class='tabpane active'>
-          <ul id='dvSpotList' class='simple' style='margin-top:8px'>${wardList(high.wardSpots||[])}</ul>
-        </div>
-        <div id='dv-tab-players' class='tabpane' style='display:none'>
-          <div class='grid3'>
-            <div>
-              <h4>Most placed</h4>
-              <ul class='simple'>${wardPlayersList(players.mostPlaced||[])}</ul>
-            </div>
-            <div>
-              <h4>Most dewards</h4>
-              <ul class='simple'>${wardPlayersList(players.mostDewards||[])}</ul>
-            </div>
-            <div>
-              <h4>Most successful (avg. lifetime)</h4>
-              <ul class='simple'>${(players.longestAvg||[]).map(p=>{ const sec=Number(p.avgSeconds||0); const mm=Math.floor(sec/60), ss=sec%60; return `<li><span>${linkPlayer(p)}</span><span class='badge'>${mm}m ${ss}s avg</span><span class='badge'>n=${p.samples||0}</span></li>`; }).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
-            </div>
-          </div>
-        </div>
-        <div id='dv-tab-longest' class='tabpane' style='display:none'>
-          <ul id='dvLongestList' class='simple' style='opacity:.85'>${wardList(high.wardLongest||[])}</ul>
-        </div>
-    </div>
-  </div>`;
-  }
+  // Ward map rendering handled by shared WardViewer module
   const roshByMatchHtml = (function(){
     const list = (high.roshanByMatch||[]).slice(0,5);
     if(!list.length) return '';
@@ -823,7 +734,7 @@ function renderHighlights(high, heroMap, mapConf, label){
       </div>
       <div>
         <h3>Top single-match performances</h3>
-        <ul class="simple">${topHtml}</ul>
+        ${topPerfHtml}
       </div>
     </div>
     <div class="grid3" style="margin-top:8px">
@@ -884,8 +795,8 @@ function renderHighlights(high, heroMap, mapConf, label){
         <h3>3 shortest matches</h3>
         <ul class="simple">${durList(high.durationShortest)}</ul>
       </div>
-    </div>
-    ${wardHtml()}`;
+  </div>
+  `;
   body.innerHTML = html; card.style.display='';
   // Attach rampage click-to-toggle handlers
   try{
@@ -897,35 +808,10 @@ function renderHighlights(high, heroMap, mapConf, label){
       });
     });
   }catch(_e){}
-  // Attach ward interactivity if present
-  attachWardUI(body);
+  // Ward interactivity handled by WardViewer
 }
 
-// Attach dynamic interactions for ward map/tabs/hover after DOM is inserted
-function attachWardUI(scope){
-  try{
-    const root = scope.querySelector('.wardgrid');
-    if(!root) return; // highlights may not include ward block when no data
-    const svg = root.querySelector('#dvWardSvg'); if(!svg) return;
-    const wrap = svg.closest('.wardmap'); const gSpots = svg.querySelector('#dv-ov-spots'); const gLongest = svg.querySelector('#dv-ov-longest');
-    const tabs = Array.from(root.querySelectorAll('.tabs .tab'));
-    function show(name){
-      root.querySelectorAll('.tabpane').forEach(p=>p.style.display='none');
-      const pane = root.querySelector('#dv-tab-'+name); if(pane) pane.style.display='';
-      tabs.forEach(b=>b.classList.toggle('active', b.getAttribute('data-tab')===name));
-      if(gSpots && gLongest){ if(name==='longest'){ gSpots.style.display='none'; gLongest.style.display=''; } else { gSpots.style.display=''; gLongest.style.display='none'; } }
-    }
-    tabs.forEach(b=> b.addEventListener('click', ()=> show(b.getAttribute('data-tab'))));
-    const active = new Set();
-    function setHighlight(id,on){ if(!id) return; const sel = '#'+CSS.escape(id); const els = svg.querySelectorAll(sel); if(els&&els.length){ els.forEach(el=> el.classList.toggle('hl', !!on)); }
-      if(on) active.add(id); else active.delete(id); if(wrap){ wrap.classList.toggle('highlighting', active.size>0); } }
-    function wireHover(ul){ if(!ul) return; ul.addEventListener('mouseover', e=>{ const li=e.target.closest('li[data-spot]'); if(!li) return; setHighlight(li.getAttribute('data-spot'), true); }); ul.addEventListener('mouseout', e=>{ const li=e.target.closest('li[data-spot]'); if(!li) return; setHighlight(li.getAttribute('data-spot'), false); }); }
-    wireHover(root.querySelector('#dvSpotList')); wireHover(root.querySelector('#dvLongestList'));
-  const toggle = root.querySelector('#dvToggleSpots'); if(toggle){ toggle.addEventListener('change', ()=>{ svg.style.display = toggle.checked ? '' : 'none'; }); }
-  const toggleDbg = root.querySelector('#dvToggleDebug'); const gDbg = svg.querySelector('#dv-ov-debug');
-  if(toggleDbg && gDbg){ toggleDbg.addEventListener('change', ()=>{ gDbg.style.display = toggleDbg.checked ? '' : 'none'; }); }
-  }catch(err){ console.warn('Ward UI attach failed', err); }
-}
+// Old attachWardUI removed; WardViewer handles interactivity
 
 async function main(){
   // Top-level tabs wiring
@@ -934,11 +820,19 @@ async function main(){
     if (!tabsRoot) return;
     const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
     function showTab(name){
-  ['highlights','players','heroes','teams','awards','calendar'].forEach(id=>{
+  ['highlights','wards','players','heroes','teams','awards','calendar'].forEach(id=>{
         const pane = document.getElementById('pane-'+id);
         if (pane) pane.style.display = (id===name)? '' : 'none';
       });
       tabs.forEach(b=> b.classList.toggle('active', b.getAttribute('data-tab')===name));
+      // Reflect selected tab in URL and localStorage
+      try{
+        const sp = new URLSearchParams(location.search);
+        if(name && name !== 'highlights') sp.set('tab', name); else sp.delete('tab');
+        const url = location.pathname + (sp.toString()? ('?'+sp.toString()):'') + location.hash;
+        history.replaceState(null, '', url);
+      }catch(_e){}
+      try{ localStorage.setItem('dv_tab', name||'highlights'); }catch(_e){}
     }
     tabs.forEach(b=> b.addEventListener('click', ()=> showTab(b.getAttribute('data-tab'))));
     // Expose for initial selection via URL
@@ -1211,12 +1105,8 @@ async function main(){
           if(aid>0 && obsLog.length){ addMapCount(obsPlacedBy, aid, obsLog.length); }
           for(const o of obsLog){ const x=Number(o.x), y=Number(o.y), t=Number(o.time||0); const k=`${x},${y}`; addMapCount(wardSpots, k, 1); wardEvents.push({x,y,type:'obs'}); placed.push({x,y,time:t}); }
           for(const o of leftLog){ left.push({x:Number(o.x), y:Number(o.y), time:Number(o.time||0), attackername: String(o.attackername||'')}); }
-          // Dewards
-          let dk = Number(p.obs_kills||0);
-          if(!dk && Array.isArray(p.sen_log)){
-            let alt=0; for(const s of p.sen_log){ const typ=String(s.type||s.action||''); if(/deward|obs_kill/i.test(typ)) alt++; }
-            dk=alt;
-          }
+          // Dewards (observers only)
+          let dk = Number(p.obs_kills||p.obs_killed||0);
           if(aid>0 && dk>0) addMapCount(dewardsBy, aid, dk);
           // Hero->Account for deward fallback
           if((p.hero_id|0)>0 && aid>0) heroToAccount.set(Number(p.hero_id), aid);
@@ -1227,11 +1117,11 @@ async function main(){
         const pBy=new Map(), lBy=new Map();
         for(const e of placed){ const k=`${e.x},${e.y}`; if(!pBy.has(k)) pBy.set(k,[]); pBy.get(k).push(Number(e.time||0)); }
         for(const e of left){ const k=`${e.x},${e.y}`; if(!lBy.has(k)) lBy.set(k,[]); lBy.get(k).push(Number(e.time||0)); }
-        for(const [k,pt] of pBy){ pt.sort((a,b)=>a-b); const lt=(lBy.get(k)||[]).sort((a,b)=>a-b); let j=0; for(let i=0;i<pt.length;i++){ const tP=pt[i]; while(j<lt.length && lt[j]<tP) j++; let life=480; if(j<lt.length){ life = Math.max(0, Number(lt[j]-tP)); j++; } const cur=wardLifeMax.get(k)||0; if(life>cur) wardLifeMax.set(k, life); } }
+  for(const [k,pt] of pBy){ pt.sort((a,b)=>a-b); const lt=(lBy.get(k)||[]).sort((a,b)=>a-b); let j=0; for(let i=0;i<pt.length;i++){ const tP=pt[i]; while(j<lt.length && lt[j]<tP) j++; let life=360; if(j<lt.length){ life = Math.max(0, Number(lt[j]-tP)); j++; } life = Math.min(360, life); const cur=wardLifeMax.get(k)||0; if(life>cur) wardLifeMax.set(k, life); } }
         // Lifetimes per player (avg)
   for(const p of players){
           const aid=Number(p.account_id||0); if(!(aid>0)) continue; const obsLog=Array.isArray(p.obs_log)? p.obs_log:[]; const leftLog=Array.isArray(p.obs_left_log)? p.obs_left_log:[];
-          const times=[]; const P=obsLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); const L=leftLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); let jj=0; for(let i=0;i<P.length;i++){ const tP=P[i]; while(jj<L.length && L[jj]<tP) jj++; let life=480; if(jj<L.length){ life = Math.max(0, L[jj]-tP); jj++; } times.push(life); }
+          const times=[]; const P=obsLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); const L=leftLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); let jj=0; for(let i=0;i<P.length;i++){ const tP=P[i]; while(jj<L.length && L[jj]<tP) jj++; let life=360; if(jj<L.length){ life = Math.max(0, L[jj]-tP); jj++; } times.push(Math.min(360, life)); }
           if(times.length){ const arr=lifeBy.get(aid)||[]; lifeBy.set(aid, arr.concat(times)); }
         }
         // Teammates per match, courier etc already counted per player; now pair counts
@@ -1425,6 +1315,62 @@ async function main(){
   const warnNoDetails = okDetails.length===0;
   const high = computeHighlightsFromDetails(details, heroMap);
   renderHighlights(high, heroMap, mapConf, label);
+  // Mount WardViewer into dedicated Wards tab
+  try{
+    const container = document.getElementById('dvWardMount');
+    if(container && window.WardViewer){
+      // Build teams from details (names best-effort)
+      const teamMap = new Map();
+      const playerMap = new Map();
+      for(const md of details){ if(!md) continue; const rId=Number(md.radiant_team_id||0), dId=Number(md.dire_team_id||0);
+        if(rId>0) teamMap.set(rId,{id:rId, name: md.radiant_name||(`Team ${rId}`)});
+        if(dId>0) teamMap.set(dId,{id:dId, name: md.dire_name||(`Team ${dId}`)});
+        // collect players for filtering
+        const pls = Array.isArray(md.players)? md.players:[];
+        for(const p of pls){ const aid=Number(p.account_id||0); if(aid>0){ const name = p.personaname || `Player ${aid}`; if(!playerMap.has(aid)) playerMap.set(aid,{id:aid, name}); } }
+      }
+      // Fallback: if details had no players (offline/partial), derive from subset and global playerNames
+      if(playerMap.size===0){
+        try{
+          const seen = new Set();
+          for(const m of subset||[]){
+            const pls = Array.isArray(m.players)? m.players: [];
+            for(const p of pls){
+              const aid = Number(p.account_id||0); if(!(aid>0)) continue;
+              if(seen.has(aid)) continue; seen.add(aid);
+              const nm = p.personaname || playerNames[String(aid)] || `Player ${aid}`;
+              playerMap.set(aid, { id: aid, name: nm });
+            }
+          }
+          // As a last resort, populate from global playerNames map
+          if(playerMap.size===0){
+            for(const [idStr,nm] of Object.entries(playerNames||{})){
+              const aid = Number(idStr)||0; if(!(aid>0)) continue;
+              playerMap.set(aid, { id: aid, name: String(nm||`Player ${aid}`) });
+            }
+          }
+        }catch(_e){}
+      }
+      // Build spot aggregates with samples for time slicing
+      const countBy = new Map(); const totalBy = new Map(); const bySide = new Map(); const byTeam = new Map(); const samplesBy = new Map();
+      for(const md of details){ if(!md) continue; const players = Array.isArray(md.players)? md.players: []; const rId=Number(md.radiant_team_id||0), dId=Number(md.dire_team_id||0);
+        for(const p of players){ const side = (Number(p.player_slot)<128)? 'Radiant' : 'Dire'; const teamId = side==='Radiant'? rId : dId; const aid = Number(p.account_id||0); const P = Array.isArray(p.obs_log)? p.obs_log: []; const L = Array.isArray(p.obs_left_log)? p.obs_left_log: [];
+          const pt = P.map(o=>({x:Number(o.x),y:Number(o.y),t:Number(o.time||0)})).sort((a,b)=>a.t-b.t);
+          const lt = L.map(o=>({x:Number(o.x),y:Number(o.y),t:Number(o.time||0)})).sort((a,b)=>a.t-b.t);
+          const mapL = new Map(); for(const e of lt){ const k=`${e.x},${e.y}`; if(!mapL.has(k)) mapL.set(k,[]); mapL.get(k).push(e.t); }
+          for(const e of pt){ const k=`${e.x},${e.y}`; const arr = mapL.get(k)||[]; let life=360; if(arr.length){ const idx = arr.findIndex(T=> T>=e.t); if(idx!==-1){ life=Math.max(0, arr[idx]-e.t); arr.splice(idx,1); } mapL.set(k,arr); }
+            life = Math.min(360, life);
+            countBy.set(k,(countBy.get(k)||0)+1); totalBy.set(k,(totalBy.get(k)||0)+life);
+            const sb = bySide.get(k)||{Radiant:{count:0,total:0}, Dire:{count:0,total:0}}; sb[side].count++; sb[side].total += life; bySide.set(k,sb);
+            if(teamId>0){ const tb=byTeam.get(k)||{}; const to=tb[teamId]||{count:0,total:0}; to.count++; to.total+=life; tb[teamId]=to; byTeam.set(k,tb); }
+            const sm = samplesBy.get(k)||[]; sm.push({t:e.t, life, side, teamId, aid}); samplesBy.set(k,sm);
+          }
+        }
+      }
+      const spots = Array.from(countBy.keys()).map(k=>{ const [x,y]=k.split(',').map(Number); return { spot:k, x, y, count:countBy.get(k)||0, total:totalBy.get(k)||0, bySide:bySide.get(k)||{Radiant:{count:0,total:0}, Dire:{count:0,total:0}}, byTeam:byTeam.get(k)||{}, samples:samplesBy.get(k)||[] }; });
+  window.WardViewer.mount(container, { mapConf, data:{ spots, teams:Array.from(teamMap.values()), players:Array.from(playerMap.values()) }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } });
+    }
+  }catch(err){ console.warn('WardViewer mount failed', err); }
   if(warnNoDetails){
     const note = `<div class='sub' style='margin-bottom:8px'>Detailed match data could not be loaded (file:// CORS or offline). The map renders with available data, but some highlights may be missing. For full data, serve docs/ over a local server.</div>`;
     try{ body.innerHTML = note + body.innerHTML; }catch(_e){}
@@ -1569,6 +1515,9 @@ async function main(){
   // Optional: open requested tab. If focusing a player, default to Players tab.
   if(__focusAid>0 && window.__dvShowTab){ window.__dvShowTab('players'); }
   else if(ptab && window.__dvShowTab){ window.__dvShowTab(ptab); }
+  else {
+    try{ const last = localStorage.getItem('dv_tab'); if(last && window.__dvShowTab){ window.__dvShowTab(last); } }catch(_e){}
+  }
   // Preselect UI controls if provided
   try{ const sel=document.getElementById('playerFilter'); if(sel && __focusAid>0){ sel.value=String(__focusAid); } }catch(_e){}
     // Optional: hide controls for read-only/locked monthly wrappers
