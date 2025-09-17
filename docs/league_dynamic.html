@@ -100,6 +100,14 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:1
 /* Wards layout: map + lists side-by-side (responsive) */
 .wardgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;align-items:start}
 @media (max-width: 980px){.wardgrid{grid-template-columns:1fr}}
+/* Segmented controls */
+.segmented{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.segmented .seg{padding:6px 10px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));color:var(--text);border-radius:999px;font-size:12px;cursor:pointer}
+.segmented .seg:hover{border-color:rgba(255,255,255,.18)}
+.segmented .seg.active{background:linear-gradient(160deg,rgba(110,180,255,.35),rgba(110,175,255,.08));border-color:rgba(110,180,255,.55);box-shadow:0 0 0 1px rgba(110,180,255,.35)}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);border-radius:999px;font-size:12px;cursor:pointer;white-space:nowrap}
+.chip.active{background:linear-gradient(160deg,rgba(110,180,255,.35),rgba(110,175,255,.08));border-color:rgba(110,180,255,.55)}
 </style>
 </head>
 <body>
@@ -138,10 +146,23 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:1
               <button class="tab active" data-wmode="best">Best</button>
               <button class="tab" data-wmode="worst">Worst</button>
             </div>
-            <label class="sub" style="display:flex;align-items:center;gap:6px;margin-left:auto">
-              Team:
-              <select id="wardTeamFilter" style="min-width:180px"></select>
-            </label>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div class="sub" style="opacity:.85">Zeitfenster</div>
+              <div id="wardTimeSeg" class="segmented" role="tablist" aria-label="Zeitfenster">
+                <button class="seg" data-time="">All</button>
+                <button class="seg" data-time="early">Early</button>
+                <button class="seg" data-time="mid">Mid</button>
+                <button class="seg" data-time="earlylate">Early Late</button>
+                <button class="seg" data-time="late">Late</button>
+                <button class="seg" data-time="superlate">Super Late</button>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-left:auto">
+              <div class="sub" style="opacity:.85">Team</div>
+              <div id="wardTeamSeg" class="chip-row" aria-label="Team Filter">
+                <!-- Chips inserted by JS -->
+              </div>
+            </div>
           </div>
           <div id="wardMapContainer">
             <div class="wardmap enhanced" id="wardMap"><svg></svg></div>
@@ -200,6 +221,49 @@ async function loadJson(url){ try{ const r=await fetch(url,{cache:'no-store'}); 
 function fmtPct(x){ if(!isFinite(x)) return '0.0%'; return (x*100).toFixed(1)+'%'; }
 function qs(k){ const u=new URL(location.href); return u.searchParams.get(k); }
 function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+// Repository constants for raw fallback (GitHub Pages)
+const REPO = 'Zeroks77/Kret_Dota';
+const BRANCH = 'main';
+const REL_BASE = '../data';
+const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
+function isGitHubPages(){ try{ return /\.github\.io$/i.test(location.hostname); }catch(_e){ return false; } }
+async function loadJsonWithFallback(rel, raw){
+  const onFile = (typeof location !== 'undefined' && location.protocol === 'file:');
+  const preferRaw = onFile || isGitHubPages();
+  if(preferRaw){ const a = await loadJson(raw); if(a!=null) return a; const b = await loadJson(rel); if(b!=null) return b; return null; }
+  const a = await loadJson(rel); if(a!=null) return a; const b = await loadJson(raw); if(b!=null) return b; return null;
+}
+// Helpers for meta-driven header
+function parseTimeLike(v){
+  if(v==null) return null;
+  try{
+    if(typeof v==='number'){ const ms = v<1e12? v*1000 : v; return new Date(ms); }
+    if(typeof v==='string'){
+      const t=v.trim();
+      if(!t) return null;
+      if(/^\d+$/.test(t)){ const n=Number(t); const ms = n<1e12? n*1000:n; return new Date(ms); }
+      const d=new Date(t); return isNaN(d.getTime())? null : d;
+    }
+  }catch(_e){ return null; }
+  return null;
+}
+function fmtUTC(d){ if(!d) return '?'; const iso=d.toISOString(); return iso.replace('T',' ').slice(0,16)+' UTC'; }
+function applyHeaderFromMeta(report, slug){
+  try{
+    const meta = (report && (report.meta||report.info)) || {};
+    const name = meta.name || meta.title || (slug? `League ${slug}` : 'League');
+    const fromRaw = meta.from ?? qs('from');
+    const toRaw = meta.to ?? qs('to');
+    const fromD = parseTimeLike(fromRaw);
+    const toD = parseTimeLike(toRaw);
+    const titleEl=document.getElementById('leagueTitle'); if(titleEl){ titleEl.textContent = name || 'League Viewer'; }
+    const subEl=document.getElementById('headerSub'); if(subEl){
+      if(fromD||toD){ subEl.textContent = `Range: ${fmtUTC(fromD)} - ${fmtUTC(toD)} | ${name}`; }
+      else { subEl.textContent = `${name}`; }
+    }
+    if(name){ document.title = `${name} - League Dynamic Viewer`; }
+  }catch(_e){ /* noop */ }
+}
 // Ensure ward map background loads from local asset if available
 async function ensureWardMapBackground(){
   const el=document.getElementById('wardMap'); if(!el) return;
@@ -223,16 +287,14 @@ let HERO_DATA=null;
 let MAP_CONF=null;
 async function loadHeroes(){
   if(HERO_DATA) return HERO_DATA;
-  const probes=[
-    '../data/heroes.json','../../data/heroes.json','../../../data/heroes.json','/data/heroes.json',
-    '../data/constants/heroes.json','../../data/constants/heroes.json','../../../data/constants/heroes.json','/data/constants/heroes.json'
-  ];
-  for(const p of probes){
-    const j=await loadJson(p);
+  // Try project data/ via rel path and raw.githubusercontent fallback
+  const rel1 = `${REL_BASE}/heroes.json`; const raw1 = `${RAW_BASE}/heroes.json`;
+  const rel2 = `${REL_BASE}/constants/heroes.json`; const raw2 = `${RAW_BASE}/constants/heroes.json`;
+  for(const [rel,raw] of [[rel1,raw1],[rel2,raw2]]){
+    const j = await loadJsonWithFallback(rel, raw);
     if(j){
-      // Accept either {data:{}} shape or direct id->object mapping
       if(j.data){ HERO_DATA=j.data; break; }
-      const keys=Object.keys(j);
+      const keys=Object.keys(j||{});
       if(keys.length && keys.every(k=> j[k] && typeof j[k]==='object' && 'localized_name' in j[k])){ HERO_DATA=j; break; }
     }
   }
@@ -240,8 +302,9 @@ async function loadHeroes(){
 }
 async function loadMapConf(){
   if(MAP_CONF) return MAP_CONF;
-  const probes=['../data/maps.json','../../data/maps.json','../../../data/maps.json','/data/maps.json'];
-  for(const p of probes){ const j=await loadJson(p); if(j){ MAP_CONF=j; break; } }
+  const rel = `${REL_BASE}/maps.json`; const raw = `${RAW_BASE}/maps.json`;
+  const j = await loadJsonWithFallback(rel, raw);
+  if(j){ MAP_CONF=j; }
   // Optional URL override (?map=7.39 or ?patch=7.39 or ?mpatch=7_39)
   try{
     const sp=new URLSearchParams(location.search); const pMap=sp.get('map')||sp.get('patch')||sp.get('mpatch');
@@ -422,24 +485,21 @@ let WARD_COMPUTED=false; let WARD_SOURCE='';
 let __WARD_CACHE__ = { all:[], teams:[] };
 let __WARD_MODE__ = 'best';
 let __WARD_TEAM_FILTER__ = '';
+let __WARD_TIME_FILTER__ = '';
 window.__WARD_DEBUG_GRID__ = false;
 async function computeWardsClient(report){
   if(WARD_COMPUTED && WARD_SOURCE) return; // allow one retry if first run had no source
   // Only set WARD_COMPUTED true once we actually tried with a report or matches
   const slug=qs('league')||'';
-  const probes=[
-    `../data/league/${slug}/matches.json`,
-    `../../data/league/${slug}/matches.json`,
-    `../../../data/league/${slug}/matches.json`,
-    `${location.origin}/data/league/${slug}/matches.json`
-  ];
-  let matches=null; for(const p of probes){ matches=await loadJson(p); if(matches) break; }
+  const relMatches = `${REL_BASE}/league/${slug}/matches.json`;
+  const rawMatches = `${RAW_BASE}/league/${slug}/matches.json`;
+  let matches = await loadJsonWithFallback(relMatches, rawMatches);
   let all=[]; const teamSet=new Map();
   if(matches && Array.isArray(matches)){
     // If matches.json lacks obs logs, try to fetch per-match details from cache
   const hasLogs = matches.some(m=> Array.isArray(m.obs_log) || Array.isArray(m.obs_left_log) || (Array.isArray(m.players) && m.players.some(p=> Array.isArray(p?.obs_log) || Array.isArray(p?.obs_left_log))));
     const wardStats=new Map();
-    async function consumeMatch(detail){
+  async function consumeMatch(detail){
       if(!detail) return; const dur=detail.duration||0;
       // Collect removals from either top-level or players[*]
       const left=[]; if(Array.isArray(detail.obs_left_log)) left.push(...detail.obs_left_log);
@@ -464,10 +524,12 @@ async function computeWardsClient(report){
           let removal=null; for(const l of left){ if(l.used) continue; if(l.x===o.x&&l.y===o.y&&(l.time||0)>=start){ removal=l; l.used=true; break; } }
           let life=0; if(removal) life=(removal.time||0)-start; else life=Math.max(0, Math.min(dur,420)-start);
           const keyStr = (typeof o.key==='string' && o.key) ? o.key.replace(/\[|\]|\s/g,'') : `${Math.round(o.x||0)},${Math.round(o.y||0)}`;
-          const ws=wardStats.get(keyStr)||{spot:keyStr,x:o.x,y:o.y,count:0,total:0, bySide:{Radiant:{count:0,total:0}, Dire:{count:0,total:0}}, byTeam:{}};
+          const ws=wardStats.get(keyStr)||{spot:keyStr,x:o.x,y:o.y,count:0,total:0, bySide:{Radiant:{count:0,total:0}, Dire:{count:0,total:0}}, byTeam:{}, samples:[]};
           ws.count++; ws.total+=life; ws.x=o.x; ws.y=o.y;
           ws.bySide[side].count++; ws.bySide[side].total += life;
           if(teamId){ const t = ws.byTeam[teamId] || {id:teamId,name:teamName,count:0,total:0}; t.count++; t.total+=life; ws.byTeam[teamId]=t; }
+          // Keep per-placement sample for time-filtered views
+          ws.samples.push({ t:start, life:life, side:side, teamId:teamId||0 });
           wardStats.set(keyStr,ws);
         }
       }
@@ -479,14 +541,9 @@ async function computeWardsClient(report){
       // Fetch details from cache; limit to 400 matches to avoid UI freeze
       const ids = matches.map(m=>m.match_id).filter(Boolean);
       const maxN = Math.min(ids.length, 400);
-      const bases = [
-        `../data/cache/OpenDota/matches/`,
-        `../../data/cache/OpenDota/matches/`,
-        `../../../data/cache/OpenDota/matches/`,
-        `/data/cache/OpenDota/matches/`
-      ];
+      const bases = [ `${REL_BASE}/cache/OpenDota/matches/`, `${RAW_BASE}/cache/OpenDota/matches/` ];
       async function fetchDetail(id){
-        for(const b of bases){ const j=await loadJson(`${b}${id}.json`); if(j) return j; }
+        for(const b of bases){ const url = `${b}${id}.json`; const j = await loadJson(url); if(j) return j; }
         return null;
       }
       // Simple concurrency
@@ -498,12 +555,13 @@ async function computeWardsClient(report){
     all=[...wardStats.entries()].map(([k,v])=>({spot:k,x:v.x,y:v.y,
       count:v.count, total:v.total,
       bySide:v.bySide, byTeam:v.byTeam,
+      samples: Array.isArray(v.samples)? v.samples: [],
       avgSeconds:v.count?Math.floor(v.total/v.count):0
     }));
     if(all.length){ const lg=document.getElementById('wardMapLegend'); if(lg) lg.textContent='Green = Best avg lifetime, Red = Worst.'; }
   } else if(report && report.highlights && report.highlights.wards){
     const wd=report.highlights.wards; // Server path lacks team attribution
-    all=(wd.allSpots||[]).map(s=>({...s, total:(s.avgSeconds||0)*(s.count||0), bySide:{Radiant:{count:0,total:0},Dire:{count:0,total:0}}, byTeam:{}}));
+    all=(wd.allSpots||[]).map(s=>({...s, total:(s.avgSeconds||0)*(s.count||0), bySide:{Radiant:{count:0,total:0},Dire:{count:0,total:0}}, byTeam:{}, samples: [] }));
     WARD_SOURCE='server';
   }
   __WARD_CACHE__ = { all, teams: Array.from(teamSet.values()) };
@@ -527,13 +585,23 @@ async function computeWardsClient(report){
   }
   // Populate team filter select
   try{
-    const sel=document.getElementById('wardTeamFilter');
-    if(sel){
-      const opts=["<option value=''>All</option>","<option value='Radiant'>Radiant</option>","<option value='Dire'>Dire</option>"];
+    // Build team chips (All/Radiant/Dire + named teams)
+    const teamWrap=document.getElementById('wardTeamSeg');
+    if(teamWrap){
+      const chips=[{v:'',label:'All'},{v:'Radiant',label:'Radiant'},{v:'Dire',label:'Dire'}];
       const teams=(__WARD_CACHE__.teams||[]).slice().sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
-      for(const t of teams){ opts.push(`<option value='team:${t.id}'>${esc(t.name||('Team '+t.id))}</option>`); }
-      sel.innerHTML = opts.join(''); sel.value = __WARD_TEAM_FILTER__ || '';
-      if(!sel.__wired){ sel.__wired=true; sel.addEventListener('change',()=>{ __WARD_TEAM_FILTER__ = sel.value||''; renderWardByMode(__WARD_MODE__); }); }
+      for(const t of teams){ chips.push({v:`team:${t.id}`, label: String(t.name||(`Team ${t.id}`))}); }
+      teamWrap.innerHTML = chips.map(c=>`<button class="chip" data-team="${esc(c.v)}">${esc(c.label)}</button>`).join('');
+      const setActive=()=>{ teamWrap.querySelectorAll('.chip').forEach(b=> b.classList.toggle('active', (b.getAttribute('data-team')||'')===(__WARD_TEAM_FILTER__||''))); };
+      setActive();
+      if(!teamWrap.__wired){ teamWrap.__wired=true; teamWrap.addEventListener('click', (e)=>{ const btn=e.target.closest('button.chip'); if(!btn) return; __WARD_TEAM_FILTER__ = btn.getAttribute('data-team')||''; setActive(); renderWardByMode(__WARD_MODE__); }); }
+    }
+    // Wire time segmented controls
+    const timeWrap=document.getElementById('wardTimeSeg');
+    if(timeWrap){
+      const setActive=()=>{ timeWrap.querySelectorAll('.seg').forEach(b=> b.classList.toggle('active', (b.getAttribute('data-time')||'')===(__WARD_TIME_FILTER__||''))); };
+      setActive();
+      if(!timeWrap.__wired){ timeWrap.__wired=true; timeWrap.addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; __WARD_TIME_FILTER__ = btn.getAttribute('data-time')||''; setActive(); renderWardByMode(__WARD_MODE__); }); }
     }
   }catch(_e){}
   // Initial render
@@ -553,9 +621,34 @@ function renderWardByMode(mode){
   const btns = document.querySelectorAll('#wardViewTabs .tab');
   btns.forEach(b=> b.classList.toggle('active', (b.dataset.wmode||'')===__WARD_MODE__));
   const base = (__WARD_CACHE__ && __WARD_CACHE__.all) ? __WARD_CACHE__.all : [];
+  // Time window mapping
+  function timeWindow(){
+    switch(__WARD_TIME_FILTER__){
+      case 'early': return {min:0, max:600, label:'0-10m'};
+      case 'mid': return {min:600, max:2100, label:'10-35m'};
+      case 'earlylate': return {min:2100, max:3000, label:'35-50m'};
+      case 'late': return {min:3000, max:4500, label:'50-75m'};
+      case 'superlate': return {min:4500, max:Infinity, label:'75m+'};
+      default: return {min:-Infinity, max:Infinity, label:'all'};
+    }
+  }
   // Build filtered view arrays from base according to team filter
   function pick(s){
     const val = __WARD_TEAM_FILTER__;
+    const tw = timeWindow();
+    // If we have per-placement samples, filter precisely
+    if(Array.isArray(s.samples) && s.samples.length){
+      let cnt=0, tot=0;
+      for(const sm of s.samples){
+        const t = Number(sm.t||0);
+        if(!(t>=tw.min && t<tw.max)) continue;
+        if(!val){ cnt++; tot+=Number(sm.life||0); continue; }
+        if(val==='Radiant' || val==='Dire'){ if(String(sm.side||'')===val){ cnt++; tot+=Number(sm.life||0); } continue; }
+        if(val.startsWith('team:')){ const id=Number(val.split(':')[1]||0); if(Number(sm.teamId||0)===id){ cnt++; tot+=Number(sm.life||0); } continue; }
+      }
+      return {count:cnt, total:tot};
+    }
+    // Fallback to pre-aggregated totals (no time slicing)
     if(!val){ return {count:s.count, total:s.total}; }
     if(val==='Radiant' || val==='Dire'){
       const side = s.bySide && s.bySide[val] || {count:0,total:0}; return {count:side.count||0, total:side.total||0};
@@ -577,6 +670,8 @@ function renderWardByMode(mode){
     best = [];
   }
   renderWardMap(best, worst, all);
+  // Update status with current time window label
+  try{ const st=document.getElementById('wardStatus'); if(st){ const tw=timeWindow(); const baseTxt = st.dataset && st.dataset.base ? st.dataset.base : (st.textContent||''); st.textContent = `${baseTxt} | time:${tw.label}`; st.dataset.base = baseTxt; } }catch(_e){}
   // Update lists
   function listify(arr){
     if(!arr.length) return `<div class='sub'>Keine Daten</div>`;
@@ -653,18 +748,17 @@ async function main(){
   await loadHeroes();
   await loadMapConf();
   const slug=qs('league')||''; const from=qs('from'); const to=qs('to');
-  document.getElementById('leagueTitle').textContent = `League Viewer - ${slug}`;
-  document.getElementById('headerSub').textContent = `Range: ${from||'?'} - ${to||'?'} UTC | League ${slug}`;
+  // Set a lightweight placeholder; will be replaced by report.meta if present
+  const tEl=document.getElementById('leagueTitle'); if(tEl){ tEl.textContent = slug? `League Viewer - ${slug}` : 'League Viewer'; }
+  const hsEl=document.getElementById('headerSub'); if(hsEl){ hsEl.textContent = `Range: ${from||'?'} - ${to||'?'} UTC${slug? ` | League ${slug}`:''}`; }
   ensureWardMapBackground();
-  const probes = [
-    `../data/league/${slug}/report.json`,
-    `../../data/league/${slug}/report.json`,
-    `../../../data/league/${slug}/report.json`,
-    `${location.origin}/data/league/${slug}/report.json`
-  ];
-  let report=null; for(const p of probes){ report = await loadJson(p); if(report) break; }
+  const relReport = `${REL_BASE}/league/${slug}/report.json`;
+  const rawReport = `${RAW_BASE}/league/${slug}/report.json`;
+  let report = await loadJsonWithFallback(relReport, rawReport);
   if(!report){ document.getElementById('highlightsBody').textContent='Failed to load report.json'; return; }
   window.__REPORT_REPORT__ = report; // store full report
+  // Apply meta-based header (name/from/to) if available
+  applyHeaderFromMeta(report, slug);
   renderHighlights(report.highlights);
   renderPlacements(report.placements);
   computeBasicTables(report);

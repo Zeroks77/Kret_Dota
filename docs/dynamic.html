@@ -98,11 +98,11 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
   </section>
   <div class="card controls">
     <div class="field">
-      <label for="from">From (UTC)</label>
+      <label for="from">From (local)</label>
       <input type="datetime-local" id="from">
     </div>
     <div class="field">
-      <label for="to">To (UTC)</label>
+      <label for="to">To (local)</label>
       <input type="datetime-local" id="to">
     </div>
     <div class="field">
@@ -145,7 +145,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     <div id="highlightsCard" class="card" style="margin-top:12px;display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <h2 style="margin:0 0 0;font-size:18px">Highlights</h2>
-        <div class="sub">Auto-switches with quick range (30 days / All time)</div>
+  <div class="sub">Auto-switches with quick range (30/60/120 days, Patch, All)</div>
       </div>
       <div id="highlightsBody"></div>
     </div>
@@ -328,15 +328,13 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
     // Build hero breakdown list
     const poolSize = Object.keys(p.heroes||{}).length;
     const listId = `hp-${p.account_id}`;
-    const heroList = Object.entries(p.heroes||{}).map(([hid,cnt])=>{
+    const heroData = Object.entries(p.heroes||{}).map(([hid,cnt])=>{
       const wins = Number(p.heroWins && p.heroWins[hid] || 0);
       const wrH = cnt>0 ? (wins/cnt) : 0;
       const meta = heroMap[String(hid)] || {name:`Hero ${hid}`,img:''};
-      return `<div style='display:flex;align-items:center;gap:8px;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)'><span style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' class='logo'><span>${meta.name}</span></span><span><span class='badge'>x${cnt}</span><span class='badge'>WR ${fmtPct(wrH)}</span></span></div>`;
-    }).sort((a,b)=>{
-      // Sort by games desc by extracting xNN in the string; fallback to name
-      const ax = (a.match(/x(\d+)/)||[])[1]|0; const bx = (b.match(/x(\d+)/)||[])[1]|0; return bx-ax;
-    }).join('');
+      return {hid, cnt:Number(cnt), wins, wrH, meta};
+    }).sort((a,b)=> b.cnt - a.cnt || b.wrH - a.wrH || a.meta.name.localeCompare(b.meta.name));
+    const heroList = heroData.map(h=> `<div style='display:flex;align-items:center;gap:8px;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)'><span style='display:flex;align-items:center;gap:8px'><img src='${h.meta.img}' class='logo' alt='${h.meta.name}'><span>${h.meta.name}</span></span><span><span class='badge'>x${h.cnt}</span><span class='badge'>WR ${fmtPct(h.wrH)}</span></span></div>`).join('');
     const heroes = `<div class='has-hover' data-pop='${listId}' style='display:inline-block'>
       <button class='badge' data-action='toggle-pop' data-target='${listId}' title='Show per-hero breakdown'>Hero pool: <strong>${poolSize}</strong></button>
       <div id='${listId}' class='hovercard' style='min-width:320px'>
@@ -400,7 +398,7 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
         const wr = cnt>0 ? (wins/cnt) : 0;
         const bestLabel = `<a href='${p.profile}' target='_blank'>${p.name}</a> - ${fmtPct(wr)} (${wins}/${cnt})`;
         return `<tr>
-          <td data-sort="${meta.name.toLowerCase()}"><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td>
+          <td data-sort="${meta.name.toLowerCase()}"><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' alt='${meta.name}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td>
           <td data-sort="${cnt}">${cnt}</td>
           <td data-sort="0">0</td>
           <td data-sort="${wins}">${wins}</td>
@@ -419,7 +417,7 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
         if(arr.length){ const b=arr[0]; bestLabel = `<a href='${b.profile}' target='_blank'>${b.name}</a> - ${fmtPct(b.wr)} (${b.wins}/${b.games})`; bestWr=b.wr; }
       }
       return `<tr>
-        <td data-sort="${meta.name.toLowerCase()}"><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td>
+  <td data-sort="${meta.name.toLowerCase()}"><div style='display:flex;align-items:center;gap:8px'><img src='${meta.img}' alt='${meta.name}' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'><span>${meta.name}</span></div></td>
         <td data-sort="${picks}">${picks}</td>
         <td data-sort="${bans}">${bans}</td>
         <td data-sort="${wins}">${wins}</td>
@@ -474,11 +472,11 @@ function renderSummary(subsetAgg, heroMap){
   const bestHero = heroPool.slice().sort((a,b)=> b.wr - a.wr || b.picks - a.picks)[0] || null;
   const worstHero = heroPool.slice().sort((a,b)=> a.wr - b.wr || b.picks - a.picks)[0] || null;
 
-  function liPicked(h){ return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.img}' alt=''><span class='name'>${h.name}</span></span><span><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.winrate)}</strong></span></span></li>`; }
-  function liBanned(h){ return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.img}' alt=''><span class='name'>${h.name}</span></span><span><span class='badge'>Bans: ${h.bans}</span><span class='badge'>Picks: ${h.picks}</span></span></li>`; }
+  function liPicked(h){ return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.img}' alt='${h.name}'><span class='name'>${h.name}</span></span><span><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.winrate)}</strong></span></span></li>`; }
+  function liBanned(h){ return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.img}' alt='${h.name}'><span class='name'>${h.name}</span></span><span><span class='badge'>Bans: ${h.bans}</span><span class='badge'>Picks: ${h.picks}</span></span></li>`; }
   function liTopPlayer(p){ return `<li><span class='name'><a href='${p.profile}' target='_blank'>${p.name}</a></span><span><span class='badge'>${p.games} games</span><span class='badge'>WR: <strong>${fmtPct(p.wr)}</strong></span></span></li>`; }
   function liMostPlayed(p){ return `<li><span class='name'><a href='${p.profile}' target='_blank'>${p.name}</a></span><span><span class='badge'>${p.games} games</span><span class='badge'>WR: <strong>${fmtPct(p.wr)}</strong></span></span></li>`; }
-  function heroRow(h){ return h? `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.meta.img||''}' alt=''><span class='name'>${h.meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.wr)}</strong></span></span></li>` : `<li><span class='sub'>no data</span></li>`; }
+  function heroRow(h){ return h? `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.meta.img||''}' alt='${h.meta.name||('#'+h.hid)}'><span class='name'>${h.meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.wr)}</strong></span></span></li>` : `<li><span class='sub'>no data</span></li>`; }
 
   grid.innerHTML = `
     <div class='summary-card' id='sum-top-picked'>
@@ -594,7 +592,7 @@ function renderHighlights(high, heroMap, mapConf, label){
   function objectiveList(arr, label){
     if(!Array.isArray(arr) || !arr.length) return '';
     const heading = label ? `<div class='sub' style='margin-top:6px'>${label}</div>` : '';
-    const singular = label ? label.replace(/s$/,'') : null;
+  const singular = label ? (label.endsWith('es') ? label.slice(0,-2) : label.endsWith('s') ? label.slice(0,-1) : label) : null;
     return heading + `<ul class='simple'>` + arr.map(ev=>{
       const hasTime = ev.time!==undefined && ev.time!==null && isFinite(Number(ev.time));
       const sec = hasTime ? Number(ev.time) : NaN; const mm = hasTime ? Math.floor(sec/60) : null; const ss = hasTime ? (sec%60) : null;
@@ -1436,7 +1434,7 @@ async function main(){
     const ul = document.getElementById('ul-top-banned');
     if(ul && high && high.banCounts){
       const arr = Array.from(high.banCounts.entries()).map(([hid,cnt])=>({hid:Number(hid), bans:Number(cnt)})).sort((a,b)=> b.bans-a.bans).slice(0,3);
-      const html = arr.map(h=>{ const meta = heroMap[String(h.hid)]||{}; return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${meta.img||''}' alt=''><span class='name'>${meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Bans: ${h.bans}</span></span></li>`; }).join('');
+  const html = arr.map(h=>{ const meta = heroMap[String(h.hid)]||{}; return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${meta.img||''}' alt='${meta.name||('#'+h.hid)}'><span class='name'>${meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Bans: ${h.bans}</span></span></li>`; }).join('');
       ul.innerHTML = html || `<li><span class='sub'>no data</span></li>`;
     }
   }catch(_e){}
@@ -1645,7 +1643,7 @@ function computeAwardsFromDetails(details, heroMap){
   bountyHunterIRL: [],
   dieHard: [],
   afkFarmer: [],
-  tipSpammer: [],
+  // removed: tipSpammer (award dropped)
   roshanTourist: [],
   fountainDiver: [],
   bottleHoarder: [],
@@ -2106,7 +2104,7 @@ function computeAwardsFromDetails(details, heroMap){
       }
       if(best>0){ const prev = spreeMax.get(aid)||0; if(best>prev) spreeMax.set(aid, best); }
   // streaks ended
-  const ksEnd = Number(p.killed_streaks||0); if(ksEnd) streaksEnded.set(aid, (streaksEnded.get(aid)||0)+ksEnd);
+  // removed: streaksEnded award (dropped)
   // damage inflictor separation
   const di = p.damage_inflictor||{}; const exclude = new Set(['null','attack','attack_debuff','generic']);
   let spell=0, right=0; for(const [k,v] of Object.entries(di)){ const key=String(k||'').toLowerCase(); const val=Number(v||0); if(!val) continue; if(exclude.has(key)) right+=val; else spell+=val; }
