@@ -6,7 +6,7 @@ param(
   [bool]$PromptForSteamKey = $false,
   [object]$UpdateConstants = $true,
   [object]$FetchMatches    = $true,
-  [object]$DiscoverMatches = $true,     # Discover league matches (Steam if STEAM_API_KEY present; fallback to OpenDota)
+  [object]$DiscoverMatches = $true,     # Discover league matches (Steam-only)
   [object]$UpdateShards    = $true,     # Write/merge simplified records into data/matches/YYYY-MM.json
   [object]$UpdateManifest  = $true,     # Rebuild data/manifest.json from shards
   [object]$RequestParse    = $false,    # Request OpenDota parse for up to -MaxParseRequests matches lacking enriched data
@@ -17,9 +17,12 @@ param(
   [int]$TeamDiscoveryMaxTeams = 24,     # Cap number of teams to query via team endpoints
   [object]$SanitizeCache   = $false,    # Rewrite cached files to drop image fields that trigger false positives
   [bool]$DiscoverViaSteam = $true,
-  [bool]$DiscoverViaOpenDota = $true,
-  [bool]$DiscoverViaTeams = $true,
+  [bool]$DiscoverViaOpenDota = $false,
+  [bool]$DiscoverViaTeams = $false,
   [bool]$ForceRefetch = $false,
+  [bool]$SkipFinalEnsure = $false,      # If true, skip the expensive final ensure pass across all cached matches
+  [int]$ParseBudgetSec = 180,           # Hard cap on total seconds spent issuing parse requests
+  [bool]$LeagueOnly = $true,            # Enforce league-only behavior for sharding/backfill
   [ValidateSet('default','discover','full','sanitize')][string]$Mode = 'default'
 )
 
@@ -49,9 +52,37 @@ function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot\.." | Select-Object -Expan
 function Get-DataPath(){ Join-Path (Get-RepoRoot) 'data' }
 function Ensure-Dir([string]$path){ $dir=[System.IO.Path]::GetDirectoryName($path); if($dir -and -not (Test-Path -LiteralPath $dir)){ New-Item -ItemType Directory -Path $dir -Force | Out-Null } }
 function Read-JsonFile([string]$path){ if(-not (Test-Path -LiteralPath $path)){ return $null } try{ Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json } catch { $null } }
-function Save-Json([object]$obj,[string]$path){ Ensure-Dir $path; ($obj | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $path -Encoding UTF8 }
+function Save-Json([object]$obj,[string]$path){
+  Ensure-Dir $path
+  try{
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+    $json = ($obj | ConvertTo-Json -Depth 100 -Compress)
+    $sw.Stop(); $ser = $sw.ElapsedMilliseconds
+    $sw.Restart()
+    Set-Content -LiteralPath $path -Encoding UTF8 -NoNewline -Value $json
+    $sw.Stop(); $wr = $sw.ElapsedMilliseconds
+    Write-Log ("Save-Json: serialized in {0} ms, wrote in {1} ms -> {2}" -f $ser, $wr, $path)
+  } catch {
+    Write-Warning ("Save-Json failed for {0}: {1}" -f $path, (Format-HttpError $_))
+    throw
+  }
+}
 
 function Get-LeagueId(){ $info = Read-JsonFile (Join-Path (Get-DataPath) 'info.json'); try { return [int]$info.league_id } catch { return 0 } }
+
+function Get-MatchLeagueId($md){
+  try{
+    if($null -eq $md){ return 0 }
+    $val = $null
+    try{ $val = $md.leagueid }catch{}
+    if($null -ne $val -and [string]$val -ne ''){ try { return [int]$val } catch { return 0 } }
+    if($md.league){
+      try{ if($md.league.leagueid){ return [int]$md.league.leagueid } }catch{}
+      try{ if($md.league.id){ return [int]$md.league.id } }catch{}
+    }
+    return 0
+  } catch { return 0 }
+}
 
 function Invoke-Json([string]$Method,[string]$Uri){
   $backoff = 600
@@ -68,7 +99,9 @@ function Invoke-Json([string]$Method,[string]$Uri){
   }
 }
 
-function Write-Log([string]$msg){ Write-Host $msg }
+function Write-Log([string]$msg){
+  try{ $ts = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss'); Write-Host ("[{0}] {1}" -f $ts, $msg) }catch{ Write-Host $msg }
+}
 function Sanitize-Uri([string]$u){
   if([string]::IsNullOrWhiteSpace($u)){ return $u }
   try{ return ($u -replace '(?i)(key=)([^&]+)','$1***') }catch{ return $u }
@@ -111,19 +144,24 @@ function Update-Constants(){
   $constDir = Join-Path $data 'cache/OpenDota/constants'
   if(-not (Test-Path -LiteralPath $constDir)){ New-Item -ItemType Directory -Path $constDir -Force | Out-Null }
 
-  Write-Host 'Fetching OpenDota constants: heroes'
+  Write-Log 'Fetching OpenDota constants: heroes'
   try{
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
     $heroes = Invoke-Json -Method GET -Uri 'https://api.opendota.com/api/constants/heroes'
     if($heroes){ Save-Json -obj $heroes -path (Join-Path $constDir 'heroes.json'); Set-Content -LiteralPath (Join-Path $data 'heroes.json') -Value (($heroes | ConvertTo-Json -Depth 50)) -Encoding UTF8 }
+    $sw.Stop(); Write-Log ("Fetched heroes in {0} ms" -f $sw.ElapsedMilliseconds)
   } catch {
     Write-Warning ("Failed to fetch constants: heroes: {0}" -f (Format-HttpError $_))
   }
+  Write-Log ("Throttle: sleeping {0} ms after constants/heroes" -f $DelayMs)
   Start-Sleep -Milliseconds $DelayMs
 
-  Write-Host 'Fetching OpenDota constants: patch'
+  Write-Log 'Fetching OpenDota constants: patch'
   try{
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
     $patch = Invoke-Json -Method GET -Uri 'https://api.opendota.com/api/constants/patch'
     if($patch){ Save-Json -obj $patch -path (Join-Path $constDir 'patch.json') }
+    $sw.Stop(); Write-Log ("Fetched patch in {0} ms" -f $sw.ElapsedMilliseconds)
   } catch {
     Write-Warning ("Failed to fetch constants: patch: {0}" -f (Format-HttpError $_))
   }
@@ -144,9 +182,21 @@ function Remove-KeysByName($obj, [string[]]$names){
 }
 
 function Sanitize-MatchObject($obj){
-  # Remove image fields that contain long hex fingerprints to avoid false-positive secret scans
-  Remove-KeysByName -obj $obj -names @('image_path','image_inventory')
-  return $obj
+  try{
+    # Heuristic: OpenDota match objects have match_id and players; they generally don't include image_* fields.
+    # To avoid expensive deep recursion (and potential hangs), skip sanitize for matches.
+    if($obj -and $obj.PSObject){
+      $hasMatchId = $obj.PSObject.Properties.Match('match_id').Count -gt 0
+      $hasPlayers = $obj.PSObject.Properties.Match('players').Count -gt 0
+      if($hasMatchId -and $hasPlayers){ return $obj }
+    }
+    # For smaller objects (e.g., constants), perform targeted removal
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+    Remove-KeysByName -obj $obj -names @('image_path','image_inventory')
+    $sw.Stop()
+    if($sw.ElapsedMilliseconds -gt 1000){ Write-Log ("Sanitize-MatchObject took {0} ms (non-match object)" -f $sw.ElapsedMilliseconds) }
+    return $obj
+  } catch { return $obj }
 }
 
 function Sanitize-ExistingCache(){
@@ -204,13 +254,14 @@ function Get-MatchIdCandidates(){
 }
 
 function Fetch-MissingMatches(){
+  if($LeagueOnly){ Write-Log 'Skipping Fetch-MissingMatches due to -LeagueOnly'; return }
   $data = Get-DataPath
   $cacheDir = Join-Path $data 'cache/OpenDota/matches'
   if(-not (Test-Path -LiteralPath $cacheDir)){ New-Item -ItemType Directory -Path $cacheDir -Force | Out-Null }
 
   $ids = @(Get-MatchIdCandidates)
   $count = ($ids | Measure-Object).Count
-  Write-Host ("Found {0} candidate match IDs" -f $count)
+  Write-Log ("Found {0} candidate match IDs" -f $count)
   if($count -le 0){ return }
 
   $i=0
@@ -218,14 +269,25 @@ function Fetch-MissingMatches(){
     $i++
     $outFile = Join-Path $cacheDir ("{0}.json" -f $id)
     if(Test-Path -LiteralPath $outFile){ continue }
-    Write-Host ("[{0}/{1}] Fetching match {2}" -f $i, $ids.Count, $id)
+    Write-Log ("[{0}/{1}] Fetching match {2}" -f $i, $ids.Count, $id)
     try {
     $uri = ("https://api.opendota.com/api/matches/{0}" -f $id)
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
     $obj = Invoke-Json -Method GET -Uri $uri
-  if($obj){ $obj = Sanitize-MatchObject $obj; Save-Json -obj $obj -path $outFile }
+    $sw.Stop(); Write-Log ("HTTP GET ok for {0} in {1} ms" -f $id, $sw.ElapsedMilliseconds)
+    if($obj){
+      Write-Log ("Sanitizing match {0}" -f $id)
+      $tm = [System.Diagnostics.Stopwatch]::StartNew()
+      $obj = Sanitize-MatchObject $obj
+      $tm.Stop(); Write-Log ("Sanitize done for {0} in {1} ms" -f $id, $tm.ElapsedMilliseconds)
+      Save-Json -obj $obj -path $outFile
+      try{ $sz = (Get-Item -LiteralPath $outFile).Length }catch{ $sz = 0 }
+      Write-Log ("Saved cache for {0} ({1} bytes)" -f $id, $sz)
+    }
     } catch {
     Write-Warning ("Failed to fetch match {0} (uri={1}): {2}" -f $id, (Sanitize-Uri $uri), (Format-HttpError $_))
     }
+    Write-Log ("Throttle: sleeping {0} ms after match fetch" -f $DelayMs)
     Start-Sleep -Milliseconds $DelayMs
   }
 }
@@ -234,6 +296,7 @@ function Discover-MatchIdsFromSteam(){
   $key = $env:STEAM_API_KEY
   $leagueId = Get-LeagueId
   if([string]::IsNullOrWhiteSpace($key) -or $leagueId -le 0){ Write-Log 'Skipping Steam discovery (missing STEAM_API_KEY or league_id)'; return @() }
+  $funcStart = Get-Date
   Write-Log ("Discovering matches via Steam for league_id={0}" -f $leagueId)
   $base = 'https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/'
   $all = New-Object System.Collections.Generic.List[object]
@@ -250,6 +313,7 @@ function Discover-MatchIdsFromSteam(){
   $minId = ($pageMatches | Measure-Object -Property match_id -Minimum).Minimum
       if(-not $minId){ break }
       $startAt = [int64]$minId - 1
+      Write-Log ("Throttle: sleeping {0} ms between Steam pages" -f $DelayMs)
       Start-Sleep -Milliseconds $DelayMs
     } catch {
       Write-Warning ("Steam discovery failed on page {0} (uri={1}): {2}" -f $page, (Sanitize-Uri $uri), (Format-HttpError $_))
@@ -258,7 +322,8 @@ function Discover-MatchIdsFromSteam(){
   }
   $ids = @($all.ToArray() | Sort-Object -Unique)
   $cnt = (($ids | Measure-Object).Count)
-  Write-Log ("Discovered {0} match IDs via Steam" -f $cnt)
+  $dur = ((Get-Date) - $funcStart).TotalSeconds
+  Write-Log ("Discovered {0} match IDs via Steam in {1:n1}s" -f $cnt, $dur)
   return $ids
 }
 
@@ -369,6 +434,12 @@ function Get-CachedMatchObjects(){
 
 function To-ShardRecord($md){
   try{
+    # Enforce league-only: skip records not belonging to configured league
+    $targetLeague = Get-LeagueId
+    if($targetLeague -gt 0){
+      $mLeague = Get-MatchLeagueId $md
+      if($mLeague -ne $targetLeague){ return $null }
+    }
     $rec = [ordered]@{}
     $rec.match_id = [int64]$md.match_id
     $rec.start_time = [int]$md.start_time
@@ -447,7 +518,12 @@ function Ensure-AllGamesParsed(){
 function Request-Parse-ForMissing(){
   $objs = Get-CachedMatchObjects
   $reqs = 0
+  $start = Get-Date
   foreach($md in ($objs | Sort-Object match_id -Descending)){
+    if($ParseBudgetSec -gt 0){
+      $elapsed = ((Get-Date) - $start).TotalSeconds
+      if($elapsed -ge $ParseBudgetSec){ Write-Warning ("Aborting parse requests after {0}s budget" -f $ParseBudgetSec); break }
+    }
     if($reqs -ge $MaxParseRequests){ break }
     $needs = $false
     try {
@@ -463,8 +539,16 @@ function Request-Parse-ForMissing(){
       for($a=1; $a -le $attempts; $a++){
         if($reqs -ge $MaxParseRequests){ break }
         try{ Invoke-Json -Method POST -Uri ("https://api.opendota.com/api/request/{0}" -f $mid) | Out-Null; Write-Log ("Requested parse for {0} (attempt {1}/{2})" -f $mid, $a, $attempts); $reqs++ } catch { Write-Warning ("Parse request failed for {0} (attempt {1}): {2}" -f $mid, $a, $_.Exception.Message) }
-        if($a -lt $attempts){ Start-Sleep -Seconds ([int]$ParseDelaySec) }
+        if($a -lt $attempts){
+          if($ParseBudgetSec -gt 0){
+            $elapsed = ((Get-Date) - $start).TotalSeconds
+            if($elapsed -ge $ParseBudgetSec){ break }
+          }
+          Write-Log ("Parse throttle: sleeping {0}s before retry" -f $ParseDelaySec)
+          Start-Sleep -Seconds ([int]$ParseDelaySec)
+        }
       }
+      Write-Log ("Throttle: sleeping {0} ms after parse cycle" -f $DelayMs)
       Start-Sleep -Milliseconds $DelayMs
     }
   }
@@ -521,13 +605,22 @@ if($doDiscover){
         try{
           Write-Log ("Fetching discovered match {0}" -f $mid)
           $uri = ("https://api.opendota.com/api/matches/{0}" -f $mid)
+          $sw = [System.Diagnostics.Stopwatch]::StartNew()
           $obj = Invoke-Json -Method GET -Uri $uri
+          $sw.Stop(); Write-Log ("HTTP GET ok for {0} in {1} ms" -f $mid, $sw.ElapsedMilliseconds)
           if($obj){
+            Write-Log ("Sanitizing match {0}" -f $mid)
+            $tm = [System.Diagnostics.Stopwatch]::StartNew()
             $obj = Sanitize-MatchObject $obj
-            Save-Json -obj $obj -path (Join-Path $cacheDir ("{0}.json" -f $mid))
+            $tm.Stop(); Write-Log ("Sanitize done for {0} in {1} ms" -f $mid, $tm.ElapsedMilliseconds)
+            $outPath = (Join-Path $cacheDir ("{0}.json" -f $mid))
+            Save-Json -obj $obj -path $outPath
+            try{ $sz = (Get-Item -LiteralPath $outPath).Length }catch{ $sz = 0 }
+            Write-Log ("Saved cache for {0} ({1} bytes)" -f $mid, $sz)
             if($doShards){ try{ [void](Ensure-Record-InShard $obj) } catch {} }
           }
         } catch { Write-Warning ("Fetch failed for {0} (uri={1}): {2}" -f $mid, (Sanitize-Uri $uri), (Format-HttpError $_)) }
+        Write-Log ("Throttle: sleeping {0} ms after match fetch" -f $DelayMs)
         Start-Sleep -Milliseconds $DelayMs
       }
       if($doManifest){ Rebuild-Manifest; Ensure-AllGamesParsed }
@@ -550,11 +643,17 @@ if($doDiscover){
 if($doMatches){ Fetch-MissingMatches }
 # Avoid the expensive full-shard ensure pass during discovery-focused runs; we've already
 # ensured shard entries for newly discovered and existing discovered IDs above.
-if($doShards -and ($Mode -eq 'default' -or $Mode -eq 'full')){
-  Get-CachedMatchObjects | ForEach-Object { try { [void](Ensure-Record-InShard $_) } catch {} }
+if($doShards -and ($Mode -eq 'default' -or $Mode -eq 'full') -and (-not $SkipFinalEnsure)){
+  $targetLeague = Get-LeagueId
+  Get-CachedMatchObjects | ForEach-Object {
+    try {
+      if($LeagueOnly){ $mLeague = Get-MatchLeagueId $_; if($targetLeague -gt 0 -and $mLeague -ne $targetLeague){ return } }
+      [void](Ensure-Record-InShard $_)
+    } catch {}
+  }
 }
 if($doManifest){ Rebuild-Manifest; Ensure-AllGamesParsed }
 if($doParseReq){ Request-Parse-ForMissing }
 if($doSanitize){ Sanitize-ExistingCache }
 
-Write-Host 'OpenDota data fetch complete.'
+Write-Log 'OpenDota data fetch complete.'
