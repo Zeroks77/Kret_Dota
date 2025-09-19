@@ -1,768 +1,1156 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>League Dynamic Viewer</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23121834'/%3E%3Cpath d='M3 11l2.8-6h1.8L11 11H9.1L8.5 9.5H5.5L4.9 11H3zm3-3h2L6.9 6.6 6 8z' fill='%239ec7ff'/%3E%3C/svg%3E"/>
-<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
-<script defer src="js/ward_viewer.js"></script>
-<style>
-/* Expanded design tokens */
-:root{--bg:#0b1020;--panel:#121b34;--panel-alt:#182246;--grad:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));--muted:#93a0b4;--text:#eef3fb;--accent:#6eadff;--accent-glow:#3693ff;--chip:#1a2544;--border:rgba(255,255,255,.08);--success:#34d399;--danger:#ef6363;--warn:#f7b955;--radius:14px;--radius-sm:8px;--shadow:0 4px 12px -4px rgba(0,0,0,.4),0 2px 4px -2px rgba(0,0,0,.3)}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #1a2b59, transparent 60%), radial-gradient(900px 500px at 90% 110%, #16203d, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-a{color:var(--accent)}
-.wrapper{max-width:1180px;margin:0 auto;padding:16px}
-.header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.card{background:var(--grad);backdrop-filter:blur(3px);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;overflow:visible;position:relative;box-shadow:var(--shadow)}
-.card:before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(120deg,rgba(255,255,255,.18),rgba(255,255,255,0) 35%,rgba(255,255,255,.12) 70%,rgba(255,255,255,0));mask:linear-gradient(#fff,#fff) content-box,linear-gradient(#fff,#fff);-webkit-mask:linear-gradient(#fff,#fff) content-box,linear-gradient(#fff,#fff);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.35}
-.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
-.controls .field{display:flex;flex-direction:column;gap:6px}
-input,button{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)}
-select{padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.25);background:#ffffff;color:#000000}
-select option{background:#ffffff;color:#000000}
-select:disabled{background:#f2f2f2;color:#666;opacity:1}
-#quick{background:#ffffff;color:#000000;border-color:rgba(0,0,0,.25)}
-button{cursor:pointer}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
-.table th{text-align:left;color:var(--muted);font-weight:600}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--text);font-size:12px}
-.win{color:#7be495} .loss{color:#ff8b8b}
-.logo{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.1);margin-right:6px}
-.tabs{display:flex;gap:6px;margin:6px 0 8px}
-.tab{padding:6px 12px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));border-radius:12px;color:var(--text);cursor:pointer;font-size:12px;letter-spacing:.4px;transition:.18s all ease}
-.tab:hover{border-color:rgba(255,255,255,.18);background:linear-gradient(180deg,rgba(255,255,255,.15),rgba(255,255,255,.04))}
-.tab.active{background:linear-gradient(160deg,rgba(110,180,255,.35),rgba(110,175,255,.08));border-color:rgba(110,180,255,.55);box-shadow:0 0 0 1px rgba(110,180,255,.35),0 0 0 3px rgba(110,180,255,.15)}
-.tabpane{margin-top:6px}
-ul.simple{list-style:none;margin:0;padding:0}
-ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-.title{font-weight:600;margin-bottom:6px}
-.sub{color:var(--muted);font-size:12px}
-.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:4px}
-.duo-pair img{box-shadow:0 0 0 1px rgba(255,255,255,.18),0 2px 4px -1px rgba(0,0,0,.5);transition:.2s transform}
-.duo-pair img:hover{transform:translateY(-3px)}
-.duo-wrapper{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:4px}
-.duo-list{list-style:none;margin:0;padding:0}
-.duo-list li{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.duo-list li:last-child{border-bottom:0}
-.duo-pair{display:grid;grid-template-columns:42px auto 14px 42px auto;align-items:center;gap:6px;font-size:13px;font-weight:600;letter-spacing:.3px}
-.duo-pair img{width:42px;height:26px;border-radius:8px;object-fit:cover;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 2px 4px -1px rgba(0,0,0,.5)}
-.duo-col-head{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;padding:2px 0}
-.duo-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.duo-badges{display:flex;gap:6px}
-.badge.wr{min-width:58px;text-align:center}
-.duo-meta{display:flex;gap:4px;align-items:center}
-.badge{position:relative;overflow:hidden}
-.badge.winrate-high{background:rgba(52,211,153,.18);color:#5af0b9}
-.badge.winrate-mid{background:rgba(250,204,21,.18);color:#facc15}
-.badge.winrate-low{background:rgba(239,99,99,.18);color:#ff8d8d}
-.hl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:6px}
-.hl-block{display:flex;flex-direction:column;gap:10px}
-.subhead{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
-.subhead:before{content:"";width:20px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
-.chipline{display:flex;flex-wrap:wrap;gap:6px}
-.mini-badge{background:rgba(255,255,255,.08);padding:2px 6px;border-radius:6px;font-size:11px;letter-spacing:.3px}
-.compact .card{padding:10px 12px}
-.compact ul.simple li{padding:6px 0}
-.toolbar-btn{background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.02));border:1px solid var(--border);color:var(--text);padding:6px 10px;font-size:11px;border-radius:8px;cursor:pointer;letter-spacing:.5px;display:inline-flex;align-items:center;gap:6px}
-.toolbar-btn:hover{border-color:rgba(255,255,255,.2);background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.04))}
-.layout-toolbar{display:flex;gap:8px;margin-left:auto}
-.section-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:4px 0 8px;display:flex;align-items:center;gap:6px}
-.section-label:before{content:"";width:34px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
-.title{font-weight:600;margin-bottom:6px;font-size:15px;letter-spacing:.2px}
-.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.summary-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px}
-.summary-card h3{margin:0 0 6px;font-size:15px;color:var(--muted)}
-.summary-card ul{list-style:none;margin:0;padding:0}
-.summary-card li{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.summary-card li:last-child{border-bottom:0}
-
-/* Placement section */
-#placementsTable th,#placementsTable td{font-size:13px}
-
-/* Added hero icon + ward map styles */
-.hero{display:inline-flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;width:64px}
-.hero img{width:64px;height:36px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
-.wardmap{margin:8px 0 0;position:relative;width:100%;aspect-ratio:1/1;min-height:300px;background:url('https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg') center/cover no-repeat;border:1px solid var(--border);border-radius:12px}
-.wardmap svg{position:absolute;inset:0;width:100%;height:100%}
-.wardmap .spot{fill:rgba(255,255,255,.18);stroke:rgba(255,255,255,.5);stroke-width:1;transition:all .15s}
-.wardmap .spot.best{fill:rgba(52,211,153,.25);stroke:#34d399;stroke-width:1.5}
-.wardmap .spot.worst{fill:rgba(255,107,107,.25);stroke:#ff6b6b;stroke-width:1.5}
-.wardmap .spot.neutral{fill:rgba(255,255,255,.18);stroke:rgba(255,255,255,.45);stroke-width:1}
-.wardmap.enhanced svg .spot{transition:opacity .15s ease,fill .15s ease,stroke .15s ease}
-.wardmap.enhanced svg .spot.best.hl{filter:drop-shadow(0 0 8px rgba(52,211,153,.6));stroke-width:2 !important}
-.wardmap.enhanced svg .spot.worst.hl{filter:drop-shadow(0 0 8px rgba(255,107,107,.6));stroke-width:2 !important}
-.wardmap.enhanced svg .spot.hl:not(.longest){ fill: rgba(52,211,153,.14) !important; stroke:#34d399 !important; filter: drop-shadow(0 0 10px rgba(52,211,153,.7)); stroke-width:2.2 !important; opacity:1 !important }
-.wardmap.enhanced.highlighting svg .spot:not(.hl){opacity:.28}
-.wardmap.enhanced svg .spot.longest{stroke:#ff6b6b;fill:rgba(255,107,107,.25)}
-.wardmap.enhanced svg .spot.longest.hl{filter:drop-shadow(0 0 10px rgba(255,107,107,.75));stroke-width:2.2 !important}
-/* Wards layout: map + lists side-by-side (responsive) */
-.wardgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;align-items:start}
-@media (max-width: 980px){.wardgrid{grid-template-columns:1fr}}
-/* Segmented controls */
-.segmented{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.segmented .seg{padding:6px 10px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));color:var(--text);border-radius:999px;font-size:12px;cursor:pointer}
-.segmented .seg:hover{border-color:rgba(255,255,255,.18)}
-.segmented .seg.active{background:linear-gradient(160deg,rgba(110,180,255,.35),rgba(110,175,255,.08));border-color:rgba(110,180,255,.55);box-shadow:0 0 0 1px rgba(110,180,255,.35)}
-.chip-row{display:flex;flex-wrap:wrap;gap:6px}
-.chip{padding:5px 10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);border-radius:999px;font-size:12px;cursor:pointer;white-space:nowrap}
-.chip.active{background:linear-gradient(160deg,rgba(110,180,255,.35),rgba(110,175,255,.08));border-color:rgba(110,180,255,.55)}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>League Dynamic Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121832;
+      --muted: #9aa3b2;
+      --text: #eef1f7;
+      --accent: #9ec7ff;
+      --chip: #1a2142;
+      --border: rgba(255,255,255,.08);
+    }
+    * { box-sizing: border-box }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    a { color: var(--accent); text-decoration: none }
+    .wrapper { max-width: 1180px; margin: 0 auto; padding: 16px }
+    .header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px }
+    .badge { background: var(--chip); padding: 4px 10px; border-radius: 999px; font-size: 12px }
+    .tabs { display: flex; gap: 6px; margin: 6px 0 8px; flex-wrap: wrap }
+    .tab {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      border-radius: 10px; color: var(--text); cursor: pointer; font-size: 12px
+    }
+    .tab.active {
+      outline: 2px solid rgba(109,166,255,.5);
+      background: linear-gradient(180deg, rgba(109,166,255,.2), rgba(109,166,255,.08));
+      border-color: rgba(109,166,255,.45)
+    }
+    .card { background: linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02)); border:1px solid var(--border); border-radius:14px; padding:12px; overflow:visible }
+    .tabpane { margin-top: 6px }
+    ul.simple { list-style: none; margin: 0; padding: 0 }
+    ul.simple li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.06) }
+    .sub { color: var(--muted); font-size: 12px }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px }
+    .summary-card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)); border: 1px solid var(--border); border-radius: 12px; padding: 10px }
+    .summary-card h3 { margin: 0 0 6px; font-size: 15px; color: var(--muted) }
+    .summary-card ul { list-style: none; margin: 0; padding: 0 }
+    .summary-card li { display: flex; align-items: center; gap: 8px; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.06) }
+    .summary-card li:last-child { border-bottom: 0 }
+    .table { width: 100%; border-collapse: collapse }
+    .table th, .table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 14px; vertical-align: middle }
+    .table th { text-align: left; color: var(--muted); font-weight: 600; user-select: none; cursor: pointer }
+    .badge.inline { margin-left: 6px }
+    .win { color: #7be495 } .loss { color: #ff8b8b }
+    th.sorted-asc, th.sorted-desc { color: var(--accent) }
+    th.sorted-asc:after, th.sorted-desc:after { content: ' '; display: inline-block; margin-left: 4px; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent }
+    th.sorted-asc:after { border-bottom: 6px solid var(--accent) }
+    th.sorted-desc:after { border-top: 6px solid var(--accent) }
+    .perf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px }
+    .perf-card { display:flex; align-items:center; justify-content:space-between; padding:10px; border:1px solid var(--border); border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025)) }
+    .perf-left { display: flex; align-items: center; gap: 10px }
+    .perf-icon { width: 40px; height: 40px; border-radius: 10px; display:flex; align-items:center; justify-content:center; background: radial-gradient(22px 22px at 30% 30%, rgba(158,199,255,.45), rgba(158,199,255,.12)); border: 1px solid rgba(158,199,255,.25); font-size: 18px }
+  .spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.2); border-top-color: var(--accent); border-radius:50%; animation: spin 0.8s linear infinite; vertical-align: middle }
+  @keyframes spin { to { transform: rotate(360deg) } }
+    .perf-meta { display: flex; flex-direction: column; line-height: 1.15 }
+    .perf-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px }
+    .perf-player a { color: var(--text) }
+    .perf-value { font-weight: 700; font-size: 18px }
+    #calGrid .day { transition: .15s box-shadow, .15s transform }
+    #calGrid .day:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 4px 12px -4px rgba(0,0,0,.5); transform: translateY(-2px) }
+    @media (max-width: 900px) { .perf-grid { grid-template-columns: repeat(auto-fit, minmax(180px,1fr)) } .summary-grid { grid-template-columns: repeat(auto-fit, minmax(180px,1fr)) } }
+  </style>
+  <script defer src="js/ward_viewer.js"></script>
+  <script defer src="js/lane_duos_viewer.js"></script>
+  <script defer src="js/items_bought_viewer.js"></script>
+  <script defer src="js/draft_viewer.js"></script>
 </head>
 <body>
-<div class="wrapper">
-  <div class="header">
-    <h1 id="leagueTitle" style="margin:0;font-size:22px">League Viewer</h1>
-    <div class="badge">Client-side</div>
-  </div>
-  <div class="sub" id="headerSub" style="margin:-8px 0 8px 2px"></div>
-
-  <div class="tabs" id="mainTabs" style="margin-top:12px">
-    <button class="tab active" data-tab="highlights">Highlights</button>
-  <button class="tab" data-tab="players">Players</button>
-    <button class="tab" data-tab="heroes">Heroes</button>
-    <button class="tab" data-tab="teams">Teams</button>
-    <button class="tab" data-tab="placements">Placements</button>
-  <button class="tab" data-tab="wards">Wards</button>
-  </div>
-
-  <div id="pane-highlights" class="tabpane active">
-    <section class="card">
-      <h2 style="margin:0 0 8px;font-size:18px">Highlights</h2>
-      <div class="sub" style="margin-bottom:8px">League-specific spotlight (Duos, Hero Performance, Wards, Player Events).</div>
-      <div id="highlightsBody" class="sub">Loading…</div>
-    </section>
-  </div>
-  <div id="pane-wards" class="tabpane" style="display:none">
-  <div id="wardMount"></div>
-  </div>
-
-  <div id="pane-players" class="tabpane" style="display:none">
-    <section class="card">
-      <h2 style="margin:0 0 8px;font-size:18px">Players</h2>
-      <table class="table" id="playersTable"><thead><tr><th>Name</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody></tbody></table>
-    </section>
-  </div>
-  <div id="pane-heroes" class="tabpane" style="display:none">
-    <section class="card">
-      <h2 style="margin:0 0 8px;font-size:18px">Heroes</h2>
-      <table class="table" id="heroesTable"><thead><tr><th>Hero</th><th>Picks</th><th>Wins</th><th>WR</th></tr></thead><tbody></tbody></table>
-    </section>
-  </div>
-  <div id="pane-teams" class="tabpane" style="display:none">
-    <section class="card">
-      <h2 style="margin:0 0 8px;font-size:18px">Teams</h2>
-      <table class="table" id="teamsTable"><thead><tr><th>Team</th><th>Games</th><th>W-L</th><th>WR</th></tr></thead><tbody></tbody></table>
-    </section>
-  </div>
-  <div id="pane-placements" class="tabpane" style="display:none">
-    <section class="card">
-      <h2 style="margin:0 0 8px;font-size:18px">Placements</h2>
-      <div class="sub" style="margin-bottom:6px">Final placement (approx; based on series / match wins currently).</div>
-      <table class="table" id="placementsTable"><thead><tr><th>#</th><th>Team</th><th>Games</th><th>Wins</th><th>Losses</th><th>Winrate</th></tr></thead><tbody></tbody></table>
-    </section>
-  </div>
-</div>
-<script>
-async function loadJson(url){ try{ const r=await fetch(url,{cache:'no-store'}); if(!r.ok) return null; return await r.json(); }catch(_e){ return null; } }
-function fmtPct(x){ if(!isFinite(x)) return '0.0%'; return (x*100).toFixed(1)+'%'; }
-function qs(k){ const u=new URL(location.href); return u.searchParams.get(k); }
-function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
-// Repository constants for raw fallback (GitHub Pages)
-const REPO = 'Zeroks77/Kret_Dota';
-const BRANCH = 'main';
-const REL_BASE = '../data';
-const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
-function isGitHubPages(){ try{ return /\.github\.io$/i.test(location.hostname); }catch(_e){ return false; } }
-async function loadJsonWithFallback(rel, raw){
-  const onFile = (typeof location !== 'undefined' && location.protocol === 'file:');
-  const preferRaw = onFile || isGitHubPages();
-  if(preferRaw){ const a = await loadJson(raw); if(a!=null) return a; const b = await loadJson(rel); if(b!=null) return b; return null; }
-  const a = await loadJson(rel); if(a!=null) return a; const b = await loadJson(raw); if(b!=null) return b; return null;
-}
-// Helpers for meta-driven header
-function parseTimeLike(v){
-  if(v==null) return null;
-  try{
-    if(typeof v==='number'){ const ms = v<1e12? v*1000 : v; return new Date(ms); }
-    if(typeof v==='string'){
-      const t=v.trim();
-      if(!t) return null;
-      if(/^\d+$/.test(t)){ const n=Number(t); const ms = n<1e12? n*1000:n; return new Date(ms); }
-      const d=new Date(t); return isNaN(d.getTime())? null : d;
-    }
-  }catch(_e){ return null; }
-  return null;
-}
-function fmtUTC(d){ if(!d) return '?'; const iso=d.toISOString(); return iso.replace('T',' ').slice(0,16)+' UTC'; }
-function applyHeaderFromMeta(report, slug){
-  try{
-    const meta = (report && (report.meta||report.info)) || {};
-    const name = meta.name || meta.title || (slug? `League ${slug}` : 'League');
-    const fromRaw = meta.from ?? qs('from');
-    const toRaw = meta.to ?? qs('to');
-    const fromD = parseTimeLike(fromRaw);
-    const toD = parseTimeLike(toRaw);
-    const titleEl=document.getElementById('leagueTitle'); if(titleEl){ titleEl.textContent = name || 'League Viewer'; }
-    const subEl=document.getElementById('headerSub'); if(subEl){
-      if(fromD||toD){ subEl.textContent = `Range: ${fmtUTC(fromD)} - ${fmtUTC(toD)} | ${name}`; }
-      else { subEl.textContent = `${name}`; }
-    }
-    if(name){ document.title = `${name} - League Dynamic Viewer`; }
-  }catch(_e){ /* noop */ }
-}
-// Back-compat: noop now that WardViewer sets its own background
-async function ensureWardMapBackground(){ /* no-op */ }
-
-function renderPlacements(list){ const tb=document.querySelector('#placementsTable tbody'); if(!tb) return; tb.innerHTML = (list||[]).map(p=>`<tr><td>${p.place}</td><td>${esc(p.name)}</td><td>${p.games}</td><td>${p.wins}</td><td>${p.losses}</td><td>${fmtPct(p.winrate)}</td></tr>`).join(''); }
-
-// Hero constants loader (reuse heroes.json from data)
-let HERO_DATA=null;
-let MAP_CONF=null;
-async function loadHeroes(){
-  if(HERO_DATA) return HERO_DATA;
-  // Try project data/ via rel path and raw.githubusercontent fallback
-  const rel1 = `${REL_BASE}/heroes.json`; const raw1 = `${RAW_BASE}/heroes.json`;
-  const rel2 = `${REL_BASE}/constants/heroes.json`; const raw2 = `${RAW_BASE}/constants/heroes.json`;
-  for(const [rel,raw] of [[rel1,raw1],[rel2,raw2]]){
-    const j = await loadJsonWithFallback(rel, raw);
-    if(j){
-      if(j.data){ HERO_DATA=j.data; break; }
-      const keys=Object.keys(j||{});
-      if(keys.length && keys.every(k=> j[k] && typeof j[k]==='object' && 'localized_name' in j[k])){ HERO_DATA=j; break; }
-    }
-  }
-  return HERO_DATA||{};
-}
-async function loadMapConf(){
-  if(MAP_CONF) return MAP_CONF;
-  const rel = `${REL_BASE}/maps.json`; const raw = `${RAW_BASE}/maps.json`;
-  const j = await loadJsonWithFallback(rel, raw);
-  if(j){ MAP_CONF=j; }
-  // Optional URL override (?map=7.39 or ?patch=7.39 or ?mpatch=7_39)
-  try{
-    const sp=new URLSearchParams(location.search); const pMap=sp.get('map')||sp.get('patch')||sp.get('mpatch');
-    if(MAP_CONF && pMap){ const key=String(pMap).replace('_','.'); if(MAP_CONF.major && MAP_CONF.major[key]){ MAP_CONF.current=key; } }
-  }catch(_e){}
-  return MAP_CONF||{};
-}
-function heroSlug(id){ const h=(HERO_DATA||{})[id]; if(!h) return null; return (h.localized_name||h.name||'').toLowerCase().replace(/ /g,'-').replace(/[^a-z0-9\-]/g,''); }
-function heroImg(id){ const h=(HERO_DATA||{})[id]; if(!h) return ''; const name=(h.name||'').replace(/^npc_dota_hero_/,''); return `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${name}.png`; }
-function heroLabel(id){ const h=(HERO_DATA||{})[id]; return h? h.localized_name || h.name || ('#'+id): ('#'+id); }
-
-function renderHeroListWithIcons(arr){
-  if(!Array.isArray(arr)||!arr.length) return `<div class='sub'>no heroes</div>`;
-  return `<ul class='simple'>`+arr.map(h=>{
-    return `<li><span style='display:flex;align-items:center;gap:6px'><img src='${heroImg(h.hero_id)}' alt='' style='width:36px;height:20px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.15)'><span>${esc(heroLabel(h.hero_id))}</span></span><span><span class='badge'>P ${h.picks}</span><span class='badge'>WR ${fmtPct(h.winrate)}</span></span></li>`;
-  }).join('')+`</ul>`;
-}
-
-function renderWardMap(best, worst, all){
-  const wrap=document.getElementById('wardMapContainer'); const map=document.getElementById('wardMap'); if(!wrap||!map) return;
-  const svg=map.querySelector('svg'); if(!svg) return;
-  let spots=[...(best||[]).map(s=>({...s,_cls:'best'})), ...(worst||[]).map(s=>({...s,_cls:'worst'}))];
-  if(!spots.length && Array.isArray(all) && all.length){
-    // fallback: show a capped neutral set (top by count)
-    const sorted=[...all].sort((a,b)=> b.count-a.count).slice(0,40);
-    spots = sorted.map(s=>({...s,_cls:'neutral'}));
-    const lg=document.getElementById('wardMapLegend'); if(lg) lg.textContent = 'Neutral = ward placements (fallback)';
-  }
-  wrap.style.display='';
-  svg.innerHTML='';
-  if(!spots.length){
-    const legend=document.getElementById('wardMapLegend'); if(legend) legend.textContent = 'Keine Ward-Daten für diese Ansicht.'; return;
-  }
-  // Map config (bounds, invertY, radius pct) like dynamic view
-  const mc = MAP_CONF||{}; const asset = (mc.major && mc.current && mc.major[mc.current]) ? mc.major[mc.current] : null;
-  const hasBounds = asset && asset.minX!=null && asset.minY!=null && asset.maxX!=null && asset.maxY!=null && asset.maxX>asset.minX && asset.maxY>asset.minY;
-  const invertY = !!(asset && asset.invertY);
-  // Determine dynamic scale from observed coordinates if no bounds
-  const observedMax = spots.reduce((acc,s)=>({mx:Math.max(acc.mx, Number(s.x||0)), my:Math.max(acc.my, Number(s.y||0))}), {mx:0,my:0});
-  const dynScale = Math.max(1, Number(asset && asset.scale || 0), observedMax.mx, observedMax.my, Number(mc && mc.defaultScale || 0));
-  // Observer radius percentage: prefer configured value; auto only if no config present
-  const cellUnits = Number((asset && asset.cellUnits) || (mc && mc.defaultCellUnits) || 128);
-  const obsUnits  = Number((asset && asset.obsRadiusUnits) || (mc && mc.defaultObsRadiusUnits) || 1600);
-  let obsPct = (asset && asset.obsRadiusPct!=null) ? Number(asset.obsRadiusPct)
-             : (mc && mc.defaultObsRadiusPct!=null ? Number(mc.defaultObsRadiusPct) : NaN);
-  let pctMethod = isFinite(obsPct) ? 'asset' : 'auto';
-  if(!isFinite(obsPct)){
-    const denom = hasBounds ? (cellUnits * (Number(asset && asset.maxX)||0 - Number(asset && asset.minX)||0)) : (cellUnits * dynScale);
-    const calc = denom>0 ? (obsUnits/denom)*100 : NaN;
-    obsPct = isFinite(calc) && calc>0 ? Math.round(calc*100)/100 : 10;
-  }
-  // Longest mark
-  let longest = null; spots.forEach(s=>{ if(!longest || (s.avgSeconds||0) > (longest.avgSeconds||0)) longest = s; });
-  // Helper to append two circles: big range + small center dot
-  function appendSpot(cx,cy, s, isLongest){
-    const cls = 'spot '+s._cls + (isLongest? ' longest':'');
-    const big=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    big.setAttribute('cx',cx+'%'); big.setAttribute('cy',cy+'%'); big.setAttribute('r',String(obsPct));
-    big.setAttribute('class',cls); big.setAttribute('data-spot',s.spot||''); big.setAttribute('data-avg',String(s.avgSeconds||0));
-    big.setAttribute('title',`${s.spot} avg ${(s.avgSeconds/60).toFixed(1)}m (${s.count}x)`);
-    svg.appendChild(big);
-    const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    dot.setAttribute('cx',cx+'%'); dot.setAttribute('cy',cy+'%'); dot.setAttribute('r','1.0');
-    // Center dot color roughly matching class
-    const stroke = s._cls==='best' ? '#34d399' : (s._cls==='worst' ? '#ff6b6b' : 'rgba(255,215,0,0.85)');
-    dot.setAttribute('fill', stroke);
-    dot.setAttribute('opacity','0.9');
-    svg.appendChild(dot);
-  }
-  // Render all spots
-  spots.forEach(s=>{
-    let X=Number(s.x||0), Y=Number(s.y||0);
-    let cx, cy;
-    if(hasBounds){
-      const minX=asset.minX, maxX=asset.maxX, minY=asset.minY, maxY=asset.maxY;
-      const clX = Math.max(minX, Math.min(maxX, X));
-      const clY = Math.max(minY, Math.min(maxY, Y));
-      const cx0 = (clX - minX) / (maxX - minX);
-      let cy0 = (clY - minY) / (maxY - minY);
-      if(invertY) cy0 = 1 - cy0;
-      cx = Math.round(cx0*10000)/100; cy = Math.round(cy0*10000)/100;
-    } else {
-      const cx0 = Math.max(0, Math.min(dynScale, X)) / dynScale;
-      let cy0 = Math.max(0, Math.min(dynScale, Y)) / dynScale;
-      if(invertY) cy0 = 1 - cy0;
-      cx = Math.round(cx0*10000)/100; cy = Math.round(cy0*10000)/100;
-    }
-    appendSpot(cx, cy, s, !!(longest && s.spot===longest.spot));
-  });
-  // Optional debug grid
-  try{
-    const wantGrid = !!window.__WARD_DEBUG_GRID__;
-    if(wantGrid){
-      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-      g.setAttribute('data-role','grid');
-      for(let i=0;i<=10;i++){
-        const p = i*10;
-        const v1=document.createElementNS('http://www.w3.org/2000/svg','line'); v1.setAttribute('x1',p+'%'); v1.setAttribute('y1','0%'); v1.setAttribute('x2',p+'%'); v1.setAttribute('y2','100%'); v1.setAttribute('stroke','rgba(255,255,255,.08)'); v1.setAttribute('stroke-width','0.3'); g.appendChild(v1);
-        const v2=document.createElementNS('http://www.w3.org/2000/svg','line'); v2.setAttribute('x1','0%'); v2.setAttribute('y1',p+'%'); v2.setAttribute('x2','100%'); v2.setAttribute('y2',p+'%'); v2.setAttribute('stroke','rgba(255,255,255,.08)'); v2.setAttribute('stroke-width','0.3'); g.appendChild(v2);
-      }
-      svg.insertBefore(g, svg.firstChild);
-    }
-    // Update status with radius details
-  const st=document.getElementById('wardStatus'); if(st){ const base = st.dataset && st.dataset.base ? st.dataset.base : (st.textContent||''); st.textContent = `${base} | r=${obsPct}% (${pctMethod}) · bounds:${hasBounds?'yes':'no'} invY:${invertY?'yes':'no'}`; }
-    // Wire toggles
-    const ov=document.getElementById('toggleWardOverlay'); if(ov){ svg.style.display = ov.checked ? '' : 'none'; }
-    const tg=document.getElementById('toggleWardGrid'); if(tg){ tg.checked = !!window.__WARD_DEBUG_GRID__; }
-  }catch(_e){}
-  // Hover highlight binding
-  function bindList(containerId){
-    const c=document.getElementById(containerId); if(!c) return; c.querySelectorAll('li[data-spot]').forEach(li=>{
-      li.addEventListener('mouseenter',()=>{ const spot=li.getAttribute('data-spot'); svg.closest('.wardmap').classList.add('highlighting'); svg.querySelectorAll('.spot').forEach(n=>{ if(n.getAttribute('data-spot')===spot) n.classList.add('hl'); }); });
-      li.addEventListener('mouseleave',()=>{ svg.closest('.wardmap').classList.remove('highlighting'); svg.querySelectorAll('.spot.hl').forEach(n=> n.classList.remove('hl')); });
-    });
-  }
-  bindList('wl-best'); bindList('wl-worst');
-}
-
-// Override renderHighlights to inject hero icons and ward map
-function renderHighlights(data){ const el=document.getElementById('highlightsBody'); if(!el) return; if(!data){ el.textContent='No data'; return; }
-  const du = data.duos||{}; const hp = data.heroes||{}; const wd=data.wards||{}; const pl=data.players||{};
-  function duoList(arr,label){ if(!Array.isArray(arr)||!arr.length) return `<div class='sub'>Keine ${label} (Threshold)</div>`;
-    return `<ul class='duo-list'>`+arr.map(d=>{
-      const aLabel = d.a_name || heroLabel(d.a) || d.a; const bLabel = d.b_name || heroLabel(d.b) || d.b;
-      const aImg = heroImg(d.a); const bImg = heroImg(d.b);
-      const wrCls = d.winrate>=0.7? 'winrate-high' : (d.winrate>=0.5? 'winrate-mid':'winrate-low');
-      const tip = `WR ${(d.winrate*100).toFixed(1)}% | G ${d.games}`;
-      return `<li title='${esc(tip)}'>
-        <span class='duo-pair'><img src='${aImg}'><span>${esc(aLabel)}</span><span style='opacity:.4;font-weight:400;text-align:center'>+</span><img src='${bImg}'><span>${esc(bLabel)}</span></span>
-        <span class='badge'>G ${d.games}</span>
-        <span class='badge wr ${wrCls}'>${fmtPct(d.winrate)}</span>
-      </li>`;
-    }).join('')+`</ul>`;
-  }
-  function heroList(arr,label){ return renderHeroListWithIcons(arr); }
-  function wardSpotList(arr,label){ if(!Array.isArray(arr)||!arr.length) return `<div class='sub'>no ${label}</div>`; return `<ul class='simple'>`+arr.map(w=>`<li data-spot='${w.spot}'><span>${w.spot}</span><span><span class='badge'>x${w.count}</span><span class='badge'>avg ${(w.avgSeconds/60).toFixed(1)}m</span></span></li>`).join('')+`</ul>`; }
-  function playerList(arr,label){ if(!Array.isArray(arr)||!arr.length) return `<div class='sub'>no ${label}</div>`; return `<ul class='simple'>`+arr.map(p=>`<li><span>${esc(p.name)}</span><span class='badge'>x${p.count}</span></li>`).join('')+`</ul>`; }
-  el.innerHTML = `
-    <div class='layout-toolbar' style='margin-bottom:4px'>
-      <button class='toolbar-btn' id='toggleCompact' type='button'>Compact</button>
+  <div class="wrapper">
+    <div class="header">
+      <h1 id="leagueTitle" style="margin:0;font-size:22px">League – Dynamic viewer</h1>
+      <div class="badge">League scope</div>
+      <div style="flex:1"></div>
+      <button id="btnClearCache" class="tab" title="Lokale Zwischenspeicher für diese Liga löschen">Cache leeren</button>
     </div>
-    <div class='hl-grid'>
-      <div class='hl-block'>
-        <div class='subhead'>Duos</div>
-        <div class='duo-wrapper'>
-          <div>
-            <div class='title' style='margin:0 0 4px'>Offlane</div>
-            ${duoList(du.offlane,'Offlane Duos')}
-          </div>
-            <div>
-            <div class='title' style='margin:0 0 4px'>Safelane</div>
-            ${duoList(du.safelane,'Safelane Duos')}
-          </div>
+    <div class="sub" id="headerSub" style="margin:-8px 0 8px 2px"></div>
+  <!-- chunkNav removed: processing all league matches now -->
+
+    
+
+    <div class="tabs" id="mainTabs" style="margin-top:12px">
+      <button class="tab active" data-tab="highlights">Highlights</button>
+      <button class="tab" data-tab="players">Players</button>
+      <button class="tab" data-tab="heroes">Heroes</button>
+  <button class="tab" data-tab="draft">Draft</button>
+  <button class="tab" data-tab="teams">Teams</button>
+  <button class="tab" data-tab="placement">Placement</button>
+      <button class="tab" data-tab="awards">Awards</button>
+      <button class="tab" data-tab="laneduos">Lane Duos</button>
+      <button class="tab" data-tab="itemsbought">Items Bought</button>
+      <button class="tab" data-tab="wards">Wards</button>
+    </div>
+
+    <div id="pane-highlights" class="tabpane active">
+      <div id="highlightsCard" class="card" style="margin-top:12px;display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h2 style="margin:0;font-size:18px">Highlights</h2>
+          <div class="sub" id="rangeLabel"></div>
         </div>
+        <div id="highlightsBody"></div>
       </div>
-      <div class='hl-block'>
-        <div class='subhead'>Best Heroes (>=5)</div>
-        ${heroList(hp.best,'best heroes')}
-        <div class='subhead'>Worst Heroes (>=5)</div>
-        ${heroList(hp.worst,'worst heroes')}
-      </div>
-      <div class='hl-block'>
-        <div class='subhead' style='margin-top:4px'>Player Events</div>
-        <div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px'>
-          <div><div class='title' style='margin:0 0 4px'>Rampages</div>${playerList(pl.rampages,'rampages')}</div>
-          <div><div class='title' style='margin:0 0 4px'>Rapiers</div>${playerList(pl.rapiers,'rapiers')}</div>
-          <div><div class='title' style='margin:0 0 4px'>Aegis</div>${playerList(pl.aegisSnatch,'aegis snatch')}</div>
+    </div>
+
+    <div id="pane-players" class="tabpane" style="display:none">
+      <section class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2 style="margin:0;font-size:18px">Players</h2>
+          <button class="tab" id="exportPlayersCsv">Export CSV</button>
         </div>
-      </div>
-    </div>`;
-  const btn=document.getElementById('toggleCompact'); if(btn){ btn.addEventListener('click',()=>{ document.body.classList.toggle('compact'); btn.textContent = document.body.classList.contains('compact')? 'Comfort': 'Compact'; }); }
-  window.__REPORT_WARD_DATA__ = wd; // store for wards tab
-}
+        <table class="table sortable" id="playersTable">
+          <thead>
+            <tr>
+              <th data-type="text">Name</th>
+              <th data-type="num">Games</th>
+              <th data-type="num">W-L</th>
+              <th data-type="num">WR</th>
+              <th data-type="num">Hero pool</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
 
-// Client-side ward computation (matches.json) with fallback to server aggregated
-let WARD_COMPUTED=false; let WARD_SOURCE='';
-// Cache stores base spots with per-side/per-team aggregates and a list of teams
-let __WARD_CACHE__ = { all:[], teams:[] };
-let __WARD_MODE__ = 'best';
-let __WARD_TEAM_FILTER__ = '';
-let __WARD_TIME_FILTER__ = '';
-window.__WARD_DEBUG_GRID__ = false;
-async function computeWardsClient(report){
-  if(WARD_COMPUTED && WARD_SOURCE) return; // allow one retry if first run had no source
-  // Only set WARD_COMPUTED true once we actually tried with a report or matches
-  const slug=qs('league')||'';
-  const relMatches = `${REL_BASE}/league/${slug}/matches.json`;
-  const rawMatches = `${RAW_BASE}/league/${slug}/matches.json`;
-  let matches = await loadJsonWithFallback(relMatches, rawMatches);
-  let all=[]; const teamSet=new Map(); const playerMap=new Map();
-  const reg = (window.__REG_NAME_MAP__ instanceof Map) ? window.__REG_NAME_MAP__ : new Map();
-  if(matches && Array.isArray(matches)){
-    // Pre-collect player names from match summaries (even if they lack logs)
-    try{
-      for(const m of matches){
-        if(!m || !Array.isArray(m.players)) continue;
-        for(const pl of m.players){
-          if(!pl) continue; const aid=Number(pl.account_id||0)||0; const pname = reg.get(aid) || pl.personaname || pl.name || '';
-          if(aid && pname && !playerMap.has(aid)) playerMap.set(aid, pname);
+    <div id="pane-heroes" class="tabpane" style="display:none">
+      <section class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2 style="margin:0;font-size:18px">Heroes</h2>
+          <button class="tab" id="exportHeroesCsv">Export CSV</button>
+        </div>
+        <table class="table sortable" id="heroesTable">
+          <thead>
+            <tr>
+              <th data-type="text">Hero</th>
+              <th data-type="num">Picks</th>
+              <th data-type="num">Bans</th>
+              <th data-type="num">Wins</th>
+              <th data-type="num">WR</th>
+              <th data-type="text">Best player</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+    <div id="pane-draft" class="tabpane" style="display:none">
+      <section class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2 style="margin:0;font-size:18px">Draft</h2>
+          <button class="tab" id="exportDraftCsv">Export CSV</button>
+        </div>
+        <div id="draftMount" class="sub"><span class="spinner"></span> Loading…</div>
+      </section>
+    </div>
+
+    <div id="pane-teams" class="tabpane" style="display:none">
+      <section class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2 style="margin:0;font-size:18px">Teams</h2>
+          <button class="tab" id="exportTeamsCsv">Export CSV</button>
+        </div>
+        <table class="table sortable" id="teamsTable">
+          <thead>
+            <tr>
+              <th data-type="text">Team</th>
+              <th data-type="num">Games</th>
+              <th data-type="num">W-L</th>
+              <th data-type="num">WR</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+    <div id="pane-placement" class="tabpane" style="display:none">
+      <section class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2 style="margin:0;font-size:18px">Placement</h2>
+          <button class="tab" id="exportPlacementCsv">Export CSV</button>
+        </div>
+        <table class="table sortable" id="placementTable">
+          <thead>
+            <tr>
+              <th data-type="num">#</th>
+              <th data-type="text">Team</th>
+              <th data-type="num">Games</th>
+              <th data-type="num">W-L</th>
+              <th data-type="num">WR</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+    <div id="pane-awards" class="tabpane" style="display:none">
+      <section class="card">
+        <h2 style="margin:0 0 8px;font-size:18px">🏆 Awards</h2>
+        <div id="awardsBody" class="sub"><span class="spinner"></span> Computing…</div>
+      </section>
+    </div>
+
+    <div id="pane-laneduos" class="tabpane" style="display:none">
+      <section class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2 style="margin:0;font-size:18px">Lane Duos</h2>
+          <button class="tab" id="exportLaneDuosCsv">Export CSV</button>
+        </div>
+        <div id="ldMount" class="sub"><span class="spinner"></span> Loading…</div>
+      </section>
+    </div>
+
+  <div id="pane-itemsbought" class="tabpane" style="display:none">
+      <section class="card">
+        <h2 style="margin:0 0 8px;font-size:18px">Items Bought</h2>
+        <div id="ibMount" class="sub">Loading…</div>
+      </section>
+    </div>
+
+    
+
+    <div id="pane-wards" class="tabpane" style="display:none">
+      <section class="card" style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h2 style="margin:0;font-size:18px">Wards</h2>
+          <div class="sub">League ward stats</div>
+        </div>
+        <div id="dvWardMount"><span class="spinner"></span> Preparing…</div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const OD_PLAYER_URL = id => `https://www.opendota.com/players/${id}`;
+    const OD_MATCH_URL = id => `https://www.opendota.com/matches/${id}`;
+    function fmtPct(x) { return (x * 100).toFixed(1) + '%'; }
+
+    async function loadJson(u) {
+      try {
+        const r = await fetch(u, { cache: 'no-store' });
+        if (!r.ok) return null;
+        return await r.json();
+      } catch (_e) { return null; }
+    }
+    async function loadJsonWithFallback(rel, raw) {
+      const isFile = (typeof location !== 'undefined' && location.protocol === 'file:');
+      if (isFile) { const a = await loadJson(raw); if (a) return a; return await loadJson(rel); }
+      else { const a = await loadJson(rel); if (a) return a; return await loadJson(raw); }
+    }
+    async function loadFirst(urls) {
+      for (const u of urls) { const j = await loadJson(u); if (j) return j; }
+      return null;
+    }
+
+    function makeHeroMap(heroesRaw) {
+      const map = {};
+      if (!heroesRaw) return map;
+      const add = (obj) => {
+        if (!obj) return;
+        const id = String(obj.id || obj.hero_id || obj.npc_id || obj.key || obj.key_id || obj.code || obj.slug || obj);
+        if (!/^[0-9]+$/.test(id)) return;
+        const name = obj.localized_name || obj.name_localized || obj.displayName || obj.name || `Hero ${id}`;
+        let img = obj.img || obj.icon || '';
+        if (img && !/^https?:/i.test(img)) {
+          // OpenDota/Valve asset paths start with /apps/dota2/...; prefix Valve CDN for absolute access
+          img = `https://cdn.cloudflare.steamstatic.com${img}`;
         }
-      }
-    }catch(_e){}
-    // If matches.json lacks per-player obs logs, try to fetch per-match details from cache
-  const hasLogs = matches.some(m=> Array.isArray(m.obs_log) || Array.isArray(m.obs_left_log) || (Array.isArray(m.players) && m.players.some(p=> Array.isArray(p?.obs_log) || Array.isArray(p?.obs_left_log))));
-    const wardStats=new Map();
-  async function consumeMatch(detail){
-      if(!detail) return; const dur=detail.duration||0;
-      // Collect removals from either top-level or players[*]
-      const left=[]; if(Array.isArray(detail.obs_left_log)) left.push(...detail.obs_left_log);
-      (detail.players||[]).forEach(pl=>{ if(Array.isArray(pl?.obs_left_log)) left.push(...pl.obs_left_log); });
-      left.sort((a,b)=> (a.time||0)-(b.time||0));
-      // For team attribution
-      const rTeamId = Number(detail.radiant_team_id||0)||0; const dTeamId = Number(detail.dire_team_id||0)||0;
-      const rTeamName = detail.radiant_name || (rTeamId?`Team ${rTeamId}`:'Radiant');
-      const dTeamName = detail.dire_name || (dTeamId?`Team ${dTeamId}`:'Dire');
-      if(rTeamId) teamSet.set('T'+rTeamId, {id:rTeamId, name:rTeamName});
-      if(dTeamId) teamSet.set('T'+dTeamId, {id:dTeamId, name:dTeamName});
-      // Iterate each player's placements to attribute to side/team
-      for(const pl of (detail.players||[])){
-        if(!pl || !Array.isArray(pl.obs_log) || pl.obs_log.length===0) continue;
-  const aid = Number(pl.account_id)||0; const pname = reg.get(aid) || pl.personaname || pl.name || (aid?('#'+aid):'Unknown');
-        if(aid && !playerMap.has(aid)) playerMap.set(aid, pname);
-        const isRad = !!(pl.is_radiant || Number(pl.player_slot)<128);
-        const side = isRad ? 'Radiant' : 'Dire';
-        const teamId = isRad ? rTeamId : dTeamId; const teamName = isRad ? rTeamName : dTeamName;
-        const obs = pl.obs_log.slice().sort((a,b)=> (a.time||0)-(b.time||0));
-        for(const o of obs){
-          const start = Math.max(0, o.time||0);
-          // find first matching removal
-          let removal=null; for(const l of left){ if(l.used) continue; if(l.x===o.x&&l.y===o.y&&(l.time||0)>=start){ removal=l; l.used=true; break; } }
-          let life=0; if(removal) life=(removal.time||0)-start; else life=Math.max(0, Math.min(dur,360)-start);
-          if(life>360) life=360;
-          const keyStr = (typeof o.key==='string' && o.key) ? o.key.replace(/\[|\]|\s/g,'') : `${Math.round(o.x||0)},${Math.round(o.y||0)}`;
-          const ws=wardStats.get(keyStr)||{spot:keyStr,x:o.x,y:o.y,count:0,total:0, bySide:{Radiant:{count:0,total:0}, Dire:{count:0,total:0}}, byTeam:{}, samples:[]};
-          ws.count++; ws.total+=life; ws.x=o.x; ws.y=o.y;
-          ws.bySide[side].count++; ws.bySide[side].total += life;
-          if(teamId){ const t = ws.byTeam[teamId] || {id:teamId,name:teamName,count:0,total:0}; t.count++; t.total+=life; ws.byTeam[teamId]=t; }
-          // Keep per-placement sample for time-filtered views
-          ws.samples.push({ t:start, life:life, side:side, teamId:teamId||0, aid: aid||0 });
-          wardStats.set(keyStr,ws);
+        map[id] = { id: Number(id), name, img };
+      };
+      if (Array.isArray(heroesRaw)) { heroesRaw.forEach(add); }
+      else if (typeof heroesRaw === 'object') { Object.values(heroesRaw).forEach(add); }
+      return map;
+    }
+
+    function sortTable(table, col, type, asc) {
+      const tbody = table.tBodies[0];
+      if (!tbody) return;
+      const rows = Array.from(tbody.rows);
+      function val(td) {
+        const ds = td.dataset && td.dataset.sort !== undefined ? td.dataset.sort : null;
+        if (ds !== null) {
+          const n = parseFloat(String(ds).replace('%', '').replace(',', '.'));
+          return isNaN(n) ? String(ds).toLowerCase() : n;
         }
+        const t = td.textContent.trim().replace('%', '').replace(',', '.');
+        const n = parseFloat(t);
+        return isNaN(n) ? t.toLowerCase() : n;
       }
+      rows.sort((a, b) => {
+        let va = val(a.cells[col]), vb = val(b.cells[col]);
+        if (type === 'text') return asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+        va = parseFloat(va) || 0; vb = parseFloat(vb) || 0;
+        return asc ? va - vb : vb - va;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+      table.querySelectorAll('th').forEach(th => th.classList.remove('sorted-asc', 'sorted-desc'));
+      const th = table.querySelectorAll('th')[col];
+      if (th) th.classList.add(asc ? 'sorted-asc' : 'sorted-desc');
     }
-    if(hasLogs){
-      for(const m of matches){ await consumeMatch(m); }
-      if(wardStats.size>0){
-        WARD_SOURCE='client-matches';
-      } else {
-        // Fallback to cached details if no samples produced
-        const ids = matches.map(m=>m.match_id).filter(Boolean);
-        const maxN = Math.min(ids.length, 400);
-        const bases = [ `${REL_BASE}/cache/OpenDota/matches/`, `${RAW_BASE}/cache/OpenDota/matches/` ];
-        async function fetchDetail(id){ for(const b of bases){ const url = `${b}${id}.json`; const j = await loadJson(url); if(j) return j; } return null; }
-        const concurrency=8; let idx=0; let ok=0; async function worker(){ while(idx<maxN){ const i=idx++; const id=ids[i]; const d=await fetchDetail(id); if(d){ ok++; await consumeMatch(d); } } }
-        await Promise.all(Array.from({length:concurrency},()=>worker()));
-        WARD_SOURCE = ok>0 ? 'client-cache' : '';
-      }
-    } else {
-      // Fetch details from cache; limit to 400 matches to avoid UI freeze
-      const ids = matches.map(m=>m.match_id).filter(Boolean);
-      const maxN = Math.min(ids.length, 400);
-      const bases = [ `${REL_BASE}/cache/OpenDota/matches/`, `${RAW_BASE}/cache/OpenDota/matches/` ];
-      async function fetchDetail(id){ for(const b of bases){ const url = `${b}${id}.json`; const j = await loadJson(url); if(j) return j; } return null; }
-      const concurrency=8; let idx=0; let ok=0; async function worker(){ while(idx<maxN){ const i=idx++; const id=ids[i]; const d=await fetchDetail(id); if(d){ ok++; await consumeMatch(d); } } }
-      await Promise.all(Array.from({length:concurrency},()=>worker()));
-      WARD_SOURCE = ok>0 ? 'client-cache' : '';
-    }
-    all=[...wardStats.entries()].map(([k,v])=>({spot:k,x:v.x,y:v.y,
-      count:v.count, total:v.total,
-      bySide:v.bySide, byTeam:v.byTeam,
-      samples: Array.isArray(v.samples)? v.samples: [],
-      avgSeconds:v.count?Math.floor(v.total/v.count):0
-    }));
-    if(all.length){ const lg=document.getElementById('wardMapLegend'); if(lg) lg.textContent='Green = Best avg lifetime, Red = Worst.'; }
-  } else if(report && report.highlights && report.highlights.wards){
-    const wd=report.highlights.wards; // Server path lacks team attribution
-    all=(wd.allSpots||[]).map(s=>({...s, total:(s.avgSeconds||0)*(s.count||0), bySide:{Radiant:{count:0,total:0},Dire:{count:0,total:0}}, byTeam:{}, samples: [] }));
-    WARD_SOURCE='server';
-  }
-  __WARD_CACHE__ = { all, teams: Array.from(teamSet.values()), players: Array.from(playerMap.entries()).map(([id,name])=>({id, name})) };
-  try{ console.info('WARD_SOURCE', WARD_SOURCE||'(none)', {all:all.length, teams: __WARD_CACHE__.teams.length}); }catch(_e){}
-  function listify(arr){
-    if(!arr.length) return `<div class='sub'>Keine Daten</div>`;
-    return `<ul class='simple'>`+arr.map((s,idx)=>{
-      const mm = s.avgSeconds? Math.floor((s.avgSeconds||0)/60):0; const ss = s.avgSeconds? (s.avgSeconds%60):0;
-      const coords = (s.spot||'').replace(/\[|\]|\s/g,'');
-      return `<li data-spot='${s.spot||''}'>
-        <span style='display:flex;align-items:center;gap:8px'>
-          <span class='badge' style='min-width:54px;text-align:center'>Ward ${idx+1}</span>
-          <span class='sub' style='opacity:.8'>${coords}</span>
-        </span>
-        <span style='display:flex;gap:6px'>
-          ${s.avgSeconds!==undefined?`<span class='badge'>avg ${mm}m ${ss}s</span>`:''}
-          ${s.count? `<span class='badge'>x${s.count}</span>`:''}
-        </span>
-      </li>`;
-    }).join('')+`</ul>`;
-  }
-  // Populate team filter select
-  try{
-    // Build team chips (All/Radiant/Dire + named teams)
-    const teamWrap=document.getElementById('wardTeamSeg');
-    if(teamWrap){
-      const chips=[{v:'',label:'All'},{v:'Radiant',label:'Radiant'},{v:'Dire',label:'Dire'}];
-      const teams=(__WARD_CACHE__.teams||[]).slice().sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
-      for(const t of teams){ chips.push({v:`team:${t.id}`, label: String(t.name||(`Team ${t.id}`))}); }
-      teamWrap.innerHTML = chips.map(c=>`<button class="chip" data-team="${esc(c.v)}">${esc(c.label)}</button>`).join('');
-      const setActive=()=>{ teamWrap.querySelectorAll('.chip').forEach(b=> b.classList.toggle('active', (b.getAttribute('data-team')||'')===(__WARD_TEAM_FILTER__||''))); };
-      setActive();
-      if(!teamWrap.__wired){ teamWrap.__wired=true; teamWrap.addEventListener('click', (e)=>{ const btn=e.target.closest('button.chip'); if(!btn) return; __WARD_TEAM_FILTER__ = btn.getAttribute('data-team')||''; setActive(); renderWardByMode(__WARD_MODE__); }); }
-    }
-    // Wire time segmented controls
-    const timeWrap=document.getElementById('wardTimeSeg');
-    if(timeWrap){
-      const setActive=()=>{ timeWrap.querySelectorAll('.seg').forEach(b=> b.classList.toggle('active', (b.getAttribute('data-time')||'')===(__WARD_TIME_FILTER__||''))); };
-      setActive();
-      if(!timeWrap.__wired){ timeWrap.__wired=true; timeWrap.addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; __WARD_TIME_FILTER__ = btn.getAttribute('data-time')||''; setActive(); renderWardByMode(__WARD_MODE__); }); }
-    }
-  }catch(_e){}
-  // Initial render
-  renderWardByMode(__WARD_MODE__);
-  const st=document.getElementById('wardStatus'); if(st){ const base=`Source: ${WARD_SOURCE||'none'} | spots:${all.length}`; st.textContent = base; st.dataset.base = base; }
-  WARD_COMPUTED=true; // mark after attempt so a second call won't repeat unless forced
-  // Wire overlay/grid toggles once
-  try{
-    const ov=document.getElementById('toggleWardOverlay'); const tg=document.getElementById('toggleWardGrid');
-    if(ov && !ov.__wired){ ov.__wired=true; ov.addEventListener('change',()=>{ const svg=document.querySelector('#wardMap svg'); if(svg){ svg.style.display = ov.checked ? '' : 'none'; } }); }
-    if(tg && !tg.__wired){ tg.__wired=true; tg.addEventListener('change',()=>{ window.__WARD_DEBUG_GRID__ = !!tg.checked; renderWardByMode(__WARD_MODE__); }); }
-  }catch(_e){}
-}
-
-function renderWardByMode(mode){
-  __WARD_MODE__ = mode || __WARD_MODE__;
-  const btns = document.querySelectorAll('#wardViewTabs .tab');
-  btns.forEach(b=> b.classList.toggle('active', (b.dataset.wmode||'')===__WARD_MODE__));
-  const base = (__WARD_CACHE__ && __WARD_CACHE__.all) ? __WARD_CACHE__.all : [];
-  // Time window mapping
-  function timeWindow(){
-    switch(__WARD_TIME_FILTER__){
-      case 'early': return {min:0, max:600, label:'0-10m'};
-      case 'mid': return {min:600, max:2100, label:'10-35m'};
-      case 'earlylate': return {min:2100, max:3000, label:'35-50m'};
-      case 'late': return {min:3000, max:4500, label:'50-75m'};
-      case 'superlate': return {min:4500, max:Infinity, label:'75m+'};
-      default: return {min:-Infinity, max:Infinity, label:'all'};
-    }
-  }
-  // Build filtered view arrays from base according to team filter
-  function pick(s){
-    const val = __WARD_TEAM_FILTER__;
-    const tw = timeWindow();
-    // If we have per-placement samples, filter precisely
-    if(Array.isArray(s.samples) && s.samples.length){
-      let cnt=0, tot=0;
-      for(const sm of s.samples){
-        const t = Number(sm.t||0);
-        if(!(t>=tw.min && t<tw.max)) continue;
-        if(!val){ cnt++; tot+=Number(sm.life||0); continue; }
-        if(val==='Radiant' || val==='Dire'){ if(String(sm.side||'')===val){ cnt++; tot+=Number(sm.life||0); } continue; }
-        if(val.startsWith('team:')){ const id=Number(val.split(':')[1]||0); if(Number(sm.teamId||0)===id){ cnt++; tot+=Number(sm.life||0); } continue; }
-      }
-      return {count:cnt, total:tot};
-    }
-    // Fallback to pre-aggregated totals (no time slicing)
-    if(!val){ return {count:s.count, total:s.total}; }
-    if(val==='Radiant' || val==='Dire'){
-      const side = s.bySide && s.bySide[val] || {count:0,total:0}; return {count:side.count||0, total:side.total||0};
-    }
-    if(val.startsWith('team:')){ const id=Number(val.split(':')[1]||0); const t = s.byTeam && s.byTeam[id]; return {count:(t&&t.count)||0, total:(t&&t.total)||0}; }
-    return {count:s.count, total:s.total};
-  }
-  const derived = base.map(s=>{ const v=pick(s); const avg = v.count? Math.floor(v.total/v.count):0; return {spot:s.spot,x:s.x,y:s.y,count:v.count,avgSeconds:avg}; });
-  // Performance threshold: at least 2 occurrences
-  const perf = derived.filter(s=> s.count>=2);
-  // Build best/worst lists (15 each); exclude zero-minute entries from worst entirely
-  let best = [], worst = [], all = derived;
-  if(__WARD_MODE__==='best'){
-    best = perf.slice().sort((a,b)=> (b.avgSeconds-a.avgSeconds) || (b.count-a.count)).slice(0,15);
-    worst = [];
-  } else if(__WARD_MODE__==='worst'){
-    const wsrc = perf.slice().filter(s=> (s.avgSeconds||0) > 0);
-    worst = wsrc.sort((a,b)=> (a.avgSeconds-b.avgSeconds) || (b.count-a.count)).slice(0,15);
-    best = [];
-  }
-  renderWardMap(best, worst, all);
-  // Update status with current time window label
-  try{ const st=document.getElementById('wardStatus'); if(st){ const tw=timeWindow(); const baseTxt = st.dataset && st.dataset.base ? st.dataset.base : (st.textContent||''); st.textContent = `${baseTxt} | time:${tw.label}`; st.dataset.base = baseTxt; } }catch(_e){}
-  // Update lists
-  function listify(arr){
-    if(!arr.length) return `<div class='sub'>Keine Daten</div>`;
-    return `<ul class='simple'>`+arr.map((s,idx)=>{
-      const mm = s.avgSeconds? Math.floor((s.avgSeconds||0)/60):0; const ss = s.avgSeconds? (s.avgSeconds%60):0;
-      const coords = (s.spot||'').replace(/\[|\]|\s/g,'');
-      return `<li data-spot='${s.spot||''}'>
-        <span style='display:flex;align-items:center;gap:8px'>
-          <span class='badge' style='min-width:54px;text-align:center'>Ward ${idx+1}</span>
-          <span class='sub' style='opacity:.8'>${coords}</span>
-        </span>
-        <span style='display:flex;gap:6px'>
-          ${s.avgSeconds!==undefined?`<span class='badge'>avg ${mm}m ${ss}s</span>`:''}
-          ${s.count? `<span class='badge'>x${s.count}</span>`:''}
-        </span>
-      </li>`;
-    }).join('')+`</ul>`;
-  }
-  const bestEl=document.getElementById('wl-best'); if(bestEl) bestEl.innerHTML = listify(best);
-  const worstEl=document.getElementById('wl-worst'); if(worstEl) worstEl.innerHTML = listify(worst);
-}
-
-// Extend computeBasicTables to show hero icons
-function makeSortable(table){
-  if(!table) return; const ths=table.querySelectorAll('th'); let sortState={col:0,dir:1};
-  ths.forEach((th,i)=>{ th.style.cursor='pointer'; th.addEventListener('click',()=>{
-    const tbody=table.querySelector('tbody'); const rows=[...tbody.querySelectorAll('tr')];
-    if(sortState.col===i){ sortState.dir*=-1 } else { sortState.col=i; sortState.dir=1 }
-    rows.sort((a,b)=>{
-      const av=a.children[i].getAttribute('data-sort')||a.children[i].textContent.trim();
-      const bv=b.children[i].getAttribute('data-sort')||b.children[i].textContent.trim();
-      const numA=parseFloat(av); const numB=parseFloat(bv); const isNum=!isNaN(numA)&&!isNaN(numB);
-      if(isNum){ return (numA-numB)*sortState.dir }
-      return av.localeCompare(bv,undefined,{sensitivity:'base'})*sortState.dir;
-    });
-    rows.forEach(r=>tbody.appendChild(r));
-  }); });
-}
-
-async function computeBasicTables(report){
-  await loadHeroes();
-  // Heroes full list straight from report.highlights.heroes.all
-  const allHeroes=(report.highlights.heroes.all||[]).slice();
-  allHeroes.sort((a,b)=> heroLabel(a.hero_id).localeCompare(heroLabel(b.hero_id),'de',{sensitivity:'base'}));
-  const heroRows = allHeroes.map(h=>{
-    const wr = h.picks? h.wins/h.picks:0; return `<tr><td data-sort='${esc(heroLabel(h.hero_id))}' style='display:flex;align-items:center;gap:8px'><img src='${heroImg(h.hero_id)}' style='width:42px;height:24px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.12)'><span>${esc(heroLabel(h.hero_id))}</span></td><td data-sort='${h.picks}'>${h.picks}</td><td data-sort='${h.wins}'>${h.wins}</td><td data-sort='${wr.toFixed(4)}'>${fmtPct(wr)}</td></tr>`; }).join('');
-  document.querySelector('#heroesTable tbody').innerHTML = heroRows;
-  makeSortable(document.getElementById('heroesTable'));
-
-  // Players full list
-  const allPlayers=(report.highlights.players.all||[]).slice();
-  allPlayers.sort((a,b)=> a.name.localeCompare(b.name,'de',{sensitivity:'base'}));
-  const playerRows = allPlayers.map(p=>{
-    const wr=p.games? p.wins/p.games:0; return `<tr><td data-sort='${esc(p.name)}'>${esc(p.name)}</td><td data-sort='${p.games}'>${p.games}</td><td data-sort='${p.wins - p.losses}'>${p.wins}-${p.losses}</td><td data-sort='${wr.toFixed(4)}'>${fmtPct(wr)}</td></tr>`; }).join('');
-  document.querySelector('#playersTable tbody').innerHTML = playerRows;
-  makeSortable(document.getElementById('playersTable'));
-
-  // Teams full list (use placements for totals)
-  const placements = (report.placements||[]).slice();
-  const teamRows = placements.map(t=>{
-    const wr = t.games? t.wins/t.games:0;
-    return `<tr>
-      <td data-sort='${esc(t.name||"")}'><span>${esc(t.name||'')}</span></td>
-      <td data-sort='${t.games||0}'>${t.games||0}</td>
-      <td data-sort='${(t.wins||0) - (t.losses||0)}'>${t.wins||0}-${t.losses||0}</td>
-      <td data-sort='${wr.toFixed(4)}'>${fmtPct(wr)}</td>
-    </tr>`;
-  }).join('');
-  const teamsTb = document.querySelector('#teamsTable tbody');
-  if(teamsTb){ teamsTb.innerHTML = teamRows || `<tr><td colspan='4' class='sub'>Keine Team-Daten</td></tr>`; makeSortable(document.getElementById('teamsTable')); }
-}
-
-async function main(){
-  await loadHeroes();
-  await loadMapConf();
-  const slug=qs('league')||''; const from=qs('from'); const to=qs('to');
-  // Set a lightweight placeholder; will be replaced by report.meta if present
-  const tEl=document.getElementById('leagueTitle'); if(tEl){ tEl.textContent = slug? `League Viewer - ${slug}` : 'League Viewer'; }
-  const hsEl=document.getElementById('headerSub'); if(hsEl){ hsEl.textContent = `Range: ${from||'?'} - ${to||'?'} UTC${slug? ` | League ${slug}`:''}`; }
-  ensureWardMapBackground();
-  const relReport = `${REL_BASE}/league/${slug}/report.json`;
-  const rawReport = `${RAW_BASE}/league/${slug}/report.json`;
-  let report = await loadJsonWithFallback(relReport, rawReport);
-  if(!report){ document.getElementById('highlightsBody').textContent='Failed to load report.json'; return; }
-  window.__REPORT_REPORT__ = report; // store full report
-  // Build a map of registered names from report for consistent naming (prefer over Steam personaname)
-  try{
-    const reg = new Map();
-    const ppl = report && report.highlights && report.highlights.players && Array.isArray(report.highlights.players.all)
-      ? report.highlights.players.all : [];
-    for(const p of ppl){
-      const aid = Number(p.account_id || p.id || p.aid || 0);
-      const nm = String(p.name || '').trim();
-      if(aid>0 && nm) reg.set(aid, nm);
-    }
-    window.__REG_NAME_MAP__ = reg;
-  }catch(_e){ window.__REG_NAME_MAP__ = new Map(); }
-  // Apply meta-based header (name/from/to) if available
-  applyHeaderFromMeta(report, slug);
-  renderHighlights(report.highlights);
-  renderPlacements(report.placements);
-  computeBasicTables(report);
-  // Prepare data for shared WardViewer module
-  await computeWardsClient(report);
-  try{
-    const container = document.getElementById('wardMount');
-    if(container && window.WardViewer){
-      const teams = Array.from(new Map((report.placements||[]).map(t=>['T'+(t.team_id||t.id), {id: t.team_id||t.id, name: t.name}])).values()).filter(t=>t.id);
-      const reg = (window.__REG_NAME_MAP__ instanceof Map) ? window.__REG_NAME_MAP__ : new Map();
-      let players = (__WARD_CACHE__ && Array.isArray(__WARD_CACHE__.players)) ? __WARD_CACHE__.players.map(p=>({ id: Number(p.id), name: reg.get(Number(p.id)) || p.name })) : [];
-      if(!players.length){
-        // derive from ward samples
-        const ids=new Map();
-        for(const s of ((__WARD_CACHE__&&__WARD_CACHE__.all)||[])){
-          const sm=Array.isArray(s.samples)? s.samples: [];
-          for(const o of sm){ const aid=Number(o.aid||0); if(aid>0 && !ids.has(aid)) ids.set(aid, aid); }
-        }
-        // try to resolve names via pre-collected playerMap (from computeWardsClient)
-        const nameMap = new Map((__WARD_CACHE__ && Array.isArray(__WARD_CACHE__.players) ? __WARD_CACHE__.players : []).map(p=>[Number(p.id), p.name]));
-        players = Array.from(ids.keys()).map(id=>({id, name: reg.get(Number(id)) || nameMap.get(Number(id)) || `Player ${id}`}));
-      }
-      window.WardViewer.mount(container, {
-        mapConf: MAP_CONF,
-        data: { spots: (__WARD_CACHE__&&__WARD_CACHE__.all)||[], teams, players },
-        options: { modeDefault: 'best', showExtras: false }
+    function enableSorting() {
+      document.querySelectorAll('table.sortable').forEach(table => {
+        table.querySelectorAll('th').forEach((th, i) => {
+          th.addEventListener('click', () => {
+            const type = th.dataset.type || 'text';
+            const asc = !th.classList.contains('sorted-asc');
+            sortTable(table, i, type, asc);
+          });
+        });
       });
     }
-  }catch(_e){}
-}
-main();
-// Main Tab logic (scope to header tabs only)
-const mTabs=document.querySelectorAll('#mainTabs .tab');
-const panes={}; document.querySelectorAll('.tabpane').forEach(p=> panes[p.id.replace('pane-','')] = p);
-mTabs.forEach(t=> t.addEventListener('click',()=>{ mTabs.forEach(x=>x.classList.remove('active')); t.classList.add('active'); const id=t.dataset.tab; document.querySelectorAll('.tabpane').forEach(p=>p.style.display='none'); const pane=document.getElementById('pane-'+id); if(pane) pane.style.display=''; if(id==='wards'){ computeWardsClient(window.__REPORT_REPORT__); } }));
-// (ward tabs now handled by WardViewer)
-</script>
+
+    function aggregate(matches, playerNames, teamNames) {
+      const teams = new Map(), players = new Map(), teamPlayers = new Map(), heroStats = new Map(), heroPlayerAgg = new Map();
+      for (const m of matches) {
+        const radWin = !!m.radiant_win, radTeamId = m.radiant_team_id | 0, dirTeamId = m.dire_team_id | 0;
+        const radName = teamNames[String(radTeamId)] || m.radiant_name || 'Radiant';
+        const dirName = teamNames[String(dirTeamId)] || m.dire_name || 'Dire';
+        function ensureTeam(id, name) { if (!id) return; if (!teams.has(id)) teams.set(id, { team_id: id, name, games: 0, wins: 0, losses: 0 }); }
+        ensureTeam(radTeamId, radName); ensureTeam(dirTeamId, dirName);
+        if (radTeamId) { const t = teams.get(radTeamId); t.games++; if (radWin) t.wins++; else t.losses++; if (radName && radName !== 'Radiant') t.name = radName; }
+        if (dirTeamId) { const t = teams.get(dirTeamId); t.games++; if (radWin) t.losses++; else t.wins++; if (dirName && dirName !== 'Dire') t.name = dirName; }
+        if (Array.isArray(m.picks_bans)) for (const pb of m.picks_bans) {
+          const hid = pb.hero_id | 0; let hs = heroStats.get(hid);
+          if (!hs) { hs = { picks: 0, wins: 0, bans: 0 }; heroStats.set(hid, hs); }
+          if (!pb.is_pick) hs.bans++;
+        }
+        for (const p of m.players || []) {
+          const id = Number(p.account_id || 0); if (!(id > 0)) continue;
+          if (!players.has(id)) { const nm = playerNames[String(id)] || p.personaname || `Player ${id}`; players.set(id, { account_id: id, name: nm, games: 0, wins: 0, heroes: {}, heroWins: {}, profile: OD_PLAYER_URL(id) }); }
+          const ps = players.get(id); ps.games++; const won = p.is_radiant ? radWin : !radWin; if (won) ps.wins++;
+          const hid = p.hero_id | 0; if (hid > 0) {
+            ps.heroes[String(hid)] = (ps.heroes[String(hid)] || 0) + 1; ps.heroWins[String(hid)] = (ps.heroWins[String(hid)] || 0) + (won ? 1 : 0);
+            let hs = heroStats.get(hid); if (!hs) { hs = { picks: 0, wins: 0, bans: 0 }; heroStats.set(hid, hs); }
+            hs.picks++; if (won) hs.wins++;
+            if (!heroPlayerAgg.has(hid)) heroPlayerAgg.set(hid, new Map());
+            if (!heroPlayerAgg.get(hid).has(id)) heroPlayerAgg.get(hid).set(id, { account_id: id, name: ps.name, games: 0, wins: 0, profile: ps.profile });
+            const hp = heroPlayerAgg.get(hid).get(id); hp.games++; if (won) hp.wins++;
+          }
+          const teamId = p.is_radiant ? radTeamId : dirTeamId; if (teamId) {
+            if (!teamPlayers.has(teamId)) teamPlayers.set(teamId, new Map());
+            if (!teamPlayers.get(teamId).has(id)) teamPlayers.get(teamId).set(id, { account_id: id, name: ps.name, games: 0, wins: 0, profile: ps.profile });
+            const tp = teamPlayers.get(teamId).get(id); tp.games++; if (won) tp.wins++;
+          }
+        }
+      }
+      return { teams, players, teamPlayers, heroStats, heroPlayerAgg };
+    }
+
+    let __focusAid = 0, __userOnlyAid = 0;
+    function render({ teams, players, teamPlayers, heroStats, heroPlayerAgg }, heroMap, opts) {
+      const teamResolver = opts && typeof opts.teamResolver === 'function' ? opts.teamResolver : null;
+      // Build primary team mapping: for each player choose the team with most games in this league
+      const primaryTeamByAid = {};
+      for (const [tid, pmap] of teamPlayers.entries()) {
+        const teamName = (teams.get(tid) && teams.get(tid).name) || `Team ${tid}`;
+        for (const [aid, st] of pmap.entries()) {
+          const k = String(aid);
+          const prev = primaryTeamByAid[k];
+          if (!prev || (st.games || 0) > (prev.games || 0)) {
+            primaryTeamByAid[k] = { name: teamName, games: st.games };
+          }
+        }
+      }
+      let plist = Array.from(players.values());
+      if (__userOnlyAid > 0) plist = plist.filter(p => Number(p.account_id) === __userOnlyAid);
+      if (__focusAid > 0) { const idx = plist.findIndex(p => Number(p.account_id) === __focusAid); if (idx > 0) { const [it] = plist.splice(idx, 1); plist.unshift(it); } }
+
+      const playerRows = plist.map(p => {
+        const wr = p.games ? p.wins / p.games : 0; const poolSize = Object.keys(p.heroes || {}).length;
+        const resolvedTeam = teamResolver ? (teamResolver(p.account_id) || '') : '';
+        const pt = primaryTeamByAid[String(p.account_id)];
+        const teamName = resolvedTeam || (pt && pt.name) || '';
+        const teamLabel = teamName ? ` <span class='sub' style='margin-left:6px'>(${teamName})</span>` : '';
+        return (
+          `<tr>
+            <td data-sort='${p.name.toLowerCase()} ${teamName ? teamName.toLowerCase() : ''}'>
+              <a href='${p.profile}' target='_blank'>${p.name}</a>${teamLabel}
+            </td>
+            <td data-sort='${p.games}'>${p.games}</td>
+            <td data-sort='${p.wins / (p.games || 1)}'><span class='win'>${p.wins}</span>-<span class='loss'>${p.games - p.wins}</span></td>
+            <td data-sort='${wr}'>${fmtPct(wr)}</td>
+            <td data-sort='${poolSize}'>${poolSize}</td>
+          </tr>`
+        );
+      }).join('');
+      document.querySelector('#playersTable tbody').innerHTML = playerRows;
+
+      const teamRows = Array.from(teams.values()).map(t => {
+        const wr = t.games ? t.wins / t.games : 0;
+        return (
+          `<tr>
+            <td data-sort='${t.name.toLowerCase()}'>${t.name}</td>
+            <td data-sort='${t.games}'>${t.games}</td>
+            <td data-sort='${t.wins / (t.games || 1)}'><span class='win'>${t.wins}</span>-<span class='loss'>${t.losses}</span></td>
+            <td data-sort='${wr}'>${fmtPct(wr)}</td>
+          </tr>`
+        );
+      }).join('');
+      document.querySelector('#teamsTable tbody').innerHTML = teamRows;
+
+      const heroRows = Array.from(heroStats.keys()).map(hid => {
+        const hs = heroStats.get(hid);
+        const picks = hs.picks | 0, wins = hs.wins | 0, bans = hs.bans | 0, wr = picks ? wins / picks : 0;
+        const meta = heroMap[String(hid)] || { name: `Hero ${hid}`, img: '' };
+        let bestLabel = '<span class="badge">no data</span>', bestWr = 0;
+        const hpa = heroPlayerAgg.get(hid);
+        if (hpa) {
+          const arr = Array.from(hpa.values()).filter(x => x.games > 0).map(x => ({ ...x, wr: x.wins / x.games })).sort((a, b) => b.wr - a.wr || b.games - a.games);
+          if (arr.length) { const b = arr[0]; bestLabel = `<a href='${b.profile}' target='_blank'>${b.name}</a> - ${fmtPct(b.wr)} (${b.wins}/${b.games})`; bestWr = b.wr; }
+        }
+        return (
+          `<tr>
+            <td data-sort='${meta.name.toLowerCase()}'>
+              <div style='display:flex;align-items:center;gap:8px'>
+                <img src='${meta.img}' loading='lazy' decoding='async' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'>
+                <span>${meta.name}</span>
+              </div>
+            </td>
+            <td data-sort='${picks}'>${picks}</td>
+            <td data-sort='${bans}'>${bans}</td>
+            <td data-sort='${wins}'>${wins}</td>
+            <td data-sort='${wr}'>${fmtPct(wr)}</td>
+            <td data-sort='${bestWr}'>${bestLabel}</td>
+          </tr>`
+        );
+      }).join('');
+      document.querySelector('#heroesTable tbody').innerHTML = heroRows;
+
+      if (!window.__lvSortedOnce) {
+        sortTable(document.getElementById('playersTable'), 3, 'num', false);
+        sortTable(document.getElementById('teamsTable'), 3, 'num', false);
+        sortTable(document.getElementById('heroesTable'), 1, 'num', false);
+        window.__lvSortedOnce = true;
+      }
+    }
+
+    // summary cards removed for league view
+
+    async function pMap(items, limit, worker) {
+      const ret = new Array(items.length); let i = 0; let active = 0;
+      return await new Promise(res => {
+        function next() {
+          if (i >= items.length && active === 0) { res(ret); return; }
+          while (active < limit && i < items.length) {
+            const idx = i++; active++;
+            Promise.resolve(worker(items[idx], idx)).then(v => { ret[idx] = v; active--; next(); }).catch(() => { ret[idx] = null; active--; next(); });
+          }
+        }
+        next();
+      });
+    }
+
+    async function fetchMatchDetail(id, relBase, rawBase) {
+      const localPreferred = `${relBase}/cache/OpenDota/matches/${id}.json`;
+      const localAlt = `data/cache/OpenDota/matches/${id}.json`;
+      const remote = `${rawBase}/cache/OpenDota/matches/${id}.json`;
+      return await loadFirst([localPreferred, localAlt, remote]);
+    }
+
+    function computeHighlightsFromDetails(details, resolver, teamResolver) {
+      const rampages = new Map(), rapierBy = new Map(), gemBy = new Map(), duosSafe = new Map(), duosOff = new Map(), roshanTeam = { Radiant: 0, Dire: 0 };
+      let bestGPM = null, bestKills = null, bestAssists = null, bestNet = null;
+      const durList = [];
+      function add(map, k, inc = 1) { map.set(String(k), (map.get(String(k)) || 0) + inc); }
+
+      for (const md of details) {
+        if (!md) continue; const mid = Number(md.match_id || 0);
+        const players = Array.isArray(md.players) ? md.players : []; const radWin = !!md.radiant_win;
+        for (const p of players) {
+          const aid = Number(p.account_id || 0); if (aid > 0) {
+            const mk = p.multi_kills || {}; const r = Number(mk['5'] || 0); if (r > 0) add(rampages, aid, r);
+            const displayName = (resolver && resolver(aid)) || p.personaname || `Player ${aid}`;
+            const teamTag = (teamResolver && teamResolver(aid)) || '';
+            const display = teamTag ? `${displayName} (${teamTag})` : displayName;
+            const setBest = (cur, val) => val > 0 && (!cur || (cur.value || 0) < val)
+              ? { account_id: aid, name: display, profile: OD_PLAYER_URL(aid), value: val, match_id: mid } : cur;
+            bestGPM = setBest(bestGPM, Number(p.gold_per_min || 0));
+            bestKills = setBest(bestKills, Number(p.kills || 0));
+            bestAssists = setBest(bestAssists, Number(p.assists || 0));
+            bestNet = setBest(bestNet, Number(p.net_worth || 0) || Number(p.total_gold || 0));
+            const log = Array.isArray(p.purchase_log) ? p.purchase_log : [];
+            for (const ev of log) { const k = String(ev.key || '').toLowerCase(); if (k.includes('rapier')) add(rapierBy, aid, 1); if (k === 'gem' || k.includes('gem_of_true_sight')) add(gemBy, aid, 1); }
+          }
+        }
+        for (const side of ['radiant', 'dire']) {
+          const sidePlayers = players.filter(pl => (pl.is_radiant && side === 'radiant') || (!pl.is_radiant && side === 'dire'));
+          for (const laneName of ['Safe', 'Off']) {
+            const code = laneName === 'Safe' ? 1 : 3; const lanePlayers = sidePlayers.filter(pl => (pl.lane_role | 0) === code);
+            if (lanePlayers.length === 2) { const pair = [Number(lanePlayers[0].hero_id), Number(lanePlayers[1].hero_id)].sort((a, b) => a - b); const key = `${pair[0]}-${pair[1]}`; const mp = laneName === 'Safe' ? duosSafe : duosOff; const rec = mp.get(key) || { games: 0, wins: 0 }; rec.games++; const laneWin = (side === 'radiant' && radWin) || (side === 'dire' && !radWin); if (laneWin) rec.wins++; mp.set(key, rec); }
+          }
+        }
+        if (Array.isArray(md.objectives)) for (const ev of md.objectives) { if (/roshan_kill/i.test(String(ev.type || ''))) { const team = (ev.team === 2 || ev.team === 0 || ev.key === 'radiant') ? 'Radiant' : 'Dire'; roshanTeam[team]++; } }
+        durList.push({ match_id: mid, duration: Number(md.duration || 0), radiant_win: radWin });
+      }
+  function topN(map, n) { return Array.from(map.entries()).map(([aid, c]) => { const id = Number(aid); const base = (resolver && resolver(id)) || `Player ${id}`; const tag = (teamResolver && teamResolver(id)) || ''; const name = tag ? `${base} (${tag})` : base; return { account_id: id, name, profile: OD_PLAYER_URL(id), count: c }; }).sort((a, b) => b.count - a.count).slice(0, n); }
+      function duosFrom(mp) { return Array.from(mp.entries()).map(([k, v]) => { const [a, b] = k.split('-').map(Number); return { a, b, games: v.games, wins: v.wins, winrate: v.games ? v.wins / v.games : 0 }; }).sort((a, b) => b.winrate - a.winrate || b.games - a.games).slice(0, 5); }
+      const topSingle = {}; if (bestGPM) topSingle.gpm = bestGPM; if (bestKills) topSingle.kills = bestKills; if (bestAssists) topSingle.assists = bestAssists; if (bestNet) topSingle.networth = bestNet;
+      const durationLongest = durList.slice().sort((a, b) => b.duration - a.duration).slice(0, 3);
+      const durationShortest = durList.slice().sort((a, b) => a.duration - b.duration).slice(0, 3);
+      return { rampages: topN(rampages, 10), rapierTop: topN(rapierBy, 3), gemTop: topN(gemBy, 3), topSingle, safeDuos: duosFrom(duosSafe), offDuos: duosFrom(duosOff), roshan: roshanTeam, durationLongest, durationShortest };
+    }
+
+    function detailsToMatches(details, matchesFallback) {
+      // Convert detailed match objects to the lightweight structure expected by aggregate()
+      const out = [];
+      // Build a quick lookup from matches.json for missing team IDs/names
+      const matchById = new Map();
+      if (Array.isArray(matchesFallback)) {
+        for (const m of matchesFallback) {
+          const mid = Number(m.match_id || 0);
+          if (!mid) continue;
+          matchById.set(mid, {
+            radiant_team_id: Number(m.radiant_team_id || 0),
+            dire_team_id: Number(m.dire_team_id || 0),
+            radiant_name: m.radiant_name || '',
+            dire_name: m.dire_name || ''
+          });
+        }
+      }
+      for (const d of details || []) {
+        if (!d) continue;
+        const mid = Number(d.match_id || 0);
+        // Primary from details
+        let radTeamId = Number(d.radiant_team_id || (d.radiant_team && d.radiant_team.team_id) || 0);
+        let dirTeamId = Number(d.dire_team_id || (d.dire_team && d.dire_team.team_id) || 0);
+        let radName = (d.radiant_team && d.radiant_team.name) || d.radiant_name || '';
+        let dirName = (d.dire_team && d.dire_team.name) || d.dire_name || '';
+        // Fallback from matches.json if details missing/0 or generic
+        const isGeneric = (s) => { const t = (s||'').toString().trim(); return !t || /^radiant$/i.test(t) || /^dire$/i.test(t); };
+        const fb = matchById.get(mid);
+        if (fb) {
+          if (!radTeamId && Number(fb.radiant_team_id || 0)) radTeamId = Number(fb.radiant_team_id || 0);
+          if (!dirTeamId && Number(fb.dire_team_id || 0)) dirTeamId = Number(fb.dire_team_id || 0);
+          if (isGeneric(radName) && fb.radiant_name) radName = fb.radiant_name;
+          if (isGeneric(dirName) && fb.dire_name) dirName = fb.dire_name;
+        }
+        if (!radName) radName = 'Radiant';
+        if (!dirName) dirName = 'Dire';
+        const players = Array.isArray(d.players) ? d.players.map(p => ({
+          account_id: Number(p.account_id || 0),
+          hero_id: Number(p.hero_id || 0),
+          // Robust radiant detection across schemas
+          is_radiant: !!(p.isRadiant ?? p.is_radiant ?? ((p.player_slot|0) < 128)),
+          personaname: p.personaname || null
+        })) : [];
+        const picks_bans = Array.isArray(d.picks_bans) ? d.picks_bans.map(pb => ({
+          hero_id: Number(pb.hero_id || 0),
+          is_pick: !!pb.is_pick,
+          team: (pb.team !== undefined ? Number(pb.team) : (pb.is_radiant ? 0 : 1)),
+          order: Number(pb.order || pb.pick_order || pb.draft_order || 0)
+        })) : [];
+        out.push({
+          match_id: mid,
+          radiant_win: !!d.radiant_win,
+          radiant_team_id: radTeamId,
+          dire_team_id: dirTeamId,
+          radiant_name: radName,
+          dire_name: dirName,
+          players,
+          picks_bans
+        });
+      }
+      return out;
+    }
+
+    function renderHighlights(high) {
+      const card = document.getElementById('highlightsCard');
+      const body = document.getElementById('highlightsBody');
+      if (!high) { card.style.display = 'none'; body.innerHTML = ''; return; }
+      function simple(arr) { if (!Array.isArray(arr) || !arr.length) return `<li><span class='sub'>no data</span></li>`; return arr.map(it => `<li><span>${it.name}</span><span class='badge'>x${it.count}</span></li>`).join(''); }
+      function durList(arr) { if (!Array.isArray(arr) || !arr.length) return `<li><span class='sub'>no games</span></li>`; return arr.map(x => { const sec = Number(x.duration || 0); const mm = Math.floor(sec / 60), ss = sec % 60; return `<li><span><a target='_blank' href='${OD_MATCH_URL(x.match_id)}'>M${x.match_id}</a></span><span class='badge'>${mm}m ${ss}s</span></li>`; }).join(''); }
+      function topPerf() {
+        const order = ['gpm', 'kills', 'assists', 'networth']; const icons = { gpm: '💰', kills: '⚔️', assists: '🤝', networth: '💎' };
+        return `<div class='perf-grid'>` + order.map(k => { const p = high.topSingle[k]; if (!p) return ''; return `<div class='perf-card'><div class='perf-left'><div class='perf-icon'>${icons[k]}</div><div class='perf-meta'><div class='perf-label'>${k}</div><div class='perf-player'><a href='${p.profile}' target='_blank'>${p.name}</a></div></div></div><div class='perf-actions'><div class='perf-value'>${p.value}</div><a class='badge' target='_blank' href='${OD_MATCH_URL(p.match_id)}'>Match</a></div></div>`; }).join('') + `</div>`;
+      }
+      body.innerHTML = `
+        ${topPerf()}
+        <div class='grid3' style='display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px'>
+          <div><h3>Rampages</h3><ul class='simple'>${simple(high.rampages)}</ul></div>
+          <div><h3>Rapiers</h3><ul class='simple'>${simple(high.rapierTop)}</ul></div>
+          <div><h3>Gems</h3><ul class='simple'>${simple(high.gemTop)}</ul></div>
+        </div>
+        <div style='margin-top:8px'>
+          <h3>Roshan Taken</h3>
+          <ul class='simple'>
+            <li><span>Radiant</span><span class='badge'>x${high.roshan.Radiant}</span></li>
+            <li><span>Dire</span><span class='badge'>x${high.roshan.Dire}</span></li>
+          </ul>
+        </div>
+        <div class='grid2' style='display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:8px'>
+          <div><h3>3 longest matches</h3><ul class='simple'>${durList(high.durationLongest)}</ul></div>
+          <div><h3>3 shortest matches</h3><ul class='simple'>${durList(high.durationShortest)}</ul></div>
+        </div>`;
+      card.style.display = '';
+    }
+
+    function computeAwardsFromDetails(details, resolver) {
+      const agg = new Map(); // aid -> aggregated stats
+      function ensure(aid){ if (!agg.has(aid)) agg.set(aid, { games:0, wins:0, k:0, a:0, d:0, gpmTotal:0, obs:0, sent:0, obsLog:0, sentLog:0, mvpCount:0, dmg:0, tdmg:0, lh10:0, stuns:0, visionScore:0, kpSum:0, name: (resolver && resolver(aid)) || `Player ${aid}`, profile: OD_PLAYER_URL(aid) }); return agg.get(aid); }
+      for (const md of details) {
+        if (!md) continue; const radWin = !!md.radiant_win;
+        // Per-match MVP proxy: pick the player with highest score = kills*2 + assists + gpm/100 + (win?1:0)
+        let best = null;
+        for (const p of (md.players || [])) {
+          const aid = Number(p.account_id || 0); if (!(aid > 0)) continue; const won = p.is_radiant ? radWin : !radWin;
+          const st = ensure(aid); st.games++; if (won) st.wins++;
+          const k = Number(p.kills || 0), a = Number(p.assists || 0), d = Number(p.deaths || 0), gpm = Number(p.gold_per_min || 0);
+          st.k += k; st.a += a; st.d += d; st.gpmTotal += gpm;
+          st.dmg += Number(p.hero_damage || 0);
+          st.tdmg += Number(p.tower_damage || 0);
+          // Last hits at 10 (when available)
+          try { if (p.lh_t && (Array.isArray(p.lh_t) || typeof p.lh_t === 'object')) { const arr = Array.isArray(p.lh_t) ? p.lh_t : Object.values(p.lh_t); if (arr && arr.length > 10) st.lh10 += Number(arr[10] || 0); } } catch(_e) {}
+          st.stuns += Number(p.stuns || 0);
+          const obsPlaced = Number(p.obs_placed || 0), senPlaced = Number(p.sen_placed || 0);
+          st.obs += obsPlaced; st.sent += senPlaced; st.visionScore += obsPlaced + senPlaced;
+          const oblog = Array.isArray(p.obs_log) ? p.obs_log.length : 0; const sl = Array.isArray(p.sen_log) ? p.sen_log.length : 0;
+          st.obsLog += oblog; st.sentLog += sl; st.visionScore += oblog + sl + Number(p.camps_stacked || 0);
+          const score = (k*2) + a + (gpm/100) + (won ? 1 : 0);
+          if (!best || score > best.score) best = { aid, score };
+        }
+        // Kill participation proxy per team
+        const radKills = (md.players||[]).filter(x=>x.is_radiant).reduce((s,x)=> s + Number(x.kills||0),0);
+        const dirKills = (md.players||[]).filter(x=>!x.is_radiant).reduce((s,x)=> s + Number(x.kills||0),0);
+        for (const p of (md.players||[])) {
+          const aid = Number(p.account_id||0); if (!(aid>0)) continue;
+          const teamKills = p.is_radiant ? radKills : dirKills; const kp = teamKills>0 ? (Number(p.kills||0)+Number(p.assists||0))/teamKills : 0;
+          ensure(aid).kpSum += kp;
+        }
+        if (best && agg.has(best.aid)) agg.get(best.aid).mvpCount++;
+      }
+      const list = Array.from(agg.entries()).map(([aid, v]) => ({ aid: Number(aid), ...v, kda: (v.k + v.a) / Math.max(1, v.d), avgGpm: v.games ? v.gpmTotal / v.games : 0, avgWards: v.games ? (v.obs + v.sent) / v.games : 0, avgDmg: v.games? v.dmg/v.games:0, avgTDmg: v.games? v.tdmg/v.games:0, avgLH10: v.games? v.lh10/v.games:0, avgStuns: v.games? v.stuns/v.games:0, avgVisionScore: v.games? v.visionScore/v.games:0, avgKP: v.games? v.kpSum/v.games:0 }));
+      const minGames = Math.max(3, Math.min(5, Math.floor(list.reduce((m,x)=>Math.max(m,x.games),0) * 0.2) || 3));
+      function topBy(fn, filter = x=>x.games>=minGames, n=3){ return list.filter(filter).sort((a,b)=> fn(b)-fn(a) || b.games - a.games).slice(0,n); }
+      return {
+        mvp: topBy(x=>x.mvpCount, x=>x.mvpCount>0).map(x=>({ name:x.name, profile:x.profile, count:x.mvpCount, games:x.games })),
+        bestKDA: topBy(x=>x.kda).map(x=>({ name:x.name, profile:x.profile, kda:x.kda, k:x.k, a:x.a, d:x.d, games:x.games })),
+        bestGPM: topBy(x=>x.avgGpm).map(x=>({ name:x.name, profile:x.profile, gpm:x.avgGpm, games:x.games })),
+        visionary: topBy(x=>x.avgWards).map(x=>({ name:x.name, profile:x.profile, wards:x.avgWards, games:x.games })),
+        mostDamage: topBy(x=>x.avgDmg).map(x=>({ name:x.name, profile:x.profile, dmg:Math.round(x.avgDmg), games:x.games })),
+        mostTowerDamage: topBy(x=>x.avgTDmg).map(x=>({ name:x.name, profile:x.profile, tdmg:Math.round(x.avgTDmg), games:x.games })),
+        bestCS10: topBy(x=>x.avgLH10).map(x=>({ name:x.name, profile:x.profile, lh10:Math.round(x.avgLH10), games:x.games })),
+        mostStuns: topBy(x=>x.avgStuns).map(x=>({ name:x.name, profile:x.profile, stuns:x.avgStuns.toFixed(1), games:x.games })),
+        bestVisionScore: topBy(x=>x.avgVisionScore).map(x=>({ name:x.name, profile:x.profile, vs:x.avgVisionScore.toFixed(1), games:x.games })),
+        bestKP: topBy(x=>x.avgKP).map(x=>({ name:x.name, profile:x.profile, kp:(x.avgKP*100).toFixed(1)+'%', games:x.games }))
+      };
+    }
+    function renderAwards(awards) {
+      const root = document.getElementById('awardsBody'); if (!root) return;
+      function simple(items, fmt){ if (!items || !items.length) return '<div class="sub">no data</div>'; return '<ul class="simple">'+items.map(it=>`<li><span><a href='${it.profile}' target='_blank'>${it.name}</a></span><span class='badge'>${fmt(it)}</span></li>`).join('')+'</ul>'; }
+      root.innerHTML = `
+        <div class='summary-grid'>
+          <div class='summary-card'>
+            <h3>MVP (match tops)</h3>
+            ${simple(awards.mvp, it=>`x${it.count}`)}
+          </div>
+          <div class='summary-card'>
+            <h3>Best KDA</h3>
+            ${simple(awards.bestKDA, it=>`${(it.kda).toFixed(2)} (${it.k}/${it.d}/${it.a})`)}
+          </div>
+          <div class='summary-card'>
+            <h3>Best GPM</h3>
+            ${simple(awards.bestGPM, it=>`${Math.round(it.gpm)} gpm`)}
+          </div>
+          <div class='summary-card'>
+            <h3>Visionary</h3>
+            ${simple(awards.visionary, it=>`${it.wards.toFixed(1)} wards/game`)}
+          </div>
+          <div class='summary-card'>
+            <h3>Most Damage</h3>
+            ${simple(awards.mostDamage, it=>`${it.dmg} hero dmg`)}
+          </div>
+          <div class='summary-card'>
+            <h3>Most Tower Damage</h3>
+            ${simple(awards.mostTowerDamage, it=>`${it.tdmg} tower dmg`)}
+          </div>
+          <div class='summary-card'>
+            <h3>Best CS @10</h3>
+            ${simple(awards.bestCS10, it=>`${it.lh10} LH @10`)}
+          </div>
+          <div class='summary-card'>
+            <h3>Most Stuns</h3>
+            ${simple(awards.mostStuns, it=>`${it.stuns} stuns`)}
+          </div>
+          <div class='summary-card'>
+            <h3>Best Vision Score</h3>
+            ${simple(awards.bestVisionScore, it=>`${it.vs} score`)}
+          </div>
+          <div class='summary-card'>
+            <h3>Best Kill Participation</h3>
+            ${simple(awards.bestKP, it=>`${it.kp}`)}
+          </div>
+        </div>`;
+    }
+
+    
+
+    async function main() {
+      (function () {
+        const tabsRoot = document.getElementById('mainTabs'); const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
+        function showTab(name) {
+          ['highlights','players','heroes','draft','teams','placement','awards','laneduos','itemsbought','wards'].forEach(id => { const pane = document.getElementById('pane-' + id); if (pane) pane.style.display = (id === name) ? '' : 'none'; });
+          tabs.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === name));
+          try { localStorage.setItem('lv_tab', name || 'highlights'); } catch (_e) {}
+          // Lazy-mount heavy tabs when opened
+          if (name === 'draft' && window.__ensureDraft) window.__ensureDraft();
+          if (name === 'laneduos' && window.__ensureLaneDuos) window.__ensureLaneDuos();
+          if (name === 'itemsbought' && window.__ensureItems) window.__ensureItems();
+          if (name === 'wards' && window.__ensureWards) window.__ensureWards();
+          if (name === 'awards' && window.__ensureAwards) window.__ensureAwards();
+          if (name === 'placement' && window.__ensurePlacement) window.__ensurePlacement();
+        }
+        tabs.forEach(b => b.addEventListener('click', () => showTab(b.getAttribute('data-tab'))));
+        window.__lvShowTab = showTab;
+      })();
+
+      const REPO = 'Zeroks77/Kret_Dota', BRANCH = 'main';
+      const relBase = '../data', rawBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
+    const sp = new URLSearchParams(location.search); const slug = sp.get('league') || sp.get('l') || 'TI2025';
+
+    // Optional: explicit folder under docs containing matches.json/report.json (e.g., 'league/2025/TI2025')
+    const leaguePath = (sp.get('leaguePath') || '').replace(/^\/+/, '').replace(/\/+$/, '');
+    const relBases = [
+      ...(leaguePath ? [leaguePath] : []),
+      '../data',
+      'data'
+    ];
+    const fromBases = (p) => relBases.map(b => `${b}/${p}`);
+    // Parallelize all initial JSON loads
+    const [matchesRaw, heroesRaw, mapConfRaw, report, proPlayers] = await Promise.all([
+      loadFirst([...fromBases(`league/${slug}/matches.json`), `${rawBase}/league/${slug}/matches.json`]),
+      loadFirst([...fromBases(`heroes.json`), `${rawBase}/heroes.json`]),
+      loadFirst([...fromBases(`maps.json`), `${rawBase}/maps.json`]),
+  loadFirst([...fromBases(`league/${slug}/report.json`), `${rawBase}/league/${slug}/report.json`]),
+      loadFirst([ ...fromBases(`cache/OpenDota/proPlayers.json`), `${rawBase}/cache/OpenDota/proPlayers.json` ])
+    ]);
+  const matches = Array.isArray(matchesRaw) ? matchesRaw : (matchesRaw && matchesRaw.matches ? matchesRaw.matches : []);
+    const heroes = makeHeroMap(heroesRaw);
+    const mapConf = mapConfRaw || {};
+      try {
+        const name = (report && ((report.meta && (report.meta.name || report.meta.title)) || (report.league && report.league.name))) || slug;
+        document.getElementById('leagueTitle').textContent = `${name} – League viewer`;
+        const times = matches.map(m => m.start_time).filter(Boolean); const min = Math.min(...times), max = Math.max(...times);
+        const fmt = s => { const d = new Date(s * 1000); return d.toISOString().slice(0, 10); };
+        const hdr = document.getElementById('headerSub');
+        if (hdr) hdr.textContent = `${matches.length} matches · ${isFinite(min) ? fmt(min) : '?'} to ${isFinite(max) ? fmt(max) : '?'} (UTC)`;
+        const rl = document.getElementById('rangeLabel'); if (rl) rl.textContent = `${matches.length} matches`;
+      } catch (_e) {}
+
+  const playerNames = {}, teamNames = {};
+      // Build pro metadata: display name + optional team tag/name from proPlayers
+      const proMap = new Map(); // aid -> display name
+      const proMeta = new Map(); // aid -> { name, team_tag, team_name }
+      if (Array.isArray(proPlayers)) {
+        for (const p of proPlayers) {
+          const aid = Number(p && p.account_id || 0); if (!(aid > 0)) continue;
+          const nm = (p.name && String(p.name).trim()) || (p.personaname && String(p.personaname).trim()) || null;
+          if (nm) proMap.set(aid, nm);
+          proMeta.set(aid, {
+            name: nm || null,
+            team_tag: (p.team_tag && String(p.team_tag).trim()) || null,
+            team_name: (p.team_name && String(p.team_name).trim()) || null
+          });
+        }
+      }
+      // 1) Overlay names from report.playerTeams first (league-scoped canonical names)
+      try {
+        const pts = report && report.playerTeams; if (Array.isArray(pts)) {
+          for (const it of pts) {
+            const aid = Number(it && it.account_id || 0); if (!(aid > 0)) continue;
+            const nm = (it.name && String(it.name).trim()) || null; if (nm) playerNames[String(aid)] = nm;
+            const tid = Number(it.team_id || 0); const tn = (it.team_name && String(it.team_name).trim()) || null;
+            if (tid && tn) teamNames[String(tid)] = tn;
+          }
+        }
+      } catch(_e){}
+
+      // 2) Add/complete from matches list (fallbacks)
+      for (const m of matches) {
+        if (Array.isArray(m.players)) for (const p of m.players) {
+          if (p && p.account_id > 0) {
+            const aid = Number(p.account_id);
+            const pro = proMap.get(aid);
+            const nm = pro || (p.personaname || '').trim();
+            if (nm && !playerNames[String(aid)]) playerNames[String(aid)] = nm;
+          }
+        }
+        if (m.radiant_team_id && m.radiant_name && !teamNames[String(m.radiant_team_id)]) teamNames[String(m.radiant_team_id)] = m.radiant_name;
+        if (m.dire_team_id && m.dire_name && !teamNames[String(m.dire_team_id)]) teamNames[String(m.dire_team_id)] = m.dire_name;
+      }
+
+  const agg = aggregate(matches, playerNames, teamNames);
+  render(agg, heroes);
+      enableSorting();
+      // Start fetching details in background with higher concurrency
+      const ids = matches.map(m => m.match_id).filter(Boolean);
+      const conc = Math.min(8, Math.max(4, (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 4));
+      // Caching: try hydrate details from localStorage first
+      const cacheKey = `lv_details_${slug}`;
+      const cacheMetaKey = `lv_details_meta_${slug}`;
+      function computeFingerprint(ms){ try{ const ids = (ms||[]).map(m=>m.match_id).filter(Boolean).sort().join(','); return String(ids).slice(-100); }catch(_e){ return 'na'; } }
+      const expectedFp = computeFingerprint(matches);
+      let cachedDetails = null;
+      try {
+        const meta = JSON.parse(localStorage.getItem(cacheMetaKey) || 'null');
+        if (meta && meta.fp === expectedFp) {
+          const raw = localStorage.getItem(cacheKey);
+          if (raw) cachedDetails = JSON.parse(raw);
+        }
+      } catch(_e){}
+      const detailsPromise = (async ()=>{
+        if (Array.isArray(cachedDetails) && cachedDetails.length){ return cachedDetails; }
+        const arr = await pMap(ids, conc, id => fetchMatchDetail(id, relBase, rawBase));
+        const cleaned = (arr || []).filter(Boolean);
+        try { localStorage.setItem(cacheKey, JSON.stringify(cleaned)); localStorage.setItem(cacheMetaKey, JSON.stringify({ fp: expectedFp, ts: Date.now(), count: cleaned.length })); } catch(_e){}
+        return cleaned;
+      })();
+
+      // Once details are ready, enhance names/teams and render Highlights immediately
+  let __detailsCache = null, __resolver = null, __teamResolver = null, __highCache = null;
+      detailsPromise.then(details => {
+        __detailsCache = details;
+        // Build names from details and overlay into playerNames with pro priority
+        const namesFromDetails = {};
+        for (const d of details) {
+          for (const p of (d.players || [])) {
+            const aid = Number(p.account_id || 0); if (!(aid > 0)) continue;
+            const nm = (p.personaname && String(p.personaname).trim()) || '';
+            if (nm) namesFromDetails[String(aid)] = nm;
+            const pro = proMap.get(aid);
+            if (pro) playerNames[String(aid)] = pro; else if (nm) playerNames[String(aid)] = nm;
+          }
+        }
+        // Build per-player team from league details using team IDs
+        const teamNameById = new Map();
+        const teamIdCountByAid = new Map();
+        const teamLabelCountByAid = new Map(); // aid -> Map<label, count>
+        const isGeneric = (s) => { const t = (s||'').toString().trim(); return !t || /^radiant$/i.test(t) || /^dire$/i.test(t); };
+        for (const d of details) {
+          const rid = Number(d.radiant_team_id || (d.radiant_team && d.radiant_team.team_id) || 0);
+          const did = Number(d.dire_team_id || (d.dire_team && d.dire_team.team_id) || 0);
+          const rnameRaw = (d.radiant_team && d.radiant_team.name) || d.radiant_name || teamNames[String(rid)] || 'Radiant';
+          const dnameRaw = (d.dire_team && d.dire_team.name) || d.dire_name || teamNames[String(did)] || 'Dire';
+          const rname = isGeneric(rnameRaw) ? '' : String(rnameRaw);
+          const dname = isGeneric(dnameRaw) ? '' : String(dnameRaw);
+          if (rid) teamNameById.set(rid, rname || `Team ${rid}`); if (did) teamNameById.set(did, dname || `Team ${did}`);
+          for (const p of (d.players || [])) {
+            const aid = Number(p.account_id || 0); if (!(aid > 0)) continue;
+            const tid = p.is_radiant ? rid : did; if (!tid) continue;
+            if (!teamIdCountByAid.has(aid)) teamIdCountByAid.set(aid, new Map());
+            const inner = teamIdCountByAid.get(aid);
+            inner.set(tid, (inner.get(tid) || 0) + 1);
+            const label = p.is_radiant ? rname : dname;
+            if (label) {
+              if (!teamLabelCountByAid.has(aid)) teamLabelCountByAid.set(aid, new Map());
+              const lmap = teamLabelCountByAid.get(aid);
+              lmap.set(label, (lmap.get(label) || 0) + 1);
+            }
+          }
+        }
+        // Pre-build mapping from report.playerTeams if provided by backend generation
+        const playerTeamMap = new Map();
+        try {
+          const arr = report && report.playerTeams; if (Array.isArray(arr)) {
+            for (const it of arr) {
+              const id = Number(it && it.account_id || 0); if (!(id > 0)) continue;
+              const nm = (it.team_name && String(it.team_name).trim()) || '';
+              if (nm) playerTeamMap.set(id, nm);
+            }
+          }
+        } catch(_e){}
+
+        __teamResolver = (aid) => {
+          const id = Number(aid);
+          // Backend-provided mapping preferred
+          if (playerTeamMap.has(id)) return playerTeamMap.get(id);
+          // Prefer most frequent non-generic team label observed in details
+          const lmap = teamLabelCountByAid.get(id);
+          if (lmap && lmap.size) {
+            let bestLabel = '', bestCnt = -1;
+            for (const [label, cnt] of lmap.entries()) { if (cnt > bestCnt) { bestCnt = cnt; bestLabel = label; } }
+            if (bestLabel) return bestLabel;
+          }
+          // Fallback: choose most frequent team id, map to name
+          const inner = teamIdCountByAid.get(id);
+          if (inner && inner.size) {
+            let bestId = 0, bestG = -1;
+            for (const [tid, g] of inner.entries()) { if (g > bestG) { bestG = g; bestId = tid; } }
+            if (bestId) return teamNameById.get(bestId) || `Team ${bestId}`;
+          }
+          // Do not use global pro metadata as a fallback here to avoid stale/wrong teams for the league timeframe
+          return '';
+        };
+        __resolver = (aid) => (proMap.get(Number(aid)) || namesFromDetails[String(aid)] || playerNames[String(aid)] || null);
+
+  // Overlay non-generic team names from details for accurate team display
+    try { for (const [tid, nm] of teamNameById.entries()) { if (tid && nm && !/^radiant|dire$/i.test(String(nm))) teamNames[String(tid)] = nm; } } catch (_e) {}
+
+  // Re-render tables using detailed data (players, picks/bans) and team resolver
+  const matchesFromDetails = detailsToMatches(details, matches);
+  const agg2 = aggregate(matchesFromDetails.length ? matchesFromDetails : matches, playerNames, teamNames);
+        render(agg2, heroes, { teamResolver: __teamResolver });
+
+        // Compute and render Highlights now
+        __highCache = computeHighlightsFromDetails(details, __resolver, __teamResolver);
+        renderHighlights(__highCache);
+      }).catch(e => console.warn('Details processing failed', e));
+
+      // Lazy mount helpers for heavy tabs
+  let mountedDraft = false, mountedLaneDuos = false, mountedItems = false, mountedWards = false, mountedAwards = false, mountedPlacement = false;
+      window.__ensureDraft = () => {
+        if (mountedDraft) return; mountedDraft = true;
+        try {
+          const pre = report && report.highlights && report.highlights.draft;
+          if (window.DraftViewer && pre && (Array.isArray(pre.contest) || Array.isArray(pre.firstPicks) || Array.isArray(pre.openingPairs))) {
+            window.DraftViewer.mount(document.getElementById('draftMount'), { data: { contest: pre.contest||[], firstPicks: pre.firstPicks||[], openingPairs: pre.openingPairs||[] }, heroes, persistKey: `lv_draft_${slug}` });
+            return;
+          }
+        } catch(e){ console.warn('DraftViewer precomputed mount failed, falling back', e); }
+        // Fallback to client-side computation when precompute not available
+        detailsPromise.then(details => {
+          try { if (window.DraftViewer) { const draftData = window.DraftViewer.compute(details); window.DraftViewer.mount(document.getElementById('draftMount'), { data: draftData, heroes, persistKey: `lv_draft_${slug}` }); } }
+          catch(e){ console.warn('DraftViewer mount failed', e); }
+        });
+      };
+      window.__ensureLaneDuos = () => {
+        if (mountedLaneDuos) return; mountedLaneDuos = true;
+        try {
+          const mountEl = document.getElementById('ldMount');
+          const pre = report && report.highlights && report.highlights.duos;
+          if (window.LaneDuosViewer && pre) {
+            const safe = Array.isArray(pre.safelane) ? pre.safelane : [];
+            const off = Array.isArray(pre.offlane) ? pre.offlane : [];
+            window.LaneDuosViewer.mount(mountEl, { data: { safe, off }, heroes, persistKey: `lv_laneduos_${slug}` });
+            return;
+          }
+        } catch(e){ console.warn('LaneDuosViewer precomputed mount failed, falling back', e); }
+        // Fallback to client-side computation when precompute not available
+        detailsPromise.then(() => {
+          try { if (window.LaneDuosViewer && __highCache) { window.LaneDuosViewer.mount(document.getElementById('ldMount'), { data: { safe: __highCache.safeDuos || [], off: __highCache.offDuos || [] }, heroes, persistKey: `lv_laneduos_${slug}` }); } }
+          catch(e){ console.warn('LaneDuosViewer mount failed', e); }
+        });
+      };
+      window.__ensureItems = () => {
+        if (mountedItems) return; mountedItems = true;
+        detailsPromise.then(details => {
+          try {
+            const ib = document.getElementById('ibMount');
+            if (ib && window.ItemsBoughtViewer) {
+              const roleCache = new Map();
+              for (const d of details) { (d.players || []).forEach(p => { const aid = Number(p.account_id || 0); if (!(aid > 0)) return; const gpm = Number(p.gold_per_min || 0); roleCache.set(aid, gpm >= 420 ? 'core' : 'support'); }); }
+              const itemAgg = new Map();
+              const consumables = new Set(['tango','flask','healing_salve','enchanted_mango','clarity','faerie_fire','smoke_of_deceit','dust','dust_of_appearance','ward_observer','ward_sentry','sentry_wards','observer_ward','sentry_ward','tpscroll','tp_scroll','enchanted_quiver','bottle','refresher_shard','cheese','tome_of_knowledge','blood_grenade']);
+              function norm(k){ return String(k || '').toLowerCase(); }
+              for (const d of details) {
+                const radWin = !!d.radiant_win;
+                (d.players || []).forEach(p => {
+                  const aid = Number(p.account_id || 0); if (!(aid > 0)) return; const role = roleCache.get(aid) || 'support';
+                  const log = Array.isArray(p.purchase_log) ? p.purchase_log : [];
+                  for (const ev of log) {
+                    const key = norm(ev.key || ev.item || ''); if (!key || /recipe_/.test(key)) continue;
+                    const rec = itemAgg.get(key) || { count: 0, winCount: 0, coreCount: 0, supportCount: 0, cost: 0, consumable: false };
+                    rec.count++; if (role === 'core') rec.coreCount++; else rec.supportCount++;
+                    const won = p.is_radiant ? radWin : !radWin; if (won) rec.winCount++;
+                    if (consumables.has(key)) rec.consumable = true;
+                    itemAgg.set(key, rec);
+                  }
+                });
+              }
+              if (__highCache) {
+                (__highCache.rapierTop || []).forEach(r => { const key = 'rapier'; const rec = itemAgg.get(key) || { count: 0, winCount: 0, coreCount: 0, supportCount: 0, cost: 6000, consumable: false, display: 'Divine Rapier' }; rec.count += r.count; itemAgg.set(key, rec); });
+                (__highCache.gemTop || []).forEach(r => { const key = 'gem'; const rec = itemAgg.get(key) || { count: 0, winCount: 0, coreCount: 0, supportCount: 0, cost: 900, consumable: true, display: 'Gem of True Sight' }; rec.count += r.count; rec.consumable = true; itemAgg.set(key, rec); });
+              }
+              const items = Array.from(itemAgg.entries()).map(([k, v]) => { const role = v.coreCount === v.supportCount ? (v.coreCount > 0 ? 'core' : 'support') : (v.coreCount > v.supportCount ? 'core' : 'support'); const namePretty = v.display || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); const wins = Number(v.winCount || 0); const wr = v.count ? wins / v.count : 0; return { item: k, name: namePretty, count: v.count, wins, wr, gold: v.cost || 0, role, consumable: v.consumable }; }).sort((a, b) => b.count - a.count || b.gold - a.gold || a.name.localeCompare(b.name));
+              const meta = {}; for (const it of items) { meta[it.item] = { cost: it.gold, consumable: it.consumable, role: it.role }; }
+              window.ItemsBoughtViewer.mount(ib, { data: { items, meta, playerNames } });
+            }
+          } catch(e){ console.warn('ItemsBoughtViewer mount failed', e); }
+        });
+      };
+      window.__ensureWards = () => {
+        if (mountedWards) return; mountedWards = true;
+        detailsPromise.then(details => {
+          try {
+            const container = document.getElementById('dvWardMount');
+            if (container && window.WardViewer) {
+              const countBy = new Map(), totalBy = new Map(), samplesBy = new Map();
+              const playersSet = new Map(); // aid -> name
+              const teamNameByIdLocal = new Map();
+              const placerCount = new Map();
+              for (const md of details) {
+                const dur = Number(md.duration || 0);
+                const rid = Number(md.radiant_team_id || (md.radiant_team && md.radiant_team.team_id) || 0);
+                const did = Number(md.dire_team_id || (md.dire_team && md.dire_team.team_id) || 0);
+                const rname = (md.radiant_team && md.radiant_team.name) || md.radiant_name || teamNames[String(rid)] || 'Radiant';
+                const dname = (md.dire_team && md.dire_team.name) || md.dire_name || teamNames[String(did)] || 'Dire';
+                if (rid) teamNameByIdLocal.set(rid, rname);
+                if (did) teamNameByIdLocal.set(did, dname);
+                for (const p of (md.players || [])) {
+                  const aid = Number(p.account_id || 0);
+                  const isRad = !!(p.isRadiant ?? p.is_radiant ?? ((p.player_slot|0) < 128));
+                  const teamId = isRad ? rid : did;
+                  const side = isRad ? 'Radiant' : 'Dire';
+                  const obs = Array.isArray(p.obs_log) ? p.obs_log : [];
+                  const left = Array.isArray(p.obs_left_log) ? p.obs_left_log : [];
+                  const L = left.map(o => ({ x: o.x, y: o.y, time: o.time })).sort((a, b) => a.time - b.time);
+                  if (aid > 0 && obs.length) {
+                    const nm = (__resolver && __resolver(aid)) || playerNames[String(aid)] || p.personaname || `Player ${aid}`;
+                    if (!playersSet.has(aid)) playersSet.set(aid, nm);
+                  }
+                  for (const o of obs) {
+                    const start = Number(o.time || 0); let removal = null;
+                    for (const l of L) { if (!l.used && l.x === o.x && l.y === o.y && Number(l.time || 0) >= start) { removal = l; l.used = true; break; } }
+                    let life = removal ? (removal.time - start) : Math.min(360, Math.max(0, dur - start)); if (life > 360) life = 360;
+                    const k = `${o.x},${o.y}`;
+                    countBy.set(k, (countBy.get(k) || 0) + 1);
+                    totalBy.set(k, (totalBy.get(k) || 0) + life);
+                    const sm = samplesBy.get(k) || [];
+                    sm.push({ t: start, life, aid: aid || 0, teamId: teamId || 0, side });
+                    samplesBy.set(k, sm);
+                    if (aid > 0) placerCount.set(aid, (placerCount.get(aid) || 0) + 1);
+                  }
+                }
+              }
+              const spots = Array.from(countBy.keys()).map(k => { const [x, y] = k.split(',').map(Number); const count = countBy.get(k) || 0; const total = totalBy.get(k) || 0; return { spot: k, x, y, count, total, avgSeconds: count ? Math.round(total / count) : 0, bySide: { Radiant: { count: 0, total: 0 }, Dire: { count: 0, total: 0 } }, byTeam: {}, samples: samplesBy.get(k) || [] }; });
+              // Build teams & players lists for selectors
+              const teamsList = Array.from(teamNameByIdLocal.entries()).map(([id, name]) => ({ id: Number(id), name: String(name || `Team ${id}`) }))
+                .sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
+              const playersList = Array.from(playersSet.entries())
+                .map(([id, name]) => ({ id: Number(id), name: String(name || `Player ${id}`), count: placerCount.get(id) || 0 }))
+                .filter(p => p.count > 0)
+                .sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
+              window.WardViewer.mount(container, { mapConf, data: { spots, teams: teamsList, players: playersList }, options: { modeDefault: 'best', showExtras: true, showLongest: false, ignorePersistedPlayer: true, extras: { wardPlayers: {}, wardLongest: [] } } });
+            }
+          } catch(err){ console.warn('WardViewer mount failed', err); }
+        });
+      };
+      window.__ensureAwards = () => {
+        if (mountedAwards) return; mountedAwards = true;
+        detailsPromise.then(() => {
+          try { if (__detailsCache && __resolver) renderAwards(computeAwardsFromDetails(__detailsCache, __resolver)); }
+          catch(err){ console.warn('Awards render failed', err); }
+        });
+      };
+
+      // Placement tab mounting from report.json
+      window.__ensurePlacement = () => {
+        if (mountedPlacement) return; mountedPlacement = true;
+        try {
+          const tbl = document.getElementById('placementTable'); if (!tbl) return;
+          const tbody = tbl.tBodies && tbl.tBodies[0]; if (!tbody) return;
+          const arr = (report && (report.placements || (report.highlights && report.highlights.placements))) || [];
+          if (Array.isArray(arr) && arr.length) {
+            const rows = arr.map(p => {
+              const wr = p.games ? (p.wins / p.games) : 0;
+              return `<tr>
+                <td data-sort='${p.place||0}'>${p.place||''}</td>
+                <td data-sort='${(p.name||'').toLowerCase()}'>${p.name||''}</td>
+                <td data-sort='${p.games||0}'>${p.games||0}</td>
+                <td data-sort='${(p.wins||0)/(p.games||1)}'><span class='win'>${p.wins||0}</span>-<span class='loss'>${(p.losses||0)}</span></td>
+                <td data-sort='${wr}'>${fmtPct(wr)}</td>
+              </tr>`;
+            }).join('');
+            tbody.innerHTML = rows;
+            sortTable(tbl, 0, 'num', true);
+          } else {
+            tbody.innerHTML = "<tr><td colspan='5' class='sub'>no placement data</td></tr>";
+          }
+        } catch(e){ console.warn('Placement render failed', e); }
+      };
+
+      // CSV export wiring
+      function tableToCSV(tableId) {
+        const table = document.getElementById(tableId); if (!table) return '';
+        const rows = [];
+        const esc = (v) => {
+          const s = String(v).replace(/\u00A0/g,' ').trim();
+          if (/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
+          return s;
+        };
+        const hdr = Array.from(table.tHead ? table.tHead.rows[0].cells : []).map(th => th.textContent.trim());
+        if (hdr.length) rows.push(hdr.map(esc).join(','));
+        Array.from(table.tBodies[0].rows).forEach(tr => {
+          const cols = Array.from(tr.cells).map(td => td.textContent.replace(/\s+/g,' ').trim());
+          rows.push(cols.map(esc).join(','));
+        });
+        return rows.join('\n');
+      }
+      function downloadCSV(filename, csv) {
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 0);
+      }
+      try {
+        const suffix = `_${slug}`;
+        const ep = document.getElementById('exportPlayersCsv'); if (ep) ep.addEventListener('click', () => { const csv = tableToCSV('playersTable'); if (csv) downloadCSV(`players${suffix}.csv`, csv); });
+        const eh = document.getElementById('exportHeroesCsv'); if (eh) eh.addEventListener('click', () => { const csv = tableToCSV('heroesTable'); if (csv) downloadCSV(`heroes${suffix}.csv`, csv); });
+  const et = document.getElementById('exportTeamsCsv'); if (et) et.addEventListener('click', () => { const csv = tableToCSV('teamsTable'); if (csv) downloadCSV(`teams${suffix}.csv`, csv); });
+  const epc = document.getElementById('exportPlacementCsv'); if (epc) epc.addEventListener('click', () => { const csv = tableToCSV('placementTable'); if (csv) downloadCSV(`placement${suffix}.csv`, csv); });
+        const edv = document.getElementById('exportDraftCsv'); if (edv) edv.addEventListener('click', () => {
+          const mount = document.getElementById('draftMount'); const csv = mount && mount.__getDraftCSV ? mount.__getDraftCSV() : '';
+          if (csv) downloadCSV(`draft${suffix}.csv`, csv);
+        });
+        const eld = document.getElementById('exportLaneDuosCsv'); if (eld) eld.addEventListener('click', () => {
+          const mount = document.getElementById('ldMount'); const csv = mount && mount.__getLaneDuosCSV ? mount.__getLaneDuosCSV() : '';
+          if (csv) downloadCSV(`lane_duos${suffix}.csv`, csv);
+        });
+      } catch (_e) {}
+
+      const times = matches.map(m => m.start_time).filter(Boolean); const max = Math.max(...times);
+      
+
+      try { const last = localStorage.getItem('lv_tab'); if (last && window.__lvShowTab) { window.__lvShowTab(last); } } catch (_e) {}
+
+      // Wire cache clear button
+      try {
+        const clearBtn = document.getElementById('btnClearCache');
+        if (clearBtn) {
+          clearBtn.addEventListener('click', () => {
+            const keys = [
+              `lv_details_${slug}`,
+              `lv_details_meta_${slug}`,
+              `lv_draft_${slug}`,
+              `lv_laneduos_${slug}`
+            ];
+            try {
+              keys.forEach(k => localStorage.removeItem(k));
+              // Optional: keep last tab selection; just reload data
+              location.reload();
+            } catch (e) {
+              console.warn('Cache clear failed', e);
+            }
+          });
+        }
+      } catch(_e) {}
+    }
+
+  enableSorting();
+  main();
+  </script>
 </body>
 </html>

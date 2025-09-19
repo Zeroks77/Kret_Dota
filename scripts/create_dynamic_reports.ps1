@@ -65,11 +65,39 @@ function Get-Patch-StartUnix([string]$version){
   $constFile = Join-Path $dataPath 'cache\OpenDota\constants\patch.json'
   $const = Read-JsonFile $constFile
   if(-not $const){ return $null }
+  # Helper: parse patch date (strings may be MM/dd/yyyy or other variants)
+  function Convert-PatchDateToUnix($dateVal){
+    if($dateVal -is [int] -or $dateVal -is [long]){ return [int]$dateVal }
+    $s = '' + $dateVal
+    if([string]::IsNullOrWhiteSpace($s)){ return $null }
+    try{
+      $styles = [System.Globalization.DateTimeStyles]::AssumeUniversal -bor [System.Globalization.DateTimeStyles]::AdjustToUniversal
+      $ci = [System.Globalization.CultureInfo]::InvariantCulture
+      $formats = @(
+        'yyyy-MM-dd''T''HH:mm:ss''Z''',
+        'yyyy-MM-dd HH:mm:ss',
+        'yyyy-MM-dd',
+        'MM/dd/yyyy HH:mm:ss',
+        'M/d/yyyy H:mm:ss',
+        'MM/dd/yyyy',
+        'dd/MM/yyyy HH:mm:ss',
+        'd/M/yyyy H:mm:ss',
+        'dd/MM/yyyy'
+      )
+      $dt = $null
+      if([datetime]::TryParseExact($s, $formats, $ci, $styles, [ref]$dt)){
+        return [int][math]::Floor([datetimeoffset]::new($dt).ToUnixTimeSeconds())
+      }
+      # Fallback to invariant Parse
+      $dt = [datetime]::Parse($s, $ci, $styles)
+      return [int][math]::Floor([datetimeoffset]::new($dt).ToUnixTimeSeconds())
+    } catch { return $null }
+  }
   # File is an array of objects: [{ name, date, id }, ...]
   $candidates = @()
   foreach($it in $const){
     if($null -ne $it -and $it.PSObject.Properties.Name -contains 'date'){
-      $ts = if($it.date -is [int]){ [int]$it.date } else { [int][math]::Floor(([datetime]::Parse([string]$it.date)).ToUniversalTime().Subtract([datetime]'1970-01-01Z').TotalSeconds) }
+  $ts = Convert-PatchDateToUnix $it.date
       $ver = if($it.PSObject.Properties.Name -contains 'name'){ [string]$it.name } elseif($it.PSObject.Properties.Name -contains 'patch'){ [string]$it.patch } else { '' }
       if($ts){ $candidates += [pscustomobject]@{ version=$ver; unix=$ts } }
     }
@@ -92,10 +120,36 @@ function Get-Patch-Version-AtUnix([int]$unix){
   $constFile = Join-Path $dataPath 'cache\OpenDota\constants\patch.json'
   $const = Read-JsonFile $constFile
   if(-not $const){ return $null }
+  function Convert-PatchDateToUnix2($dateVal){
+    if($dateVal -is [int] -or $dateVal -is [long]){ return [int]$dateVal }
+    $s = '' + $dateVal
+    if([string]::IsNullOrWhiteSpace($s)){ return $null }
+    try{
+      $styles = [System.Globalization.DateTimeStyles]::AssumeUniversal -bor [System.Globalization.DateTimeStyles]::AdjustToUniversal
+      $ci = [System.Globalization.CultureInfo]::InvariantCulture
+      $formats = @(
+        'yyyy-MM-dd''T''HH:mm:ss''Z''',
+        'yyyy-MM-dd HH:mm:ss',
+        'yyyy-MM-dd',
+        'MM/dd/yyyy HH:mm:ss',
+        'M/d/yyyy H:mm:ss',
+        'MM/dd/yyyy',
+        'dd/MM/yyyy HH:mm:ss',
+        'd/M/yyyy H:mm:ss',
+        'dd/MM/yyyy'
+      )
+      $dt = $null
+      if([datetime]::TryParseExact($s, $formats, $ci, $styles, [ref]$dt)){
+        return [int][math]::Floor([datetimeoffset]::new($dt).ToUnixTimeSeconds())
+      }
+      $dt = [datetime]::Parse($s, $ci, $styles)
+      return [int][math]::Floor([datetimeoffset]::new($dt).ToUnixTimeSeconds())
+    } catch { return $null }
+  }
   $candidates = @()
   foreach($it in $const){
     if($null -ne $it -and $it.PSObject.Properties.Name -contains 'date'){
-      $ts = if($it.date -is [int]){ [int]$it.date } else { [int][math]::Floor(([datetime]::Parse([string]$it.date)).ToUniversalTime().Subtract([datetime]'1970-01-01Z').TotalSeconds) }
+  $ts = Convert-PatchDateToUnix2 $it.date
       $ver = if($it.PSObject.Properties.Name -contains 'name'){ [string]$it.name } elseif($it.PSObject.Properties.Name -contains 'patch'){ [string]$it.patch } else { '' }
       if($ts){ $candidates += [pscustomobject]@{ version=$ver; unix=$ts } }
     }

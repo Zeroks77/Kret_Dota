@@ -51,9 +51,10 @@ $ErrorActionPreference = 'Stop'
 # ---------- Helpers ----------
 function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot/.." | Select-Object -ExpandProperty Path) }
 function Get-DataPath(){ Join-Path (Get-RepoRoot) 'data' }
-function Ensure-Dir([string]$p){ $d=[System.IO.Path]::GetDirectoryName($p); if($d -and -not (Test-Path -LiteralPath $d)){ New-Item -ItemType Directory -Path $d -Force | Out-Null } }
+# Approved verb: New- (create parent directory if missing)
+function New-ParentDirectory([string]$p){ $d=[System.IO.Path]::GetDirectoryName($p); if($d -and -not (Test-Path -LiteralPath $d)){ New-Item -ItemType Directory -Path $d -Force | Out-Null } }
 function Read-JsonFile([string]$p){ if(-not (Test-Path -LiteralPath $p)){ return $null } try{ Get-Content -LiteralPath $p -Raw -Encoding UTF8 | ConvertFrom-Json }catch{ $null } }
-function Save-Json([object]$o,[string]$p){ Ensure-Dir $p; ($o | ConvertTo-Json -Depth 50) | Set-Content -LiteralPath $p -Encoding UTF8 }
+function Save-Json([object]$o,[string]$p){ New-ParentDirectory $p; ($o | ConvertTo-Json -Depth 50) | Set-Content -LiteralPath $p -Encoding UTF8 }
 function HtmlEncode([string]$s){ if($null -eq $s){ return '' } try{ return [System.Net.WebUtility]::HtmlEncode($s) }catch{ return ($s -replace '&','&amp;' -replace '<','&lt;' -replace '>','&gt;') } }
 function Log([string]$m){ if($VerboseLog){ Write-Host $m } }
 
@@ -71,7 +72,7 @@ $playerAliases = [ordered]@{
   'Puppey'    = 'Puppey'
   'Clement'   = 'Puppey'
 }
-function Normalize-PlayerName([string]$n){ if([string]::IsNullOrWhiteSpace($n)){ return $n } $t=$n.Trim(); foreach($k in $playerAliases.Keys){ if($t -ieq $k){ return $playerAliases[$k] } } return $t }
+function Convert-PlayerName([string]$n){ if([string]::IsNullOrWhiteSpace($n)){ return $n } $t=$n.Trim(); foreach($k in $playerAliases.Keys){ if($t -ieq $k){ return $playerAliases[$k] } } return $t }
 
 # ---------- League discovery ----------
 $cacheDir = Join-Path (Get-DataPath) 'cache/OpenDota'
@@ -107,6 +108,19 @@ if($needFetchPro){
 if(-not $proPlayers){ $proPlayers=@() }
 Log ("Loaded pro players: {0}" -f (@($proPlayers).Count))
 
+# ---------- Hero constants (for ward attacker mapping) ----------
+$heroNameToId = @{}
+try{
+  $heroesConstPath = Join-Path (Join-Path (Get-DataPath) 'cache/OpenDota/constants') 'heroes.json'
+  if(Test-Path -LiteralPath $heroesConstPath){
+    $constHeroes = Get-Content -LiteralPath $heroesConstPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    foreach($prop in $constHeroes.PSObject.Properties.Name){
+      $obj = $constHeroes.$prop
+      if($obj -and $obj.id -gt 0){ $nm=''+$obj.name; if(-not [string]::IsNullOrWhiteSpace($nm)){ $heroNameToId[$nm] = [int]$obj.id } }
+    }
+  }
+}catch{ Write-Verbose ("Failed loading hero constants: {0}" -f $_.Exception.Message) }
+
 # Build index account_id -> display name (prefer team_tag + name else personaname)
 $proPlayerIndex = @{}
 foreach($pp in $proPlayers){
@@ -123,32 +137,34 @@ foreach($pp in $proPlayers){
 
 # ---------- League matching ----------
 $needle = $LeagueName.Trim()
-$matches = @()
+$leagueCandidates = @()
 foreach($lg in $leagues){
   $name = ''+($lg.name)
   if([string]::IsNullOrWhiteSpace($name)){ continue }
-  if($name -ieq $needle){ $matches += $lg; continue }
-  if($name -like "*${needle}*") { $matches += $lg }
+  if($name -ieq $needle){ $leagueCandidates += $lg; continue }
+  if($name -like "*${needle}*") { $leagueCandidates += $lg }
 }
-if((@($matches)).Count -eq 0){ throw "League name '$LeagueName' not found in leagues list" }
+if((@($leagueCandidates)).Count -eq 0){ throw "League name '$LeagueName' not found in leagues list" }
 # Prefer exact (case-insensitive), else longest name containing
-$exact = $matches | Where-Object { (''+$_.name).ToLower() -eq $needle.ToLower() }
+$exact = $leagueCandidates | Where-Object { (''+$_.name).ToLower() -eq $needle.ToLower() }
 $league = $null
-if((@($exact)).Count -gt 0){ $league = ($exact | Select-Object -First 1) } else { $league = ($matches | Sort-Object { (''+$_.name).Length } -Descending | Select-Object -First 1) }
+if((@($exact)).Count -gt 0){ $league = ($exact | Select-Object -First 1) } else { $league = ($leagueCandidates | Sort-Object { (''+$_.name).Length } -Descending | Select-Object -First 1) }
 if(-not $league){ throw 'Failed to resolve league' }
 $leagueId = [int]$league.leagueid
 $leagueNameResolved = ''+$league.name
 Write-Host ("Resolved league: {0} (id={1})" -f $leagueNameResolved, $leagueId)
 
 # ---------- Slug generation ----------
-function Make-LeagueSlug([string]$n){
+function Get-LeagueSlug([string]$n){
   if([string]::IsNullOrWhiteSpace($n)){ return 'league' }
   $t=$n.Trim()
   # Special: The International 2025 -> TI2025
-  if($t -match '^(?i)the international\s+(\d{4})$'){ return 'TI'+$Matches[1] }
+  $m = [regex]::Match($t, '^(?i)the international\s+(\d{4})$')
+  if($m.Success){ return 'TI' + $m.Groups[1].Value }
   # Regional Qualifier West Europe -> RQ_WE (take initials of first two words + region initials)
-  if($t -match '^(?i)(regional qualifier)\s+(.+)$'){
-    $rest=$Matches[2]; $regionParts = ($rest -split '\s+') | Where-Object { $_ -match '^[A-Za-z]+' }
+  $m2 = [regex]::Match($t, '^(?i)(regional qualifier)\s+(.+)$')
+  if($m2.Success){
+    $rest=$m2.Groups[2].Value; $regionParts = ($rest -split '\s+') | Where-Object { $_ -match '^[A-Za-z]+' }
     $region = ($regionParts | ForEach-Object { $_.Substring(0,1).ToUpper() }) -join ''
     if([string]::IsNullOrWhiteSpace($region)){ $region='X' }
     return 'RQ_'+$region
@@ -159,38 +175,38 @@ function Make-LeagueSlug([string]$n){
   if($abbr.Length -lt 3){ $abbr = ($t -replace '[^A-Za-z0-9]+','').Substring(0,[Math]::Min(8,($t -replace '[^A-Za-z0-9]+','').Length)) }
   return $abbr
 }
-$slug = Make-LeagueSlug $leagueNameResolved
+$slug = Get-LeagueSlug $leagueNameResolved
 Write-Host ("Slug = {0}" -f $slug)
 
 # ---------- League matches summary ----------
 $leagueDataDir = Join-Path (Get-DataPath) ("league/"+$slug)
 if(-not (Test-Path -LiteralPath $leagueDataDir)){ New-Item -ItemType Directory -Path $leagueDataDir -Force | Out-Null }
-$matchesFile = Join-Path $leagueDataDir 'matches.json'
-$matches = $null
-if(-not (Test-Path -LiteralPath $matchesFile) -or -not $SkipMatchesIfCached){
+$leagueMatchesFile = Join-Path $leagueDataDir 'matches.json'
+$leagueMatches = $null
+if(-not (Test-Path -LiteralPath $leagueMatchesFile) -or -not $SkipMatchesIfCached){
   Write-Host ("Fetching league matches list for id={0}" -f $leagueId)
   try{
-    $matches = Invoke-RestMethod -Method GET -Uri ("https://api.opendota.com/api/leagues/{0}/matches" -f $leagueId) -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-league-fetcher/1.0' } -TimeoutSec 30
-    if($matches){ Save-Json -o $matches -p $matchesFile }
+    $leagueMatches = Invoke-RestMethod -Method GET -Uri ("https://api.opendota.com/api/leagues/{0}/matches" -f $leagueId) -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-league-fetcher/1.0' } -TimeoutSec 30
+    if($leagueMatches){ Save-Json -o $leagueMatches -p $leagueMatchesFile }
   }catch{ throw "Failed to fetch league matches: $($_.Exception.Message)" }
-}else{ $matches = Read-JsonFile $matchesFile }
-if(-not $matches){ throw 'No matches for league' }
+}else{ $leagueMatches = Read-JsonFile $leagueMatchesFile }
+if(-not $leagueMatches){ throw 'No matches for league' }
 
 # ---------- Fetch individual match details with rate limiting ----------
-$cacheMatchesDir = Join-Path (Get-DataPath) 'cache/OpenDota/matches'
-if(-not (Test-Path -LiteralPath $cacheMatchesDir)){ New-Item -ItemType Directory -Path $cacheMatchesDir -Force | Out-Null }
+$matchDetailsCacheDir = Join-Path (Get-DataPath) 'cache/OpenDota/matches'
+if(-not (Test-Path -LiteralPath $matchDetailsCacheDir)){ New-Item -ItemType Directory -Path $matchDetailsCacheDir -Force | Out-Null }
 
 $perMinuteWindow = @()
 $newFetchesDay = 0
 $maxNew = $MaxPerDay
 $delayMs = [int][Math]::Ceiling(60000 / [Math]::Max(1,$MaxPerMinute))
 
-$allIds = @(); foreach($m in $matches){ try{ $mid = [int64]$m.match_id; if($mid -gt 0){ $allIds += $mid } }catch{} }
+$allIds = @(); foreach($m in $leagueMatches){ try{ $mid = [int64]$m.match_id; if($mid -gt 0){ $allIds += $mid } }catch{} }
 $allIds = $allIds | Sort-Object -Unique
 Write-Host ("Total match ids enumerated: {0}" -f (@($allIds)).Count)
 
 foreach($mid in $allIds){
-  $target = Join-Path $cacheMatchesDir ("{0}.json" -f $mid)
+  $target = Join-Path $matchDetailsCacheDir ("{0}.json" -f $mid)
   if(Test-Path -LiteralPath $target){ continue }
   if($newFetchesDay -ge $maxNew){ Write-Warning "Daily fetch cap reached (MaxPerDay=$MaxPerDay)"; break }
   # Rate limiting: purge timestamps older than 60s
@@ -212,7 +228,7 @@ foreach($mid in $allIds){
 }
 
 # ---------- Compute time range ----------
-$startTimes = @(); foreach($m in $matches){ try{ $st=[int]$m.start_time; if($st -gt 0){ $startTimes += $st } }catch{} }
+$startTimes = @(); foreach($m in $leagueMatches){ try{ $st=[int]$m.start_time; if($st -gt 0){ $startTimes += $st } }catch{} }
 if((@($startTimes)).Count -eq 0){ throw 'No start times found for league matches' }
 $fromUnix = ($startTimes | Measure-Object -Minimum).Minimum
 $toUnix = ($startTimes | Measure-Object -Maximum).Maximum
@@ -223,7 +239,7 @@ $toUnix = $toUnix + (4*3600)
 # ---------- Load detailed match objects for aggregation ----------
 $detailed = @()
 foreach($mid in $allIds){
-  $p = Join-Path $cacheMatchesDir ("{0}.json" -f $mid)
+  $p = Join-Path $matchDetailsCacheDir ("{0}.json" -f $mid)
   if(Test-Path -LiteralPath $p){
     try{ $obj = Get-Content -LiteralPath $p -Raw -Encoding UTF8 | ConvertFrom-Json }
     catch{ $obj=$null }
@@ -240,20 +256,31 @@ $teamStats = @{}
 $heroStats = @{}
 $duosOff = @{}
 $duosSafe = @{}
-$heroWins = @{}
+# removed unused $heroWins
 $playerMeta = @{}
 $playerStats = @{}
+$playerTeamCount = @{} # aid -> (team_id -> appearances)
 $rampageMap = @{}
 $rapierMap = @{}
 $aegisMap = @{}
 $wardPlacement = @{}
 $wardRemoval = @{}
 $playerDewards = @{}
+# Track duration per match for ward lifetime fallback
+$matchDurations = @{}
+
+# Draft aggregation maps
+$draftPickStats = @{}     # hid -> @{ picks=0; wins=0 }
+$draftBanCount = @{}      # hid -> count
+$draftFirstPick = @{}     # hid -> @{ count=0; wins=0 }
+$draftOpeningPairs = @{}  # "a-b" -> @{ a=0; b=0; games=0; wins=0 }
 
 foreach($m in $detailed){
   $mid = [int64]$m.match_id
   $radWin = [bool]$m.radiant_win
   $duration = 0; try{ $duration = [int]$m.duration }catch{}
+  # Remember duration per match for ward lifetime fallback later
+  $matchDurations[$mid] = $duration
   $radTeam = 0; try{ $radTeam=[int]$m.radiant_team_id }catch{}
   $direTeam = 0; try{ $direTeam=[int]$m.dire_team_id }catch{}
   $radName = if($m.radiant_name){ [string]$m.radiant_name } else { 'Radiant' }
@@ -274,72 +301,126 @@ foreach($m in $detailed){
     $lane = $null; try{ $lane = [int]$p.lane }catch{}
   $rawName = if($p.personaname){ [string]$p.personaname } elseif($aid -gt 0){ "Player $aid" } else { 'Unknown' }
   if($aid -gt 0 -and $proPlayerIndex.ContainsKey($aid)){ $rawName = $proPlayerIndex[$aid] }
-  $name = Normalize-PlayerName $rawName
+  $name = Convert-PlayerName $rawName
     if($aid -gt 0 -and -not $playerMeta.ContainsKey($aid)){ $playerMeta[$aid] = @{ name=$name } }
     $won = if($isRad){ $radWin } else { -not $radWin }
     if($aid -gt 0){
       if(-not $playerStats.ContainsKey($aid)){ $playerStats[$aid] = @{ games=0; wins=0; losses=0 } }
       $playerStats[$aid].games++ ; if($won){ $playerStats[$aid].wins++ } else { $playerStats[$aid].losses++ }
+      # Track team assignment by appearances
+      $teamForPlayer = if($isRad){ $radTeam } else { $direTeam }
+      if($teamForPlayer -gt 0){
+        if(-not $playerTeamCount.ContainsKey($aid)){ $playerTeamCount[$aid] = @{} }
+        if(-not $playerTeamCount[$aid].ContainsKey($teamForPlayer)){ $playerTeamCount[$aid][$teamForPlayer] = 0 }
+        $playerTeamCount[$aid][$teamForPlayer]++
+      }
     }
     if($hid -gt 0){
       if(-not $heroStats.ContainsKey($hid)){ $heroStats[$hid] = @{ picks=0; wins=0 } }
       $heroStats[$hid].picks++ ; if($won){ $heroStats[$hid].wins++ }
     }
   }
-  # Duo collection (need per lane heroes per team)
-  $laneGroups = @{ } # key team+lane -> heroes (unique per match)
-  foreach($p in @($m.players)){
-    if(-not $p){ continue }
-    $hid = 0; try{ $hid=[int]$p.hero_id }catch{}
-    if($hid -le 0){ continue }
-    $lane = $null; try{ $lane=[int]$p.lane }catch{}
-  $teamId = if($p.isRadiant){ $radTeam } else { $direTeam }
-  # Use ${} to avoid parser confusion with ':'
-  $key = "${teamId}:${lane}"
-    if(-not $laneGroups.ContainsKey($key)){ $laneGroups[$key] = New-Object System.Collections.Generic.List[int] }
-    if(-not $laneGroups[$key].Contains($hid)){ $laneGroups[$key].Add($hid) | Out-Null }
+  # Duo collection: mirror client logic exactly -> for each side and laneRole, only if exactly 2 players -> record that pair
+  function Get-SidePlayers($players, [bool]$wantRadiant){
+    $list = New-Object System.Collections.Generic.List[object]
+    foreach($p in @($players)){
+      if(-not $p){ continue }
+      $isRad = $false
+      try{
+        if($p.PSObject.Properties.Name -contains 'isRadiant'){ $isRad = [bool]$p.isRadiant }
+        elseif($p.PSObject.Properties.Name -contains 'is_radiant'){ $isRad = [bool]$p.is_radiant }
+        else { $slot=0; try{ $slot=[int]$p.player_slot }catch{}; $isRad = ($slot -lt 128) }
+      }catch{}
+      if($isRad -ne $wantRadiant){ continue }
+      $list.Add($p) | Out-Null
+    }
+    return ,$list.ToArray()
   }
-  foreach($k in $laneGroups.Keys){
-  $parts = $k.Split(':'); if((@($parts)).Count -ne 2){ continue }
-    $lane=[int]$parts[1]
-    $heroes = $laneGroups[$k].ToArray()
-    if((@($heroes)).Count -lt 2){ continue }
-    for($i=0;$i -lt (@($heroes)).Count;$i++){
-      for($j=$i+1;$j -lt (@($heroes)).Count;$j++){
-        $a=$heroes[$i]; $b=$heroes[$j]; $key = New-PairKey $a $b
-        $targetDict = if($lane -eq 3){ $duosOff } elseif($lane -eq 1){ $duosSafe } else { $null }
-        if($null -eq $targetDict){ continue }
-        if(-not $targetDict.ContainsKey($key)){ $targetDict[$key] = @{ a=$a; b=$b; games=0; wins=0 } }
-        $targetDict[$key].games++ ; if($radWin){
-          # Determine if duo belongs to radiant team by checking membership in radiant players
-          # Simpler: check if any player hero list contains hero with isRadiant true; fallback: assume laneGroups mapping by team ensured correctness; decide winner based on team of laneGroup key
-        }
-        # To know winner: parse original laneGroup key team id vs radiant win
-        $teamId=[int]$parts[0]
-        $isWinner = ($teamId -eq $radTeam -and $radWin) -or ($teamId -eq $direTeam -and -not $radWin)
-        if($isWinner){ $targetDict[$key].wins++ }
-      }
+  function Get-LaneRole([object]$p){
+    try{ if($p.PSObject.Properties.Name -contains 'lane_role'){ return [int]$p.lane_role } }catch{}
+    try{ if($p.PSObject.Properties.Name -contains 'lane'){ return [int]$p.lane } }catch{}
+    return 0
+  }
+  foreach($side in @('Radiant','Dire')){
+    $wantRad = ($side -eq 'Radiant')
+    $teamWon = ($wantRad -and $radWin) -or ((-not $wantRad) -and (-not $radWin))
+    $teamIdCurrent = if($wantRad){ $radTeam } else { $direTeam }
+    $sidePlayers = Get-SidePlayers $m.players $wantRad
+    foreach($laneCode in 1,3){
+      $lanePlayers = @()
+      foreach($sp in $sidePlayers){ if((Get-LaneRole $sp) -eq $laneCode){ $lanePlayers += ,$sp } }
+      if((@($lanePlayers)).Count -ne 2){ continue }
+      $a = 0; $b = 0
+      try{ $a = [int]$lanePlayers[0].hero_id }catch{}
+      try{ $b = [int]$lanePlayers[1].hero_id }catch{}
+      if($a -le 0 -or $b -le 0){ continue }
+      $lo=[Math]::Min($a,$b); $hi=[Math]::Max($a,$b); $pairKey = New-PairKey $lo $hi
+      $targetDict = if($laneCode -eq 3){ $duosOff } else { $duosSafe }
+      if(-not $targetDict.ContainsKey($pairKey)){ $targetDict[$pairKey] = @{ a=$lo; b=$hi; games=0; wins=0 } }
+      $targetDict[$pairKey].games++
+      if($teamWon){ $targetDict[$pairKey].wins++ }
     }
   }
   # Ward logs
   foreach($p in @($m.players)){
     if(-not $p){ continue }
+    # Dewards per player
     $aid=0; try{ $aid=[int64]$p.account_id }catch{}
     if($aid -gt 0){
       $dew=0; try{ $dew=[int]$p.obs_kills }catch{}
       if($dew -gt 0){ if(-not $playerDewards.ContainsKey($aid)){ $playerDewards[$aid]=0 }; $playerDewards[$aid]+=$dew }
     }
-  }
-  $obs = @(); try{ $obs = @($m.obs_log) }catch{}
-  $obsLeft = @(); try{ $obsLeft = @($m.obs_left_log) }catch{}
-  foreach($o in $obs){
-    $key = ''+ $o.x +','+ $o.y
-    if(-not $wardPlacement.ContainsKey($mid)){ $wardPlacement[$mid]=@() }
-    $wardPlacement[$mid] += ,([pscustomobject]@{ x=[int]$o.x; y=[int]$o.y; time=[int]$o.time; key=$key })
-  }
-  foreach($ol in $obsLeft){
-    if(-not $wardRemoval.ContainsKey($mid)){ $wardRemoval[$mid]=@() }
-    $wardRemoval[$mid] += ,([pscustomobject]@{ x=[int]$ol.x; y=[int]$ol.y; time=[int]$ol.time; })
+    # Build slot -> account_id map for this match once (cheap to rebuild)
+    $slotToAid = @{}
+    foreach($pp in @($m.players)){
+      if(-not $pp){ continue }
+      $sa = 0; $aid2 = 0
+      try{ $sa=[int]$pp.player_slot }catch{}
+      try{ $aid2=[int64]$pp.account_id }catch{}
+      if($aid2 -gt 0){ $slotToAid[$sa] = $aid2 }
+    }
+    # Observers placed by this player
+    $pObs = @(); try{ $pObs = @($p.obs_log) }catch{}
+    foreach($o in $pObs){
+      # Normalize to integer grid to ensure consistent keys and matching with removals
+      $ix = 0; $iy = 0
+      try{ $ix = [int]([Math]::Round([double]$o.x)) }catch{}
+      try{ $iy = [int]([Math]::Round([double]$o.y)) }catch{}
+      if(-not $wardPlacement.ContainsKey($mid)){ $wardPlacement[$mid]=@() }
+      $wardPlacement[$mid] += ,([pscustomobject]@{ x=$ix; y=$iy; time=[int]$o.time })
+    }
+    # Observers removed (left) for this player
+    $pObsLeft = @(); try{ $pObsLeft = @($p.obs_left_log) }catch{}
+    foreach($ol in $pObsLeft){
+      $ix = 0; $iy = 0
+      try{ $ix = [int]([Math]::Round([double]$ol.x)) }catch{}
+      try{ $iy = [int]([Math]::Round([double]$ol.y)) }catch{}
+      if(-not $wardRemoval.ContainsKey($mid)){ $wardRemoval[$mid]=@() }
+      $wardRemoval[$mid] += ,([pscustomobject]@{ x=$ix; y=$iy; time=[int]$ol.time })
+      # Attribute deward to attacker if available
+      $attSlotSet = $false
+      $aslot = $null
+      try{ if($ol.PSObject.Properties.Name -contains 'player_slot'){ $aslot = [int]$ol.player_slot; $attSlotSet = $true } }catch{}
+      if(-not $attSlotSet){ try{ if($ol.PSObject.Properties.Name -contains 'slot'){ $aslot = [int]$ol.slot; $attSlotSet = $true } }catch{} }
+      if($attSlotSet -and $slotToAid.ContainsKey($aslot)){
+        $atkAid = [int64]$slotToAid[$aslot]
+        if($atkAid -gt 0){ if(-not $playerDewards.ContainsKey($atkAid)){ $playerDewards[$atkAid]=0 }; $playerDewards[$atkAid]++ }
+      } else {
+        # Fallback: map attackername hero -> player
+        try{
+          $an = ''+$ol.attackername
+          if($an -and $an -like 'npc_dota_hero*'){
+            $hidAtk = 0; if($heroNameToId.ContainsKey($an)){ $hidAtk = [int]$heroNameToId[$an] }
+            if($hidAtk -gt 0){
+              foreach($pp in @($m.players)){
+                $hidp=0; try{ $hidp=[int]$pp.hero_id }catch{}
+                if($hidp -eq $hidAtk){ $aidp=0; try{ $aidp=[int64]$pp.account_id }catch{}; if($aidp -gt 0){ if(-not $playerDewards.ContainsKey($aidp)){ $playerDewards[$aidp]=0 }; $playerDewards[$aidp]++ }; break }
+              }
+            }
+          }
+        }catch{}
+      }
+    }
   }
   # Objectives
   $objectives = @(); try{ $objectives = @($m.objectives) }catch{}
@@ -386,6 +467,7 @@ $wardStats = @{}
 foreach($mid in $wardPlacement.Keys){
   $placements = $wardPlacement[$mid]
   $removals = @(); if($wardRemoval.ContainsKey($mid)){ $removals = $wardRemoval[$mid] }
+  $matchDur = 0; if($matchDurations.ContainsKey($mid)){ $matchDur = [int]$matchDurations[$mid] }
   $used = New-Object System.Collections.Generic.List[object]
   foreach($p in $placements | Sort-Object time){
     $matchRemoval = $null
@@ -394,7 +476,7 @@ foreach($mid in $wardPlacement.Keys){
     }
     if($matchRemoval){ $used.Add($matchRemoval) | Out-Null }
     $life = 0
-    if($matchRemoval){ $life = [int]($matchRemoval.time - $p.time) } elseif($duration -gt 0) { $life = [int]([Math]::Min($duration, 4200) - $p.time) }
+    if($matchRemoval){ $life = [int]($matchRemoval.time - $p.time) } elseif($matchDur -gt 0) { $life = [int]([Math]::Min($matchDur, 4200) - $p.time) }
     if($life -lt 0){ $life = 0 }
     $coord = "$($p.x),$($p.y)"
     if(-not $wardStats.ContainsKey($coord)){ $wardStats[$coord] = @{ count=0; total=0 } }
@@ -403,7 +485,7 @@ foreach($mid in $wardPlacement.Keys){
 }
 
 # Build duo arrays
-function To-DuoArray($dict){
+function Get-DuoArray($dict){
   $out=@()
   foreach($k in $dict.Keys){
     $v=$dict[$k]
@@ -414,10 +496,10 @@ function To-DuoArray($dict){
     }
   }
   # Both properties descending (primary winrate, secondary games)
-  return ($out | Sort-Object -Property winrate, games -Descending | Select-Object -First 8)
+  return ($out | Sort-Object -Property winrate, games -Descending)
 }
-$duosOffArr = To-DuoArray $duosOff
-$duosSafeArr = To-DuoArray $duosSafe
+$duosOffArr = Get-DuoArray $duosOff
+$duosSafeArr = Get-DuoArray $duosSafe
 
 # Enrich duos with localized hero names if heroes constants available
 try {
@@ -437,6 +519,50 @@ try {
   Add-HeroNamesToDuos $duosOffArr
   Add-HeroNamesToDuos $duosSafeArr
 } catch { Write-Verbose "Failed duo hero name enrichment: $($_.Exception.Message)" }
+
+# Draft precomputation from picks_bans
+try {
+  foreach($m in $detailed){
+    if(-not $m){ continue }
+    $radWin = $false; try{ $radWin = [bool]$m.radiant_win }catch{}
+    $pbs = @(); try{ $pbs = @($m.picks_bans) }catch{}
+    if((@($pbs)).Count -eq 0){ continue }
+    $radList = New-Object System.Collections.Generic.List[object]
+    $dirList = New-Object System.Collections.Generic.List[object]
+    foreach($pb in $pbs){
+      $hid = 0; try{ $hid = [int]$pb.hero_id }catch{}
+      if($hid -le 0){ continue }
+      $isPick = $false; try{ $isPick = [bool]$pb.is_pick }catch{}
+      $team = $null; $side = $null
+      try{ $team = $pb.team }catch{}
+      if($null -ne $team){ if([int]$team -eq 0){ $side='Radiant' } elseif([int]$team -eq 1){ $side='Dire' } }
+      if(-not $side){ try{ if($pb.PSObject.Properties.Name -contains 'is_radiant'){ $side = ($pb.is_radiant) ? 'Radiant' : 'Dire' } }catch{} }
+      $order=0; try{ $order = [int]($pb.order); if($order -eq 0){ $order = [int]($pb.pick_order) }; if($order -eq 0){ $order = [int]($pb.draft_order) } }catch{}
+      if($isPick){
+        if(-not $draftPickStats.ContainsKey($hid)){ $draftPickStats[$hid] = @{ picks=0; wins=0 } }
+        $draftPickStats[$hid].picks++
+        if($side -eq 'Radiant'){ $radList.Add(@{ hid=$hid; order=$order }) | Out-Null } elseif($side -eq 'Dire'){ $dirList.Add(@{ hid=$hid; order=$order }) | Out-Null }
+      } else {
+        if(-not $draftBanCount.ContainsKey($hid)){ $draftBanCount[$hid]=0 }
+        $draftBanCount[$hid]++
+      }
+    }
+    function TeamWon($s){ if($s -eq 'Radiant'){ return $radWin } else { return (-not $radWin) } }
+    foreach($side in @('Radiant','Dire')){
+      $list = if($side -eq 'Radiant'){ $radList } else { $dirList }
+      $ordered = @($list | Sort-Object { $_.order })
+      if((@($ordered)).Count -ge 1){
+        $fp = $ordered[0]
+        if($fp -and $fp.hid -gt 0){ if(-not $draftFirstPick.ContainsKey($fp.hid)){ $draftFirstPick[$fp.hid] = @{ count=0; wins=0 } }; $draftFirstPick[$fp.hid].count++; if(TeamWon $side){ $draftFirstPick[$fp.hid].wins++ } }
+      }
+      if((@($ordered)).Count -ge 2){
+        $a=[int]$ordered[0].hid; $b=[int]$ordered[1].hid; if($a -gt 0 -and $b -gt 0){ $lo=[Math]::Min($a,$b); $hi=[Math]::Max($a,$b); $key="$lo-$hi"; if(-not $draftOpeningPairs.ContainsKey($key)){ $draftOpeningPairs[$key] = @{ a=$lo; b=$hi; games=0; wins=0 } }; $draftOpeningPairs[$key].games++; if(TeamWon $side){ $draftOpeningPairs[$key].wins++ } }
+      }
+      # Attribute pick wins to heroes on winning side
+      if(TeamWon $side){ foreach($ev in $list){ $hid=[int]$ev.hid; if($hid -gt 0 -and $draftPickStats.ContainsKey($hid)){ $draftPickStats[$hid].wins++ } } }
+    }
+  }
+} catch { Write-Verbose "Draft precompute failed: $($_.Exception.Message)" }
 
 # Hero best/worst
 $heroPerf = @(); foreach($hid in $heroStats.Keys){ $hs=$heroStats[$hid]; if($hs.picks -ge 5){ $heroPerf += [pscustomobject]@{ hero_id=$hid; picks=$hs.picks; wins=$hs.wins; winrate= if($hs.picks -gt 0){ [double]$hs.wins/$hs.picks } else { 0 } } } }
@@ -481,8 +607,8 @@ $mostDewards = $mostDewards | Sort-Object count -Descending | Select-Object -Fir
 function Build-EventList($map){
   $arr=@()
   foreach($aid in $map.Keys){
-    $matches=$map[$aid] | Sort-Object -Unique
-  $arr += [pscustomobject]@{ account_id=$aid; name=$playerMeta[$aid].name; count=(@($matches)).Count; matches=$matches }
+    $evMatches=$map[$aid] | Sort-Object -Unique
+    $arr += [pscustomobject]@{ account_id=$aid; name=$playerMeta[$aid].name; count=(@($evMatches)).Count; matches=$evMatches }
   }
   return ($arr | Sort-Object count -Descending | Select-Object -First 10)
 }
@@ -498,12 +624,43 @@ $placements = @(); foreach($tid in $teamStats.Keys){ $ts=$teamStats[$tid]; $wr =
 $placements = $placements | Sort-Object -Property wins, winrate, games -Descending
 $rank=1; foreach($p in $placements){ $p | Add-Member -NotePropertyName place -NotePropertyValue $rank; $rank++ }
 
+# Draft precompute result arrays
+$draftContest = @()
+foreach($hid in $draftPickStats.Keys){ $pk=$draftPickStats[$hid]; $bn= if($draftBanCount.ContainsKey($hid)){ [int]$draftBanCount[$hid] } else { 0 }; $draftContest += [pscustomobject]@{ hid=[int]$hid; picks=[int]$pk.picks; pickWins=[int]$pk.wins; bans=$bn; contest=[int]($pk.picks + $bn); wrPick= if($pk.picks -gt 0){ [double]$pk.wins/$pk.picks } else { 0 } } }
+$draftFirst = @(); foreach($hid in $draftFirstPick.Keys){ $fp=$draftFirstPick[$hid]; $draftFirst += [pscustomobject]@{ hid=[int]$hid; count=[int]$fp.count; wins=[int]$fp.wins; wr= if($fp.count -gt 0){ [double]$fp.wins/$fp.count } else { 0 } } }
+$draftPairs = @(); foreach($k in $draftOpeningPairs.Keys){ $v=$draftOpeningPairs[$k]; $draftPairs += [pscustomobject]@{ a=[int]$v.a; b=[int]$v.b; games=[int]$v.games; wins=[int]$v.wins; wr= if($v.games -gt 0){ [double]$v.wins/$v.games } else { 0 } } }
+# Sort & limit like client
+$draftContest = $draftContest | Sort-Object -Property contest, picks, bans -Descending | Select-Object -First 20
+$draftFirst = $draftFirst | Sort-Object -Property count, wr -Descending | Select-Object -First 20
+$draftPairs = $draftPairs | Sort-Object -Property wr, games -Descending | Select-Object -First 20
+
+# Build player->team mapping (choose most frequent team_id per player in this league)
+$playerTeams = @()
+foreach($aid in $playerTeamCount.Keys){
+  $map = $playerTeamCount[$aid]
+  $bestTeam = 0; $bestCnt = -1
+  foreach($tid in $map.Keys){ if($map[$tid] -gt $bestCnt){ $bestCnt = $map[$tid]; $bestTeam = [int]$tid } }
+  if($bestTeam -gt 0){
+    $tname = if($teamStats.ContainsKey($bestTeam)){ ''+$teamStats[$bestTeam].name } else { "Team $bestTeam" }
+    $pname = if($playerMeta.ContainsKey($aid)){ ''+$playerMeta[$aid].name } else { "Player $aid" }
+    $playerTeams += [pscustomobject]@{ account_id=[int64]$aid; name=$pname; team_id=[int]$bestTeam; team_name=$tname; appearances=[int]$bestCnt }
+  } else {
+    # No team observed; still include entry with team_id 0 if player appeared
+    if($playerStats.ContainsKey($aid)){
+      $pname = if($playerMeta.ContainsKey($aid)){ ''+$playerMeta[$aid].name } else { "Player $aid" }
+      $playerTeams += [pscustomobject]@{ account_id=[int64]$aid; name=$pname; team_id=0; team_name=''; appearances=[int]$playerStats[$aid].games }
+    }
+  }
+}
+
 # Aggregate object
 $report = [ordered]@{
   league = @{ id=$leagueId; name=$leagueNameResolved; slug=$slug; from=$fromUnix; to=$toUnix };
   generated = [int][DateTimeOffset]::UtcNow.ToUnixTimeSeconds();
+  playerTeams = @($playerTeams);
   highlights = [ordered]@{
   duos = @{ offlane= @($duosOffArr); safelane= @($duosSafeArr) };
+  draft = @{ contest=@($draftContest); firstPicks=@($draftFirst); openingPairs=@($draftPairs) };
   heroes = @{ best=@($bestHeroes); worst=@($worstHeroes); all=@($heroesAll) };
   wards = @{ bestSpots=@($bestSpots); worstSpots=@($worstSpots); mostDewards=@($mostDewards); allSpots=@($wardAll) };
   players = @{ rampages=@($rampages); rapiers=@($rapiers); aegisSnatch=@($aegis); all=@($playersAll) };
@@ -530,7 +687,7 @@ try {
   $publicLeagueDataDir = Join-Path $docs ("data/league/"+$slug)
   if(-not (Test-Path -LiteralPath $publicLeagueDataDir)) { New-Item -ItemType Directory -Path $publicLeagueDataDir -Force | Out-Null }
   Copy-Item -LiteralPath $reportFile -Destination (Join-Path $publicLeagueDataDir 'report.json') -Force
-  if(Test-Path -LiteralPath $matchesFile){ Copy-Item -LiteralPath $matchesFile -Destination (Join-Path $publicLeagueDataDir 'matches.json') -Force }
+  if(Test-Path -LiteralPath $leagueMatchesFile){ Copy-Item -LiteralPath $leagueMatchesFile -Destination (Join-Path $publicLeagueDataDir 'matches.json') -Force }
   # Ensure shared heroes.json is published once under docs/data for icon rendering
   $heroesSrc = Join-Path (Join-Path $PSScriptRoot '..') 'data\heroes.json'
   $heroesDestDir = Join-Path $docs 'data'
@@ -584,7 +741,7 @@ Set-Content -LiteralPath (Join-Path $folder 'index.html') -Value $html -Encoding
 Write-Host ("Wrote league report wrapper: {0}" -f (Join-Path $folder 'index.html'))
 
 # ---------- Update reports.json ----------
-function Normalize-Href([string]$href){
+function Get-NormalizedHref([string]$href){
   if([string]::IsNullOrWhiteSpace($href)){ return '' }
   $h=$href.Trim()
   if($h.StartsWith('./')){ $h=$h.Substring(2) }
@@ -608,9 +765,9 @@ function Update-ReportsJson(
   }
   $items=@(); $items += $obj.items
   for($i=0; $i -lt $items.Count; $i++){
-    if($items[$i] -and $items[$i].href){ $items[$i].href = (Normalize-Href -href ([string]$items[$i].href)) }
+    if($items[$i] -and $items[$i].href){ $items[$i].href = (Get-NormalizedHref -href ([string]$items[$i].href)) }
   }
-  $nhref = Normalize-Href -href $href
+  $nhref = Get-NormalizedHref -href $href
   $found=$false
   for($i=0; $i -lt $items.Count; $i++){
     if([string]$items[$i].href -eq [string]$nhref){
@@ -625,7 +782,7 @@ function Update-ReportsJson(
   $map=@{}
   foreach($it in $items){
     if(-not $it){ continue }
-    $h=Normalize-Href -href ([string]$it.href)
+  $h=Get-NormalizedHref -href ([string]$it.href)
     $t=0; try{ $t=[datetime]::Parse((''+$it.time)).ToFileTimeUtc() }catch{ $t=0 }
     if($map.ContainsKey($h)){
       $prev=$map[$h]; $pt=0; try{ $pt=[datetime]::Parse((''+$prev.time)).ToFileTimeUtc() }catch{ $pt=0 }

@@ -1,0 +1,1826 @@
+{
+  "league": {
+    "id": 18375,
+    "slug": "EWC2025",
+    "to": 1752955676.0,
+    "name": "Esports World Cup 2025",
+    "from": 1751965908.0
+  },
+  "generated": 1758129603,
+  "highlights": {
+    "duos": {
+      "offlane": [
+        {
+          "a": 53,
+          "b": 100,
+          "games": 5,
+          "wins": 5,
+          "winrate": 1.0,
+          "a_name": "Nature's Prophet",
+          "b_name": "Tusk"
+        }
+      ],
+      "safelane": [
+        {
+          "a": 2,
+          "b": 27,
+          "games": 3,
+          "wins": 2,
+          "winrate": 0.6666666666666666,
+          "a_name": "Axe",
+          "b_name": "Shadow Shaman"
+        },
+        {
+          "a": 84,
+          "b": 119,
+          "games": 3,
+          "wins": 2,
+          "winrate": 0.6666666666666666,
+          "a_name": "Ogre Magi",
+          "b_name": "Dark Willow"
+        },
+        {
+          "a": 37,
+          "b": 46,
+          "games": 4,
+          "wins": 2,
+          "winrate": 0.5,
+          "a_name": "Warlock",
+          "b_name": "Templar Assassin"
+        },
+        {
+          "a": 50,
+          "b": 114,
+          "games": 3,
+          "wins": 1,
+          "winrate": 0.3333333333333333,
+          "a_name": "Dazzle",
+          "b_name": "Monkey King"
+        },
+        {
+          "a": 100,
+          "b": 135,
+          "games": 3,
+          "wins": 1,
+          "winrate": 0.3333333333333333,
+          "a_name": "Tusk",
+          "b_name": "Dawnbreaker"
+        },
+        {
+          "a": 87,
+          "b": 102,
+          "games": 3,
+          "wins": 0,
+          "winrate": 0.0,
+          "a_name": "Disruptor",
+          "b_name": "Abaddon"
+        }
+      ]
+    },
+    "heroes": {
+      "worst": [
+        {
+          "hero_id": 109,
+          "picks": 8,
+          "wins": 1,
+          "winrate": 0.125
+        },
+        {
+          "hero_id": 12,
+          "picks": 8,
+          "wins": 1,
+          "winrate": 0.125
+        },
+        {
+          "hero_id": 99,
+          "picks": 10,
+          "wins": 3,
+          "winrate": 0.3
+        },
+        {
+          "hero_id": 37,
+          "picks": 19,
+          "wins": 6,
+          "winrate": 0.3157894736842105
+        },
+        {
+          "hero_id": 54,
+          "picks": 9,
+          "wins": 3,
+          "winrate": 0.3333333333333333
+        },
+        {
+          "hero_id": 58,
+          "picks": 6,
+          "wins": 2,
+          "winrate": 0.3333333333333333
+        },
+        {
+          "hero_id": 55,
+          "picks": 17,
+          "wins": 6,
+          "winrate": 0.35294117647058826
+        },
+        {
+          "hero_id": 2,
+          "picks": 21,
+          "wins": 8,
+          "winrate": 0.38095238095238093
+        },
+        {
+          "hero_id": 23,
+          "picks": 13,
+          "wins": 5,
+          "winrate": 0.38461538461538464
+        },
+        {
+          "hero_id": 50,
+          "picks": 18,
+          "wins": 7,
+          "winrate": 0.3888888888888889
+        }
+      ],
+      "all": [
+        {
+          "hero_id": 138,
+          "picks": 8,
+          "wins": 5,
+          "winrate": 0.625
+        },
+        {
+          "hero_id": 137,
+          "picks": 10,
+          "wins": 5,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 136,
+          "picks": 22,
+          "wins": 12,
+          "winrate": 0.5454545454545454
+        },
+        {
+          "hero_id": 135,
+          "picks": 22,
+          "wins": 12,
+          "winrate": 0.5454545454545454
+        },
+        {
+          "hero_id": 131,
+          "picks": 4,
+          "wins": 2,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 129,
+          "picks": 5,
+          "wins": 3,
+          "winrate": 0.6
+        },
+        {
+          "hero_id": 126,
+          "picks": 12,
+          "wins": 7,
+          "winrate": 0.5833333333333334
+        },
+        {
+          "hero_id": 123,
+          "picks": 1,
+          "wins": 1,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 120,
+          "picks": 16,
+          "wins": 9,
+          "winrate": 0.5625
+        },
+        {
+          "hero_id": 119,
+          "picks": 23,
+          "wins": 12,
+          "winrate": 0.5217391304347826
+        },
+        {
+          "hero_id": 114,
+          "picks": 24,
+          "wins": 15,
+          "winrate": 0.625
+        },
+        {
+          "hero_id": 113,
+          "picks": 1,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 112,
+          "picks": 2,
+          "wins": 2,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 111,
+          "picks": 4,
+          "wins": 3,
+          "winrate": 0.75
+        },
+        {
+          "hero_id": 110,
+          "picks": 4,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 109,
+          "picks": 8,
+          "wins": 1,
+          "winrate": 0.125
+        },
+        {
+          "hero_id": 108,
+          "picks": 5,
+          "wins": 3,
+          "winrate": 0.6
+        },
+        {
+          "hero_id": 106,
+          "picks": 19,
+          "wins": 12,
+          "winrate": 0.631578947368421
+        },
+        {
+          "hero_id": 105,
+          "picks": 1,
+          "wins": 1,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 103,
+          "picks": 1,
+          "wins": 1,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 102,
+          "picks": 17,
+          "wins": 8,
+          "winrate": 0.47058823529411764
+        },
+        {
+          "hero_id": 100,
+          "picks": 26,
+          "wins": 14,
+          "winrate": 0.5384615384615384
+        },
+        {
+          "hero_id": 99,
+          "picks": 10,
+          "wins": 3,
+          "winrate": 0.3
+        },
+        {
+          "hero_id": 98,
+          "picks": 8,
+          "wins": 5,
+          "winrate": 0.625
+        },
+        {
+          "hero_id": 97,
+          "picks": 6,
+          "wins": 3,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 96,
+          "picks": 10,
+          "wins": 6,
+          "winrate": 0.6
+        },
+        {
+          "hero_id": 95,
+          "picks": 1,
+          "wins": 1,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 94,
+          "picks": 5,
+          "wins": 3,
+          "winrate": 0.6
+        },
+        {
+          "hero_id": 93,
+          "picks": 1,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 92,
+          "picks": 2,
+          "wins": 1,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 89,
+          "picks": 8,
+          "wins": 5,
+          "winrate": 0.625
+        },
+        {
+          "hero_id": 88,
+          "picks": 1,
+          "wins": 1,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 87,
+          "picks": 17,
+          "wins": 7,
+          "winrate": 0.4117647058823529
+        },
+        {
+          "hero_id": 86,
+          "picks": 9,
+          "wins": 5,
+          "winrate": 0.5555555555555556
+        },
+        {
+          "hero_id": 85,
+          "picks": 16,
+          "wins": 8,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 84,
+          "picks": 11,
+          "wins": 5,
+          "winrate": 0.45454545454545453
+        },
+        {
+          "hero_id": 82,
+          "picks": 2,
+          "wins": 2,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 81,
+          "picks": 7,
+          "wins": 3,
+          "winrate": 0.42857142857142855
+        },
+        {
+          "hero_id": 79,
+          "picks": 2,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 78,
+          "picks": 7,
+          "wins": 3,
+          "winrate": 0.42857142857142855
+        },
+        {
+          "hero_id": 77,
+          "picks": 5,
+          "wins": 4,
+          "winrate": 0.8
+        },
+        {
+          "hero_id": 75,
+          "picks": 10,
+          "wins": 7,
+          "winrate": 0.7
+        },
+        {
+          "hero_id": 74,
+          "picks": 4,
+          "wins": 2,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 72,
+          "picks": 8,
+          "wins": 4,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 70,
+          "picks": 4,
+          "wins": 3,
+          "winrate": 0.75
+        },
+        {
+          "hero_id": 69,
+          "picks": 19,
+          "wins": 8,
+          "winrate": 0.42105263157894735
+        },
+        {
+          "hero_id": 68,
+          "picks": 1,
+          "wins": 1,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 67,
+          "picks": 1,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 66,
+          "picks": 11,
+          "wins": 8,
+          "winrate": 0.7272727272727273
+        },
+        {
+          "hero_id": 65,
+          "picks": 20,
+          "wins": 14,
+          "winrate": 0.7
+        },
+        {
+          "hero_id": 64,
+          "picks": 1,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 63,
+          "picks": 1,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 62,
+          "picks": 6,
+          "wins": 3,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 61,
+          "picks": 2,
+          "wins": 1,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 60,
+          "picks": 1,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 59,
+          "picks": 2,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 58,
+          "picks": 6,
+          "wins": 2,
+          "winrate": 0.3333333333333333
+        },
+        {
+          "hero_id": 57,
+          "picks": 3,
+          "wins": 2,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "hero_id": 55,
+          "picks": 17,
+          "wins": 6,
+          "winrate": 0.35294117647058826
+        },
+        {
+          "hero_id": 54,
+          "picks": 9,
+          "wins": 3,
+          "winrate": 0.3333333333333333
+        },
+        {
+          "hero_id": 53,
+          "picks": 24,
+          "wins": 18,
+          "winrate": 0.75
+        },
+        {
+          "hero_id": 52,
+          "picks": 14,
+          "wins": 6,
+          "winrate": 0.42857142857142855
+        },
+        {
+          "hero_id": 51,
+          "picks": 3,
+          "wins": 1,
+          "winrate": 0.3333333333333333
+        },
+        {
+          "hero_id": 50,
+          "picks": 18,
+          "wins": 7,
+          "winrate": 0.3888888888888889
+        },
+        {
+          "hero_id": 49,
+          "picks": 2,
+          "wins": 1,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 48,
+          "picks": 1,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 46,
+          "picks": 17,
+          "wins": 11,
+          "winrate": 0.6470588235294118
+        },
+        {
+          "hero_id": 45,
+          "picks": 13,
+          "wins": 7,
+          "winrate": 0.5384615384615384
+        },
+        {
+          "hero_id": 44,
+          "picks": 1,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 43,
+          "picks": 2,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 40,
+          "picks": 4,
+          "wins": 1,
+          "winrate": 0.25
+        },
+        {
+          "hero_id": 39,
+          "picks": 26,
+          "wins": 13,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 38,
+          "picks": 15,
+          "wins": 7,
+          "winrate": 0.4666666666666667
+        },
+        {
+          "hero_id": 37,
+          "picks": 19,
+          "wins": 6,
+          "winrate": 0.3157894736842105
+        },
+        {
+          "hero_id": 35,
+          "picks": 2,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 33,
+          "picks": 2,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 32,
+          "picks": 4,
+          "wins": 2,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 31,
+          "picks": 1,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 30,
+          "picks": 3,
+          "wins": 0,
+          "winrate": 0.0
+        },
+        {
+          "hero_id": 29,
+          "picks": 2,
+          "wins": 2,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 28,
+          "picks": 2,
+          "wins": 2,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 27,
+          "picks": 39,
+          "wins": 20,
+          "winrate": 0.5128205128205128
+        },
+        {
+          "hero_id": 26,
+          "picks": 6,
+          "wins": 3,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 25,
+          "picks": 5,
+          "wins": 2,
+          "winrate": 0.4
+        },
+        {
+          "hero_id": 23,
+          "picks": 13,
+          "wins": 5,
+          "winrate": 0.38461538461538464
+        },
+        {
+          "hero_id": 21,
+          "picks": 2,
+          "wins": 1,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 19,
+          "picks": 7,
+          "wins": 3,
+          "winrate": 0.42857142857142855
+        },
+        {
+          "hero_id": 18,
+          "picks": 7,
+          "wins": 5,
+          "winrate": 0.7142857142857143
+        },
+        {
+          "hero_id": 17,
+          "picks": 17,
+          "wins": 8,
+          "winrate": 0.47058823529411764
+        },
+        {
+          "hero_id": 15,
+          "picks": 5,
+          "wins": 2,
+          "winrate": 0.4
+        },
+        {
+          "hero_id": 14,
+          "picks": 1,
+          "wins": 1,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 13,
+          "picks": 32,
+          "wins": 13,
+          "winrate": 0.40625
+        },
+        {
+          "hero_id": 12,
+          "picks": 8,
+          "wins": 1,
+          "winrate": 0.125
+        },
+        {
+          "hero_id": 11,
+          "picks": 25,
+          "wins": 13,
+          "winrate": 0.52
+        },
+        {
+          "hero_id": 10,
+          "picks": 5,
+          "wins": 3,
+          "winrate": 0.6
+        },
+        {
+          "hero_id": 9,
+          "picks": 3,
+          "wins": 2,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "hero_id": 8,
+          "picks": 1,
+          "wins": 1,
+          "winrate": 1.0
+        },
+        {
+          "hero_id": 7,
+          "picks": 4,
+          "wins": 1,
+          "winrate": 0.25
+        },
+        {
+          "hero_id": 5,
+          "picks": 4,
+          "wins": 2,
+          "winrate": 0.5
+        },
+        {
+          "hero_id": 3,
+          "picks": 21,
+          "wins": 10,
+          "winrate": 0.47619047619047616
+        },
+        {
+          "hero_id": 2,
+          "picks": 21,
+          "wins": 8,
+          "winrate": 0.38095238095238093
+        },
+        {
+          "hero_id": 1,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 4,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 6,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 16,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 20,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 22,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 34,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 36,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 41,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 42,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 47,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 56,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 71,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 73,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 76,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 80,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 83,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 90,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 91,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 101,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 104,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 107,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 121,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 128,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        },
+        {
+          "hero_id": 145,
+          "picks": 0,
+          "wins": 0,
+          "winrate": 0
+        }
+      ],
+      "best": [
+        {
+          "hero_id": 77,
+          "picks": 5,
+          "wins": 4,
+          "winrate": 0.8
+        },
+        {
+          "hero_id": 53,
+          "picks": 24,
+          "wins": 18,
+          "winrate": 0.75
+        },
+        {
+          "hero_id": 66,
+          "picks": 11,
+          "wins": 8,
+          "winrate": 0.7272727272727273
+        },
+        {
+          "hero_id": 18,
+          "picks": 7,
+          "wins": 5,
+          "winrate": 0.7142857142857143
+        },
+        {
+          "hero_id": 65,
+          "picks": 20,
+          "wins": 14,
+          "winrate": 0.7
+        },
+        {
+          "hero_id": 75,
+          "picks": 10,
+          "wins": 7,
+          "winrate": 0.7
+        },
+        {
+          "hero_id": 46,
+          "picks": 17,
+          "wins": 11,
+          "winrate": 0.6470588235294118
+        },
+        {
+          "hero_id": 106,
+          "picks": 19,
+          "wins": 12,
+          "winrate": 0.631578947368421
+        },
+        {
+          "hero_id": 114,
+          "picks": 24,
+          "wins": 15,
+          "winrate": 0.625
+        },
+        {
+          "hero_id": 138,
+          "picks": 8,
+          "wins": 5,
+          "winrate": 0.625
+        }
+      ]
+    },
+    "wards": {
+      "allSpots": [],
+      "bestSpots": [],
+      "mostDewards": [],
+      "worstSpots": []
+    },
+    "players": {
+      "aegisSnatch": [],
+      "all": [
+        {
+          "account_id": 171262902,
+          "name": "[GG] 医者watson`",
+          "games": 10,
+          "wins": 6,
+          "losses": 4,
+          "winrate": 0.6
+        },
+        {
+          "account_id": 164199202,
+          "name": "[PV] 9Class",
+          "games": 18,
+          "wins": 11,
+          "losses": 7,
+          "winrate": 0.6111111111111112
+        },
+        {
+          "account_id": 195108598,
+          "name": "[TY] Noticed",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 152455523,
+          "name": "[B8] V-Tune",
+          "games": 8,
+          "wins": 0,
+          "losses": 8,
+          "winrate": 0.0
+        },
+        {
+          "account_id": 480412663,
+          "name": "[BB] gpk~",
+          "games": 9,
+          "wins": 6,
+          "losses": 3,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 201358612,
+          "name": "[Liquid] Nisha",
+          "games": 8,
+          "wins": 5,
+          "losses": 3,
+          "winrate": 0.625
+        },
+        {
+          "account_id": 389022189,
+          "name": "[Aurora] Palos",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 124801257,
+          "name": "[Aurora] Nightfall",
+          "games": 12,
+          "wins": 8,
+          "losses": 4,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 136829091,
+          "name": "[Tundra] Whitemon",
+          "games": 18,
+          "wins": 10,
+          "losses": 8,
+          "winrate": 0.5555555555555556
+        },
+        {
+          "account_id": 134556694,
+          "name": "[Dm] Solo",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 131303632,
+          "name": "[Heroic] 4nalog丶01",
+          "games": 11,
+          "wins": 4,
+          "losses": 7,
+          "winrate": 0.36363636363636365
+        },
+        {
+          "account_id": 1044002267,
+          "name": "[PV] Satanic",
+          "games": 18,
+          "wins": 11,
+          "losses": 7,
+          "winrate": 0.6111111111111112
+        },
+        {
+          "account_id": 210053851,
+          "name": "[Tundra] lorenof",
+          "games": 8,
+          "wins": 0,
+          "losses": 8,
+          "winrate": 0.0
+        },
+        {
+          "account_id": 113331514,
+          "name": "[TSpirit] Miposhka",
+          "games": 13,
+          "wins": 12,
+          "losses": 1,
+          "winrate": 0.9230769230769231
+        },
+        {
+          "account_id": 77490514,
+          "name": "[Liquid] Boxi",
+          "games": 8,
+          "wins": 5,
+          "losses": 3,
+          "winrate": 0.625
+        },
+        {
+          "account_id": 331855530,
+          "name": "[BB] Pure",
+          "games": 9,
+          "wins": 6,
+          "losses": 3,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 93817671,
+          "name": "[GG] Maladych",
+          "games": 10,
+          "wins": 6,
+          "losses": 4,
+          "winrate": 0.6
+        },
+        {
+          "account_id": 898754153,
+          "name": "[XG] Ame",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 957204049,
+          "name": "[NAVI] gotthejuice",
+          "games": 8,
+          "wins": 3,
+          "losses": 5,
+          "winrate": 0.375
+        },
+        {
+          "account_id": 86698277,
+          "name": "[Tundra] 33",
+          "games": 18,
+          "wins": 10,
+          "losses": 8,
+          "winrate": 0.5555555555555556
+        },
+        {
+          "account_id": 256156323,
+          "name": "[Aurora] Mira",
+          "games": 12,
+          "wins": 8,
+          "losses": 4,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 54580962,
+          "name": "[Liquid] Insania",
+          "games": 8,
+          "wins": 5,
+          "losses": 3,
+          "winrate": 0.625
+        },
+        {
+          "account_id": 183719386,
+          "name": "[FLCN] AMMAR_THE_F",
+          "games": 17,
+          "wins": 10,
+          "losses": 7,
+          "winrate": 0.5882352941176471
+        },
+        {
+          "account_id": 324277900,
+          "name": "[SR] Yopaj-",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 126842529,
+          "name": "[TALON] Ws`",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 847565596,
+          "name": "[TSpirit] rue",
+          "games": 13,
+          "wins": 12,
+          "losses": 1,
+          "winrate": 0.9230769230769231
+        },
+        {
+          "account_id": 157989498,
+          "name": "[Heroic] Scofield",
+          "games": 11,
+          "wins": 4,
+          "losses": 7,
+          "winrate": 0.36363636363636365
+        },
+        {
+          "account_id": 111030315,
+          "name": "[NAVI] KG_Zayac",
+          "games": 8,
+          "wins": 3,
+          "losses": 5,
+          "winrate": 0.375
+        },
+        {
+          "account_id": 76904792,
+          "name": "[XG] poloson",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 100616105,
+          "name": "[XctN] cml",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 177203952,
+          "name": "[Heroic] Yuma",
+          "games": 11,
+          "wins": 4,
+          "losses": 7,
+          "winrate": 0.36363636363636365
+        },
+        {
+          "account_id": 417235485,
+          "name": "[TY] prblms",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 100594231,
+          "name": "[SR] skem",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 375507918,
+          "name": "[TALON] 23savage",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 97590558,
+          "name": "[GG] Ace ♠",
+          "games": 10,
+          "wins": 6,
+          "losses": 4,
+          "winrate": 0.6
+        },
+        {
+          "account_id": 96183976,
+          "name": "[TY] TA2000",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 301750126,
+          "name": "[TALON] Mikoto",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 152859296,
+          "name": "[TALON] Jhocam",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 106305042,
+          "name": "[TSpirit] Larl",
+          "games": 13,
+          "wins": 12,
+          "losses": 1,
+          "winrate": 0.9230769230769231
+        },
+        {
+          "account_id": 312436974,
+          "name": "[TY] CHIRA_JUNIOR",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 431770905,
+          "name": "[Aurora] TORONTOTOKYO",
+          "games": 12,
+          "wins": 8,
+          "losses": 4,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 130991304,
+          "name": "[NAVI] Riddys",
+          "games": 8,
+          "wins": 3,
+          "losses": 5,
+          "winrate": 0.375
+        },
+        {
+          "account_id": 126212866,
+          "name": "[Liquid] Saberlight",
+          "games": 8,
+          "wins": 5,
+          "losses": 3,
+          "winrate": 0.625
+        },
+        {
+          "account_id": 898455820,
+          "name": "[FLCN] Malr1ne",
+          "games": 17,
+          "wins": 10,
+          "losses": 7,
+          "winrate": 0.5882352941176471
+        },
+        {
+          "account_id": 177411785,
+          "name": "[lvlUP] Daxao",
+          "games": 8,
+          "wins": 0,
+          "losses": 8,
+          "winrate": 0.0
+        },
+        {
+          "account_id": 165564598,
+          "name": "[BB] MieRo",
+          "games": 9,
+          "wins": 6,
+          "losses": 3,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 10366616,
+          "name": "[FLCN] Sneyking",
+          "games": 17,
+          "wins": 10,
+          "losses": 7,
+          "winrate": 0.5882352941176471
+        },
+        {
+          "account_id": 241884166,
+          "name": "[Nemiga] Hellscream",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 196878136,
+          "name": "[BB] Kataomi`",
+          "games": 9,
+          "wins": 6,
+          "losses": 3,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 399862798,
+          "name": "[XctN] Shanks",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 103735745,
+          "name": "[Tundra] Saksa",
+          "games": 18,
+          "wins": 10,
+          "losses": 8,
+          "winrate": 0.5555555555555556
+        },
+        {
+          "account_id": 100058342,
+          "name": "[FLCN] skiter",
+          "games": 17,
+          "wins": 10,
+          "losses": 7,
+          "winrate": 0.5882352941176471
+        },
+        {
+          "account_id": 302214028,
+          "name": "[TSpirit] Collapse",
+          "games": 13,
+          "wins": 12,
+          "losses": 1,
+          "winrate": 0.9230769230769231
+        },
+        {
+          "account_id": 25907144,
+          "name": "[FLCN] Cr1t-",
+          "games": 17,
+          "wins": 10,
+          "losses": 7,
+          "winrate": 0.5882352941176471
+        },
+        {
+          "account_id": 861414087,
+          "name": "[XctN] lewis",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 73401082,
+          "name": "[PV] Dukalis",
+          "games": 18,
+          "wins": 11,
+          "losses": 7,
+          "winrate": 0.6111111111111112
+        },
+        {
+          "account_id": 161839895,
+          "name": "[VP] Antares",
+          "games": 8,
+          "wins": 0,
+          "losses": 8,
+          "winrate": 0.0
+        },
+        {
+          "account_id": 317880638,
+          "name": "[BB] Save-",
+          "games": 9,
+          "wins": 6,
+          "losses": 3,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 221666230,
+          "name": "[GG] Quinn",
+          "games": 10,
+          "wins": 6,
+          "losses": 4,
+          "winrate": 0.6
+        },
+        {
+          "account_id": 858106446,
+          "name": "[Aurora] kiyotaka",
+          "games": 12,
+          "wins": 8,
+          "losses": 4,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 56351509,
+          "name": "[PV] DM",
+          "games": 18,
+          "wins": 11,
+          "losses": 7,
+          "winrate": 0.6111111111111112
+        },
+        {
+          "account_id": 137129583,
+          "name": "[XG] Xm",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 184950344,
+          "name": "[TALON] Kuku^",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 16497807,
+          "name": "[GG] tOfu",
+          "games": 10,
+          "wins": 6,
+          "losses": 4,
+          "winrate": 0.6
+        },
+        {
+          "account_id": 93618577,
+          "name": "[Tundra] bzm",
+          "games": 18,
+          "wins": 10,
+          "losses": 8,
+          "winrate": 0.5555555555555556
+        },
+        {
+          "account_id": 108958769,
+          "name": "[Aurora] panto",
+          "games": 12,
+          "wins": 8,
+          "losses": 4,
+          "winrate": 0.6666666666666666
+        },
+        {
+          "account_id": 106573901,
+          "name": "[PV] No[o]ne-",
+          "games": 18,
+          "wins": 11,
+          "losses": 7,
+          "winrate": 0.6111111111111112
+        },
+        {
+          "account_id": 152962063,
+          "name": "[Liquid] m1CKe",
+          "games": 8,
+          "wins": 5,
+          "losses": 3,
+          "winrate": 0.625
+        },
+        {
+          "account_id": 835864135,
+          "name": "[NAVI] pma",
+          "games": 8,
+          "wins": 3,
+          "losses": 5,
+          "winrate": 0.375
+        },
+        {
+          "account_id": 321580662,
+          "name": "[TSpirit] Yatoro",
+          "games": 13,
+          "wins": 12,
+          "losses": 1,
+          "winrate": 0.9230769230769231
+        },
+        {
+          "account_id": 157475523,
+          "name": "[XG] XinQ",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 129958758,
+          "name": "[XG] Xxs",
+          "games": 10,
+          "wins": 4,
+          "losses": 6,
+          "winrate": 0.4
+        },
+        {
+          "account_id": 185590374,
+          "name": "[NAVI] Niku",
+          "games": 8,
+          "wins": 3,
+          "losses": 5,
+          "winrate": 0.375
+        },
+        {
+          "account_id": 81306398,
+          "name": "[Heroic] KingJungles",
+          "games": 11,
+          "wins": 4,
+          "losses": 7,
+          "winrate": 0.36363636363636365
+        },
+        {
+          "account_id": 138880576,
+          "name": "[Heroic] Davai Lama",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 122817493,
+          "name": "[Move] 命運 reinprince",
+          "games": 8,
+          "wins": 0,
+          "losses": 8,
+          "winrate": 0.0
+        },
+        {
+          "account_id": 337575662,
+          "name": "[XctN] Tino",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 97658618,
+          "name": "hihihi",
+          "games": 8,
+          "wins": 1,
+          "losses": 7,
+          "winrate": 0.125
+        },
+        {
+          "account_id": 292921272,
+          "name": "[Heroic] Wisper",
+          "games": 11,
+          "wins": 4,
+          "losses": 7,
+          "winrate": 0.36363636363636365
+        },
+        {
+          "account_id": 127617979,
+          "name": "[Tundra] Crystallis",
+          "games": 18,
+          "wins": 10,
+          "losses": 8,
+          "winrate": 0.5555555555555556
+        }
+      ],
+      "rapiers": [
+        {
+          "account_id": 177203952,
+          "name": "[Heroic] Yuma",
+          "count": 2,
+          "matches": [
+            8370372201,
+            8370461722
+          ]
+        },
+        {
+          "account_id": 127617979,
+          "name": "[Tundra] Crystallis",
+          "count": 2,
+          "matches": [
+            8367738011,
+            8370455176
+          ]
+        },
+        {
+          "account_id": 96183976,
+          "name": "[TY] TA2000",
+          "count": 1,
+          "matches": 8369834677
+        },
+        {
+          "account_id": 324277900,
+          "name": "[SR] Yopaj-",
+          "count": 1,
+          "matches": 8367958853
+        },
+        {
+          "account_id": 331855530,
+          "name": "[BB] Pure",
+          "count": 1,
+          "matches": 8368736355
+        },
+        {
+          "account_id": 898455820,
+          "name": "[FLCN] Malr1ne",
+          "count": 1,
+          "matches": 8379310046
+        },
+        {
+          "account_id": 1044002267,
+          "name": "[PV] Satanic",
+          "count": 1,
+          "matches": 8380303096
+        }
+      ],
+      "rampages": [
+        {
+          "account_id": 171262902,
+          "name": "[GG] 医者watson`",
+          "count": 1,
+          "matches": 8367506206
+        },
+        {
+          "account_id": 152962063,
+          "name": "[Liquid] m1CKe",
+          "count": 1,
+          "matches": 8366846045
+        }
+      ]
+    }
+  },
+  "placements": [
+    {
+      "team_id": 7119388,
+      "name": "Team Spirit",
+      "games": 13,
+      "wins": 12,
+      "losses": 1,
+      "winrate": 0.9230769230769231,
+      "place": 1
+    },
+    {
+      "team_id": 9824702,
+      "name": "PVISION",
+      "games": 18,
+      "wins": 11,
+      "losses": 7,
+      "winrate": 0.6111111111111112,
+      "place": 2
+    },
+    {
+      "team_id": 9247354,
+      "name": "Team Falcons",
+      "games": 17,
+      "wins": 10,
+      "losses": 7,
+      "winrate": 0.5882352941176471,
+      "place": 3
+    },
+    {
+      "team_id": 8291895,
+      "name": "Tundra Esports",
+      "games": 18,
+      "wins": 10,
+      "losses": 8,
+      "winrate": 0.5555555555555556,
+      "place": 4
+    },
+    {
+      "team_id": 9467224,
+      "name": "Aurora Gaming",
+      "games": 12,
+      "wins": 8,
+      "losses": 4,
+      "winrate": 0.6666666666666666,
+      "place": 5
+    },
+    {
+      "team_id": 9131584,
+      "name": "BB Team",
+      "games": 9,
+      "wins": 6,
+      "losses": 3,
+      "winrate": 0.6666666666666666,
+      "place": 6
+    },
+    {
+      "team_id": 8599101,
+      "name": "Gaimin Gladiators",
+      "games": 10,
+      "wins": 6,
+      "losses": 4,
+      "winrate": 0.6,
+      "place": 7
+    },
+    {
+      "team_id": 2163,
+      "name": "Team Liquid",
+      "games": 8,
+      "wins": 5,
+      "losses": 3,
+      "winrate": 0.625,
+      "place": 8
+    },
+    {
+      "team_id": 9823272,
+      "name": "Team Yandex",
+      "games": 10,
+      "wins": 4,
+      "losses": 6,
+      "winrate": 0.4,
+      "place": 9
+    },
+    {
+      "team_id": 8261500,
+      "name": "Xtreme Gaming",
+      "games": 10,
+      "wins": 4,
+      "losses": 6,
+      "winrate": 0.4,
+      "place": 10
+    },
+    {
+      "team_id": 8597976,
+      "name": "Talon",
+      "games": 10,
+      "wins": 4,
+      "losses": 6,
+      "winrate": 0.4,
+      "place": 11
+    },
+    {
+      "team_id": 9303484,
+      "name": "HEROIC",
+      "games": 11,
+      "wins": 4,
+      "losses": 7,
+      "winrate": 0.36363636363636365,
+      "place": 12
+    },
+    {
+      "team_id": 9828954,
+      "name": "Natus Vincere",
+      "games": 8,
+      "wins": 3,
+      "losses": 5,
+      "winrate": 0.375,
+      "place": 13
+    },
+    {
+      "team_id": 39,
+      "name": "Shopify Rebellion",
+      "games": 8,
+      "wins": 1,
+      "losses": 7,
+      "winrate": 0.125,
+      "place": 14
+    },
+    {
+      "team_id": 8254145,
+      "name": "Execration",
+      "games": 8,
+      "wins": 1,
+      "losses": 7,
+      "winrate": 0.125,
+      "place": 15
+    },
+    {
+      "team_id": 9729720,
+      "name": "Virtus.pro",
+      "games": 8,
+      "wins": 0,
+      "losses": 8,
+      "winrate": 0.0,
+      "place": 16
+    }
+  ]
+}

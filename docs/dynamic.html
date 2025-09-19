@@ -94,6 +94,10 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .cal .matches a{display:inline-block;background:var(--chip);color:var(--text);border-radius:999px;font-size:11px;padding:2px 6px}
 </style>
 <script defer src="js/ward_viewer.js"></script>
+<script defer src="js/lane_duos_viewer.js"></script>
+<script defer src="js/player_stats_viewer.js"></script>
+<script defer src="js/items_bought_viewer.js"></script>
+<script defer src="js/draft_viewer.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -149,9 +153,12 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
   <button class="tab" data-tab="wards">Wards</button>
     <button class="tab" data-tab="players">Players</button>
     <button class="tab" data-tab="heroes">Heroes</button>
+    <button class="tab" data-tab="draft">Draft</button>
     <button class="tab" data-tab="teams">Teams</button>
   <button class="tab" data-tab="calendar">Calendar</button>
   <button class="tab" data-tab="awards">Awards</button>
+    <button class="tab" data-tab="laneduos">Lane Duos</button>
+    <button class="tab" data-tab="itemsbought">Items Bought</button>
   </div>
 
   <div id="pane-highlights" class="tabpane active">
@@ -193,6 +200,13 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     </section>
   </div>
 
+  <div id="pane-draft" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Draft</h2>
+      <div id="draftMount" class="sub">Select a range (Apply) to load draft stats.</div>
+    </section>
+  </div>
+
   <div id="pane-teams" class="tabpane" style="display:none">
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Teams</h2>
@@ -209,6 +223,21 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
         <label class="sub" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="awHideEmpty"> Hide empty awards</label>
       </div>
       <div id="awardsBody" class="sub">Select a range and Apply to compute awards.</div>
+    </section>
+  </div>
+
+  <div id="pane-laneduos" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Lane Duos</h2>
+      <div id="ldMount" class="sub">Select a range (Apply) to load lane duos.</div>
+    </section>
+  </div>
+
+
+  <div id="pane-itemsbought" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Items Bought</h2>
+      <div id="ibMount" class="sub">Select a range (Apply) to load item purchases.</div>
     </section>
   </div>
 
@@ -774,18 +803,9 @@ function renderHighlights(high, heroMap, mapConf, label){
         <h3>Gems bought</h3>
         <ul class="simple">${simpleCountList(high.gemTop, 'gems')}</ul>
       </div>
-      <div></div>
+      <div class='sub'>Details jetzt im Tab: Items Bought</div>
     </div>
-    <div class="grid2" style="margin-top:8px">
-      <div>
-        <h3>Best Safe Lane Duos</h3>
-        <ul class="simple">${duoList(high.safeDuos||[])}</ul>
-      </div>
-      <div>
-        <h3>Best Off Lane Duos</h3>
-        <ul class="simple">${duoList(high.offDuos||[])}</ul>
-      </div>
-    </div>
+    <div class='sub' style='margin-top:10px'>Lane Duos jetzt im Tab "Lane Duos" interaktiv verfügbar.</div>
     <div class="grid2" style="margin-top:8px">
       <div>
         <h3>3 longest matches</h3>
@@ -820,7 +840,7 @@ async function main(){
     if (!tabsRoot) return;
     const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
     function showTab(name){
-  ['highlights','wards','players','heroes','teams','awards','calendar'].forEach(id=>{
+  ['highlights','wards','players','heroes','draft','teams','awards','calendar','laneduos','itemsbought'].forEach(id=>{
         const pane = document.getElementById('pane-'+id);
         if (pane) pane.style.display = (id===name)? '' : 'none';
       });
@@ -1315,6 +1335,55 @@ async function main(){
   const warnNoDetails = okDetails.length===0;
   const high = computeHighlightsFromDetails(details, heroMap);
   renderHighlights(high, heroMap, mapConf, label);
+  // Mount Lane Duos component
+  try{
+    const ld = document.getElementById('ldMount');
+    if(ld && window.LaneDuosViewer){
+      window.LaneDuosViewer.mount(ld, { data:{ safe: high.safeDuos||[], off: high.offDuos||[] }, heroes: heroMap });
+    }
+  }catch(e){ console.warn('LaneDuosViewer mount failed', e); }
+  // Mount Items Bought component (use rapier and gem counts plus other tracked purchases if available)
+  try{
+    const ib = document.getElementById('ibMount');
+    if(ib && window.ItemsBoughtViewer){
+      // Build comprehensive purchase aggregation from detailed match data
+      const consumableSet = new Set([
+        'tango','flask','healing_salve','enchanted_mango','clarity','faerie_fire','smoke_of_deceit','dust','dust_of_appearance','ward_observer','ward_sentry','sentry_wards','observer_ward','sentry_ward','tpscroll','tp_scroll','enchanted_quiver','bottle','refresher_shard','cheese','tome_of_knowledge','blood_grenade'
+      ]);
+      const itemAgg = new Map(); // key -> {count, coreCount, supportCount, cost, consumable}
+      // Role heuristic: use gold_per_min threshold (>=420 => core) else support
+      const roleCache = new Map(); // aid -> role
+      for(const md of details){ if(!md) continue; const pls = Array.isArray(md.players)? md.players:[]; for(const p of pls){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; const gpm=Number(p.gold_per_min||0); const role = gpm>=420? 'core':'support'; roleCache.set(aid, role); } }
+      function normName(key){ return String(key||'').toLowerCase(); }
+      for(const md of details){ if(!md) continue; const pls = Array.isArray(md.players)? md.players:[]; for(const p of pls){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; const role = roleCache.get(aid)||'support'; const log = Array.isArray(p.purchase_log)? p.purchase_log:[]; for(const ev of log){ const rawKey = normName(ev.key||ev.item||''); if(!rawKey) continue; // skip neutral tokens (example prefix?)
+            if(/recipe_/.test(rawKey)) continue; // ignore recipes
+            const rec = itemAgg.get(rawKey) || { count:0, coreCount:0, supportCount:0, cost:0, consumable:false };
+            rec.count++;
+            if(role==='core') rec.coreCount++; else rec.supportCount++;
+            // Enrich from OpenDota constants if available
+            try{
+              const constItems = window.__opendotaItems || {};
+              const meta = constItems[rawKey];
+              if(meta){ if(!rec.cost && meta.cost) rec.cost = Number(meta.cost)||0; const disp = meta.dname || meta.localized_name; if(disp) rec.display = disp; }
+            }catch(_e){}
+            if(rec.cost===0){ // fallback cost heuristic left as is (0)
+            }
+            if(consumableSet.has(rawKey)) rec.consumable = true;
+            itemAgg.set(rawKey, rec);
+          } } }
+      // Also include rapier/gem aggregation from high.* if not present
+      (high.rapierTop||[]).forEach(r=>{ const key='rapier'; const rec=itemAgg.get(key)||{count:0,coreCount:0,supportCount:0,cost:6000,consumable:false,display:'Divine Rapier'}; rec.count+=r.count; itemAgg.set(key,rec); });
+      (high.gemTop||[]).forEach(r=>{ const key='gem'; const rec=itemAgg.get(key)||{count:0,coreCount:0,supportCount:0,cost:900,consumable:true,display:'Gem of True Sight'}; rec.count+=r.count; rec.consumable=true; itemAgg.set(key,rec); });
+      // Finalize role majority tag
+      const items = Array.from(itemAgg.entries()).map(([k,v])=>{
+        const role = v.coreCount===v.supportCount ? (v.coreCount>0? 'core':'support') : (v.coreCount>v.supportCount?'core':'support');
+        const namePretty = v.display || k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+        return { item:k, name:namePretty, count:v.count, gold:v.cost||0, role, consumable:v.consumable };
+      }).sort((a,b)=> b.count-a.count || b.gold-a.gold || a.name.localeCompare(b.name));
+      const meta = {}; for(const it of items){ meta[it.item]={ cost: it.gold, consumable: it.consumable, role: it.role }; }
+      window.ItemsBoughtViewer.mount(ib, { data:{ items, meta } });
+    }
+  }catch(e){ console.warn('ItemsBoughtViewer mount failed', e); }
   // Mount WardViewer into dedicated Wards tab
   try{
     const container = document.getElementById('dvWardMount');
@@ -1371,6 +1440,15 @@ async function main(){
   window.WardViewer.mount(container, { mapConf, data:{ spots, teams:Array.from(teamMap.values()), players:Array.from(playerMap.values()) }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } });
     }
   }catch(err){ console.warn('WardViewer mount failed', err); }
+
+  // Draft: compute from current details and mount component
+  try{
+    if(window.DraftViewer){
+      const draftData = window.DraftViewer.compute(details);
+      const mount = document.getElementById('draftMount');
+      window.DraftViewer.mount(mount, { data: draftData, heroes: heroMap });
+    }
+  }catch(e){ console.warn('DraftViewer mount failed', e); }
   if(warnNoDetails){
     const note = `<div class='sub' style='margin-bottom:8px'>Detailed match data could not be loaded (file:// CORS or offline). The map renders with available data, but some highlights may be missing. For full data, serve docs/ over a local server.</div>`;
     try{ body.innerHTML = note + body.innerHTML; }catch(_e){}
