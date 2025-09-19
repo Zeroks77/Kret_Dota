@@ -259,6 +259,12 @@ if($GenerateMonthly){
   $patchVer = Get-Patch-Version-AtUnix -unix $r.ToUnix
   $major = if($patchVer){ ($patchVer -replace '^(\d+\.\d+).*','$1') } else { Get-CurrentMajorPatchTag }
   $query = ("?from=$($r.FromUnix)" + "`&to=$($r.ToUnix)" + "`&tab=highlights" + "`&lock=1")
+  # Append league filter if available from data/info.json
+  try{
+    $dataPath = Get-DataPath
+    $info = Read-JsonFile (Join-Path $dataPath 'info.json')
+    if($info -and $info.league_id){ $query += "`&league=$($info.league_id)" }
+  }catch{}
   if($major){ $query += "`&map=$major" }
   $title = if($major){ "Monthly Report - $monthName $($ym.Year) - $major" } else { "Monthly Report - $monthName $($ym.Year)" }
   Write-Dynamic-Wrapper -outDir $outDir -title $title -query $query
@@ -277,6 +283,11 @@ if($GeneratePatch){
   $folderName = if($ver){ "Patch - $ver - Report" } else { "Patch - Latest - Report" }
   $outDir = Join-Path $rootDocs $folderName
   $query = ("?from=$startUnix" + "`&to=$nowUnix" + "`&tab=highlights" + "`&lock=1")
+  try{
+    $dataPath = Get-DataPath
+    $info = Read-JsonFile (Join-Path $dataPath 'info.json')
+    if($info -and $info.league_id){ $query += "`&league=$($info.league_id)" }
+  }catch{}
   Write-Dynamic-Wrapper -outDir $outDir -title "Patch Report - $displayVer" -query $query
   # Update index for sidebar
   Update-ReportsJson -docsRoot $rootDocs -title "$displayVer" -href ("{0}/" -f $folderName) -group 'patch' -when ((Get-Date).ToUniversalTime()) -sortKey $displayVer

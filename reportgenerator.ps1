@@ -36,6 +36,16 @@ try{
   }
 }catch{}
 
+# Optional: append league filter from data/info.json
+try{
+  $root = Get-RepoRoot
+  $infoPath = Join-Path $root 'data/info.json'
+  if(Test-Path -LiteralPath $infoPath){
+    $info = Get-Content -LiteralPath $infoPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    if($info -and $info.league_id){ $query += "`&league=$($info.league_id)" }
+  }
+}catch{}
+
 # Compose wrapper HTML
 $title = "Last $Range Days Report"
 $html = @"

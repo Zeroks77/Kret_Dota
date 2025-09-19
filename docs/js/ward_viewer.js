@@ -60,15 +60,16 @@
   const teams = Array.isArray(data.teams)? data.teams: [];
   const players = Array.isArray(data.players)? data.players: [];
     const mc = cfg && cfg.mapConf || {};
-    const extras = (cfg && cfg.options && cfg.options.extras) || {};
-    const showExtras = !!(cfg && cfg.options && cfg.options.showExtras);
-    const IGNORE_PLAYER_PERSIST = !!(cfg && cfg.options && cfg.options.ignorePersistedPlayer);
-  let state = { mode: (cfg && cfg.options && cfg.options.modeDefault) || 'best', team:'', player:'', time:'', overlay:true, grid:false, minCount:1, topN:'all', metric:'avg', includeZeroWorst:false, pins:[], pquery:'' };
+  const extras = (cfg && cfg.options && cfg.options.extras) || {};
+  const showExtras = !!(cfg && cfg.options && cfg.options.showExtras);
+  const IGNORE_PLAYER_PERSIST = !!(cfg && cfg.options && cfg.options.ignorePersistedPlayer);
+  const IGNORE_CLUSTER_PERSIST = !!(cfg && cfg.options && cfg.options.ignorePersistedCluster);
+  let state = { mode: (cfg && cfg.options && cfg.options.modeDefault) || 'best', team:'', player:'', time:'', overlay:true, grid:false, minCount:1, topN:'all', metric:'avg', includeZeroWorst:false, pins:[], pquery:'', cluster:0 };
     // URL/Storage helpers
     function getSP(){ try{ return new URLSearchParams(location.search); }catch(_e){ return new URLSearchParams(); } }
     function replaceUrl(sp){ try{ const url = location.pathname + (sp.toString()? ('?'+sp.toString()):'') + location.hash; history.replaceState(null, '', url); }catch(_e){} }
     const LS_KEY = {
-  mode:'wv_mode', time:'wv_time', team:'wv_team', player:'wv_player', ov:'wv_ov', grid:'wv_grid', min:'wv_min', top:'wv_top', metric:'wv_metric', zworst:'wv_zworst', pins:'wv_pins', pquery:'wv_pq'
+  mode:'wv_mode', time:'wv_time', team:'wv_team', player:'wv_player', ov:'wv_ov', grid:'wv_grid', min:'wv_min', top:'wv_top', metric:'wv_metric', zworst:'wv_zworst', pins:'wv_pins', pquery:'wv_pq', cluster:'wv_cluster'
     };
     function readStorage(k, def){ try{ const v = localStorage.getItem(k); if(v===null || v===undefined) return def; return v; }catch(_e){ return def; } }
     function writeStorage(k, v){ try{ if(v===undefined || v===null || v===''){ localStorage.removeItem(k); } else { localStorage.setItem(k, String(v)); } }catch(_e){} }
@@ -84,7 +85,8 @@
       const urlGrid = String(sp.get('wgrid')||'');
       const urlMin  = String(sp.get('wmin')||'');
       const urlTop  = String(sp.get('wtop')||'');
-      const urlMet  = String(sp.get('wmetric')||'');
+    const urlMet  = String(sp.get('wmetric')||'');
+  const urlCr   = String(sp.get('wcr')||'');
   const urlZw   = String(sp.get('wzw')||'');
   const urlPins = String(sp.get('wpins')||'');
   const urlPq   = String(sp.get('wpq')||'');
@@ -100,7 +102,9 @@
       const stGrid = urlGrid!==''? (urlGrid==='1'?'1':(urlGrid==='0'?'0':'')) : readStorage(LS_KEY.grid, state.grid? '1':'0');
       const stMin  = urlMin!==''? urlMin : readStorage(LS_KEY.min, String(state.minCount));
       const stTop  = urlTop!==''? urlTop : readStorage(LS_KEY.top, String(state.topN));
-      const stMet  = urlMet!==''? urlMet : readStorage(LS_KEY.metric, state.metric);
+    const stMet  = urlMet!==''? urlMet : readStorage(LS_KEY.metric, state.metric);
+  // Cluster: optionally ignore persisted storage to default to Off unless URL overrides
+  const stCr   = urlCr!==''? urlCr : (IGNORE_CLUSTER_PERSIST ? String(state.cluster) : readStorage(LS_KEY.cluster, String(state.cluster)));
   const stZw   = urlZw!==''? urlZw : readStorage(LS_KEY.zworst, state.includeZeroWorst? '1':'0');
   const stPins = (urlPins!==''? urlPins : readStorage(LS_KEY.pins, '')).trim();
   const stPq   = urlPq!==''? urlPq : readStorage(LS_KEY.pquery, '');
@@ -116,6 +120,17 @@
       const topVal = (String(stTop).toLowerCase()==='all')? 'all' : (parseInt(stTop,10)||15);
       state.topN = (topVal==='all'|| (typeof topVal==='string' && topVal.toLowerCase()==='all'))? 'all' : Math.max(1, Number(topVal));
       if(ALLOWED_METRIC.has(stMet)) state.metric = stMet;
+  // cluster radius percentage (0 = off)
+  {
+    let cr = Number(stCr);
+    if(!isFinite(cr) || cr<0) cr = 0;
+    // snap to 0, 1, 1.5, 2, 3, 4
+    const choices = [0,1,1.5,2,3,4];
+    if(!choices.includes(cr)){
+      cr = choices.reduce((best,v)=> Math.abs(v-cr) < Math.abs(best-cr) ? v : best, 0);
+    }
+    state.cluster = cr;
+  }
   state.includeZeroWorst = (String(stZw)==='1');
   // pins as array of spot keys
   state.pins = stPins ? stPins.split(',').filter(Boolean) : [];
@@ -124,7 +139,7 @@
     function persistState(){
       // Write to URL (only include when different from default)
       const sp = getSP();
-  const def = { mode:(cfg && cfg.options && cfg.options.modeDefault) || 'best', time:'', team:'', player:'', ov:'1', grid:'0', min:String(1), top:'all', metric:'avg', zw:'0', pins:'', pq:'' };
+  const def = { mode:(cfg && cfg.options && cfg.options.modeDefault) || 'best', time:'', team:'', player:'', ov:'1', grid:'0', min:String(1), top:'all', metric:'avg', zw:'0', pins:'', pq:'', cr:String(0) };
       function setOrRemove(key, val, defVal){ if(val===defVal || val==='' || val===null || val===undefined){ sp.delete(key); } else { sp.set(key, String(val)); } }
       setOrRemove('wmode', state.mode, def.mode);
       setOrRemove('wtime', state.time, def.time);
@@ -138,6 +153,7 @@
   setOrRemove('wplayer', state.player, def.player);
   setOrRemove('wpins', (state.pins||[]).join(','), def.pins);
   setOrRemove('wpq', state.pquery||'', def.pq);
+    setOrRemove('wcr', String(state.cluster||0), def.cr);
       replaceUrl(sp);
       // LocalStorage
     writeStorage(LS_KEY.mode, state.mode);
@@ -153,6 +169,8 @@
       writeStorage(LS_KEY.zworst, state.includeZeroWorst? '1':'0');
   writeStorage(LS_KEY.pins, (state.pins||[]).join(','));
   writeStorage(LS_KEY.pquery, state.pquery||'');
+  // Optionally avoid writing persisted cluster to keep default "Off" in views that opt-in
+  if(!IGNORE_CLUSTER_PERSIST){ writeStorage(LS_KEY.cluster, String(state.cluster||0)); }
     }
     // Build DOM
     const root = h(`
@@ -221,6 +239,17 @@
                   <button class="seg" data-metric="median">Median</button>
                 </div>
               </div>
+              <div>
+                <div class="wv-label">Group</div>
+                <div id="wvCluster" class="wv-segmented">
+                  <button class="seg" data-cluster="0">Off</button>
+                  <button class="seg" data-cluster="1">1%</button>
+                  <button class="seg" data-cluster="1.5">1.5%</button>
+                  <button class="seg" data-cluster="2">2%</button>
+                  <button class="seg" data-cluster="3">3%</button>
+                  <button class="seg" data-cluster="4">4%</button>
+                </div>
+              </div>
               <div style="align-self:end;display:flex;gap:12px;justify-content:flex-end">
                 <label class="wv-sub"><input type="checkbox" id="wvZeroWorst" style="vertical-align:middle;margin-right:6px">Include 0s worst</label>
               </div>
@@ -265,10 +294,12 @@
   function setActiveMin(){ const wrap=root.querySelector('#wvMin'); if(!wrap) return; wrap.querySelectorAll('.seg').forEach(b=> b.classList.toggle('active', Number(b.getAttribute('data-min')||'0')===Number(state.minCount))); }
   function setActiveTop(){ const wrap=root.querySelector('#wvTop'); if(!wrap) return; wrap.querySelectorAll('.seg').forEach(b=> b.classList.toggle('active', (b.getAttribute('data-top')||'')=== (state.topN==='all'?'all':String(state.topN)))); }
   function setActiveMetric(){ const wrap=root.querySelector('#wvMetric'); if(!wrap) return; wrap.querySelectorAll('.seg').forEach(b=> b.classList.toggle('active', (b.getAttribute('data-metric')||'')===state.metric)); }
+  function setActiveCluster(){ const wrap=root.querySelector('#wvCluster'); if(!wrap) return; wrap.querySelectorAll('.seg').forEach(b=> b.classList.toggle('active', Number(b.getAttribute('data-cluster')||'0')===Number(state.cluster))); }
     setActiveTime();
   setActiveMin();
   setActiveTop();
   setActiveMetric();
+  setActiveCluster();
     // Build team and player picklists
     (function(){
       const tWrap=root.querySelector('#wvTeams'); const pWrap=root.querySelector('#wvPlayersPick'); if(!tWrap) return;
@@ -303,6 +334,7 @@
   root.querySelector('#wvMin').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; const v = Math.max(1, parseInt(btn.getAttribute('data-min')||'1',10)); state.minCount = v; setActiveMin(); persistState(); render(); });
   root.querySelector('#wvTop').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; const t = String(btn.getAttribute('data-top')||'15'); state.topN = (t.toLowerCase()==='all')? 'all' : Math.max(1, parseInt(t,10)||15); setActiveTop(); persistState(); render(); });
   root.querySelector('#wvMetric').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; const m = String(btn.getAttribute('data-metric')||'avg'); if(ALLOWED_METRIC.has(m)){ state.metric = m; setActiveMetric(); persistState(); render(); } });
+  root.querySelector('#wvCluster').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; const cr = Number(btn.getAttribute('data-cluster')||'0'); state.cluster = (!isFinite(cr) || cr<0)? 0 : cr; setActiveCluster(); persistState(); render(); });
     const svg = root.querySelector('#wvMap svg');
     function ensureBG(){ try{ const asset = (mc && mc.major && mc.current && mc.major[mc.current]) ? mc.major[mc.current] : null; let src = asset && asset.src ? asset.src : null; if(!src && mc && mc.default){ src = mc.default; } const el=root.querySelector('#wvMap'); if(src && el){ el.style.backgroundImage = `url('${src}')`; } }catch(_e){} }
     ensureBG();
@@ -340,23 +372,17 @@
     function togglePin(spotKey){ spotKey=String(spotKey||''); if(!spotKey) return; const arr = state.pins||[]; const idx = arr.indexOf(spotKey); if(idx===-1){ arr.push(spotKey); } else { arr.splice(idx,1); } state.pins = arr; persistState(); render(); }
     function isPinned(spotKey){ return (state.pins||[]).includes(String(spotKey||'')); }
     function render(){
-      // derive best/worst
+      // derive base metrics per raw spot
       const derived = spots.map(s=>{ const v=pickCounts(s); const avg = v.count? Math.floor(v.total/v.count):0; const med = (v.lifes && v.lifes.length)? median(v.lifes) : 0; const chosen = (state.metric==='median')? med : avg; return {spot:s.spot,x:s.x,y:s.y,count:v.count,avgSeconds:chosen,avg:avg,median:med}; });
       const perf = derived.filter(s=> s.count>=Number(state.minCount||1));
       let best=[], worst=[], all=derived;
       const topN = (state.topN==='all')? Infinity : Number(state.topN||15);
-      if(state.mode==='best'){
-        best = perf.slice().sort((a,b)=> (b.avgSeconds-a.avgSeconds)||(b.count-a.count)).slice(0, topN);
-      } else {
-        const wsrc = perf.slice().filter(s=> state.includeZeroWorst ? true : (s.avgSeconds||0)>0);
-        worst = wsrc.sort((a,b)=> (a.avgSeconds-b.avgSeconds)||(b.count-a.count)).slice(0, topN);
-      }
-      // map render
+      // map render prep
       svg.innerHTML='';
       const asset = (mc && mc.major && mc.current && mc.major[mc.current]) ? mc.major[mc.current] : null;
       const hasBounds = asset && asset.minX!=null && asset.maxX!=null && asset.minY!=null && asset.maxY!=null && asset.maxX>asset.minX && asset.maxY>asset.minY;
       const invertY = !!(asset && asset.invertY);
-      const observedMax = (best.concat(worst).concat(all)).reduce((acc,s)=>({mx:Math.max(acc.mx, Number(s.x||0)), my:Math.max(acc.my, Number(s.y||0))}), {mx:0,my:0});
+      const observedMax = (perf.concat(all)).reduce((acc,s)=>({mx:Math.max(acc.mx, Number(s.x||0)), my:Math.max(acc.my, Number(s.y||0))}), {mx:0,my:0});
       const dynScale = Math.max(1, Number(asset && asset.scale || 0), observedMax.mx, observedMax.my, Number(mc && mc.defaultScale || 0));
       const cellUnits = Number((asset && asset.cellUnits) || (mc && mc.defaultCellUnits) || 128);
       const obsUnits  = Number((asset && asset.obsRadiusUnits) || (mc && mc.defaultObsRadiusUnits) || 1600);
@@ -368,10 +394,51 @@
         obsPct = isFinite(calc) && calc>0 ? Math.round(calc*100)/100 : 10;
       }
   function norm(X,Y){ let cx0, cy0; if(hasBounds){ const minX=asset.minX, maxX=asset.maxX, minY=asset.minY, maxY=asset.maxY; const clX=Math.max(minX,Math.min(maxX,Number(X||0))); const clY=Math.max(minY,Math.min(maxY,Number(Y||0))); cx0=(clX-minX)/(maxX-minX); cy0=(clY-minY)/(maxY-minY); if(invertY) cy0=1-cy0; } else { cx0=Math.max(0,Math.min(dynScale,Number(X||0)))/dynScale; cy0=Math.max(0,Math.min(dynScale,Number(Y||0)))/dynScale; if(invertY) cy0=1-cy0; } return {cx: Math.round(cx0*10000)/100, cy: Math.round(cy0*10000)/100}; }
+      // optional clustering before ranking
+      function clusterize(list, radiusPct){
+        const r = Number(radiusPct||0);
+        if(!isFinite(r) || r<=0) return list.slice();
+        const pts = list.map(s=>{ const n=norm(s.x,s.y); return {s, nx:Number(n.cx||0), ny:Number(n.cy||0)}; });
+        // sort by count desc then avgSeconds desc for seed selection
+        pts.sort((a,b)=> (Number(b.s.count||0)-Number(a.s.count||0)) || (Number(b.s.avgSeconds||0)-Number(a.s.avgSeconds||0)) );
+        const used = new Array(pts.length).fill(false);
+        const clusters = [];
+        function wmedian(pairs){ const arr=pairs.filter(x=> isFinite(x.v) && isFinite(x.w) && x.w>0).sort((a,b)=> a.v-b.v); if(!arr.length) return 0; let total=0; for(const x of arr) total+=x.w; let acc=0; const half=total/2; for(const x of arr){ acc+=x.w; if(acc>=half) return Math.floor(x.v); } return Math.floor(arr[arr.length-1].v); }
+        for(let i=0;i<pts.length;i++){
+          if(used[i]) continue;
+          const seed = pts[i];
+          const groupIdx=[]; let sumW=0,sumNX=0,sumNY=0,sumX=0,sumY=0,sumTotSec=0; const meds=[];
+          for(let j=i;j<pts.length;j++){
+            if(used[j]) continue;
+            const q=pts[j]; const dx = seed.nx - q.nx; const dy = seed.ny - q.ny; const dist = Math.hypot(dx,dy);
+            if(dist<=r){
+              groupIdx.push(j); used[j]=true; const w = Number(q.s.count||0);
+              sumW+=w; sumNX += q.nx*w; sumNY += q.ny*w; sumX += Number(q.s.x||0)*w; sumY += Number(q.s.y||0)*w; sumTotSec += Number(q.s.avg||0)*w;
+              meds.push({v:Number(q.s.median||0), w});
+            }
+          }
+          if(sumW<=0) continue;
+          const cnx = sumNX/sumW, cny = sumNY/sumW;
+          const cx = sumX/sumW, cy = sumY/sumW;
+          const totalCount = sumW; const avgSeconds = Math.floor(sumTotSec/Math.max(1,totalCount)); const medSeconds = wmedian(meds);
+          const chosen = (state.metric==='median')? medSeconds : avgSeconds;
+          const spotKey = `cluster:[${cnx.toFixed(1)},${cny.toFixed(1)}]~r${r}`;
+          clusters.push({ spot: spotKey, x: cx, y: cy, count: totalCount, avgSeconds: chosen, avg: avgSeconds, median: medSeconds });
+        }
+        return clusters;
+      }
+      let perfForRanking = perf;
+      if(Number(state.cluster||0) > 0){ perfForRanking = clusterize(perf, Number(state.cluster)); }
+      if(state.mode==='best'){
+        best = perfForRanking.slice().sort((a,b)=> (b.avgSeconds-a.avgSeconds)||(b.count-a.count)).slice(0, topN);
+      } else {
+        const wsrc = perfForRanking.slice().filter(s=> state.includeZeroWorst ? true : (s.avgSeconds||0)>0);
+        worst = wsrc.sort((a,b)=> (a.avgSeconds-b.avgSeconds)||(b.count-a.count)).slice(0, topN);
+      }
   function addSpot(list, cls){ list.forEach(s=>{ const {cx,cy}=norm(s.x,s.y); const key=String(s.spot||''); const big=document.createElementNS('http://www.w3.org/2000/svg','circle'); big.setAttribute('cx',cx+'%'); big.setAttribute('cy',cy+'%'); big.setAttribute('r',String(obsPct)); let klass='spot '+cls; if(isPinned(key)) klass+=' pinned'; big.setAttribute('class',klass); big.setAttribute('data-spot',key); big.setAttribute('data-avg',String(s.avg||0)); big.setAttribute('data-median',String(s.median||0)); big.setAttribute('data-count',String(s.count||0)); big.setAttribute('data-cx',String(cx)); big.setAttribute('data-cy',String(cy)); svg.appendChild(big); const dot=document.createElementNS('http://www.w3.org/2000/svg','circle'); dot.setAttribute('cx',cx+'%'); dot.setAttribute('cy',cy+'%'); dot.setAttribute('r', isPinned(key)? '1.6' : '1.0'); dot.setAttribute('class','pindot'); const stroke = isPinned(key)? '#fbbf24' : (cls==='best'? '#34d399' : (cls==='worst'? '#ff6b6b' : 'rgba(255,215,0,0.85)')); dot.setAttribute('fill',stroke); dot.setAttribute('opacity','0.95'); svg.appendChild(dot); big.addEventListener('click', ()=> togglePin(key)); dot.addEventListener('click', ()=> togglePin(key)); }); }
       if(state.mode==='best') addSpot(best,'best'); else addSpot(worst,'worst');
       if(root.querySelector('#wvGrid').checked){ const g=document.createElementNS('http://www.w3.org/2000/svg','g'); for(let i=0;i<=10;i++){ const p=i*10; const v1=document.createElementNS('http://www.w3.org/2000/svg','line'); v1.setAttribute('x1',p+'%'); v1.setAttribute('y1','0%'); v1.setAttribute('x2',p+'%'); v1.setAttribute('y2','100%'); v1.setAttribute('stroke','rgba(255,255,255,.08)'); v1.setAttribute('stroke-width','0.3'); g.appendChild(v1); const v2=document.createElementNS('http://www.w3.org/2000/svg','line'); v2.setAttribute('x1','0%'); v2.setAttribute('y1',p+'%'); v2.setAttribute('x2','100%'); v2.setAttribute('y2',p+'%'); v2.setAttribute('stroke','rgba(255,255,255,.08)'); v2.setAttribute('stroke-width','0.3'); g.appendChild(v2);} svg.insertBefore(g, svg.firstChild); }
-  const st = root.querySelector('#wvStatus'); if(st){ const teamLbl = state.team||'All'; const playerLbl = state.player? ` · player:${state.player}` : ''; st.textContent = `spots:${spots.length} | r=${obsPct}% · bounds:${hasBounds?'yes':'no'} invY:${invertY?'yes':'no'} | time:${timeWindow().label} | team:${teamLbl}${playerLbl} | min>=${state.minCount} · top=${state.topN}`; }
+  const st = root.querySelector('#wvStatus'); if(st){ const teamLbl = state.team||'All'; const playerLbl = state.player? ` · player:${state.player}` : ''; const grp = Number(state.cluster||0)>0? `${state.cluster}%` : 'off'; st.textContent = `spots:${spots.length} | r=${obsPct}% · bounds:${hasBounds?'yes':'no'} invY:${invertY?'yes':'no'} | time:${timeWindow().label} | team:${teamLbl}${playerLbl} | min>=${state.minCount} · top=${state.topN} · group:${grp}`; }
       // lists
   function listify(arr){ if(!arr.length) return `<div class='wv-sub'>No data</div>`; return `<ul class='wv-simple'>`+arr.map((s,idx)=>{ const mm = s.avgSeconds? Math.floor((s.avgSeconds||0)/60):0; const ss = s.avgSeconds? (s.avgSeconds%60):0; const coords = (s.spot||'').replace(/\[|\]|\s/g,''); const pin = isPinned(s.spot) ? 'Unpin' : 'Pin'; return `<li data-spot='${s.spot||''}'><span style='display:flex;align-items:center;gap:8px'><span class='wv-badge' style='min-width:54px;text-align:center'>Ward ${idx+1}</span><span class='wv-sub' style='opacity:.8'>${coords}</span></span><span style='display:flex;gap:6px'>${s.avgSeconds!==undefined?`<span class='wv-badge'>avg ${mm}m ${ss}s</span>`:''}${s.count? `<span class='wv-badge'>x${s.count}</span>`:''}<button class='tab' data-pin='${esc(String(s.spot||''))}'>${pin}</button></span></li>`; }).join('')+`</ul>`; }
       const bestEl=root.querySelector('#wvBest'); if(bestEl) bestEl.innerHTML = listify(best);

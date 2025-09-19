@@ -104,6 +104,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
   <div class="header">
     <h1 id="leagueTitle" style="margin:0;font-size:22px">Dynamic viewer</h1>
     <div class="badge">Client-side</div>
+    <div class="badge" title="This view is restricted to league 18438">League lock: 18438</div>
   </div>
   <div class="sub" id="headerSub" style="margin:-8px 0 8px 2px"></div>
 
@@ -867,6 +868,8 @@ async function main(){
     loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({})),
     loadJsonWithFallback(`${relBase}/maps.json`, `${rawBase}/maps.json`).catch(()=>null)
   ]);
+  // Hard-lock to Kret's league (18438), ignoring URL/info overrides
+  let __leagueIdTarget = 18438;
   // Preload OpenDota item constants for cost filtering (used by Fast First Purchase >1k)
   try{
     const items = await fetch('https://api.opendota.com/api/constants/items', { cache: 'force-cache' }).then(r=>r.json());
@@ -887,6 +890,8 @@ async function main(){
   const files = months.map(m => ({rel: `${relBase}/${m.file}`, raw: `${rawBase}/${m.file}`}));
   const shards = await Promise.all(files.map(p => loadJsonWithFallback(p.rel, p.raw).catch(()=>[])));
   let allMatches = shards.flat();
+  // Keep a memoized cache of fetched match details to avoid duplicate network hits
+  const __detailCache = new Map();
   // Build hero map with absolute images and friendly names
   const heroes = (function buildHeroMap(src){
     const out = {};
@@ -905,26 +910,9 @@ async function main(){
     }
     return out;
   })(heroesRaw);
-  // Names aren’t shipped separately in shards; derive names from matches where available
-  const playerNames = {}; const teamNames = {};
-  for(const m of allMatches){
-    if(Array.isArray(m.players)){
-      for(const p of m.players){ if(p && p.account_id>0 && p.personaname){ playerNames[String(p.account_id)] = p.personaname; } }
-    }
-    if(m.radiant_team_id && m.radiant_name) teamNames[String(m.radiant_team_id)] = m.radiant_name;
-    if(m.dire_team_id && m.dire_name)       teamNames[String(m.dire_team_id)]    = m.dire_name;
-  }
-  // Populate player filter dropdown
-  try{
-    const sel = document.getElementById('playerFilter');
-    if(sel){
-      const list = Object.entries(playerNames).map(([id,name])=>({id:Number(id), name: String(name||(`Player ${id}`))})).filter(x=>x.id>0);
-      list.sort((a,b)=> a.name.localeCompare(b.name));
-      const opts = ["<option value=''>All players</option>"];
-      for(const it of list){ opts.push(`<option value='${it.id}'>${it.name}</option>`); }
-      sel.innerHTML = opts.join('');
-    }
-  }catch(_e){}
+  // Names map (mutable): we'll populate this from the CURRENT FILTERED SUBSET in apply()
+  let playerNames = {}; let teamNames = {};
+  // Initial player filter list is kept minimal; it'll be rebuilt after Apply() using the filtered subset
 
   // chatwheel/voiceline features removed
 
@@ -949,6 +937,7 @@ async function main(){
     return '';
   }
   async function fetchMatchDetail(id){
+    try{ const key = Number(id)||0; if(key>0 && __detailCache.has(key)) return __detailCache.get(key); }catch(_e){}
     const rel = `${relBase}/cache/OpenDota/matches/${id}.json`;
     const raw = `${rawBase}/cache/OpenDota/matches/${id}.json`;
     const isFile = (typeof location !== 'undefined' && location.protocol === 'file:');
@@ -1031,7 +1020,8 @@ async function main(){
       }catch(_e){}
     }
     // Final guard: if still missing, return a benign stub so downstream logic can skip gracefully
-    if(!md) return { match_id:Number(id)||0, players:[], objectives:[] };
+    if(!md) { md = { match_id:Number(id)||0, players:[], objectives:[] }; }
+    try{ const key = Number(id)||0; if(key>0) __detailCache.set(key, md); }catch(_e){}
     return md;
   }
   async function pMap(items, limit, worker){
@@ -1437,7 +1427,7 @@ async function main(){
         }
       }
       const spots = Array.from(countBy.keys()).map(k=>{ const [x,y]=k.split(',').map(Number); return { spot:k, x, y, count:countBy.get(k)||0, total:totalBy.get(k)||0, bySide:bySide.get(k)||{Radiant:{count:0,total:0}, Dire:{count:0,total:0}}, byTeam:byTeam.get(k)||{}, samples:samplesBy.get(k)||[] }; });
-  window.WardViewer.mount(container, { mapConf, data:{ spots, teams:Array.from(teamMap.values()), players:Array.from(playerMap.values()) }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } });
+  window.WardViewer.mount(container, { mapConf, data:{ spots, teams:Array.from(teamMap.values()), players:Array.from(playerMap.values()) }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } });
     }
   }catch(err){ console.warn('WardViewer mount failed', err); }
 
@@ -1468,7 +1458,20 @@ async function main(){
   renderAwards(awards, heroMap, { hideEmpty, filterAid: __userOnlyAid>0 ? __userOnlyAid : 0 });
   }
 
-  function apply(){
+  // Filter a subset of monthly shard entries to only those belonging to a target league
+  async function filterSubsetByLeague(subset, lid){
+    try{
+      const L = Number(lid)||0; if(!(L>0)) return subset;
+      const ids = Array.from(new Set(subset.map(m=> Number(m.match_id||m.matchId||0)).filter(x=>x>0)));
+      if(!ids.length) return [];
+      const details = await pMap(ids, 6, id=> fetchMatchDetail(id));
+      const ok = new Set();
+      for(const d of details){ if(d && Number(d.leagueid||0)===L){ ok.add(Number(d.match_id||0)); } }
+      return subset.filter(m => ok.has(Number(m.match_id||m.matchId||0)));
+    }catch(_e){ return subset; }
+  }
+
+  async function apply(){
     let f = parseLocalInput(from.value); if(!isFinite(f)) f=0;
     let t = parseLocalInput(to.value);   if(!isFinite(t)) t=Number.MAX_SAFE_INTEGER;
     if(f>t){ const tmp=f; f=t; t=tmp; }
@@ -1478,6 +1481,10 @@ async function main(){
       document.getElementById('leagueTitle').textContent = `${league} – Dynamic viewer`;
       const fmt=(s)=>{ if(!s) return ''; const d=new Date(s*1000); return d.toISOString().replace('T',' ').slice(0,16)+'Z'; };
   let sub=`${fmt(f)} to ${fmt(t)} (UTC)`;
+  if(__leagueIdTarget>0){
+    const lid = __leagueIdTarget;
+    if(info && info.league_name){ sub += ` · ${info.league_name} (LID ${lid})`; } else { sub += ` · League ${lid}`; }
+  }
   if(__userOnlyAid>0){ sub += ' · user-only'; }
       document.getElementById('headerSub').textContent=sub;
       // Show focused player chip if requested
@@ -1499,6 +1506,45 @@ async function main(){
   const hasAid = (m, aid)=> Array.isArray(m.players) && m.players.some(p=> Number(p.account_id||0)===aid);
   let statsSubset = baseSubset;
   if(__userOnlyAid>0){ statsSubset = baseSubset.filter(m => hasAid(m, __userOnlyAid)); }
+  // Enforce league restriction if configured
+  if(__leagueIdTarget>0){ statsSubset = await filterSubsetByLeague(statsSubset, __leagueIdTarget); }
+  // Rebuild player and team name maps strictly from the league-filtered subset
+  try{
+    const pMap = {}; const tMap = {};
+    for(const m of statsSubset){
+      if(Array.isArray(m.players)){
+        for(const p of m.players){ if(p && p.account_id>0 && p.personaname){ pMap[String(p.account_id)] = p.personaname; } }
+      }
+      if(m.radiant_team_id && m.radiant_name) tMap[String(m.radiant_team_id)] = m.radiant_name;
+      if(m.dire_team_id && m.dire_name)       tMap[String(m.dire_team_id)]    = m.dire_name;
+    }
+    playerNames = pMap; teamNames = tMap;
+  }catch(_e){}
+  // Rebuild player filter dropdown from the filtered subset to avoid non-league entries
+  try{
+    const sel = document.getElementById('playerFilter');
+    if(sel){
+      const names = new Map();
+      for(const m of statsSubset){
+        if(Array.isArray(m.players)){
+          for(const p of m.players){
+            const id=Number(p.account_id||0);
+            if(id>0){
+              const nm = String(p.personaname||'');
+              if(!names.has(id)) names.set(id, nm||(`Player ${id}`));
+            }
+          }
+        }
+      }
+      const list = Array.from(names.entries()).map(([id,name])=>({id,name})).sort((a,b)=> a.name.localeCompare(b.name));
+      const prev = Number(sel.value||0)||0;
+      const opts = ["<option value=''>All players</option>"];
+      for(const it of list){ opts.push(`<option value='${it.id}'>${it.name}</option>`); }
+      sel.innerHTML = opts.join('');
+      // Preserve selection if still present
+      if(prev>0 && names.has(prev)){ sel.value = String(prev); } else { sel.value=''; if(prev>0){ __focusAid=0; __userOnlyAid=0; } }
+    }
+  }catch(_e){}
   __subsetCache = statsSubset; __rangeUnix = {from:f,to:t};
   // Update header with match count to make empty selections obvious
   try{
