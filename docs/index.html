@@ -39,6 +39,11 @@ a{color:var(--accent)}
 select{padding:6px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.25);background:#ffffff;color:#000000}
 select option{background:#ffffff;color:#000000}
 select:disabled{background:#f2f2f2;color:#666;opacity:1}
+/* Loading spinner for sidebar */
+.ix-spinner{display:none;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.ix-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:bd 1s infinite}
+.ix-dot:nth-child(2){animation-delay:.15s}.ix-dot:nth-child(3){animation-delay:.3s}
+@keyframes bd{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
 </style>
 </head>
 <body>
@@ -47,6 +52,7 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
       <h1>Reports - Kret&#39;s EU Dota League</h1>
       <div class='sub'>Pick a run or filter by range.</div>
     </div>
+    <div id='ixSpin' class='ix-spinner'><div class='ix-dot'></div><div class='ix-dot'></div><div class='ix-dot'></div><span>Loading list…</span></div>
   <!-- Filters removed; Dynamic view is available as a pinned list entry below -->
     <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
     <ul id='list' class='list tree'>
@@ -149,10 +155,19 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
   }
 
   async function loadReports(){
+    const spin = document.getElementById('ixSpin'); if(spin) spin.style.display='flex';
     try {
-      const res = await fetch('./reports.json', { cache: 'no-store' });
-      if (!res.ok) throw new Error('HTTP '+res.status);
-      const data = await res.json();
+      async function fetchWithRetry(url, tries=3){
+        let lastErr=null; const bust = ()=> (url + (url.includes('?')?'&':'?') + '_ts=' + Date.now());
+        for(let i=1;i<=tries;i++){
+          try{
+            const res = await fetch(bust(), { cache: 'no-store' }); if(!res.ok) throw new Error('HTTP '+res.status);
+            return await res.json();
+          }catch(e){ lastErr=e; await new Promise(r=>setTimeout(r, 300*i)); }
+        }
+        throw lastErr||new Error('fetch failed');
+      }
+      const data = await fetchWithRetry('./reports.json', 3);
       if (!data || !Array.isArray(data.items)) return;
       // Prepare containers
       const ulMonthly = document.getElementById('tree-monthly');
@@ -240,7 +255,9 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
       items = Array.from(list.querySelectorAll('.leaf.item'));
       wireItemClicks();
     } catch (e) {
-      // ignore; fallback to static pinned entry
+      console.warn('Failed to load reports.json', e);
+    } finally {
+      if(spin) spin.style.display='none';
     }
   }
 

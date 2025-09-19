@@ -92,6 +92,11 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .cal .date{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:4px}
 .cal .matches{display:flex;flex-wrap:wrap;gap:4px}
 .cal .matches a{display:inline-block;background:var(--chip);color:var(--text);border-radius:999px;font-size:11px;padding:2px 6px}
+/* Loading overlay */
+.loading-overlay{position:fixed;inset:0;background:rgba(9,12,24,.75);backdrop-filter:blur(1px);display:none;align-items:center;justify-content:center;z-index:99999}
+.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--border)}
+.spinner{width:36px;height:36px;border:3px solid rgba(158,199,255,.3);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 <script defer src="js/ward_viewer.js"></script>
 <script defer src="js/lane_duos_viewer.js"></script>
@@ -100,6 +105,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 <script defer src="js/draft_viewer.js"></script>
 </head>
 <body>
+<div id="dvLoading" class="loading-overlay"><div class="loading-box"><div class="spinner"></div><div id="dvLoadingText" class="sub">Loading…</div></div></div>
 <div class="wrapper">
   <div class="header">
     <h1 id="leagueTitle" style="margin:0;font-size:22px">Dynamic viewer</h1>
@@ -264,6 +270,8 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 const OD_PLAYER_URL = id => `https://www.opendota.com/players/${id}`;
 const OD_MATCH_URL = id => `https://www.opendota.com/matches/${id}`;
 function fmtPct(x){ return (x*100).toFixed(1)+'%'; }
+function __showLoading(msg){ try{ const el=document.getElementById('dvLoading'); if(el){ el.style.display='flex'; const t=document.getElementById('dvLoadingText'); if(t && msg) t.textContent=msg; } }catch(_e){} }
+function __hideLoading(){ try{ const el=document.getElementById('dvLoading'); if(el){ el.style.display='none'; } }catch(_e){} }
 async function loadJson(url){
   try{
     const r = await fetch(url,{cache:'no-store'});
@@ -835,6 +843,7 @@ function renderHighlights(high, heroMap, mapConf, label){
 // Old attachWardUI removed; WardViewer handles interactivity
 
 async function main(){
+  try{ __showLoading('Loading data…'); }catch(_e){}
   // Top-level tabs wiring
   (function(){
     const tabsRoot = document.getElementById('mainTabs');
@@ -1496,6 +1505,7 @@ async function main(){
   }
 
   async function apply(){
+    try{ __showLoading('Computing view…'); }catch(_e){}
     let f = parseLocalInput(from.value); if(!isFinite(f)) f=0;
     let t = parseLocalInput(to.value);   if(!isFinite(t)) t=Number.MAX_SAFE_INTEGER;
     if(f>t){ const tmp=f; f=t; t=tmp; }
@@ -1587,6 +1597,7 @@ async function main(){
   computeHighlightsForSubset(statsSubset, heroes, mapConf, label);
   // Render calendar for current cursor
   renderCalendarMonth(__subsetCache, __rangeUnix, __calCursor);
+  try{ __hideLoading(); }catch(_e){}
   }
   // Wire hide-empty persistence and change handler
   try{
@@ -1674,7 +1685,10 @@ async function main(){
     }
   })();
   // If quick change handler didn’t apply yet, do it now
-  if(!__subsetCache.length) apply();
+  if(!__subsetCache.length){
+    try{ __showLoading('Computing view…'); }catch(_e){}
+    try{ await apply(); } finally { __hideLoading(); }
+  } else { __hideLoading(); }
 }
 enableSorting();
 // ------- Awards logic (compute + render) -------
