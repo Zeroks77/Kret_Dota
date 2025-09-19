@@ -13,13 +13,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch OpenDota data (Steam-only, full check, forced fetch, shards + parses)
+      - name: Fetch OpenDota data (Steam-only, league-only, shards + parse with retries)
         shell: pwsh
         working-directory: ${{ github.workspace }}
         env:
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
-          .\scripts\fetch_opendota_data.ps1 -Mode full -DelayMs 1000 -HttpTimeoutSec 30 -DiscoverViaSteam:$true -DiscoverViaOpenDota:$false -DiscoverViaTeams:$false -ForceRefetch:$false -RequestParse:$true -MaxParseRequests 999999 -ParseAttemptsPerMatch 5 -ParseDelaySec 30
+          .\scripts\fetch_opendota_data.ps1 -Mode full -DelayMs 1000 -HttpTimeoutSec 30 -DiscoverViaSteam:$true -DiscoverViaOpenDota:$false -DiscoverViaTeams:$false -ForceRefetch:$false -RequestParse:$true -MaxParseRequests 999999 -ParseAttemptsPerMatch 3 -ParseDelaySec 15 -LeagueOnly:$true -ReportParseStatus:$true
       - name: Cleanup old user reports (auto-prune)
         shell: pwsh
         run: |

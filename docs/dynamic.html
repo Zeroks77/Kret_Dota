@@ -1019,6 +1019,30 @@ async function main(){
         }
       }catch(_e){}
     }
+    // If we loaded a cached file but it lacks parsed stats (e.g., camps_stacked), try to upgrade via live API
+    try{
+      const needsStacks = (obj)=>{
+        try{
+          if(!obj || !Array.isArray(obj.players) || obj.players.length===0) return true;
+          // If od_data.has_parsed is explicitly false, prefer upgrading
+          if(obj.od_data && obj.od_data.has_parsed===false) return true;
+          // If none of the players have camps_stacked defined, attempt upgrade
+          return obj.players.every(p=> p==null || p.camps_stacked===undefined);
+        }catch(_e){ return true }
+      };
+      if(md && needsStacks(md)){
+        // Avoid file:// CORS; only call API when running over http(s)
+        const isHttp = typeof location!=='undefined' && /^https?:/i.test(location.protocol||'');
+        if(isHttp){
+          const apiFresh = await loadJson(`https://api.opendota.com/api/matches/${id}`);
+          if(apiFresh && Array.isArray(apiFresh.players) && apiFresh.players.length>0){
+            // Prefer fresh if it has parsed data or stacks present
+            const ok = (apiFresh.od_data && apiFresh.od_data.has_parsed===true) || !apiFresh.players.every(p=> p==null || p.camps_stacked===undefined);
+            if(ok){ md = apiFresh; }
+          }
+        }
+      }
+    }catch(_e){}
     // Final guard: if still missing, return a benign stub so downstream logic can skip gracefully
     if(!md) { md = { match_id:Number(id)||0, players:[], objectives:[] }; }
     try{ const key = Number(id)||0; if(key>0) __detailCache.set(key, md); }catch(_e){}

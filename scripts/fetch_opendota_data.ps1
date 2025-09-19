@@ -11,8 +11,8 @@ param(
   [object]$UpdateManifest  = $true,     # Rebuild data/manifest.json from shards
   [object]$RequestParse    = $false,    # Request OpenDota parse for up to -MaxParseRequests matches lacking enriched data
   [int]$MaxParseRequests = 50,
-  [int]$ParseAttemptsPerMatch = 0,      # If >0, attempt this many parse requests per match that needs it
-  [int]$ParseDelaySec = 30,             # Delay between parse attempts per match
+  [int]$ParseAttemptsPerMatch = 3,      # Attempts per match that needs parsing (will be >= 1)
+  [int]$ParseDelaySec = 15,             # Delay in seconds between parse attempts per match
   [int]$TeamDiscoveryRecentMonths = 2,  # Limit team discovery to the most recent N month shards
   [int]$TeamDiscoveryMaxTeams = 24,     # Cap number of teams to query via team endpoints
   [object]$SanitizeCache   = $false,    # Rewrite cached files to drop image fields that trigger false positives
@@ -22,7 +22,9 @@ param(
   [bool]$ForceRefetch = $false,
   [bool]$SkipFinalEnsure = $false,      # If true, skip the expensive final ensure pass across all cached matches
   [int]$ParseBudgetSec = 180,           # Hard cap on total seconds spent issuing parse requests
-  [bool]$LeagueOnly = $true,            # Enforce league-only behavior for sharding/backfill
+  [object]$LeagueOnly = $true,          # Enforce league-only behavior for sharding/backfill (bash/CLI-friendly)
+  [object]$ReportParseStatus = $false,  # If truthy, audit cached matches for parse status and write a summary
+  [int64[]]$RefetchMatchIds = @(),      # If provided, force re-fetch of these match IDs and update cache
   [ValidateSet('default','discover','full','sanitize')][string]$Mode = 'default'
 )
 
@@ -292,6 +294,36 @@ function Fetch-MissingMatches(){
   }
 }
 
+function Refetch-SpecificMatches([int64[]]$ids){
+  if(-not $ids -or $ids.Count -le 0){ return }
+  $data = Get-DataPath
+  $cacheDir = Join-Path $data 'cache/OpenDota/matches'
+  if(-not (Test-Path -LiteralPath $cacheDir)){ New-Item -ItemType Directory -Path $cacheDir -Force | Out-Null }
+  $i=0; $n=$ids.Count
+  foreach($mid in ($ids | Sort-Object)){
+    $i++
+    try{
+      Write-Log ("[{0}/{1}] Refetching match {2}" -f $i, $n, $mid)
+      $uri = ("https://api.opendota.com/api/matches/{0}" -f $mid)
+      $sw = [System.Diagnostics.Stopwatch]::StartNew()
+      $obj = Invoke-Json -Method GET -Uri $uri
+      $sw.Stop(); Write-Log ("HTTP GET ok for {0} in {1} ms" -f $mid, $sw.ElapsedMilliseconds)
+      if($obj){
+        $tm = [System.Diagnostics.Stopwatch]::StartNew()
+        $obj = Sanitize-MatchObject $obj
+        $tm.Stop(); Write-Log ("Sanitize done for {0} in {1} ms" -f $mid, $tm.ElapsedMilliseconds)
+        $outPath = (Join-Path $cacheDir ("{0}.json" -f $mid))
+        Save-Json -obj $obj -path $outPath
+        try{ $sz = (Get-Item -LiteralPath $outPath).Length }catch{ $sz = 0 }
+        Write-Log ("Saved cache for {0} ({1} bytes)" -f $mid, $sz)
+        if($doShards){ try{ [void](Ensure-Record-InShard $obj) } catch {} }
+      }
+    } catch { Write-Warning ("Refetch failed for {0} (uri={1}): {2}" -f $mid, (Sanitize-Uri $uri), (Format-HttpError $_)) }
+    Write-Log ("Throttle: sleeping {0} ms after refetch" -f $DelayMs)
+    Start-Sleep -Milliseconds $DelayMs
+  }
+}
+
 function Discover-MatchIdsFromSteam(){
   $key = $env:STEAM_API_KEY
   $leagueId = Get-LeagueId
@@ -481,6 +513,44 @@ function Ensure-Record-InShard($md){
   return $false
 }
 
+function Purge-Shards-NonLeague(){
+  if(-not $LeagueOnly){ return }
+  $targetLeague = Get-LeagueId
+  if($targetLeague -le 0){ return }
+  $data = Get-DataPath
+  $matchesDir = Join-Path $data 'matches'
+  $cacheDir = Join-Path $data 'cache/OpenDota/matches'
+  if(-not (Test-Path -LiteralPath $matchesDir)){ return }
+  Get-ChildItem -LiteralPath $matchesDir -Filter '*.json' | ForEach-Object {
+    $file = $_.FullName
+    try{
+      $arr = Get-Content -LiteralPath $file -Raw -Encoding UTF8 | ConvertFrom-Json
+      $arr = @($arr)
+      $keep = New-Object System.Collections.Generic.List[object]
+      $dropped = 0
+      foreach($r in $arr){
+        try{
+          $mid = [int64]$r.match_id
+          $mf = Join-Path $cacheDir ("{0}.json" -f $mid)
+          if(-not (Test-Path -LiteralPath $mf)){
+            # Without a cached match, we cannot determine league reliably under LeagueOnly; drop it
+            $dropped++
+            continue
+          }
+          $md = Get-Content -LiteralPath $mf -Raw -Encoding UTF8 | ConvertFrom-Json
+          $mLeague = Get-MatchLeagueId $md
+          if($mLeague -eq $targetLeague){ $keep.Add($r) | Out-Null } else { $dropped++ }
+        } catch { $dropped++ }
+      }
+      if($dropped -gt 0){
+        $newArr = $keep.ToArray()
+        Save-Json -obj $newArr -path $file
+        Write-Log ("Purged {0} non-league records from shard: {1}" -f $dropped, [System.IO.Path]::GetFileName($file))
+      }
+    } catch {}
+  }
+}
+
 function Rebuild-Manifest(){
   $data = Get-DataPath
   $dir = Join-Path $data 'matches'
@@ -515,30 +585,110 @@ function Ensure-AllGamesParsed(){
   Write-Log 'Wrote data/allgames_parsed.json'
 }
 
+function Test-Parsed($md){
+  try{
+    if($null -eq $md){ return $false }
+    # Prefer explicit flag if available
+    try{ if($md.od_data -and $md.od_data.has_parsed -eq $true){ return $true } }catch{}
+    # Heuristics: presence of parse-derived structures
+    try{ if($md.objectives -and $md.objectives.Count -gt 0){ return $true } }catch{}
+    try{ foreach($p in ($md.players|ForEach-Object { $_ })){
+      if($null -eq $p){ continue }
+      if($p.purchase_log -and $p.purchase_log.Count -gt 0){ return $true }
+      if($p.obs_log -and $p.obs_log.Count -gt 0){ return $true }
+      if($p.obs_left_log -and $p.obs_left_log.Count -gt 0){ return $true }
+      if($p.killed -and $p.killed.PSObject.Properties.Count -gt 0){ return $true }
+      if($p.multi_kills -and $p.multi_kills.PSObject.Properties.Count -gt 0){ return $true }
+      if($p.camps_stacked -ne $null){ return $true }
+    } }catch{}
+    return $false
+  } catch { return $false }
+}
+
+function Report-LeagueParseStatus(){
+  $targetLeague = Get-LeagueId
+  $objs = Get-CachedMatchObjects
+  $list = New-Object System.Collections.Generic.List[object]
+  foreach($md in $objs){
+    try{
+      if($LeagueOnly -and $targetLeague -gt 0){ $mLeague = Get-MatchLeagueId $md; if($mLeague -ne $targetLeague){ continue } }
+      $mid = 0; try{ $mid = [int64]$md.match_id }catch{ $mid = 0 }
+      if($mid -le 0){ continue }
+      $parsed = Test-Parsed $md
+      $list.Add([pscustomobject]@{ match_id=$mid; league_id=(Get-MatchLeagueId $md); parsed=$parsed }) | Out-Null
+    } catch {}
+  }
+  $arr = $list.ToArray() | Sort-Object match_id
+  $total = ($arr | Measure-Object).Count
+  $parsedCount = (($arr | Where-Object { $_.parsed }) | Measure-Object).Count
+  $unparsed = $arr | Where-Object { -not $_.parsed }
+  Write-Log ("Report: total={0}, parsed={1}, unparsed={2}" -f $total, $parsedCount, (($total - $parsedCount)))
+  try{
+    $out = @{
+      league_id = $targetLeague;
+      total = $total;
+      parsed = $parsedCount;
+      unparsed = ($total - $parsedCount);
+      unparsed_ids = ($unparsed | Select-Object -ExpandProperty match_id)
+    }
+    Save-Json -obj $out -path (Join-Path (Get-DataPath) 'parse_status.json')
+    Write-Log 'Wrote data/parse_status.json'
+  }catch{}
+}
+
 function Request-Parse-ForMissing(){
   $objs = Get-CachedMatchObjects
   $reqs = 0
   $start = Get-Date
+  $targetLeague = Get-LeagueId
+  if($LeagueOnly -and $targetLeague -gt 0){ Write-Log ("Parse: filtering to league_id={0}" -f $targetLeague) } else { Write-Log 'Parse: no league filter applied' }
+  $considered = 0; $skippedLeague = 0
   foreach($md in ($objs | Sort-Object match_id -Descending)){
+    if($LeagueOnly -and $targetLeague -gt 0){ try{ $mLeague = Get-MatchLeagueId $md }catch{ $mLeague = 0 }; if($mLeague -ne $targetLeague){ $skippedLeague++; continue } }
+    $considered++
     if($ParseBudgetSec -gt 0){
       $elapsed = ((Get-Date) - $start).TotalSeconds
       if($elapsed -ge $ParseBudgetSec){ Write-Warning ("Aborting parse requests after {0}s budget" -f $ParseBudgetSec); break }
     }
     if($reqs -ge $MaxParseRequests){ break }
     $needs = $false
+    $mid = 0
     try {
+      $mid = [int64]$md.match_id
       $hasPlayers = $md.players -and $md.players.Count -gt 0
       $hasObjectives = $md.objectives -and $md.objectives.Count -gt 0
       $hasUsage = $false
       if($hasPlayers){ foreach($p in $md.players){ if($p.purchase_log -or $p.item_uses -or $p.obs_killed -or $p.sen_killed){ $hasUsage = $true; break } } }
+      $parsedHeuristic = Test-Parsed $md
       if(-not ($hasPlayers -and $hasObjectives -and $hasUsage)){ $needs=$true }
+      if($needs){
+        $reasons = @()
+        if(-not $hasPlayers){ $reasons += 'no players' }
+        if(-not $hasObjectives){ $reasons += 'no objectives' }
+        if(-not $hasUsage){ $reasons += 'no usage logs' }
+        $flag = $null; try{ if($md.od_data -and $md.od_data.has_parsed -ne $null){ $flag = [string]$md.od_data.has_parsed } }catch{}
+        Write-Log ("Needs parse: match={0}, heuristic_parsed={1}, od_data.has_parsed={2}, reasons=[{3}]" -f $mid, $parsedHeuristic, ($flag ?? 'n/a'), ($reasons -join ', '))
+      }
     } catch { $needs=$true }
     if($needs){
-      $mid = [int64]$md.match_id
       $attempts = [Math]::Max(1, [int]$ParseAttemptsPerMatch)
       for($a=1; $a -le $attempts; $a++){
         if($reqs -ge $MaxParseRequests){ break }
-        try{ Invoke-Json -Method POST -Uri ("https://api.opendota.com/api/request/{0}" -f $mid) | Out-Null; Write-Log ("Requested parse for {0} (attempt {1}/{2})" -f $mid, $a, $attempts); $reqs++ } catch { Write-Warning ("Parse request failed for {0} (attempt {1}): {2}" -f $mid, $a, $_.Exception.Message) }
+        try{
+          $elapsedNow = ((Get-Date) - $start).TotalSeconds
+          $remaining = if($ParseBudgetSec -gt 0){ [Math]::Max(0,[int]([Math]::Round($ParseBudgetSec - $elapsedNow))) } else { -1 }
+          Write-Log ("POST /request -> match={0}, attempt {1}/{2}, elapsed={3:n1}s, remaining={4}" -f $mid, $a, $attempts, $elapsedNow, ($remaining -ne -1 ? ($remaining.ToString()+'s') : 'n/a'))
+          $resp = Invoke-Json -Method POST -Uri ("https://api.opendota.com/api/request/{0}" -f $mid)
+          try{
+            $desc = ''
+            try{ if($resp.job){ $desc = ('job=' + [string]$resp.job) } }catch{}
+            try{ if($resp.error){ $desc = ('error=' + [string]$resp.error) } }catch{}
+            if([string]::IsNullOrWhiteSpace($desc)){ $desc = 'accepted' }
+            Write-Log ("OpenDota request response: {0}" -f $desc)
+          } catch {}
+          Write-Log ("Requested parse for {0} (attempt {1}/{2})" -f $mid, $a, $attempts)
+          $reqs++
+        } catch { Write-Warning ("Parse request failed for {0} (attempt {1}): {2}" -f $mid, $a, $_.Exception.Message) }
         if($a -lt $attempts){
           if($ParseBudgetSec -gt 0){
             $elapsed = ((Get-Date) - $start).TotalSeconds
@@ -550,8 +700,10 @@ function Request-Parse-ForMissing(){
       }
       Write-Log ("Throttle: sleeping {0} ms after parse cycle" -f $DelayMs)
       Start-Sleep -Milliseconds $DelayMs
+      Write-Log ("If still unparsed, match {0} will be retried in the next run." -f $mid)
     }
   }
+  Write-Log ("Parse: considered={0}, skipped_non_league={1}" -f $considered, $skippedLeague)
   Write-Log ("Parse requests sent: {0}" -f $reqs)
 }
 
@@ -564,6 +716,9 @@ $doShards   = To-Bool $UpdateShards $false
 $doManifest = To-Bool $UpdateManifest $false
 $doParseReq = To-Bool $RequestParse $false
 $doSanitize = To-Bool $SanitizeCache $false
+$doReport   = To-Bool $ReportParseStatus $false
+# Normalize LeagueOnly to a boolean early (tolerate strings like 'true'/'false' or 1/0)
+$LeagueOnly = To-Bool $LeagueOnly $true
 
 switch($Mode){
   'discover' { $doDiscover=$true; $doMatches=$true; $doShards=$true; $doManifest=$true }
@@ -641,6 +796,8 @@ if($doDiscover){
   }
 }
 if($doMatches){ Fetch-MissingMatches }
+# Optional targeted refetches
+if($RefetchMatchIds -and (($RefetchMatchIds | Measure-Object).Count) -gt 0){ Refetch-SpecificMatches -ids $RefetchMatchIds }
 # Avoid the expensive full-shard ensure pass during discovery-focused runs; we've already
 # ensured shard entries for newly discovered and existing discovered IDs above.
 if($doShards -and ($Mode -eq 'default' -or $Mode -eq 'full') -and (-not $SkipFinalEnsure)){
@@ -651,9 +808,12 @@ if($doShards -and ($Mode -eq 'default' -or $Mode -eq 'full') -and (-not $SkipFin
       [void](Ensure-Record-InShard $_)
     } catch {}
   }
+  # Additionally, purge any stale non-league records that may linger from prior runs
+  Purge-Shards-NonLeague
 }
 if($doManifest){ Rebuild-Manifest; Ensure-AllGamesParsed }
 if($doParseReq){ Request-Parse-ForMissing }
+if($doReport){ Report-LeagueParseStatus }
 if($doSanitize){ Sanitize-ExistingCache }
 
 Write-Log 'OpenDota data fetch complete.'
