@@ -159,6 +159,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     <button class="tab active" data-tab="highlights">Highlights</button>
   <button class="tab" data-tab="wards">Wards</button>
     <button class="tab" data-tab="players">Players</button>
+    <button class="tab" data-tab="compare">Compare</button>
     <button class="tab" data-tab="heroes">Heroes</button>
     <button class="tab" data-tab="draft">Draft</button>
     <button class="tab" data-tab="teams">Teams</button>
@@ -185,7 +186,9 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
         <h2 style="margin:0 0 0;font-size:18px">Wards</h2>
         <div class="sub">Best/Worst by time window and team filter</div>
       </div>
-      <div id="dvWardMount"></div>
+      <div id="dvWardMount">
+        <div id="dvWardStd"></div>
+      </div>
     </section>
   </div>
 
@@ -195,6 +198,13 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
       <table class="table sortable" id="playersTable"><thead><tr>
         <th data-type="text">Name</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th><th data-type="num">Hero pool</th>
       </tr></thead><tbody></tbody></table>
+    </section>
+  </div>
+
+  <div id="pane-compare" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Player Comparison</h2>
+      <div id="compareMount" class="sub">Pick two players to compare.</div>
     </section>
   </div>
 
@@ -850,10 +860,11 @@ async function main(){
     if (!tabsRoot) return;
     const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
     function showTab(name){
-  ['highlights','wards','players','heroes','draft','teams','awards','calendar','laneduos','itemsbought'].forEach(id=>{
+  ['highlights','wards','players','compare','heroes','draft','teams','awards','calendar','laneduos','itemsbought'].forEach(id=>{
         const pane = document.getElementById('pane-'+id);
         if (pane) pane.style.display = (id===name)? '' : 'none';
       });
+      if(name === 'compare') { try{ bootCompare(); }catch(_e){} }
       tabs.forEach(b=> b.classList.toggle('active', b.getAttribute('data-tab')===name));
       // Reflect selected tab in URL and localStorage
       try{
@@ -922,6 +933,34 @@ async function main(){
   // Names map (mutable): we'll populate this from the CURRENT FILTERED SUBSET in apply()
   let playerNames = {}; let teamNames = {};
   // Initial player filter list is kept minimal; it'll be rebuilt after Apply() using the filtered subset
+
+  // Lazy-load Player Compare when its tab is first shown
+  let __compareBooted = false;
+  async function bootCompare(){
+    if(__compareBooted) return; __compareBooted = true;
+    try{
+      // Load component script dynamically
+      await new Promise((res, rej)=>{
+        const s = document.createElement('script');
+        s.src = 'js/components/player_compare.js';
+        s.async = true;
+        s.onload = ()=> res();
+        s.onerror = ()=> rej(new Error('Failed to load player_compare.js'));
+        document.head.appendChild(s);
+      });
+      const mountEl = document.getElementById('compareMount');
+      if(mountEl && window.PlayerCompare && typeof window.PlayerCompare.mount==='function'){
+        const matchesSrc = (window.__dvSubsetCache && Array.isArray(window.__dvSubsetCache) && window.__dvSubsetCache.length)
+          ? window.__dvSubsetCache
+          : allMatches;
+        const playersIndex = Array.from((aggregate(matchesSrc, playerNames, teamNames).players||new Map()).values());
+        window.PlayerCompare.mount(mountEl, { data: { matches: matchesSrc, playersIndex, heroes: heroes }, leagueLock: 18438, useExternalRange: true });
+      }
+    }catch(e){
+      const mountEl = document.getElementById('compareMount');
+      if(mountEl) mountEl.textContent = 'Failed to load comparison component.';
+    }
+  }
 
   // chatwheel/voiceline features removed
 
@@ -1409,8 +1448,9 @@ async function main(){
   }catch(e){ console.warn('ItemsBoughtViewer mount failed', e); }
   // Mount WardViewer into dedicated Wards tab
   try{
-    const container = document.getElementById('dvWardMount');
-    if(container && window.WardViewer){
+  const container = document.getElementById('dvWardMount');
+  const stdHost = document.getElementById('dvWardStd');
+  if(container && stdHost && window.WardViewer){
       // Build teams from details (names best-effort)
       const teamMap = new Map();
       const playerMap = new Map();
@@ -1445,6 +1485,8 @@ async function main(){
       }
       // Build spot aggregates with samples for time slicing
       const countBy = new Map(); const totalBy = new Map(); const bySide = new Map(); const byTeam = new Map(); const samplesBy = new Map();
+      // Also aggregate sentry placements to couple Contest to sentry pressure
+      const senCountBy = new Map(); const senBySide = new Map(); const senByTeam = new Map(); const senSamplesBy = new Map();
       for(const md of details){ if(!md) continue; const players = Array.isArray(md.players)? md.players: []; const rId=Number(md.radiant_team_id||0), dId=Number(md.dire_team_id||0);
         for(const p of players){ const side = (Number(p.player_slot)<128)? 'Radiant' : 'Dire'; const teamId = side==='Radiant'? rId : dId; const aid = Number(p.account_id||0); const P = Array.isArray(p.obs_log)? p.obs_log: []; const L = Array.isArray(p.obs_left_log)? p.obs_left_log: [];
           const pt = P.map(o=>({x:Number(o.x),y:Number(o.y),t:Number(o.time||0)})).sort((a,b)=>a.t-b.t);
@@ -1457,10 +1499,23 @@ async function main(){
             if(teamId>0){ const tb=byTeam.get(k)||{}; const to=tb[teamId]||{count:0,total:0}; to.count++; to.total+=life; tb[teamId]=to; byTeam.set(k,tb); }
             const sm = samplesBy.get(k)||[]; sm.push({t:e.t, life, side, teamId, aid}); samplesBy.set(k,sm);
           }
+          // Sentries: placements only (pressure proxy); left_log optional for future use
+          try{
+            const SP = Array.isArray(p.sen_log)? p.sen_log : [];
+            for(const se of SP){ const sx=Number(se.x), sy=Number(se.y), st=Number(se.time||0); const k=`${sx},${sy}`; senCountBy.set(k,(senCountBy.get(k)||0)+1);
+              const sb = senBySide.get(k)||{Radiant:{count:0}, Dire:{count:0}}; sb[side].count++; senBySide.set(k,sb);
+              if(teamId>0){ const tb=senByTeam.get(k)||{}; const to=tb[teamId]||{count:0}; to.count++; tb[teamId]=to; senByTeam.set(k,tb); }
+              const sm = senSamplesBy.get(k)||[]; sm.push({t:st, side, teamId, aid}); senSamplesBy.set(k,sm);
+            }
+          }catch(_e){}
         }
       }
       const spots = Array.from(countBy.keys()).map(k=>{ const [x,y]=k.split(',').map(Number); return { spot:k, x, y, count:countBy.get(k)||0, total:totalBy.get(k)||0, bySide:bySide.get(k)||{Radiant:{count:0,total:0}, Dire:{count:0,total:0}}, byTeam:byTeam.get(k)||{}, samples:samplesBy.get(k)||[] }; });
-  window.WardViewer.mount(container, { mapConf, data:{ spots, teams:Array.from(teamMap.values()), players:Array.from(playerMap.values()) }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } });
+      const sentries = Array.from(senCountBy.keys()).map(k=>{ const [x,y]=k.split(',').map(Number); return { spot:k, x, y, count:senCountBy.get(k)||0, bySide:senBySide.get(k)||{Radiant:{count:0}, Dire:{count:0}}, byTeam:senByTeam.get(k)||{}, samples:senSamplesBy.get(k)||[] }; });
+      const teamsList = Array.from(teamMap.values());
+      const playersList = Array.from(playerMap.values());
+  // Mount a single instance; Ward Viewer manages its own Basis/filters
+  window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } });
     }
   }catch(err){ console.warn('WardViewer mount failed', err); }
 
@@ -1580,6 +1635,12 @@ async function main(){
     }
   }catch(_e){}
   __subsetCache = statsSubset; __rangeUnix = {from:f,to:t};
+  // Expose globally for cross-tab consumers and emit an event
+  try{
+    window.__dvSubsetCache = statsSubset;
+    window.__dvRangeUnix = { from: f, to: t };
+    window.dispatchEvent(new CustomEvent('dv:range-changed', { detail: { from: f, to: t } }));
+  }catch(_e){}
   // Update header with match count to make empty selections obvious
   try{
     const hs=document.getElementById('headerSub'); if(hs){ hs.textContent = (hs.textContent||'') + ` · ${statsSubset.length} matches`; }

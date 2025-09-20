@@ -265,6 +265,17 @@ $rapierMap = @{}
 $aegisMap = @{}
 $wardPlacement = @{}
 $wardRemoval = @{}
+# Sentry placements and viewer-precompute helpers
+$sentryCountBy = @{}     # "x,y" -> count
+$sentryBySide  = @{}     # "x,y" -> { Radiant={count}, Dire={count} }
+$sentryByTeam  = @{}     # "x,y" -> team_id -> { count }
+$sentrySamples = @{}     # "x,y" -> array of { t, side, teamId, aid }
+# For ward viewer enriched data
+$obsSamplesBy  = @{}     # "x,y" -> array of { t, life, side, teamId, aid }
+$wardBySide    = @{}     # "x,y" -> { Radiant={count,total}, Dire={count,total} }
+$wardByTeam    = @{}     # "x,y" -> team_id -> { count,total }
+# Track players who actually placed observers (for viewer player list)
+$obsPlacerCount = @{}     # aid -> placements
 $playerDewards = @{}
 # Track duration per match for ward lifetime fallback
 $matchDurations = @{}
@@ -387,9 +398,14 @@ foreach($m in $detailed){
       try{ $ix = [int]([Math]::Round([double]$o.x)) }catch{}
       try{ $iy = [int]([Math]::Round([double]$o.y)) }catch{}
       if(-not $wardPlacement.ContainsKey($mid)){ $wardPlacement[$mid]=@() }
-      $wardPlacement[$mid] += ,([pscustomobject]@{ x=$ix; y=$iy; time=[int]$o.time })
+      # Store side/team/aid for viewer enrichment
+      $side = if($isRad){ 'Radiant' } else { 'Dire' }
+      $teamId = if($isRad){ $radTeam } else { $direTeam }
+      $aidp = 0; try{ $aidp=[int64]$p.account_id }catch{}
+      $wardPlacement[$mid] += ,([pscustomobject]@{ x=$ix; y=$iy; time=[int]$o.time; side=$side; teamId=$teamId; aid=$aidp })
+      if($aidp -gt 0){ if(-not $obsPlacerCount.ContainsKey($aidp)){ $obsPlacerCount[$aidp]=0 }; $obsPlacerCount[$aidp]++ }
     }
-    # Observers removed (left) for this player
+  # Observers removed (left) for this player
     $pObsLeft = @(); try{ $pObsLeft = @($p.obs_left_log) }catch{}
     foreach($ol in $pObsLeft){
       $ix = 0; $iy = 0
@@ -421,6 +437,28 @@ foreach($m in $detailed){
         }catch{}
       }
     }
+    # Sentry placements for this player (pressure proxy)
+    try{
+      $pSen = @(); try{ $pSen = @($p.sen_log) }catch{}
+      foreach($se in $pSen){
+        $sx=0; $sy=0; try{ $sx=[int]([Math]::Round([double]$se.x)) }catch{}; try{ $sy=[int]([Math]::Round([double]$se.y)) }catch{}
+        $st=0; try{ $st=[int]$se.time }catch{}
+        $coord = "$sx,$sy"
+        if(-not $sentryCountBy.ContainsKey($coord)){ $sentryCountBy[$coord]=0 }
+        $sentryCountBy[$coord]++
+        $sideSen = if($isRad){ 'Radiant' } else { 'Dire' }
+        if(-not $sentryBySide.ContainsKey($coord)){ $sentryBySide[$coord] = @{ Radiant=@{count=0}; Dire=@{count=0} } }
+        $sentryBySide[$coord][$sideSen].count++
+        $teamIdSen = if($isRad){ $radTeam } else { $direTeam }
+        if($teamIdSen -gt 0){ if(-not $sentryByTeam.ContainsKey($coord)){ $sentryByTeam[$coord]=@{} }
+          if(-not $sentryByTeam[$coord].ContainsKey($teamIdSen)){ $sentryByTeam[$coord][$teamIdSen] = @{ count=0 } }
+          $sentryByTeam[$coord][$teamIdSen].count++
+        }
+        if(-not $sentrySamples.ContainsKey($coord)){ $sentrySamples[$coord]=@() }
+        $aidp=0; try{ $aidp=[int64]$p.account_id }catch{}
+        $sentrySamples[$coord] += ,([pscustomobject]@{ t=$st; side=$sideSen; teamId=$teamIdSen; aid=$aidp })
+      }
+    }catch{}
   }
   # Objectives
   $objectives = @(); try{ $objectives = @($m.objectives) }catch{}
@@ -462,7 +500,7 @@ foreach($m in $detailed){
   }
 }
 
-# Compute ward lifetimes per (x,y)
+# Compute ward lifetimes per (x,y) and build viewer samples + bySide/byTeam aggregates
 $wardStats = @{}
 foreach($mid in $wardPlacement.Keys){
   $placements = $wardPlacement[$mid]
@@ -481,6 +519,15 @@ foreach($mid in $wardPlacement.Keys){
     $coord = "$($p.x),$($p.y)"
     if(-not $wardStats.ContainsKey($coord)){ $wardStats[$coord] = @{ count=0; total=0 } }
     $wardStats[$coord].count++ ; $wardStats[$coord].total += $life
+    # Build viewer samples and aggregates by side/team
+    if(-not $obsSamplesBy.ContainsKey($coord)){ $obsSamplesBy[$coord]=@() }
+    $obsSamplesBy[$coord] += ,([pscustomobject]@{ t=[int]$p.time; life=[int]$life; side=([string]$p.side); teamId=[int]$p.teamId; aid=[int64]$p.aid })
+    if(-not $wardBySide.ContainsKey($coord)){ $wardBySide[$coord] = @{ Radiant=@{count=0; total=0}; Dire=@{count=0; total=0} } }
+    if(($p.side -eq 'Radiant') -or ($p.side -eq 'Dire')){ $wardBySide[$coord][$p.side].count++; $wardBySide[$coord][$p.side].total += $life }
+    if([int]$p.teamId -gt 0){ if(-not $wardByTeam.ContainsKey($coord)){ $wardByTeam[$coord]=@{} }
+      if(-not $wardByTeam[$coord].ContainsKey([int]$p.teamId)){ $wardByTeam[$coord][[int]$p.teamId] = @{ count=0; total=0 } }
+      $wardByTeam[$coord][[int]$p.teamId].count++; $wardByTeam[$coord][[int]$p.teamId].total += $life
+    }
   }
 }
 
@@ -599,6 +646,52 @@ $worstSpots = $wardPerf | Sort-Object -Property count -Descending | Sort-Object 
 # Collect all ward spots (count>=1) for fallback map rendering (limit later in client)
 $wardAll = @(); foreach($c in $wardStats.Keys){ $ws=$wardStats[$c]; if($ws.count -ge 1){ $parts=$c -split ','; $wx=0;$wy=0; if($parts.Length -ge 2){ [int]::TryParse($parts[0],[ref]$wx)|Out-Null; [int]::TryParse($parts[1],[ref]$wy)|Out-Null }; $wardAll += [pscustomobject]@{ spot=$c; x=$wx; y=$wy; avgSeconds= if($ws.count -gt 0){ [int]([Math]::Floor($ws.total / $ws.count)) } else {0}; count=$ws.count } } }
 
+# ---------- Build Ward Viewer precomputed block ----------
+# Teams list for viewer (id/name)
+$viewerTeams = @()
+foreach($tid in $teamStats.Keys){ $nm=''; try{ $nm = ''+$teamStats[$tid].name }catch{}; $viewerTeams += [pscustomobject]@{ id = [int]$tid; name = if($nm){ $nm } else { "Team $tid" } } }
+# Players list (only those who placed observers)
+$viewerPlayers = @()
+foreach($aid in $obsPlacerCount.Keys){
+  $nm = if($playerMeta.ContainsKey($aid)){ ''+$playerMeta[$aid].name } else { "Player $aid" }
+  $viewerPlayers += [pscustomobject]@{ id=[int64]$aid; name=$nm; count=[int]$obsPlacerCount[$aid] }
+}
+$viewerPlayers = $viewerPlayers | Sort-Object -Property name
+# Spots with samples, bySide/byTeam
+$viewerSpots = @()
+foreach($coord in $wardStats.Keys){
+  $ws = $wardStats[$coord]; $parts = $coord -split ','; $wx=0;$wy=0; if($parts.Length -ge 2){ [int]::TryParse($parts[0],[ref]$wx)|Out-Null; [int]::TryParse($parts[1],[ref]$wy)|Out-Null }
+  $samples = @(); if($obsSamplesBy.ContainsKey($coord)){ $samples = @($obsSamplesBy[$coord]) }
+  $sideAgg = @{ Radiant = @{ count=0; total=0 }; Dire = @{ count=0; total=0 } }
+  if($wardBySide.ContainsKey($coord)){ $s=$wardBySide[$coord]; $sideAgg.Radiant.count = [int]$s.Radiant.count; $sideAgg.Radiant.total = [int]$s.Radiant.total; $sideAgg.Dire.count = [int]$s.Dire.count; $sideAgg.Dire.total = [int]$s.Dire.total }
+  $teamAgg = @{}
+  if($wardByTeam.ContainsKey($coord)){
+    foreach($tid in $wardByTeam[$coord].Keys){
+      $k = [string]([int]$tid)
+      $teamAgg[$k] = @{ count = [int]$wardByTeam[$coord][$tid].count; total = [int]$wardByTeam[$coord][$tid].total }
+    }
+  }
+  # Build spot record (without Intelligence fields)
+  $viewerSpots += [pscustomobject]@{ spot=$coord; x=[int]$wx; y=[int]$wy; count=[int]$ws.count; total=[int]$ws.total; bySide=$sideAgg; byTeam=$teamAgg; samples=$samples }
+}
+# Sentries with samples, bySide/byTeam
+$viewerSentries = @()
+foreach($coord in $sentryCountBy.Keys){
+  $parts=$coord -split ','; $sx=0;$sy=0; if($parts.Length -ge 2){ [int]::TryParse($parts[0],[ref]$sx)|Out-Null; [int]::TryParse($parts[1],[ref]$sy)|Out-Null }
+  $count = [int]$sentryCountBy[$coord]
+  $sideAgg = @{ Radiant = @{ count=0 }; Dire = @{ count=0 } }
+  if($sentryBySide.ContainsKey($coord)){ $s=$sentryBySide[$coord]; $sideAgg.Radiant.count = [int]$s.Radiant.count; $sideAgg.Dire.count = [int]$s.Dire.count }
+  $teamAgg = @{}
+  if($sentryByTeam.ContainsKey($coord)){
+    foreach($tid in $sentryByTeam[$coord].Keys){
+      $k = [string]([int]$tid)
+      $teamAgg[$k] = @{ count = [int]$sentryByTeam[$coord][$tid].count }
+    }
+  }
+  $samples = @(); if($sentrySamples.ContainsKey($coord)){ $samples = @($sentrySamples[$coord]) }
+  $viewerSentries += [pscustomobject]@{ spot=$coord; x=[int]$sx; y=[int]$sy; count=$count; bySide=$sideAgg; byTeam=$teamAgg; samples=$samples }
+}
+
 # Player dewards
 $mostDewards = @(); foreach($aid in $playerDewards.Keys){ $mostDewards += [pscustomobject]@{ account_id=$aid; name=$playerMeta[$aid].name; count=$playerDewards[$aid] } }
 $mostDewards = $mostDewards | Sort-Object count -Descending | Select-Object -First 8
@@ -662,7 +755,7 @@ $report = [ordered]@{
   duos = @{ offlane= @($duosOffArr); safelane= @($duosSafeArr) };
   draft = @{ contest=@($draftContest); firstPicks=@($draftFirst); openingPairs=@($draftPairs) };
   heroes = @{ best=@($bestHeroes); worst=@($worstHeroes); all=@($heroesAll) };
-  wards = @{ bestSpots=@($bestSpots); worstSpots=@($worstSpots); mostDewards=@($mostDewards); allSpots=@($wardAll) };
+  wards = @{ bestSpots=@($bestSpots); worstSpots=@($worstSpots); mostDewards=@($mostDewards); allSpots=@($wardAll); viewer = @{ spots=@($viewerSpots); sentries=@($viewerSentries); teams=@($viewerTeams); players=@($viewerPlayers) } };
   players = @{ rampages=@($rampages); rapiers=@($rapiers); aegisSnatch=@($aegis); all=@($playersAll) };
   };
   placements = $placements

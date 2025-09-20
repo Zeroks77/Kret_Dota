@@ -1,0 +1,701 @@
+{
+  "version": 1,
+  "league_lock": 18438,
+  "existing_components_catalog": {
+    "tabs": {
+      "highlights": "Highlights-Übersicht",
+      "players": "Players-Tab mit Tabelle/Aggregates",
+      "heroes": "Heroes-Tab mit Tabelle/Aggregates",
+      "teams": "Teams-Tab mit Tabelle/Aggregates",
+      "placements": "Placements-Tab",
+      "wards": "Wards-Viewer (Map/Spots/Legend)"
+    },
+    "shell": {
+      "page": "league_dynamic.html Grundgerüst inkl. Tab-Navigation",
+      "header_toolbar": "Oberes Toolbar/Status-Area",
+      "url_state": "URL/LocalStorage Persistenz und Param-Hydration",
+      "filter_bar": "Bestehende Filter (Zeitraum, side, wmin/wtime) sofern vorhanden",
+      "tables": "Standard-Tabellen (Sortierung/Paging), Metric-Badges/Karten",
+      "map_viewer": "Ward-Map mit Spots/Legend/Interaktionen",
+      "export_hook": "Vorhandene Link-/Copy-Mechanik, soweit vorhanden"
+    },
+    "data_pipeline": {
+      "pages_output": "docs/* als GitHub Pages Output",
+      "monthly_shards": "Monatsweise JSON-Dateien für Matches/Aggregates",
+      "manifests": "manifest/index Dateien falls vorhanden",
+      "fetch_scripts": "scripts/* (PowerShell) für Ingest/Aggregation"
+    }
+  },
+  "items": [
+    {
+      "id": "player-comparison-tool",
+      "title": "Player Comparison Tool",
+      "status": "planned",
+      "priority": 1,
+  "notes": "Vergleich zweier Spieler über gemeinsame Filter. Outputs: hero pool overlap, laning diff (XPM/GPM, LH@10, Net@10), vision (obs/sen, dewards), stacks, objectives, item timings.",
+      "plan": [
+        { "id": "contract", "title": "Data contract & inputs", "desc": "Inputs playerA/B (account_ids), timeRange, side/role optional; Output-Schema je Gruppe." },
+        { "id": "aggregate-core", "title": "Core aggregates", "desc": "Games, W-L, WR, K/D/A, GPM/XPM pro Spieler & Filter." },
+        { "id": "laning-diff", "title": "Laning diff", "desc": "LH@10/Net@10/XP@10 (oder Approx). Delta A-B, side-kontext." },
+        { "id": "hero-pool", "title": "Hero pool overlap", "desc": "Top-Helden A/B, Overlap, einzigartige Picks, WR pro Held." },
+        { "id": "vision", "title": "Vision metrics", "desc": "Obs/Sen placed, dewards, ward lifetime per 10m; side-splits." },
+        { "id": "stacks", "title": "Stacks", "desc": "Camps stacked total/avg; pulls wenn verfügbar." },
+        { "id": "objectives", "title": "Objective participation", "desc": "Teilnahme ±60s um Tower/Roshan Events." },
+        { "id": "items", "title": "Item timings", "desc": "Erstkäufe Schlüsselitems, Median/Delta." },
+        { "id": "ui", "title": "UI & interactions", "desc": "Neuer Compare-Untertab; zwei Player-Picker; Summary-Karten + kompakte Tabellen; Copy-Link." },
+        { "id": "perf", "title": "Performance & caching", "desc": "Memoize per-player Aggregates; optional Precompute mini per-player JSONs." }
+      ],
+      "acceptance": [
+        "A/B wählbar, Filter greifen, alle Gruppen gefüllt",
+        "Overlap/Unique-Picks mit WR je Held",
+        "Laning diff zeigt LH/Net@10 oder klaren Hinweis bei fehlenden Daten",
+        "Vision mit side-splits sichtbar",
+        "Permalink stellt Vergleich exakt wieder her"
+      ],
+      "dependencies": [
+        "LH@10/Net@10 verfügbar/approx",
+        "Purchase logs",
+        "Objective/Events"
+      ],
+      "reuse": {
+        "extends": ["tabs.players", "tabs.heroes", "shell.page", "shell.url_state", "shell.filter_bar", "shell.tables"],
+        "ui_reuse": [
+          "Tab-Navigation (Add 'Compare' als Untertab statt neue Seite)",
+          "Bestehende Filterbar/Param-Logik (time, side, wmin/wtime)",
+          "Metric-Badges/Karten-Stil aus Players/Teams",
+          "Standard-Tabelle für Detail-Listen"
+        ],
+        "data_reuse": [
+          "Monats-Shards und vorhandene Player/Hero Aggregates",
+          "Manifests/Index falls vorhanden"
+        ],
+        "new_minimal": [
+          "Zwei Player-Picker (Dropdown+Search) als kleine Zusatz-Controls",
+          "Kleine Aggregations-Helper (falls nicht vorhanden) – aber via Shared Utils"
+        ],
+        "avoid_new": [
+          "Keinen neuen Grid/Renderer bauen",
+          "Keinen separaten Vergleichs-Viewer außerhalb league_dynamic.html"
+        ]
+      }
+    },
+    {
+      "id": "ward-intelligence-toggle",
+      "title": "Ward Intelligence (Focused)",
+  "status": "dropped",
+  "priority": 1,
+  "notes": "Entfernt; Fokus bleibt auf Basismetriken (Lifetime/Contest).",
+      "plan": [
+        { "id": "vision-roi-score", "title": "Vision ROI Score", "desc": "Nähe zu objektiven Zonen/Rotationspfaden, Start mit statischen Regionen." },
+        { "id": "conversion-metrics", "title": "Conversion after Placement", "desc": "Kills/Objectives 30/60/90s nach Placement im Quadranten." },
+        { "id": "persist-params", "title": "Persistenz & URLs", "desc": "Eigene Intelligence-Parameter (wvi/metric) und konsistente Permalinks." }
+      ],
+      "acceptance": [
+        "Spots zeigen ROI‑Score (Skala + Legende)",
+        "Conversions 30/60/90s pro Spot/Cluster sichtbar",
+        "Permalink stellt Intelligence‑Panel und seine Parameter wieder her"
+      ],
+      "dependencies": [
+        "sen_log/sen_left_log (für Sentry‑Kontext optional)",
+        "Eventdaten (kills/roshan/tower) für Conversions",
+        "Map‑Regionen/Wege (statisch in maps.json) für ROI"
+      ],
+      "reuse": {
+        "extends": ["tabs.wards", "shell.map_viewer", "shell.url_state"],
+        "ui_reuse": [
+          "Ward‑Map + bestehende Layers",
+          "Toolbar/Copy‑Link"
+        ],
+        "data_reuse": [
+          "Ward‑Spot‑Daten",
+          "Monats‑Shards, objectives aus match JSON"
+        ],
+        "new_minimal": [
+          "ROI‑Scoring‑Helper",
+          "Conversion‑Aggregator (30/60/90s)"
+        ],
+        "avoid_new": [
+          "Kein zweiter Map‑Viewer",
+          "Keine neue Seite außerhalb Wards"
+        ]
+      }
+    },
+    {
+      "id": "vision-details-pane",
+      "title": "Vision Details Pane",
+      "status": "planned",
+      "priority": 2,
+      "notes": "Details zu einem ausgewählten Ward-Spot: Dewarder, median time, placement heroes, Bucket-Verteilung, Sentry-Heat in der Nähe, Conversions.",
+      "plan": [
+        { "id": "selection", "title": "Spot selection hook", "desc": "onSpotSelect aus Ward-Viewer nutzen." },
+        { "id": "dewarders", "title": "Common dewarders", "desc": "Top Dewarder + Medianzeit." },
+        { "id": "placement-heroes", "title": "Placement heroes", "desc": "Häufige Ward-Helden für den Spot." },
+        { "id": "time-buckets", "title": "Minute buckets", "desc": "0–5/6–30/31–150/151–360s Verteilung." },
+        { "id": "sentry-heat", "title": "Sentry density heatmap", "desc": "Heat um Spot basierend auf sen-Logs." },
+        { "id": "conversion", "title": "Conversions", "desc": "Kills/Objectives 30/60/90s nach Placement im Quadranten." },
+        { "id": "ui-pane", "title": "Details UI", "desc": "Drawer/Sidepane mit Tabs, Permalink auf spezifischen Spot." }
+      ],
+      "acceptance": [
+        "Spot-Klick öffnet Pane mit echten Aggregaten",
+        "Dewarder & Median sichtbar",
+        "Buckets stimmen",
+        "Heat in der Nähe sichtbar",
+        "Permalink öffnet denselben Spot"
+      ],
+      "dependencies": [
+        "sen_log/sen_left_log aggregiert",
+        "Event-Mapping zu Quadranten",
+        "Ward selection API"
+      ],
+      "reuse": {
+        "extends": ["tabs.wards", "shell.map_viewer"],
+        "ui_reuse": [
+          "Existierende Spot-Click-Mechanik",
+          "Vorhandener Info-Container als Drawer/Pane erweitern",
+          "Tooltips/Legende aus Ward-Viewer"
+        ],
+        "data_reuse": [
+          "Gleiche Ward-/Event-Datenquellen",
+          "Monats-Shards"
+        ],
+        "new_minimal": [
+          "Kleiner Drawer/Pane (CSS/HTML) mit Tabs",
+          "Zwei kleine Aggregations-Helper (Dewarder/Conversions)"
+        ],
+        "avoid_new": [
+          "Kein separater Vision-Details-Viewer",
+          "Kein alternativer Map-Stack"
+        ]
+      }
+    },
+    {
+      "id": "player-comparison-ui",
+      "title": "Player Comparison UI Wiring",
+      "status": "planned",
+      "priority": 2,
+      "notes": "Compare-Untertab/Drewer; nutzt vorhandene Render-Primitives und Tabellen.",
+      "plan": [
+        { "id": "component", "title": "Component scaffolding", "desc": "player_compare.js mount(container, options)." },
+        { "id": "tab", "title": "Compare tab wiring", "desc": "Untertab registrieren, lazy mount." },
+        { "id": "shared", "title": "Shared compute utils", "desc": "Aggregation-Helper extrahieren." },
+        { "id": "state", "title": "State & permalinks", "desc": "URL/LocalStorage; Copy-Link." },
+        { "id": "a11y", "title": "Accessibility", "desc": "Keyboard/ARIA in Pickern/Listen." }
+      ],
+      "acceptance": [
+        "Neuer Compare-Untertab erscheint & lazy lädt",
+        "Zwei Player-Picker mit Suche/Clear",
+        "Permalink stellt Auswahl/Filter wieder her",
+        "Kein Regress bei Ladezeit anderer Tabs"
+      ],
+      "dependencies": [
+        "Aggregates aus Comparison Tool",
+        "Tabs-Integration"
+      ],
+      "reuse": {
+        "extends": ["tabs.players", "shell.page", "shell.filter_bar", "shell.tables", "shell.url_state"],
+        "ui_reuse": [
+          "Bestehende Tab/Hüll-Komponenten",
+          "Bestehende Tabellen/Badges",
+          "Copy-Link Mechanismus"
+        ],
+        "data_reuse": [
+          "Players/Heroes Aggregates",
+          "Bestehende Filter/Selector-Funktionen"
+        ],
+        "new_minimal": [
+          "Picker-Controls (A/B)",
+          "Kleine Mount-Logik im Untertab"
+        ],
+        "avoid_new": [
+          "Kein eigenes Seitenlayout",
+          "Keine zweite Persistenzschicht"
+        ]
+      }
+    },
+    {
+      "id": "objective-control",
+      "title": "Objective Control",
+      "status": "planned",
+      "priority": 3,
+      "notes": "Team-Timelines (tower/rosh), smoke-to-objective success, swings.",
+      "plan": [
+        { "id": "events", "title": "Event extraction", "desc": "Tower falls, roshan kills, aegis, glyph, smoke." },
+        { "id": "timelines", "title": "Team timelines", "desc": "Sequenzen & Lead-Änderungen." },
+        { "id": "rates", "title": "Success rates", "desc": "Smoke→Objective %, Trade-Fenster, ΔZeit." },
+        { "id": "ui", "title": "UI", "desc": "Kompakte Timeline, Filter, Tooltips." }
+      ],
+      "acceptance": [
+        "Timeline zeigt korrekte Events beider Teams",
+        "Rosh/Tower timestamps stimmen",
+        "Smoke-% wenn Daten existieren"
+      ],
+      "dependencies": [
+        "Objective/Smoke Events verfügbar"
+      ],
+      "reuse": {
+        "extends": ["tabs.teams", "tabs.highlights", "shell.filter_bar", "shell.tables"],
+        "ui_reuse": [
+          "Existierende Tab-Hülle (Teams/Highlights Untertab)",
+          "Tooltips/Badges/Filterbar"
+        ],
+        "data_reuse": [
+          "Eventdaten aus bestehender Pipeline/Matches",
+          "Monats-Shards"
+        ],
+        "new_minimal": [
+          "Ein Timeline-Renderer (leichtgewichtig)",
+          "Zwei kleine Aggregations-Helper (success/trade)"
+        ],
+        "avoid_new": [
+          "Keine neue Seite",
+          "Kein eigener Filter-Stack"
+        ]
+      }
+    },
+    {
+      "id": "item-timing-tracker",
+      "title": "Item Timing Tracker",
+      "status": "planned",
+      "priority": 3,
+      "notes": "Key Item Timings pro Rolle; Integration in Comparison & Players.",
+      "plan": [
+        { "id": "key-items", "title": "Key item list", "desc": "Blink, BKB, Mek, Pipe, Greaves, Gem, Glimmer, Force etc." },
+        { "id": "extract", "title": "Purchase extraction", "desc": "Erstkaufzeiten je Match/Spieler; Median/Avg." },
+        { "id": "benchmarks", "title": "Patch benchmarks", "desc": "Optional Benchmarks mit +/- Delta." },
+        { "id": "ui", "title": "UI", "desc": "Kompakte Tabelle/Badges; sortierbar." }
+      ],
+      "acceptance": [
+        "Median pro Spieler für Key-Items",
+        "Delta vs Benchmark (falls vorhanden)",
+        "Optional Link zu Matches um diesen Zeitpunkt"
+      ],
+      "dependencies": [
+        "Purchase Logs",
+        "Rollen-Tagging/Heuristik"
+      ],
+      "reuse": {
+        "extends": ["tabs.players", "tabs.heroes", "shell.tables", "shell.filter_bar"],
+        "ui_reuse": [
+          "Vorhandene Tabellen/Spalten-Renderer",
+          "Badges/Formatter"
+        ],
+        "data_reuse": [
+          "Players-Aggregate + Purchase Logs",
+          "Monats-Shards"
+        ],
+        "new_minimal": [
+          "Zusätzliche Spalten/Untertabelle 'Item Timings'"
+        ],
+        "avoid_new": [
+          "Kein separater Viewer nur für Items"
+        ]
+      }
+    },
+    {
+      "id": "perf-caches",
+      "title": "Performance Caches",
+      "status": "planned",
+      "priority": 4,
+      "notes": "Precompute & Cache für schwere Aggregationen (duos, draft synergy, ward clustering).",
+      "plan": [
+        { "id": "audit", "title": "Hotspots", "desc": "Identifiziere teure Views (draft, duos, wards, comparison)." },
+        { "id": "schema", "title": "Chunk schema", "desc": "Aggregate-Chunks per league/time; Manifest-Versionierung." },
+        { "id": "build", "title": "Build step", "desc": "Nightly Erzeugung; Log Timings." },
+        { "id": "load", "title": "Lazy load", "desc": "On-demand laden + Memoize." }
+      ],
+      "acceptance": [
+        "Initial Load <1.5s (warm)",
+        "Tab-Wechsel heavy Views <300ms nach first load",
+        "CI Logs zeigen Chunk-Dauern"
+      ],
+      "dependencies": [
+        "scripts/* Pipeline",
+        "docs/* Hosting"
+      ],
+      "reuse": {
+        "extends": ["data_pipeline.pages_output", "data_pipeline.monthly_shards", "data_pipeline.manifests"],
+        "ui_reuse": [
+          "Keine UI – wirkt unter der Haube auf alle Tabs"
+        ],
+        "data_reuse": [
+          "Bestehende Shards/Manifeste",
+          "Gleiche Ordnerstruktur"
+        ],
+        "new_minimal": [
+          "Ein Aggregations-Step + kleine Loader-Helpers"
+        ],
+        "avoid_new": [
+          "Kein neues Datenformat neben JSON+Manifest"
+        ]
+      }
+    },
+    {
+      "id": "qol-filters",
+      "title": "QoL Filters & Permalinks",
+      "status": "planned",
+      "priority": 4,
+      "notes": "Einheitliche Parameter & Persistenz; Copy-Link überall.",
+      "plan": [
+  { "id": "spec", "title": "Param spec", "desc": "time, team, player, wmode, wbasis, cr – Defaults/Doku." },
+        { "id": "copy", "title": "Copy-link buttons", "desc": "Überall vorhanden; Toast Feedback." },
+        { "id": "state", "title": "Hydration order", "desc": "URL > session > localStorage > defaults." },
+        { "id": "consistency", "title": "Roundtrip tests", "desc": "Automatisierte Konsistenzprüfungen." }
+      ],
+      "acceptance": [
+        "Alle Viewer teilen Param-Namen/Defaults",
+        "Copy-Link in Wards/Players/Compare",
+        "Hydration-Order verifiziert"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["shell.url_state", "shell.filter_bar", "shell.header_toolbar"],
+        "ui_reuse": [
+          "Bestehende Filterbar/Param-Parsing",
+          "Vorhandene Buttons/Icons in Toolbar"
+        ],
+        "data_reuse": [
+          "Keine – rein UX/State"
+        ],
+        "new_minimal": [
+          "Kleiner Copy-Link Helper + Toast-Komponente"
+        ],
+        "avoid_new": [
+          "Keine parallele Persistenzlogik"
+        ]
+      }
+    },
+    {
+      "id": "trend-visuals",
+      "title": "Trend Visuals & Time Series",
+      "status": "planned",
+      "priority": 2,
+      "notes": "Zeitverläufe für bestehende Aggregates (Hero/Player/Team).",
+      "plan": [
+        { "id": "series-data", "title": "Zeitserien vorberechnen", "desc": "WR/PR/KPIs pro Woche/Tag." },
+        { "id": "charts", "title": "Charts", "desc": "Line/Area oberhalb Tabellen in Heroes/Players." },
+        { "id": "ui", "title": "Filter", "desc": "1W/2W/All + Tooltips." }
+      ],
+      "acceptance": [
+        "Heroes zeigt WR-Verlauf",
+        "Filter wirken live",
+        "Werte konsistent mit Aggregates"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["tabs.heroes", "tabs.players", "shell.filter_bar", "shell.tables"],
+        "ui_reuse": [
+          "Bestehendes Tab-Layout",
+          "Formatter/Badges für Kennzahlen",
+          "Tooltips-Stil"
+        ],
+        "data_reuse": [
+          "Monats-Shards, vorhandene Aggregates als Basis"
+        ],
+        "new_minimal": [
+          "Kleiner Chart-Renderer (leichte Lib oder Eigenbau)",
+          "Precompute Series (kleine JSONs)"
+        ],
+        "avoid_new": [
+          "Kein separater Trends-Viewer"
+        ]
+      }
+    },
+    {
+      "id": "mobile-darkmode",
+      "title": "Mobile UX & Dark Mode",
+      "status": "planned",
+      "priority": 3,
+      "notes": "Responsive Tabellen (sticky header, horiz. Scroll), Drawer-Details, Dark Mode Toggle.",
+      "plan": [
+        { "id": "responsive", "title": "Responsiveness", "desc": "Tabellen mobil optimieren." },
+        { "id": "drawer", "title": "Drawer-UI", "desc": "Details in Drawer/Bottom-Sheet." },
+        { "id": "darkmode", "title": "Dark Mode", "desc": "Theme-Toggle + Persistenz." }
+      ],
+      "acceptance": [
+        "Tabellen mobil ohne Chaos nutzbar",
+        "Details öffnen im Drawer",
+        "Dark Mode persistiert"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["shell.page", "shell.tables", "shell.header_toolbar"],
+        "ui_reuse": [
+          "Bestehende Tabellen/Info-Boxen → nur Layout-Tweaks",
+          "Toolbar als Platz für Theme-Toggle"
+        ],
+        "data_reuse": [],
+        "new_minimal": [
+          "CSS-Variablen/Theming",
+          "Zwei/drei Utility-Klassen für Sticky/Scroll"
+        ],
+        "avoid_new": [
+          "Keine zweite Stylesheet-Welt"
+        ]
+      }
+    },
+    {
+      "id": "perf-workers",
+      "title": "Performance: Web/Service Worker",
+      "status": "planned",
+      "priority": 3,
+      "notes": "Schwere Berechnungen in Worker; Offline/Cache via Service Worker.",
+      "plan": [
+        { "id": "webworker", "title": "Web Worker", "desc": "Parsing/Aggregation auslagern." },
+        { "id": "serviceworker", "title": "Service Worker", "desc": "Precache wichtige JSONs; Offline letzte Liga." }
+      ],
+      "acceptance": [
+        "UI bleibt flüssig",
+        "Zuletzt gesehene Liga offline sichtbar",
+        "Initial Load verbessert"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["data_pipeline.pages_output", "shell.url_state"],
+        "ui_reuse": [
+          "Keine UI – Progress/Status über vorhandene Loader/Toasts"
+        ],
+        "data_reuse": [
+          "Gleiche JSON-Struktur/Manifeste"
+        ],
+        "new_minimal": [
+          "Ein gemeinsamer Worker + Registrierungs-Code"
+        ],
+        "avoid_new": [
+          "Keine pro-Feature Worker-Varianten"
+        ]
+      }
+    },
+    {
+      "id": "share-trust",
+      "title": "Sharing & Trust Features",
+      "status": "planned",
+      "priority": 4,
+      "notes": "Build-Info, Data-Freshness-Banner, Embeds, externe Match-Links.",
+      "plan": [
+        { "id": "buildinfo", "title": "Build Info", "desc": "Commit-SHA, Build-Zeit, Match-Counts, API-Version." },
+        { "id": "databanner", "title": "Data Freshness Banner", "desc": "„Stand: … (UTC), n=…“ sichtbar im Header." },
+        { "id": "embeds", "title": "Embeds/Share", "desc": "Permalink/Embed-Link, Screenshot." },
+        { "id": "matchlinks", "title": "Match-Links", "desc": "Direkt zu OpenDota/Stratz." }
+      ],
+      "acceptance": [
+        "Build-Info & Datenstand sichtbar",
+        "Embed/Permalink funktioniert",
+        "Matches verlinkt"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["shell.header_toolbar", "shell.export_hook", "shell.url_state"],
+        "ui_reuse": [
+          "Header/Toolbar-Bereich für Banner/Buttons",
+          "Vorhandene Copy-Link Mechanik"
+        ],
+        "data_reuse": [
+          "build-info.json falls vorhanden; sonst CI-Variablen"
+        ],
+        "new_minimal": [
+          "Kleine Banner/Modal-Komponente"
+        ],
+        "avoid_new": [
+          "Kein separater Info-Viewer"
+        ]
+      }
+    },
+
+    {
+      "id": "meta-patch-awareness",
+      "title": "Meta & Patch Awareness",
+      "status": "planned",
+      "priority": 5,
+      "notes": "Patch-Vergleiche und Meta-Trend-Reports.",
+      "plan": [
+        { "id": "patch-splits", "title": "Patch-Splits", "desc": "WR/PR & KPIs vor/nach Patch vergleichen." },
+        { "id": "meta-trend", "title": "Meta-Trend", "desc": "Top-Helden/Strategien im Verlauf." }
+      ],
+      "acceptance": [
+        "Heroes zeigt Patch-Vergleich",
+        "Meta-Trend-Chart im League/Monthly Kontext"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["tabs.heroes", "tabs.players", "shell.filter_bar", "shell.tables"],
+        "ui_reuse": [
+          "Vorhandene Tabellen + neue Spalte 'Δ Patch'",
+          "Charts wie bei Trend-Visuals"
+        ],
+        "data_reuse": [
+          "Vorhandene Aggregates + Patch-Timestamps"
+        ],
+        "new_minimal": [
+          "Kleiner Patch-Toggle & Delta-Formatter"
+        ],
+        "avoid_new": [
+          "Kein eigener Patch-Viewer"
+        ]
+      }
+    },
+    {
+      "id": "draft-synergy",
+      "title": "Draft Synergy & Lane Duos",
+      "status": "planned",
+      "priority": 5,
+      "notes": "Hero-Pairings, Synergie/Anti-Synergie, Lane-Duos.",
+      "plan": [
+        { "id": "pair-stats", "title": "Hero-Pairs", "desc": "WR von Team-/Lane-Duos." },
+        { "id": "synergy-heatmap", "title": "Synergy Heatmap", "desc": "Matrix WR/PR für Kombinationen." },
+        { "id": "ban-response", "title": "Pick-Ban-Response", "desc": "Helden nach spezifischen Bans." }
+      ],
+      "acceptance": [
+        "Heatmap sichtbar",
+        "Lane-Duo-WR berechnet"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["tabs.heroes", "tabs.teams", "shell.tables"],
+        "ui_reuse": [
+          "Tabellen + kompakte Matrix/Heatmap als Zusatz-View",
+          "Tooltips/Badges wie gehabt"
+        ],
+        "data_reuse": [
+          "Draft/Lineup Daten aus Matches"
+        ],
+        "new_minimal": [
+          "Leichter Heatmap-Renderer (Canvas/SVG)"
+        ],
+        "avoid_new": [
+          "Keine eigene Draft-Seite"
+        ]
+      }
+    },
+    {
+      "id": "benchmarks-alerts",
+      "title": "Benchmarks & Alerts",
+      "status": "planned",
+      "priority": 5,
+      "notes": "Liga-Durchschnitt je Rolle/Team; Alerts bei Abweichungen.",
+      "plan": [
+        { "id": "benchmarks", "title": "Benchmarks", "desc": "Schnittwerte pro Rolle/Team." },
+        { "id": "alerts", "title": "Alerts", "desc": "Regeln (z. B. Roshan-Control niedrig)." }
+      ],
+      "acceptance": [
+        "± Abweichungen zum Schnitt",
+        "Alert-Liste/Badges"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["tabs.players", "tabs.teams", "shell.tables", "shell.header_toolbar"],
+        "ui_reuse": [
+          "Badges/Spalten in vorhandenen Tabellen",
+          "Kleines Alert-Badge/Panel im Header"
+        ],
+        "data_reuse": [
+          "Aggregates + Rollen-Zuordnung"
+        ],
+        "new_minimal": [
+          "Kleine Regel-Engine (clientseitig) oder Precompute-Flag"
+        ],
+        "avoid_new": [
+          "Keine neue Alerts-Seite"
+        ]
+      }
+    },
+    {
+      "id": "personalization",
+      "title": "Personalization & Dashboards",
+      "status": "planned",
+      "priority": 5,
+      "notes": "Favoriten, leichtgewichtige Custom-Dashboards (ohne Accounts).",
+      "plan": [
+        { "id": "favorites", "title": "Favoriten", "desc": "Spieler/Teams anpinnen; Reihenfolge hoch." },
+        { "id": "custom-dashboard", "title": "Custom Dashboard", "desc": "Kleines Layout mit auswählbaren Cards; Speicherung in localStorage." }
+      ],
+      "acceptance": [
+        "Favoriten erscheinen überall priorisiert",
+        "Eigenes Mini-Dashboard speichert Layout/Zustand"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["shell.header_toolbar", "tabs.players", "tabs.teams"],
+        "ui_reuse": [
+          "Bestehende Karten/Tabellen als Dashboard-Cards",
+          "Toolbar als Ort für 'Add to dashboard'"
+        ],
+        "data_reuse": [
+          "Vorhandene Aggregates/Filter"
+        ],
+        "new_minimal": [
+          "Kleiner Layout-Container + LocalStorage-Keys"
+        ],
+        "avoid_new": [
+          "Kein Account-/Login-System"
+        ]
+      }
+    },
+    {
+      "id": "data-export",
+      "title": "Data Export & API",
+      "status": "planned",
+      "priority": 5,
+      "notes": "CSV/JSON-Export auf Tabs; leichte API/Downloads.",
+      "plan": [
+        { "id": "csv-json", "title": "CSV/JSON Export", "desc": "Buttons auf allen Daten-Views." },
+        { "id": "pdf-report", "title": "PDF/PNG Reports", "desc": "Auto-Report (optional)." },
+        { "id": "open-api", "title": "Open API", "desc": "Leichte JSON-Endpoints (static)." }
+      ],
+      "acceptance": [
+        "Tabs bieten CSV/JSON",
+        "PDF/PNG erzeugbar",
+        "Externe Tools ziehen JSON"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["shell.export_hook", "shell.tables", "shell.url_state"],
+        "ui_reuse": [
+          "Vorhandene Buttons/Dropdowns",
+          "Table-Data als Export-Quelle"
+        ],
+        "data_reuse": [
+          "Die gleichen Aggregates/Filters wie Anzeige"
+        ],
+        "new_minimal": [
+          "CSV/JSON Serializer",
+          "Kleiner Export-Dialog"
+        ],
+        "avoid_new": [
+          "Kein paralleles Datenmodell für Export"
+        ]
+      }
+    },
+    {
+      "id": "community-annotations",
+      "title": "Community & Annotations",
+      "status": "planned",
+      "priority": 5,
+      "notes": "Optionale Analysten-Notizen/Annotationen, Permalinks mit Notizen.",
+      "plan": [
+        { "id": "annotations", "title": "Annotations", "desc": "Kommentare zu Matches/Events/Spots." },
+        { "id": "sharing", "title": "Share annotated views", "desc": "Permalinks inkl. Annotationen." }
+      ],
+      "acceptance": [
+        "Annotationen erscheinen kontextuell",
+        "Permalinks beinhalten Notes"
+      ],
+      "dependencies": [],
+      "reuse": {
+        "extends": ["tabs.highlights", "tabs.wards", "shell.url_state"],
+        "ui_reuse": [
+          "Bestehende Detail-/Info-Boxen → Notizfeld/Popover",
+          "Copy-Link Mechanik"
+        ],
+        "data_reuse": [
+          "Event-/Spot-IDs als Bezugspunkte"
+        ],
+        "new_minimal": [
+          "Leichtes Notes-Storage (localStorage oder statisches JSON ohne Auth)"
+        ],
+        "avoid_new": [
+          "Kein komplexes Kommentar-System/Moderation"
+        ]
+      }
+    }
+  ]
+}

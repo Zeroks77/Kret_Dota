@@ -954,15 +954,25 @@
           catch(e){ console.warn('LaneDuosViewer mount failed', e); }
         });
       };
-      window.__ensureItems = () => {
+      window.__ensureWards = () => {
         if (mountedItems) return; mountedItems = true;
         detailsPromise.then(details => {
           try {
-            const ib = document.getElementById('ibMount');
-            if (ib && window.ItemsBoughtViewer) {
-              const roleCache = new Map();
-              for (const d of details) { (d.players || []).forEach(p => { const aid = Number(p.account_id || 0); if (!(aid > 0)) return; const gpm = Number(p.gold_per_min || 0); roleCache.set(aid, gpm >= 420 ? 'core' : 'support'); }); }
-              const itemAgg = new Map();
+            const container = document.getElementById('dvWardMount'); if (!container) return;
+            container.innerHTML = '';
+            const mapConf = window.__mapConf || {};
+            // Prefer precomputed viewer block from report.json if available
+            const preV = report && report.highlights && report.highlights.wards && report.highlights.wards.viewer;
+            if (preV && window.WardViewer) {
+              const teamsList = Array.isArray(preV.teams) ? preV.teams : [];
+              const playersList = Array.isArray(preV.players) ? preV.players : [];
+              const spots = Array.isArray(preV.spots) ? preV.spots : [];
+              const sentries = Array.isArray(preV.sentries) ? preV.sentries : [];
+              window.WardViewer.mount(container, { mapConf, data: { spots, sentries, teams: teamsList, players: playersList }, options: { modeDefault: 'best', showExtras: true, showLongest: false, ignorePersistedPlayer: true, ignorePersistedCluster: true, extras: { wardPlayers: {}, wardLongest: [] } } });
+              return;
+            }
+            // Fallback: Build viewer data from details
+            if (__detailsCache && Array.isArray(__detailsCache)) {
               const consumables = new Set(['tango','flask','healing_salve','enchanted_mango','clarity','faerie_fire','smoke_of_deceit','dust','dust_of_appearance','ward_observer','ward_sentry','sentry_wards','observer_ward','sentry_ward','tpscroll','tp_scroll','enchanted_quiver','bottle','refresher_shard','cheese','tome_of_knowledge','blood_grenade']);
               function norm(k){ return String(k || '').toLowerCase(); }
               for (const d of details) {
@@ -998,6 +1008,7 @@
             const container = document.getElementById('dvWardMount');
             if (container && window.WardViewer) {
               const countBy = new Map(), totalBy = new Map(), samplesBy = new Map();
+              const senCountBy = new Map(), senBySide = new Map(), senByTeam = new Map(), senSamplesBy = new Map();
               const playersSet = new Map(); // aid -> name
               const teamNameByIdLocal = new Map();
               const placerCount = new Map();
@@ -1033,9 +1044,30 @@
                     samplesBy.set(k, sm);
                     if (aid > 0) placerCount.set(aid, (placerCount.get(aid) || 0) + 1);
                   }
+                  // Sentries: placements only (pressure proxy)
+                  const sp = Array.isArray(p.sen_log) ? p.sen_log : [];
+                  for (const se of sp) {
+                    const sx = Number(se.x), sy = Number(se.y), st = Number(se.time || 0);
+                    const k = `${sx},${sy}`;
+                    senCountBy.set(k, (senCountBy.get(k) || 0) + 1);
+                    const sb = senBySide.get(k) || { Radiant: { count: 0 }, Dire: { count: 0 } };
+                    sb[side].count++;
+                    senBySide.set(k, sb);
+                    if (teamId > 0) {
+                      const tb = senByTeam.get(k) || {};
+                      const to = tb[teamId] || { count: 0 };
+                      to.count++;
+                      tb[teamId] = to;
+                      senByTeam.set(k, tb);
+                    }
+                    const sm = senSamplesBy.get(k) || [];
+                    sm.push({ t: st, side, teamId, aid });
+                    senSamplesBy.set(k, sm);
+                  }
                 }
               }
               const spots = Array.from(countBy.keys()).map(k => { const [x, y] = k.split(',').map(Number); const count = countBy.get(k) || 0; const total = totalBy.get(k) || 0; return { spot: k, x, y, count, total, avgSeconds: count ? Math.round(total / count) : 0, bySide: { Radiant: { count: 0, total: 0 }, Dire: { count: 0, total: 0 } }, byTeam: {}, samples: samplesBy.get(k) || [] }; });
+              const sentries = Array.from(senCountBy.keys()).map(k => { const [x, y] = k.split(',').map(Number); return { spot: k, x, y, count: senCountBy.get(k) || 0, bySide: senBySide.get(k) || { Radiant: { count: 0 }, Dire: { count: 0 } }, byTeam: senByTeam.get(k) || {}, samples: senSamplesBy.get(k) || [] }; });
               // Build teams & players lists for selectors
               const teamsList = Array.from(teamNameByIdLocal.entries()).map(([id, name]) => ({ id: Number(id), name: String(name || `Team ${id}`) }))
                 .sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
@@ -1043,7 +1075,7 @@
                 .map(([id, name]) => ({ id: Number(id), name: String(name || `Player ${id}`), count: placerCount.get(id) || 0 }))
                 .filter(p => p.count > 0)
                 .sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
-              window.WardViewer.mount(container, { mapConf, data: { spots, teams: teamsList, players: playersList }, options: { modeDefault: 'best', showExtras: true, showLongest: false, ignorePersistedPlayer: true, ignorePersistedCluster: true, extras: { wardPlayers: {}, wardLongest: [] } } });
+              window.WardViewer.mount(container, { mapConf, data: { spots, sentries, teams: teamsList, players: playersList }, options: { modeDefault: 'best', showExtras: true, showLongest: false, ignorePersistedPlayer: true, ignorePersistedCluster: true, extras: { wardPlayers: {}, wardLongest: [] } } });
             }
           } catch(err){ console.warn('WardViewer mount failed', err); }
         });
