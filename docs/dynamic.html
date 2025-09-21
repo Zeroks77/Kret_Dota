@@ -103,6 +103,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 <script defer src="js/player_stats_viewer.js"></script>
 <script defer src="js/items_bought_viewer.js"></script>
 <script defer src="js/draft_viewer.js"></script>
+<script defer src="js/duo_viewer.js"></script>
 </head>
 <body>
 <div id="dvLoading" class="loading-overlay"><div class="loading-box"><div class="spinner"></div><div id="dvLoadingText" class="sub">Loading…</div></div></div>
@@ -157,16 +158,17 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
   <!-- Main tabs like in All-time report -->
   <div class="tabs" id="mainTabs" style="margin-top:12px">
     <button class="tab active" data-tab="highlights">Highlights</button>
-  <button class="tab" data-tab="wards">Wards</button>
     <button class="tab" data-tab="players">Players</button>
     <button class="tab" data-tab="compare">Compare</button>
     <button class="tab" data-tab="heroes">Heroes</button>
+    <button class="tab" data-tab="duos">Duos</button>
+    <button class="tab" data-tab="laneduos">Lane Duos</button>
     <button class="tab" data-tab="draft">Draft</button>
     <button class="tab" data-tab="teams">Teams</button>
-  <button class="tab" data-tab="calendar">Calendar</button>
-  <button class="tab" data-tab="awards">Awards</button>
-    <button class="tab" data-tab="laneduos">Lane Duos</button>
     <button class="tab" data-tab="itemsbought">Items Bought</button>
+    <button class="tab" data-tab="wards">Wards</button>
+    <button class="tab" data-tab="awards">Awards</button>
+    <button class="tab" data-tab="calendar">Calendar</button>
   </div>
 
   <div id="pane-highlights" class="tabpane active">
@@ -255,6 +257,13 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Items Bought</h2>
       <div id="ibMount" class="sub">Select a range (Apply) to load item purchases.</div>
+    </section>
+  </div>
+
+  <div id="pane-duos" class="tabpane" style="display:none">
+    <section class="card">
+      <h2 style="margin:0 0 8px;font-size:18px">Best Duos</h2>
+      <div id="duosMount" class="sub">Select a range (Apply) to compute best player duos and their hero combinations.</div>
     </section>
   </div>
 
@@ -860,7 +869,7 @@ async function main(){
     if (!tabsRoot) return;
     const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
     function showTab(name){
-  ['highlights','wards','players','compare','heroes','draft','teams','awards','calendar','laneduos','itemsbought'].forEach(id=>{
+  ['highlights','players','compare','heroes','duos','laneduos','draft','teams','itemsbought','wards','awards','calendar'].forEach(id=>{
         const pane = document.getElementById('pane-'+id);
         if (pane) pane.style.display = (id===name)? '' : 'none';
       });
@@ -1114,6 +1123,7 @@ async function main(){
     const dewardsBy = new Map();       // aid -> count
     const lifeBy = new Map();          // aid -> number[]
     const pairCounts = new Map();      // "aid1-aid2" -> games
+    const playerDuos = new Map();      // key -> {games,wins, heroes: Map("hid1-hid2" -> {games,wins})}
     const courierKillsBy = new Map();  // aid -> total
     const campsStackedBy = new Map();  // aid -> total
   const rapierBy = new Map();        // aid -> total rapiers bought
@@ -1206,9 +1216,22 @@ async function main(){
           const times=[]; const P=obsLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); const L=leftLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b); let jj=0; for(let i=0;i<P.length;i++){ const tP=P[i]; while(jj<L.length && L[jj]<tP) jj++; let life=360; if(jj<L.length){ life = Math.max(0, L[jj]-tP); jj++; } times.push(Math.min(360, life)); }
           if(times.length){ const arr=lifeBy.get(aid)||[]; lifeBy.set(aid, arr.concat(times)); }
         }
-        // Teammates per match, courier etc already counted per player; now pair counts
-  const rad=[], dire=[]; for(const p of players){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; ((p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128)?rad:dire).push(aid); }
-        const sides=[rad,dire]; for(const arr of sides){ for(let i=0;i<arr.length;i++){ for(let j=i+1;j<arr.length;j++){ const a=arr[i], b=arr[j]; const lo=Math.min(a,b), hi=Math.max(a,b); const key=`${lo}-${hi}`; addMapCount(pairCounts, key, 1); } } }
+        // Teammates per match; build duo structures with hero combos and wins
+        const rad=[], dire=[]; for(const p of players){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; const hid=Number(p.hero_id||0); const rec={aid,hid}; ((p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128)?rad:dire).push(rec); }
+        const radWin = !!md.radiant_win;
+        function tally(arr, won){
+          for(let i=0;i<arr.length;i++){
+            for(let j=i+1;j<arr.length;j++){
+              const a=arr[i], b=arr[j]; const lo=Math.min(a.aid,b.aid), hi=Math.max(a.aid,b.aid); const key=`${lo}-${hi}`;
+              addMapCount(pairCounts, key, 1);
+              let duo = playerDuos.get(key); if(!duo){ duo={games:0,wins:0,heroes:new Map()}; playerDuos.set(key,duo); }
+              duo.games++; if(won) duo.wins++;
+              const ha=Math.min(a.hid,b.hid), hb=Math.max(a.hid,b.hid); const hkey=`${ha}-${hb}`;
+              const hRec = duo.heroes.get(hkey) || {a:ha,b:hb,games:0,wins:0}; hRec.games++; if(won) hRec.wins++; duo.heroes.set(hkey, hRec);
+            }
+          }
+        }
+        tally(rad, radWin); tally(dire, !radWin);
         // Lane duos (Safe=1, Off=3), use lane_role and lane_efficiency_pct
   const bySide={Radiant:players.filter(p=> (p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128)), Dire:players.filter(p=> !(p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128))};
         const duos={Safe:new Map(), Off:new Map()};
@@ -1294,8 +1317,16 @@ async function main(){
     const mostPlaced = withNames(topNByCount(obsPlacedBy, 5));
     const mostDewards = withNames(topNByCount(dewardsBy, 5));
     const longestAvg = withNames(Array.from(lifeBy.entries()).map(([aid,arr])=>({account_id:Number(aid), name:`Player ${aid}`, profile: OD_PLAYER_URL(aid), avgSeconds: arr.length? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0, samples: arr.length})).sort((a,b)=> b.avgSeconds-a.avgSeconds).slice(0,5));
-    // Teammates pairs top
+    // Teammates pairs top (by games for highlights block)
     const teammates = Array.from(pairCounts.entries()).map(([k,games])=>{ const [a,b]=k.split('-').map(Number); return {a,b, name1: nameCache.get(a)||`Player ${a}`, name2: nameCache.get(b)||`Player ${b}`, profile1: OD_PLAYER_URL(a), profile2: OD_PLAYER_URL(b), games: Number(games)}; }).sort((a,b)=> b.games-a.games || String(a.name1).localeCompare(String(b.name1))).slice(0,3);
+    // Build full player duet list with hero combos
+    const duosAll = Array.from(playerDuos.entries()).map(([k,rec])=>{
+      const [a,b]=k.split('-').map(Number);
+      const pa = { account_id:a, name: nameCache.get(a)||`Player ${a}`, profile: OD_PLAYER_URL(a) };
+      const pb = { account_id:b, name: nameCache.get(b)||`Player ${b}`, profile: OD_PLAYER_URL(b) };
+      const heroes = Array.from(rec.heroes.values()).sort((x,y)=> (y.wins/(y.games||1)) - (x.wins/(x.games||1)) || (y.games - x.games)).slice(0,10);
+      return { pair:[pa,pb], games:rec.games, wins:rec.wins, heroes };
+    }).sort((x,y)=> (y.wins/(y.games||1)) - (x.wins/(x.games||1)) || (y.games - x.games)).slice(0,50);
     // Courier/Stacks
     const courierTop = withNames(topNByCount(courierKillsBy,3));
     const stackTop = withNames(topNByCount(campsStackedBy,3));
@@ -1381,6 +1412,7 @@ async function main(){
       durationLongest,
   durationShortest,
   banCounts
+      ,duosTop: duosAll
     };
   }
 
@@ -1446,6 +1478,11 @@ async function main(){
       window.ItemsBoughtViewer.mount(ib, { data:{ items, meta } });
     }
   }catch(e){ console.warn('ItemsBoughtViewer mount failed', e); }
+  // Mount Best Duos component
+  try{
+    const dm = document.getElementById('duosMount');
+    if(dm && window.DuosViewer){ window.DuosViewer.mount(dm, { data: high.duosTop || [], heroes: heroMap }); }
+  }catch(e){ console.warn('DuosViewer mount failed', e); }
   // Mount WardViewer into dedicated Wards tab
   try{
   const container = document.getElementById('dvWardMount');
