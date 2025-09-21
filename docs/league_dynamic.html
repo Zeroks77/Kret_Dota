@@ -265,6 +265,7 @@
       for (const u of urls) { const j = await loadJson(u); if (j) return j; }
       return null;
     }
+    const IS_GHPAGES = (typeof location !== 'undefined' && /\.github\.io$/i.test(String(location.hostname||'')));
 
     function makeHeroMap(heroesRaw) {
       const map = {};
@@ -468,7 +469,8 @@
       const localPreferred = `${relBase}/cache/OpenDota/matches/${id}.json`;
       const localAlt = `data/cache/OpenDota/matches/${id}.json`;
       const remote = `${rawBase}/cache/OpenDota/matches/${id}.json`;
-      return await loadFirst([localPreferred, localAlt, remote]);
+      const order = IS_GHPAGES ? [remote, localPreferred, localAlt] : [localPreferred, localAlt, remote];
+      return await loadFirst(order);
     }
 
     function computeHighlightsFromDetails(details, resolver, teamResolver) {

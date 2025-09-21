@@ -434,6 +434,14 @@
           list.push(root + `data/cache/OpenDota/matches/${mid}.json`);
         }
       }catch(_e){}
+      // raw.githubusercontent.com fallback (works reliably on GitHub Pages)
+      try{
+        const m = String(location.pathname||'');
+        const m2 = m.match(/^\/(.+?)\/([^\/]+)\/docs\//); // /<owner>/<repo>/docs/
+        const owner = (m2 && m2[1]) || 'Zeroks77';
+        const repo = (m2 && m2[2]) || 'Kret_Dota';
+        list.push(`https://raw.githubusercontent.com/${owner}/${repo}/main/data/cache/OpenDota/matches/${mid}.json`);
+      }catch(_e){}
       return list;
     })();
     async function tryLoad(url){ try{ const r=await fetch(url,{cache:'force-cache'}); if(r && r.ok){ return await r.json(); } }catch(_e){} return null; }

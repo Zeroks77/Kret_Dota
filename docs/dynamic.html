@@ -1059,12 +1059,17 @@ async function main(){
     try{ const key = Number(id)||0; if(key>0 && __detailCache.has(key)) return __detailCache.get(key); }catch(_e){}
     const rel = `${relBase}/cache/OpenDota/matches/${id}.json`;
     const raw = `${rawBase}/cache/OpenDota/matches/${id}.json`;
+    const IS_GHPAGES = (typeof location !== 'undefined' && /\.github\.io$/i.test(String(location.hostname||'')));
     const isFile = (typeof location !== 'undefined' && location.protocol === 'file:');
     const tryLoad = async (url)=>{ const v = await loadJson(url); return v||null; };
     let md = null;
     // Try cached paths first (skip rel on file://)
-    if(!isFile){ md = await tryLoad(rel); }
-    if(!md){ md = await tryLoad(raw); }
+    if(!isFile){
+      if(IS_GHPAGES){ md = await tryLoad(raw); if(!md) md = await tryLoad(rel); }
+      else { md = await tryLoad(rel); if(!md) md = await tryLoad(raw); }
+    } else {
+      md = await tryLoad(raw); if(!md) md = await tryLoad(rel);
+    }
     // Assess completeness to decide whether to attempt API enrichment (not rejection)
     const isPartial = (obj)=>{
       if(!obj) return true;
