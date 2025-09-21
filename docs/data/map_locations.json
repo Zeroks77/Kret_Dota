@@ -1,0 +1,15 @@
+{
+  "patch": "7.39",
+  "items": [
+    {
+      "id": "loc_example_roshan",
+      "name": "Roshan",
+      "type": "objective",
+      "side": "",
+      "tags": ["roshan"],
+      "notes": "Roshan pit center",
+      "shape": { "kind": "point" },
+      "points": [ { "x": 50.0, "y": 42.0 } ]
+    }
+  ]
+}

@@ -1515,7 +1515,7 @@ async function main(){
       const teamsList = Array.from(teamMap.values());
       const playersList = Array.from(playerMap.values());
   // Mount a single instance; Ward Viewer manages its own Basis/filters
-  window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } });
+  window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, objectivesUrl:'data/map_locations.json', extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } });
     }
   }catch(err){ console.warn('WardViewer mount failed', err); }
 

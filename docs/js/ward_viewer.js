@@ -20,6 +20,7 @@
     .wv-wardmap.enhanced.highlighting svg .spot:not(.hl){opacity:.28}
   .wv-wardmap svg .spot.pinned{stroke:#fbbf24 !important; fill:rgba(251,191,36,.18) !important; stroke-width:2 !important}
   .wv-wardmap svg .pindot{fill:#fbbf24; opacity:.95}
+  .wv-wardmap svg .spot.selected{ stroke:#9ec7ff !important; fill:rgba(158,199,255,.16) !important; stroke-width:2.2 !important; filter:drop-shadow(0 0 10px rgba(158,199,255,.55)) }
   /* tooltip */
   .wv-tooltip{position:absolute;pointer-events:none;z-index:5;min-width:150px;max-width:240px;background:rgba(15,23,42,.95);color:#e5ecf8;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 8px;box-shadow:0 6px 18px rgba(0,0,0,.35);transform:translate(-50%, -110%);opacity:0;transition:opacity .12s}
   .wv-tooltip.show{opacity:1}
@@ -87,6 +88,40 @@
   .wv-settings .wv-segmented .seg.active { background:#2a2a2a; border-color:#3a3a3a; }
   .wv-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; z-index:999; }
   .wv-overlay.show { display:block; }
+  /* Details drawer */
+  .wv-details { position: fixed; top:0; right:0; width: 360px; max-width:92vw; height: 100%; background:#0f152c; border-left:1px solid rgba(255,255,255,.08); box-shadow: -8px 0 24px rgba(0,0,0,0.45); transform: translateX(100%); transition: transform .18s ease-out; z-index: 1001; }
+  .wv-details.open { transform: translateX(0); }
+  .wv-details-inner { padding:12px; height:100%; display:flex; flex-direction:column; gap:10px; }
+  .wv-details-header { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .wv-details-title { font-weight:600; font-size:15px; }
+  .wv-detail-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  .wv-detail-badge { display:inline-block; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.08); color:#eef3fb; font-size:12px; border:1px solid rgba(255,255,255,.12) }
+  .wv-details .hint { color:#9aa7bd; font-size:12px }
+  /* Spot flyout */
+  .wv-spot-flyout { position:absolute; min-width:220px; max-width:320px; background:rgba(15,23,42,.98); color:#e5ecf8; border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px; box-shadow:0 10px 26px rgba(0,0,0,.5); z-index:6; display:none }
+  .wv-spot-flyout.show { display:block }
+  .wv-spot-flyout .hdr { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px }
+  .wv-spot-flyout .title { font-weight:600; font-size:14px }
+  .wv-spot-flyout .row { display:flex; flex-wrap:wrap; gap:6px }
+  .wv-spot-flyout .badge { display:inline-block; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); font-size:12px }
+  /* mini charts */
+  .wv-prog { height:8px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:6px; overflow:hidden; }
+  .wv-prog .fill { height:100%; background:linear-gradient(90deg, rgba(110,180,255,.9), rgba(110,175,255,.55)); box-shadow:0 0 8px rgba(110,180,255,.35) inset; }
+  .wv-stack { display:flex; height:10px; border:1px solid rgba(255,255,255,.12); border-radius:6px; overflow:hidden; }
+  .wv-stack .seg { height:100%; }
+  .wv-seg-inst { background:rgba(255,64,64,.8); }
+  .wv-seg-short { background:rgba(255,140,64,.75); }
+  .wv-seg-med { background:rgba(255,210,64,.75); }
+  .wv-seg-long { background:rgba(80,200,120,.8); }
+  .wv-stack-legend { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+  .wv-stack-legend .key { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#c9d3ea }
+  .wv-stack-legend .dot { width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .wv-friendly .line { margin:6px 0; }
+  .wv-friendly .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  .wv-minibar { display:flex; gap:4px; align-items:flex-end; height:26px; margin-top:4px }
+  .wv-minibar .b { flex:1; position:relative; height:100%; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); border-radius:3px; overflow:hidden }
+  .wv-minibar .b .fill { position:absolute; left:0; right:0; bottom:0; height:0; background:linear-gradient(180deg, rgba(110,180,255,.9), rgba(110,175,255,.55)); box-shadow:0 0 8px rgba(110,180,255,.35) inset }
+  .wv-minibar .cap { display:flex; justify-content:space-between; font-size:10px; color:#9aa7bd; margin-top:2px }
     `;
     const style = document.createElement('style'); style.id='wv-base-styles'; style.textContent=css; document.head.appendChild(style);
   }
@@ -94,7 +129,7 @@
   function mount(host, cfg){
     injectBaseStyles();
     if(!host) return;
-  const data = cfg && cfg.data || {}; const spots = Array.isArray(data.spots)? data.spots: [];
+    const data = cfg && cfg.data || {}; const spots = Array.isArray(data.spots) ? data.spots : [];
   const sentries = Array.isArray(data.sentries)? data.sentries: [];
   const teams = Array.isArray(data.teams)? data.teams: [];
   const players = Array.isArray(data.players)? data.players: [];
@@ -105,12 +140,12 @@
   const showExtras = !!(cfg && cfg.options && cfg.options.showExtras);
   const IGNORE_PLAYER_PERSIST = !!(cfg && cfg.options && cfg.options.ignorePersistedPlayer);
   const IGNORE_CLUSTER_PERSIST = !!(cfg && cfg.options && cfg.options.ignorePersistedCluster);
-  let state = { mode: (cfg && cfg.options && cfg.options.modeDefault) || 'best', team:'', player:'', time:'', overlay:true, grid:false, hotSentries:false, showSentries:false, minCount:1, topN:'all', basis: BASIS_DEFAULT, includeZeroWorst:false, pins:[], pquery:'', tquery:'', cluster:0 };
+  let state = { mode: (cfg && cfg.options && cfg.options.modeDefault) || 'best', team:'', player:'', time:'', overlay:true, grid:false, hotSentries:false, showSentries:false, minCount:1, topN:'all', basis: BASIS_DEFAULT, includeZeroWorst:false, pins:[], pquery:'', tquery:'', cluster:0, wspot:'' };
     // URL/Storage helpers
     function getSP(){ try{ return new URLSearchParams(location.search); }catch(_e){ return new URLSearchParams(); } }
     function replaceUrl(sp){ try{ const url = location.pathname + (sp.toString()? ('?'+sp.toString()):'') + location.hash; history.replaceState(null, '', url); }catch(_e){} }
     const LS_KEY = {
-  mode:'wv_mode', time:'wv_time', team:'wv_team', player:'wv_player', ov:'wv_ov', grid:'wv_grid', hot:'wv_hot', sen:'wv_sen', min:'wv_min', top:'wv_top', basis:'wv_basis', zworst:'wv_zworst', pins:'wv_pins', pquery:'wv_pq', cluster:'wv_cluster'
+  mode:'wv_mode', time:'wv_time', team:'wv_team', player:'wv_player', ov:'wv_ov', grid:'wv_grid', hot:'wv_hot', sen:'wv_sen', min:'wv_min', top:'wv_top', basis:'wv_basis', zworst:'wv_zworst', pins:'wv_pins', pquery:'wv_pq', cluster:'wv_cluster', wspot:'wv_wspot'
     };
     function readStorage(k, def){ try{ const v = localStorage.getItem(k); if(v===null || v===undefined) return def; return v; }catch(_e){ return def; } }
     function writeStorage(k, v){ try{ if(v===undefined || v===null || v===''){ localStorage.removeItem(k); } else { localStorage.setItem(k, String(v)); } }catch(_e){} }
@@ -118,7 +153,7 @@
     const ALLOWED_TIME = new Set(['','early','mid','earlylate','late','superlate']);
   const ALLOWED_BASIS = new Set(['lifetime','contest']);
     function hydrateState(){
-      const sp = getSP();
+  const sp = getSP();
       const urlMode = String(sp.get('wmode')||'');
       const urlTime = String(sp.get('wtime')||'');
       const urlTeam = String(sp.get('wteam')||'');
@@ -136,6 +171,7 @@
   const urlZw   = String(sp.get('wzw')||'');
   const urlPins = String(sp.get('wpins')||'');
   const urlPq   = String(sp.get('wpq')||'');
+  const urlSpot = String(sp.get('wspot')||'');
   const urlPl   = String(sp.get('wplayer')||'');
       const stMode = urlMode || readStorage(LS_KEY.mode, state.mode);
       const stTime = (urlTime!==''? urlTime : (sp.has('wtime')? '' : readStorage(LS_KEY.time, state.time)));
@@ -176,6 +212,7 @@
   const stZw   = urlZw!==''? urlZw : readStorage(LS_KEY.zworst, state.includeZeroWorst? '1':'0');
   const stPins = (urlPins!==''? urlPins : readStorage(LS_KEY.pins, '')).trim();
   const stPq   = urlPq!==''? urlPq : readStorage(LS_KEY.pquery, '');
+  const stWs   = urlSpot!==''? urlSpot : readStorage(LS_KEY.wspot, '');
       if(ALLOWED_MODE.has(stMode)) state.mode = stMode;
       if(ALLOWED_TIME.has(stTime)) state.time = stTime;
       // team can be '', 'Radiant', 'Dire', or 'team:<id>'
@@ -202,6 +239,7 @@
     state.cluster = cr;
   }
   state.includeZeroWorst = (String(stZw)==='1');
+  state.wspot = String(stWs||'');
   
   // (Intelligence removed)
   // pins as array of spot keys
@@ -228,6 +266,7 @@
   setOrRemove('wplayer', state.player, def.player);
   setOrRemove('wpins', (state.pins||[]).join(','), def.pins);
   setOrRemove('wpq', state.pquery||'', def.pq);
+  setOrRemove('wspot', state.wspot||'', '');
     setOrRemove('wcr', String(state.cluster||0), def.cr);
   // no intelligence param
         // Remove legacy param if present
@@ -251,6 +290,7 @@
   writeStorage(LS_KEY.pquery, state.pquery||'');
   // Optionally avoid writing persisted cluster to keep default "Off" in views that opt-in
   if(!IGNORE_CLUSTER_PERSIST){ writeStorage(LS_KEY.cluster, String(state.cluster||0)); }
+  writeStorage(LS_KEY.wspot, state.wspot||'');
   
       // Clean up legacy storage key
       writeStorage('wv_metric', '');
@@ -335,7 +375,7 @@
                 </div>
               </div>` : ''}
             </div>
-            <div class="wv-wardmap enhanced" id="wvMap"><svg></svg><div class="wv-tooltip" id="wvTip" role="tooltip" aria-hidden="true"></div></div>
+            <div class="wv-wardmap enhanced" id="wvMap"><svg></svg><div class="wv-tooltip" id="wvTip" role="tooltip" aria-hidden="true"></div><div class="wv-spot-flyout" id="wvFly"><div class="hdr"><div class="title">Vision Details</div><div style="display:flex;gap:6px"><button class="tab" id="wvFlyCopy">Copy</button><button class="tab" id="wvFlyClose" title="Close">Close</button></div></div><div id="wvFlyBody" class="wv-sub">Pick a ward spot.</div></div></div>
             <div class="wv-settings" id="wvSettings" aria-hidden="true">
               <div class="wv-settings-inner">
                 <div class="wv-title" style="margin:0 0 6px">Settings</div>
@@ -406,6 +446,19 @@
               </div>`:''}
             </div>
           </div>
+          <!-- Global details drawer (fixed) -->
+          <aside class="wv-details" id="wvDetails" aria-hidden="true" role="dialog" aria-label="Vision details">
+            <div class="wv-details-inner">
+              <div class="wv-details-header">
+                <div class="wv-details-title">Vision Details</div>
+                <div style="display:flex; gap:6px">
+                  <button class="tab" id="wvDetailsCopy">Copy link</button>
+                  <button class="tab" id="wvDetailsClose" title="Close">Close</button>
+                </div>
+              </div>
+              <div id="wvDetailsBody" class="wv-sub">Pick a ward spot on the map or from the list.</div>
+            </div>
+          </aside>
         </div>
       </section>`);
     host.innerHTML=''; host.appendChild(root);
@@ -413,6 +466,7 @@
   const overlayEl = document.createElement('div');
   overlayEl.className = 'wv-overlay';
   host.appendChild(overlayEl);
+  // Reuse overlay for details as well
     // Read initial state from URL/localStorage
     hydrateState();
     // Set default active tabs
@@ -422,12 +476,30 @@
   function setActiveTop(){ const wrap=root.querySelector('#wvTop'); if(!wrap) return; wrap.querySelectorAll('.seg').forEach(b=> b.classList.toggle('active', (b.getAttribute('data-top')||'')=== (state.topN==='all'?'all':String(state.topN)))); }
   function setActiveBasis(){ const wrap=root.querySelector('#wvBasis'); if(!wrap) return; wrap.querySelectorAll('.seg').forEach(b=> b.classList.toggle('active', (b.getAttribute('data-basis')||'')===state.basis)); }
   function setActiveCluster(){ const wrap=root.querySelector('#wvCluster'); if(!wrap) return; wrap.querySelectorAll('.seg').forEach(b=> b.classList.toggle('active', Number(b.getAttribute('data-cluster')||'0')===Number(state.cluster))); }
+  function updateViewAndListLabels(){
+    const bestBtn = root.querySelector('#wvTabs .tab[data-wmode="best"]');
+    const worstBtn = root.querySelector('#wvTabs .tab[data-wmode="worst"]');
+    const bestTitle = (root.querySelector('#wvBest') && root.querySelector('#wvBest').previousElementSibling);
+    const worstTitle = (root.querySelector('#wvWorst') && root.querySelector('#wvWorst').previousElementSibling);
+    if(state.basis==='contest'){
+      if(bestBtn) bestBtn.textContent = 'Safest';
+      if(worstBtn) worstBtn.textContent = 'Most contested';
+      if(bestTitle) bestTitle.textContent = 'Safest Spots';
+      if(worstTitle) worstTitle.textContent = 'Most Contested Spots';
+    } else {
+      if(bestBtn) bestBtn.textContent = 'Best';
+      if(worstBtn) worstBtn.textContent = 'Worst';
+      if(bestTitle) bestTitle.textContent = 'Best Spots';
+      if(worstTitle) worstTitle.textContent = 'Worst Spots';
+    }
+  }
   
     setActiveTime();
   setActiveMin();
   setActiveTop();
   setActiveBasis();
   setActiveCluster();
+    updateViewAndListLabels();
   
   
     // Build team and player picklists
@@ -470,7 +542,7 @@
   root.querySelector('#wvTime').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; state.time = btn.getAttribute('data-time')||''; setActiveTime(); persistState(); render(); });
   root.querySelector('#wvMin').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; const v = Math.max(1, parseInt(btn.getAttribute('data-min')||'1',10)); state.minCount = v; setActiveMin(); persistState(); render(); });
   root.querySelector('#wvTop').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; const t = String(btn.getAttribute('data-top')||'15'); state.topN = (t.toLowerCase()==='all')? 'all' : Math.max(1, parseInt(t,10)||15); setActiveTop(); persistState(); render(); });
-  root.querySelector('#wvBasis').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; const b = String(btn.getAttribute('data-basis')||'lifetime'); if(ALLOWED_BASIS.has(b)){ state.basis = b; setActiveBasis(); persistState(); render(); } });
+  root.querySelector('#wvBasis').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; const b = String(btn.getAttribute('data-basis')||'lifetime'); if(ALLOWED_BASIS.has(b)){ state.basis = b; setActiveBasis(); updateViewAndListLabels(); persistState(); render(); } });
   // Intelligence controls removed
   
   root.querySelector('#wvCluster').addEventListener('click',(e)=>{ const btn=e.target.closest('button.seg'); if(!btn) return; const cr = Number(btn.getAttribute('data-cluster')||'0'); state.cluster = (!isFinite(cr) || cr<0)? 0 : cr; setActiveCluster(); persistState(); render(); });
@@ -487,6 +559,55 @@
   try{ const zw=root.querySelector('#wvZeroWorst'); if(zw){ zw.checked = !!state.includeZeroWorst; const lab=zw.closest('label'); if(lab){ lab.style.display = (state.mode==='worst')? '' : 'none'; } zw.addEventListener('change',()=>{ state.includeZeroWorst = !!zw.checked; persistState(); render(); }); } }catch(_e){}
     root.querySelector('#wvOv').addEventListener('change',()=>{ state.overlay = !!root.querySelector('#wvOv').checked; svg.style.display = state.overlay? '':'none'; persistState(); });
   root.querySelector('#wvGrid').addEventListener('change',()=>{ state.grid = !!root.querySelector('#wvGrid').checked; persistState(); render(); });
+  // Compact vs details toggle for flyout (not persisted)
+  let flyDetailOpen = false;
+
+  // Shared render context and helpers accessible to flyout
+  const lastCtx = { spotIndex:null, perfForRanking:null, perf2:null, best:null, worst:null, derived:null,
+    asset:null, hasBounds:false, invertY:false, dynScale:1, obsPct:10, senPct:6, sentIdx:null };
+  function equalSpotKey(a,b){ const ca=String(a||'').replace(/[\[\]\s]/g,''); const cb=String(b||'').replace(/[\[\]\s]/g,''); return ca===cb; }
+  function parseXY(key){ try{ const c=String(key||'').replace(/[\[\]\s]/g,'').split(','); if(c.length!==2) return null; const x=parseFloat(c[0]), y=parseFloat(c[1]); if(!isFinite(x)||!isFinite(y)) return null; return {x,y}; }catch(_e){ return null; } }
+  function normXY(X,Y){ try{
+    const asset = lastCtx.asset; const hasBounds = !!(lastCtx && lastCtx.hasBounds);
+    const invertY = !!(lastCtx && lastCtx.invertY); const dynScale = Number(lastCtx && lastCtx.dynScale || 1);
+    let cx0, cy0;
+    if(hasBounds && asset){ const minX=asset.minX, maxX=asset.maxX, minY=asset.minY, maxY=asset.maxY; const clX=Math.max(minX,Math.min(maxX,Number(X||0))); const clY=Math.max(minY,Math.min(maxY,Number(Y||0))); cx0=(clX-minX)/(maxX-minX); cy0=(clY-minY)/(maxY-minY); if(invertY) cy0=1-cy0; }
+    else { cx0=Math.max(0,Math.min(dynScale,Number(X||0)))/dynScale; cy0=Math.max(0,Math.min(dynScale,Number(Y||0)))/dynScale; if(invertY) cy0=1-cy0; }
+    return {cx: Math.round(cx0*10000)/100, cy: Math.round(cy0*10000)/100};
+  }catch(_e){ return {cx:0,cy:0}; } }
+  function sentryPressureFor(cx, cy){
+    try{
+      const sentIdx = Array.isArray(lastCtx.sentIdx)? lastCtx.sentIdx : [];
+      if(!sentIdx.length) return {pressure:0, top:[], within:false};
+      const senPct = Number(lastCtx.senPct||0);
+      const senR = Math.max(0.008, senPct/100);
+      const senMax = sentIdx.reduce((m,it)=> Math.max(m, Number(it.cntTW||0)), 0) || 1;
+      let acc = 0; const contrib=[]; let anyWithin=false;
+      for(const it of sentIdx){ const dx = cx - Number(it.nx||0), dy = cy - Number(it.ny||0); const dist = Math.hypot(dx,dy); if(dist>senR) continue; anyWithin=true; const w = 1 - (dist/senR); const c = Number(it.cntTW||0)/senMax; const score = Math.max(0, w*c); if(score>0){ acc += score; contrib.push({spot:it.spot, x:it.x, y:it.y, score, count:it.cntTW, r:it.rTW, d:it.dTW}); } }
+      contrib.sort((a,b)=> b.score-a.score);
+      const top = contrib.slice(0,3);
+      const pressure = Math.max(0, Math.min(100, Math.round(Math.min(1, acc)*100)));
+      return { pressure, top, within:anyWithin };
+    }catch(_e){ return {pressure:0, top:[], within:false}; }
+  }
+  function getItemForKey(key){
+    const k = String(key || '');
+    let it = null;
+    try{
+      const spotIndex = lastCtx.spotIndex instanceof Map ? lastCtx.spotIndex : null;
+      if(spotIndex){ it = spotIndex.get(k) || null; if(!it){ for(const [sk,sv] of spotIndex.entries()){ if(equalSpotKey(sk,k)){ it = sv; break; } } }
+      }
+      function findIn(arr){ if(!Array.isArray(arr)) return null; const f = arr.find(s=> equalSpotKey(s.spot, k)); return f||null; }
+      if(!it) it = findIn(lastCtx.perfForRanking);
+      if(!it) it = findIn(lastCtx.perf2);
+      if(!it) it = findIn(lastCtx.best);
+      if(!it) it = findIn(lastCtx.worst);
+      if(!it) it = findIn(lastCtx.derived);
+      if(!it){ const xy = parseXY(k); if(xy){ const tol = 0.2; const cand = (Array.isArray(lastCtx.derived)? lastCtx.derived: []).find(s=>{ const p=parseXY(s.spot); return p && Math.abs(p.x-xy.x)<=tol && Math.abs(p.y-xy.y)<=tol; }); if(cand) it=cand; }
+      }
+    }catch(_e){}
+    return it;
+  }
   // Settings flyout open/close
   (function(){
     const panel = root.querySelector('#wvSettings');
@@ -494,10 +615,17 @@
     const overlay = root.parentElement && root.parentElement.querySelector('.wv-overlay');
     if(!panel || !openBtn || !overlay) return;
   function open(){ panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); overlay.classList.add('show'); setActiveMin(); setActiveTop(); setActiveCluster(); }
-    function close(){ panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); overlay.classList.remove('show'); }
+    function close(){ panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); // don't hide overlay here; may be used by details
+      // hide overlay only if details is closed as well
+      const det = root.querySelector('#wvDetails'); if(det && det.classList.contains('open')){ /* keep overlay */ } else { overlay.classList.remove('show'); } }
     openBtn.addEventListener('click',(e)=>{ e.preventDefault(); if(panel.classList.contains('open')) close(); else open(); });
-    overlay.addEventListener('click', close);
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+    overlay.addEventListener('click', ()=>{ close(); /* overlay is dedicated to settings; flyout uses no overlay */ });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ close(); try{ const fly=root.querySelector('#wvFly'); if(fly && fly.classList.contains('show')){ fly.classList.remove('show'); state.wspot=''; persistState(); } }catch(_e){} } });
+  })();
+  // Close flyout on outside click
+  (function(){
+    function onDocClick(e){ const fly=root.querySelector('#wvFly'); const map=root.querySelector('#wvMap'); if(!fly || !map) return; if(fly.classList.contains('show')){ if(!fly.contains(e.target) && !map.contains(e.target.closest('circle.spot'))){ fly.classList.remove('show'); state.wspot=''; persistState(); } } }
+    document.addEventListener('click', onDocClick);
   })();
   // Inline sentry slider wiring
   (function(){
@@ -588,6 +716,369 @@
     }
     function togglePin(spotKey){ spotKey=String(spotKey||''); if(!spotKey) return; const arr = state.pins||[]; const idx = arr.indexOf(spotKey); if(idx===-1){ arr.push(spotKey); } else { arr.splice(idx,1); } state.pins = arr; persistState(); render(); }
     function isPinned(spotKey){ return (state.pins||[]).includes(String(spotKey||'')); }
+    // Spot flyout helpers
+    function fmtMMSS(secs){ const s=Math.max(0,Math.floor(Number(secs||0))); const m=Math.floor(s/60); const r=s%60; return `${m}m ${r}s`; }
+    function openFlyoutAt(clientX, clientY){ try{ const fly = root.querySelector('#wvFly'); if(!fly) return; const map = root.querySelector('#wvMap'); const box = map.getBoundingClientRect(); let x = clientX - box.left; let y = clientY - box.top; // clamp within map with margin
+      fly.style.visibility = 'hidden'; fly.classList.add('show');
+      const margin = 8; const fw = fly.offsetWidth||260; const fh = fly.offsetHeight||160; x = Math.max(margin, Math.min(box.width - fw - margin, x)); y = Math.max(margin, Math.min(box.height - fh - margin, y)); fly.style.left = x + 'px'; fly.style.top = y + 'px'; fly.style.visibility=''; }catch(_e){} }
+    function closeFlyout(){ try{ const fly=root.querySelector('#wvFly'); if(fly){ fly.classList.remove('show'); } state.wspot=''; persistState(); }catch(_e){} }
+  function renderFlyFor(spotKey, fallback){
+      const body = root.querySelector('#wvFlyBody'); const title = root.querySelector('#wvFly .title'); const copyBtn = root.querySelector('#wvFlyCopy'); const closeBtn = root.querySelector('#wvFlyClose');
+      if(!body) return;
+    const key = String(spotKey||'');
+      let item = getItemForKey(key);
+      if(!item && fallback && String(fallback.spot||'')===key){ item = fallback; }
+      if(!item){
+        // Try last-chance raw spot numeric tolerance and build minimal item
+        let raw = null; try{ const xy=parseXY(key); if(xy){ raw = (spots||[]).find(ss=>{ const p=parseXY(ss.spot); return p && Math.abs(p.x-xy.x)<=0.2 && Math.abs(p.y-xy.y)<=0.2; }) || null; } }catch(_e){}
+        if(raw){ const avg = Number(raw.count||0)>0 ? Math.floor(Number(raw.total||0)/Math.max(1,Number(raw.count||0))) : 0; item = { spot:String(raw.spot||key), x:Number(raw.x||xy&&xy.x||0), y:Number(raw.y||xy&&xy.y||0), count:Number(raw.count||0), avgSeconds:avg, avg:avg, median:0, contest:undefined }; }
+      }
+      if(!item){ body.innerHTML = `<div class='wv-sub'>No data for ${esc(key)}.</div>`; return; }
+  // compute normalized coords using shared normXY
+  const n = normXY(item.x, item.y); const cx = Number(n.cx||0)/100, cy=Number(n.cy||0)/100;
+      // sentry context
+      let sp = {pressure:0, top:[], within:false};
+  try{ sp = sentryPressureFor(cx,cy) || sp; }catch(_e){}
+      const avg = Number(item.avg||item.avgSeconds||0);
+      const med = Number(item.median||0);
+      const cnt = Number(item.count||0);
+      const contest = Number(item.contest!=null? item.contest : (item._contResidual||0));
+      const tier = isFinite(contest)? (contest>=80?'Very High': contest>=60?'High': contest>=40?'Medium': contest>=20?'Low':'Very Low') : '-';
+      const chips = [
+        `<span class='wv-detail-badge'>Avg ${fmtMMSS(avg)}</span>`,
+        med? `<span class='wv-detail-badge'>Med ${fmtMMSS(med)}</span>`:'' ,
+        `<span class='wv-detail-badge'>n=${cnt}</span>`,
+        `<span class='wv-detail-badge'>Contest ${isFinite(contest)? Math.round(contest):'-'}</span>`,
+        `<span class='wv-detail-badge'>${esc(tier)}</span>`
+      ].filter(Boolean).join(' ');
+      // lifetime distribution (if we have samples or can approximate via _v)
+      let lifeDist = null; let lifeFromAggregates=false; try{
+        if(item._v){ lifeDist = { inst:Number(item._v.inst||0), short:Number(item._v.short||0), med:Number(item._v.med||0), long:Number(item._v.long||0) }; lifeFromAggregates = !(Array.isArray(item.samples) && item.samples.length); }
+      }catch(_e){}
+      const distTot = lifeDist? (lifeDist.inst + lifeDist.short + lifeDist.med + lifeDist.long) : 0;
+      const distBlock = lifeDist && distTot>0 ? `
+        <div class='wv-title' style='margin:8px 0 4px'>Lifetime distribution</div>
+        <div class='wv-stack'>
+          <div class='seg wv-seg-inst' style='width:${(100*lifeDist.inst/distTot).toFixed(1)}%'></div>
+          <div class='seg wv-seg-short' style='width:${(100*lifeDist.short/distTot).toFixed(1)}%'></div>
+          <div class='seg wv-seg-med' style='width:${(100*lifeDist.med/distTot).toFixed(1)}%'></div>
+          <div class='seg wv-seg-long' style='width:${(100*lifeDist.long/distTot).toFixed(1)}%'></div>
+        </div>
+        <div class='wv-stack-legend'>
+          <span class='key'><span class='dot wv-seg-inst'></span> ≤5s (${lifeDist.inst})</span>
+          <span class='key'><span class='dot wv-seg-short'></span> ≤30s (${lifeDist.short})</span>
+          <span class='key'><span class='dot wv-seg-med'></span> ≤150s (${lifeDist.med})</span>
+          <span class='key'><span class='dot wv-seg-long'></span> >150s (${lifeDist.long})</span>
+        </div>
+        ${lifeFromAggregates ? `<div class='wv-sub hint' style='margin-top:4px'>approximate distribution (aggregates)</div>` : ''}
+      ` : '';
+      const sent = (sp && Array.isArray(sp.top))? sp.top.slice(0,3).map(o=>{
+        const pt = `${Math.round(o.x)},${Math.round(o.y)}`; return `<li><span>${esc(pt)}</span><span class='wv-detail-badge'>x${o.count||0}</span></li>`;
+      }).join('') : '';
+      // Prefer map-relative, time-filtered sentry pressure used in ranking
+      let __sentPressScaled = NaN;
+      try{
+        const __k = String(item.spot||key);
+        if(lastCtx && lastCtx.pressMap instanceof Map){
+          const pv = lastCtx.pressMap.get(__k);
+          if(isFinite(pv)) __sentPressScaled = Math.round(Number(pv));
+        }
+        if(!isFinite(__sentPressScaled)){
+          // Fallback: compute kernel density at this coordinate and normalize by recorded max
+          const senPctLoc = Number(lastCtx && lastCtx.senPct || 0);
+          const rPct = Math.min(isFinite(senPctLoc)? senPctLoc: 0, 4);
+          const senR = Math.max(0.02, rPct/100);
+          let acc=0;
+          const arr = Array.isArray(lastCtx && lastCtx.sentIdx)? lastCtx.sentIdx : [];
+          for(const it of arr){
+            const dx = cx - Number(it.nx||0), dy = cy - Number(it.ny||0);
+            const dist = Math.hypot(dx,dy);
+            if(dist>senR) continue;
+            const w = 1 - (dist/senR)**2;
+            const c = Math.max(0, Number(it.cntTW||0));
+            acc += w*c;
+          }
+          const maxA = Math.max(1, Number(lastCtx && lastCtx.pressMax || 1));
+          __sentPressScaled = Math.round(100 * Math.max(0, Math.min(1, acc/maxA)));
+        }
+      }catch(_e){}
+      const sentPress = isFinite(__sentPressScaled)? __sentPressScaled : (isFinite(sp && sp.pressure)? Math.round(sp.pressure) : 0);
+      const sentBlock = `
+        <div class='wv-title' style='margin:8px 0 4px'>Sentry pressure</div>
+        <div class='wv-prog'><div class='fill' style='width:${sentPress}%;'></div></div>
+        <div class='wv-sub' style='margin-top:4px'>${sentPress}% relative (current filters & time)</div>
+        <div class='wv-title' style='margin:8px 0 4px'>Nearby sentries</div>
+        ${sp && sp.top && sp.top.length? `<ul class='wv-simple'>${sent}</ul>`: `<div class='wv-sub'>none in range</div>`}`;
+      // Region names (defined early so title can use it)
+      const __regionNames = regionNamesForItem();
+      if(title){
+        const ttl = (__regionNames && __regionNames.length) ? __regionNames.join(', ') : key;
+        title.textContent = `Vision Details — ${ttl}`;
+      }
+      // Region-level typical sentry timings (ignore time window; apply team/player filters)
+      function computeRegionSentryTiming(){
+        try{
+          if(!Array.isArray(__regionNames) || !__regionNames.length) return null;
+          const regs = Array.isArray(lastCtx && lastCtx.regions)? lastCtx.regions : [];
+          if(!regs.length) return null;
+          const chosen = regs.filter(r=> __regionNames.includes(r.name||r.id));
+          if(!chosen.length) return null;
+          function inPolyXY(nx,ny,poly){
+            let inside=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+              const xi=poly[i][0], yi=poly[i][1]; const xj=poly[j][0], yj=poly[j][1];
+              const intersect = ((yi>ny)!==(yj>ny)) && (nx < (xj - xi) * (ny - yi) / ((yj - yi)||1e-9) + xi);
+              if(intersect) inside=!inside;
+            }
+            return inside;
+          }
+          const teamSel = String(state.team||'');
+          const playerSel = String(state.player||'');
+          const phases = [
+            {id:'early', label:'0–10', min:0, max:600},
+            {id:'mid', label:'10–35', min:600, max:2100},
+            {id:'earlylate', label:'35–50', min:2100, max:3000},
+            {id:'late', label:'50–75', min:3000, max:4500},
+            {id:'superlate', label:'75+', min:4500, max:Infinity}
+          ];
+          const counts = new Map(phases.map(p=> [p.id, 0]));
+          const totalByPhase = ()=> phases.map(p=> ({ph:p, n: counts.get(p.id)||0}));
+          const hasPlayer = !!(playerSel && /^\d+$/.test(playerSel));
+          const ps = Array.isArray(sentries)? sentries: [];
+          for(const it of ps){
+            // region membership by sentry location
+            const n = normXY(it.x, it.y); const nx = Number(n.cx||0)/100, ny = Number(n.cy||0)/100;
+            const inAny = chosen.some(r=> Array.isArray(r.poly) && r.poly.length>=3 && inPolyXY(nx,ny,r.poly));
+            if(!inAny) continue;
+            const samp = Array.isArray(it.samples)? it.samples: [];
+            for(const s of samp){
+              // team filter
+              let ok=true;
+              if(teamSel==='Radiant' || teamSel==='Dire'){
+                ok = String(s.side||'')===teamSel;
+              } else if(teamSel.startsWith('team:')){
+                const id=Number(teamSel.split(':')[1]||0);
+                const sid = Number(s.teamId||s.tid||it.teamId||0);
+                ok = (id>0 && sid===id);
+              }
+              if(ok && hasPlayer){ ok = Number(s.aid||s.account_id||0) === Number(playerSel); }
+              if(!ok) continue;
+              const t = Number(s.t||0);
+              const ph = phases.find(p=> t>=p.min && t<p.max);
+              if(ph){ counts.set(ph.id, (counts.get(ph.id)||0) + 1); }
+            }
+          }
+          const bars = totalByPhase();
+          const maxCount = bars.reduce((m,b)=> Math.max(m, b.n||0), 0) || 0;
+          const peak = bars.reduce((best,b)=> (b.n>(best&&best.n||0)? b: best), null);
+          const total = bars.reduce((s,b)=> s + (b.n||0), 0);
+          return { bars, maxCount, peak, total };
+        }catch(_e){ return null; }
+      }
+      const rs = computeRegionSentryTiming();
+      const regionSentryBlock = (rs && rs.total>0) ? `
+        <div class='wv-title' style='margin:8px 0 4px'>Sentry placements in region</div>
+        <div class='wv-minibar'>
+          ${rs.bars.map(b=>{ const h = rs.maxCount>0? Math.round(100 * Math.min(1, Number(b.n||0)/rs.maxCount)) : 0; return `<div class='b' title='${b.ph.label}m: n=${b.n}'><div class='fill' style='height:${h}%'></div></div>`; }).join('')}
+        </div>
+        <div class='wv-minibar cap'><span>0–10</span><span>10–35</span><span>35–50</span><span>50–75</span><span>75+</span></div>
+        <div class='wv-sub' style='margin-top:4px'>Peak: ${rs.peak && rs.peak.ph ? rs.peak.ph.label : '-'}m — n=${rs.peak? rs.peak.n: 0}</div>
+      ` : '';
+      // Side usage and best phase
+  function computeSideStats(){
+        // try to find matching raw spot by flexible key compare
+  let raw = null; try{ raw = (spots||[]).find(ss=> equalSpotKey(ss.spot, key)) || null; }catch(_e){}
+        if(!raw) return null;
+        const playerSel = String(state.player||'');
+        let rC=0, rTot=0, dC=0, dTot=0;
+        if(Array.isArray(raw.samples) && raw.samples.length){
+          for(const sm of raw.samples){
+            if(playerSel && /^\d+$/.test(playerSel) && Number(sm.aid||0)!==Number(playerSel)) continue;
+            const L = Math.max(0, Number((sm.life!=null? sm.life : sm.lifetime)||0));
+            const sd = String(sm.side||'');
+            if(sd==='Radiant'){ rC++; rTot+=L; }
+            else if(sd==='Dire'){ dC++; dTot+=L; }
+          }
+        } else {
+          // fallback to aggregates
+          const r = raw.bySide && raw.bySide.Radiant || {count:0,total:0};
+          const d = raw.bySide && raw.bySide.Dire    || {count:0,total:0};
+          rC = Number(r.count||0); rTot = Number(r.total||0);
+          dC = Number(d.count||0); dTot = Number(d.total||0);
+        }
+        const rAvg = rC>0? Math.floor(rTot/Math.max(1,rC)) : 0;
+        const dAvg = dC>0? Math.floor(dTot/Math.max(1,dC)) : 0;
+        return { rC, rAvg, dC, dAvg };
+      }
+  function computeBestPhase(){
+  let raw = null; try{ raw = (spots||[]).find(ss=> equalSpotKey(ss.spot, key)) || null; }catch(_e){}
+        if(!raw || !Array.isArray(raw.samples) || !raw.samples.length) return null;
+        const playerSel = String(state.player||'');
+        const phases = [
+          {id:'early', label:'Early (0–10m)', min:0, max:600},
+          {id:'mid', label:'Mid (10–35m)', min:600, max:2100},
+          {id:'earlylate', label:'Early Late (35–50m)', min:2100, max:3000},
+          {id:'late', label:'Late (50–75m)', min:3000, max:4500},
+          {id:'superlate', label:'Super Late (75m+)', min:4500, max:Infinity}
+        ];
+        let best = null;
+        for(const ph of phases){
+          let c=0, tot=0;
+          for(const sm of raw.samples){
+            const t = Number(sm.t||0); if(!(t>=ph.min && t<ph.max)) continue;
+            if(playerSel && /^\d+$/.test(playerSel) && Number(sm.aid||0)!==Number(playerSel)) continue;
+            const L = Math.max(0, Number((sm.life!=null? sm.life : sm.lifetime)||0)); c++; tot+=L;
+          }
+          const avg = c>0? Math.floor(tot/Math.max(1,c)) : 0;
+          if(c>0){ if(!best){ best = {phase:ph, avg, n:c}; } else { if(avg > best.avg) best = {phase:ph, avg, n:c}; } }
+        }
+        return best;
+      }
+      const side = computeSideStats();
+      const phase = computeBestPhase();
+      const sideBlock = side ? `
+        <div class='wv-title' style='margin:8px 0 4px'>Usage by side</div>
+        <ul class='wv-simple'>
+          <li><span>Radiant placements</span><span><span class='wv-detail-badge'>x${side.rC}</span>${side.rC? `<span class='wv-detail-badge'>avg ${fmtMMSS(side.rAvg)}</span>`:''}</span></li>
+          <li><span>Dire placements</span><span><span class='wv-detail-badge'>x${side.dC}</span>${side.dC? `<span class='wv-detail-badge'>avg ${fmtMMSS(side.dAvg)}</span>`:''}</span></li>
+        </ul>` : '';
+      // Per-phase mini bar (averages across phases)
+      function computePhaseAverages(){
+        let raw = null; try{ raw = (spots||[]).find(ss=> equalSpotKey(ss.spot, key)) || null; }catch(_e){}
+        if(!raw || !Array.isArray(raw.samples) || !raw.samples.length) return null;
+        const playerSel = String(state.player||'');
+        const phases = [
+          {id:'early', label:'0–10', min:0, max:600},
+          {id:'mid', label:'10–35', min:600, max:2100},
+          {id:'earlylate', label:'35–50', min:2100, max:3000},
+          {id:'late', label:'50–75', min:3000, max:4500},
+          {id:'superlate', label:'75+', min:4500, max:Infinity}
+        ];
+        const out=[]; let maxAvg=0;
+        for(const ph of phases){
+          let c=0, tot=0; for(const sm of raw.samples){ const t=Number(sm.t||0); if(!(t>=ph.min && t<ph.max)) continue; if(playerSel && /^\d+$/.test(playerSel) && Number(sm.aid||0)!==Number(playerSel)) continue; const L=Math.max(0, Number((sm.life!=null? sm.life : sm.lifetime)||0)); c++; tot+=L; }
+          const avg = c>0? Math.floor(tot/Math.max(1,c)) : 0; out.push({ph, avg, n:c}); if(avg>maxAvg) maxAvg=avg;
+        }
+        return { bars:out, maxAvg };
+      }
+      const phaseBars = computePhaseAverages();
+      const phaseBarHtml = phaseBars && phaseBars.bars.some(b=>b.n>0) ? `
+        <div class='wv-minibar'>
+          ${phaseBars.bars.map(b=>{ const h = phaseBars.maxAvg>0? Math.round(100 * Math.min(1, b.avg/phaseBars.maxAvg)) : 0; return `<div class='b' title='${b.ph.label}m: avg ${fmtMMSS(b.avg)} (n=${b.n})'><div class='fill' style='height:${h}%'></div></div>`; }).join('')}
+        </div>
+        <div class='wv-minibar cap'><span>0–10</span><span>10–35</span><span>35–50</span><span>50–75</span><span>75+</span></div>
+      ` : '';
+      const phaseBlock = phase ? `
+        <div class='wv-title' style='margin:8px 0 4px'>Best phase</div>
+        <div class='wv-sub'>Most effective during <b>${phase.phase.label}</b> — <span class='wv-detail-badge'>avg ${fmtMMSS(phase.avg)}</span> <span class='wv-detail-badge'>n=${phase.n}</span></div>
+        ${phaseBarHtml}
+      ` : '';
+  // Effectiveness score (0..100): 30% lifetime, 20% objectives proximity, 30% sentry pressure (inverse), 20% phase performance
+      function effectivenessScore(){
+        // 1) Lifetime (avg vs. a soft cap): scale 0..100 with diminishing returns; 360s ~ full credit
+        const L = Math.max(0, Number(avg||0));
+        const lifePct = Math.max(0, Math.min(100, Math.round(100 * (1 - Math.exp(-L/120))))); // ~63% at 120s, ~86% at 240s, ~95% at 360s
+        // 2) Objectives proximity: higher if closer to objectives; take best (closest) objective within a reasonable radius
+        let objPct = 0;
+        try{
+          // Nearby objectives (includes camps and towers parsed from shared map_locations.json)
+          const objs = Array.isArray(lastCtx.objectivesNorm) ? lastCtx.objectivesNorm : [];
+          if(objs.length){
+            const n = normXY(item.x, item.y); const cx = Number(n.cx||0)/100, cy=Number(n.cy||0)/100;
+            let best = Infinity; let type='';
+            for(const o of objs){ const d = Math.hypot(cx - Number(o.nx||0), cy - Number(o.ny||0)); if(d < best){ best = d; type = o.type; } }
+            // map distance to 0..100: <=3% => 100, 6% => 50, >=12% => ~0
+            const dPct = best * 100; const a=3, b=12; const cl = Math.max(0, Math.min(1, (b - dPct) / (b - a)));
+            objPct = Math.round(100 * cl);
+          }
+        }catch(_e){}
+        // 3) Sentry pressure (lower is better for effectiveness): invert normalized pressure
+        const pScaled = (lastCtx.pressMap && lastCtx.pressMap.get(String(item.spot||''))) || 0;
+        const sentPct = Math.max(0, Math.min(100, 100 - Number(pScaled||0)));
+        // 4) Phase performance: use best phase avg vs overall avg; reward improvement and sample support
+        let phasePct = 0; try{
+          if(phase && isFinite(phase.avg) && isFinite(avg)){
+            const improvement = Math.max(0, Number(phase.avg||0) - Number(avg||0));
+            // Cap benefit at +180s, scale to 0..100, slightly weight by n
+            const base = Math.min(1, improvement/180);
+            const w = Math.min(1, (Number(phase.n||0)/5));
+            phasePct = Math.round(100 * (0.7*base + 0.3*w));
+          }
+        }catch(_e){}
+        const score = Math.round(0.30*lifePct + 0.20*objPct + 0.30*sentPct + 0.20*phasePct);
+        return { score, parts:{ lifePct, objPct, sentPct, phasePct } };
+      }
+      const eff = effectivenessScore();
+      // Region inference (lazy): determine which user-defined regions (polygons) contain this spot
+      function regionNamesForItem(){
+        try{
+          const regs = Array.isArray(lastCtx.regions)? lastCtx.regions : [];
+          if(!regs.length) return [];
+          const n = normXY(item.x, item.y); const x = Number(n.cx||0)/100, y = Number(n.cy||0)/100;
+          function inPoly(x,y,poly){
+            // ray-casting algorithm
+            let inside=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+              const xi=poly[i][0], yi=poly[i][1]; const xj=poly[j][0], yj=poly[j][1];
+              const intersect = ((yi>y)!==(yj>y)) && (x < (xj - xi) * (y - yi) / ((yj - yi)||1e-9) + xi);
+              if(intersect) inside=!inside;
+            }
+            return inside;
+          }
+          const names=[]; for(const r of regs){ if(Array.isArray(r.poly) && r.poly.length>=3 && inPoly(x,y,r.poly)) names.push(r.name||r.id||'Region'); }
+          return names;
+        }catch(_e){ return []; }
+      }
+      function tierFromScore(s){ if(s>=85) return 'Very High'; if(s>=70) return 'High'; if(s>=50) return 'Medium'; if(s>=30) return 'Low'; return 'Very Low'; }
+      const effTier = tierFromScore(eff.score);
+      const sideText = side ? `Radiant: ${side.rC}x${side.rC? ` (avg ${fmtMMSS(side.rAvg)})`:''} · Dire: ${side.dC}x${side.dC? ` (avg ${fmtMMSS(side.dAvg)})`:''}` : '';
+      const phaseText = phase ? `${phase.phase.label} — avg ${fmtMMSS(phase.avg)} · n=${phase.n}` : '';
+      const barBlocks = (p)=>{
+        const pct = Math.max(0, Math.min(100, Number(p||0)));
+        const filled = Math.round(pct/10);
+        return '█'.repeat(filled) + '░'.repeat(10-filled);
+      };
+      const friendly = `
+        <div class='wv-friendly'>
+          <div class='line'>📍 <b>Ward Spot</b>: <span class='mono'>${esc(key)}</span></div>
+          ${__regionNames && __regionNames.length ? `<div class='line'>📦 <b>Region</b>: ${esc(__regionNames.join(', '))}</div>` : ''}
+          <div class='line'>🕒 <b>Average duration</b>: ${fmtMMSS(avg)}</div>
+          <div class='line'>📊 <b>Placements</b>: ${cnt}</div>
+          <div class='line'>🔖 <b>Effectiveness</b>: ${esc(effTier)} (${eff.score})</div>
+          <div class='line'>🛡️ <b>Sentry pressure</b>: ${sentPress}%<br><span class='mono'>[${barBlocks(sentPress)}]</span></div>
+          <div class='line'>👀 <b>Nearby sentries</b>: ${(sp && sp.top && sp.top.length) ? `${sp.top.length} nearby` : 'none'}</div>
+          ${side? `<div class='line'>⚔️ <b>Usage</b>: ${esc(sideText)}</div>`:''}
+          ${phase? `<div class='line'>📅 <b>Best phase</b>: ${esc(phase.phase.label)} (avg ${fmtMMSS(phase.avg)}, n=${phase.n})</div>`:''}
+        </div>
+      `;
+      // Effectiveness breakdown badges
+      const effParts = eff && eff.parts ? eff.parts : {lifePct:0,objPct:0,sentPct:0,phasePct:0};
+      const effBreak = `
+        <div class='wv-title' style='margin:8px 0 4px'>Effectiveness breakdown</div>
+        <div class='wv-detail-row'>
+          <span class='wv-detail-badge'>Lifetime ${effParts.lifePct}</span>
+          <span class='wv-detail-badge'>Objectives ${effParts.objPct}</span>
+          <span class='wv-detail-badge'>Sentries ${effParts.sentPct}</span>
+          <span class='wv-detail-badge'>Phase ${effParts.phasePct}</span>
+        </div>
+      `;
+  const detailsHtml = `${effBreak}${distBlock}${sentBlock}${regionSentryBlock}${sideBlock}${phaseBlock}`;
+      body.innerHTML = `
+        ${friendly}
+        <div style='display:flex; gap:6px; margin-top:8px'>
+          <button class='tab' id='wvFlyMore'>${flyDetailOpen? 'Hide details':'Show details'}</button>
+          <button class='tab' id='wvDetPin'>${isPinned(key)?'Unpin':'Pin'}</button>
+        </div>
+        <div id='wvFlyDet' style='display:${flyDetailOpen? 'block':'none'}; margin-top:6px'>
+          <div class='wv-detail-row' style='margin:4px 0'>${chips}</div>
+          <div class='wv-sub hint'>Team: ${esc(state.team||'All')} · Time: ${esc(timeWindow().label)} · Basis: ${esc(state.basis)}</div>
+          ${detailsHtml}
+        </div>
+      `;
+      // actions
+  const pinBtn = body.querySelector('#wvDetPin'); if(pinBtn){ pinBtn.addEventListener('click', ()=>{ togglePin(key); renderFlyFor(key); }); }
+  const moreBtn = body.querySelector('#wvFlyMore'); if(moreBtn){ moreBtn.addEventListener('click', ()=>{ flyDetailOpen = !flyDetailOpen; const det = body.querySelector('#wvFlyDet'); if(det){ det.style.display = flyDetailOpen? 'block':'none'; } moreBtn.textContent = flyDetailOpen? 'Hide details' : 'Show details'; }); }
+      if(copyBtn){ copyBtn.onclick = ()=>{ try{ const sp=new URLSearchParams(location.search); sp.set('wspot', key); navigator.clipboard.writeText(location.pathname + '?' + sp.toString() + location.hash); copyBtn.textContent='Copied'; setTimeout(()=> copyBtn.textContent='Copy', 1000); }catch(_e){} }; }
+      if(closeBtn){ closeBtn.onclick = ()=> closeFlyout(); }
+    }
     function render(){
     // (summary chips removed for a cleaner UI)
     // derive base metrics per raw spot
@@ -829,19 +1320,42 @@
           g.appendChild(circ);
         }
       }
-      // Blend sentry pressure into contest and finalize derived items
+      // Compute kernel-based raw sentry density per spot, then normalize across all spots for better contrast
+      function pressureAcc(cx, cy){
+        // Use a compact radius to differentiate spots; cap to 4% of map if derived from settings
+        const rPct = Math.min(Number(senPct||0), 4);
+        const senR = Math.max(0.02, rPct/100);
+        let acc = 0;
+        for(const it of sentIdx){
+          const dx = cx - Number(it.nx||0), dy = cy - Number(it.ny||0);
+          const dist = Math.hypot(dx,dy);
+          if(dist>senR) continue;
+          // Quadratic kernel: stronger emphasis on closer sentries
+          const w = 1 - (dist/senR)**2;
+          const c = Math.max(0, Number(it.cntTW||0));
+          acc += w * c;
+        }
+        return acc;
+      }
+      const pressRaw = perf.map(s=>{ const npt = norm(s.x,s.y); const cx = Number(npt.cx||0)/100, cy=Number(npt.cy||0)/100; return { key:String(s.spot||''), acc: pressureAcc(cx,cy) }; });
+    const maxAcc = pressRaw.reduce((m,o)=> Math.max(m, Number(o.acc||0)), 0) || 1;
+  const pressMap = new Map(pressRaw.map(o=> [o.key, Math.round(100 * (Math.max(0, Number(o.acc||0)) / Math.max(1, maxAcc)))]));
+      // Blend normalized sentry pressure with shortness residual and finalize items
       const finalized = perf.map(s=>{
-        const npt = norm(s.x, s.y); const sp = sentryPressureFor(Number(npt.cx||0)/100, Number(npt.cy||0)/100);
-        const contest = Math.round(0.7*sp.pressure + 0.3*Number(s._contResidual||0));
+        const npt = norm(s.x, s.y);
+        const cx = Number(npt.cx||0)/100, cy = Number(npt.cy||0)/100;
+        const sp = sentryPressureFor(cx, cy); // reuse for top list + within flag
+        const pScaled = pressMap.get(String(s.spot||'')) || 0;
+        const contest = Math.round(0.6*pScaled + 0.4*Number(s._contResidual||0));
         let rankVal = (state.basis==='contest')? contest : Number(s.avg||0);
         const topSentriesShort = (sp.top||[]).map(o=>`${Math.round(o.x)},${Math.round(o.y)}:${o.count}`).join('|');
-        return { spot:s.spot, x:s.x, y:s.y, count:s.count, avgSeconds:rankVal, avg:Number(s.avg||0), median:Number(s.median||0), contest, sentryTop:(sp.top||[]), sentryTopStr:topSentriesShort, senPressure:sp.pressure, senWithin: !!sp.within };
+        return { spot:s.spot, x:s.x, y:s.y, count:s.count, avgSeconds:rankVal, avg:Number(s.avg||0), median:Number(s.median||0), contest, sentryTop:(sp.top||[]), sentryTopStr:topSentriesShort, senPressure:pScaled, senWithin: !!sp.within };
       });
       // Replace perf with finalized values for ranking and rendering
       const perf2 = finalized;
     let perfForRanking = perf2;
   if(Number(state.cluster||0) > 0){ perfForRanking = clusterize(perf2, Number(state.cluster)); }
-    let filteredForRanking = perfForRanking;
+  let filteredForRanking = perfForRanking;
     if(clusterOn){ filteredForRanking = perfForRanking.filter(s=> Number(s.count||0) >= Number(state.minCount||1)); }
         if(state.mode==='best'){
           if(state.basis==='contest'){
@@ -858,11 +1372,42 @@
           worst = wsrc.sort((a,b)=> (Number(a.avgSeconds||0)-Number(b.avgSeconds||0))||(Number(b.count||0)-Number(a.count||0))).slice(0, topN);
         }
       }
+  // Index of spots currently rendered (accounts for clustering)
+  const spotIndex = new Map();
+  function equalSpotKey(a,b){ const ca=String(a||'').replace(/[\[\]\s]/g,''); const cb=String(b||'').replace(/[\[\]\s]/g,''); return ca===cb; }
+  function parseXY(key){ try{ const c=String(key||'').replace(/[\[\]\s]/g,'').split(','); if(c.length!==2) return null; const x=parseFloat(c[0]), y=parseFloat(c[1]); if(!isFinite(x)||!isFinite(y)) return null; return {x,y}; }catch(_e){ return null; } }
+  function getItemForKey(key){
+    const k = String(key || '');
+    const ck = k.replace(/[\[\]\s]/g,'');
+    let it = null;
+    try{
+      // 1) direct in spotIndex (exact or cleaned)
+      it = spotIndex.get(k) || null;
+      if(!it){ for(const [sk,sv] of spotIndex.entries()){ if(equalSpotKey(sk,k)){ it = sv; break; } } }
+      // 2) search lists by cleaned key
+      function findIn(arr){ if(!Array.isArray(arr)) return null; const f = arr.find(s=> equalSpotKey(s.spot, k)); return f||null; }
+      if(!it) it = findIn(filteredForRanking);
+      if(!it) it = findIn(perfForRanking);
+      if(!it) it = findIn(perf2);
+      if(!it) it = findIn(best);
+      if(!it) it = findIn(worst);
+      if(!it) it = findIn(derived);
+      // 3) numeric near-match tolerance on derived
+      if(!it){ const xy = parseXY(k); if(xy){ const tol = 0.2; // tolerate small rounding differences
+          function parseItemXY(skey){ const p=parseXY(skey); return p? p : null; }
+          const cand = (derived||[]).find(s=>{ const p=parseItemXY(s.spot); return p && Math.abs(p.x-xy.x)<=tol && Math.abs(p.y-xy.y)<=tol; });
+          if(cand) it=cand; }
+      }
+    }catch(_e){}
+    return it;
+  }
   function addSpot(list, cls){
     function colorForContest(d){ const t = Math.max(0, Math.min(1, Number(d||0)/100)); const h = 120*(1-t); const stroke = `hsl(${h} 80% 55%)`; const fill = `hsla(${h} 80% 55% / 0.32)`; return {stroke, fill}; }
     list.forEach(s=>{
       const {cx,cy}=norm(s.x,s.y);
       const key=String(s.spot||'');
+      // track for details lookup
+      try{ spotIndex.set(key, s); }catch(_e){}
   const drawIcon = false;
       const ring = document.createElementNS('http://www.w3.org/2000/svg','circle');
       ring.setAttribute('cx',cx+'%'); ring.setAttribute('cy',cy+'%');
@@ -893,6 +1438,16 @@
         ring.style.fill = fill;
         ring.setAttribute('stroke-width', '1');
       }
+      // If regions are available, annotate with data-region for simple inspection/debug (comma-separated)
+      try{
+        const regs = Array.isArray(lastCtx && lastCtx.regions)? lastCtx.regions : [];
+        if(regs.length){
+          const nx = Number(cx)/100, ny = Number(cy)/100;
+          function inPoly(x,y,poly){ let inside=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){ const xi=poly[i][0], yi=poly[i][1]; const xj=poly[j][0], yj=poly[j][1]; const intersect = ((yi>y)!==(yj>y)) && (x < (xj - xi) * (y - yi) / ((yj - yi)||1e-9) + xi); if(intersect) inside=!inside; } return inside; }
+          const names = regs.filter(r=> Array.isArray(r.poly)&&r.poly.length>=3 && inPoly(nx,ny,r.poly)).map(r=> r.name||r.id||'Region');
+          if(names.length) ring.setAttribute('data-region', names.join(','));
+        }
+      }catch(_e){}
       svg.appendChild(ring);
       const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
       dot.setAttribute('cx',cx+'%'); dot.setAttribute('cy',cy+'%');
@@ -902,7 +1457,19 @@
         stroke = colorForContest(Number(s.contest||0)).stroke;
       }
       dot.style.fill = stroke; dot.setAttribute('opacity','0.95'); svg.appendChild(dot);
-      ring.addEventListener('click', ()=> togglePin(key)); dot.addEventListener('click', ()=> togglePin(key));
+      function onPick(evt){
+        const multi = evt && (evt.ctrlKey || evt.metaKey || evt.shiftKey);
+        if(multi){ togglePin(key); return; }
+        state.wspot = key; persistState();
+        // highlight selected
+        svg.querySelectorAll('.spot.selected').forEach(n=> n.classList.remove('selected'));
+        ring.classList.add('selected');
+        const box = ring.getBoundingClientRect();
+        openFlyoutAt((box.left+box.right)/2, (box.top+box.bottom)/2);
+        renderFlyFor(key, s);
+      }
+      ring.addEventListener('click', onPick);
+      dot.addEventListener('click', onPick);
     });
   }
   // hotspots and sentry markers first (underlay)
@@ -916,7 +1483,7 @@
     const legend = root.querySelector('#wvLegend');
   if(legend){ if(state.basis==='contest'){ legend.textContent = 'Green = Safest (low contest), Red = Most contested (high contest). Contest couples local sentry pressure with short-lifetime residuals.'; } else { legend.textContent = 'Green = Best avg lifetime, Red = Worst.'; } }
       // lists
-  function listify(arr){ if(!arr.length) return `<div class='wv-sub'>No data</div>`; return `<ul class='wv-simple'>`+arr.map((s,idx)=>{ const mmA = Math.floor((Number(s.avg||0))/60), ssA = (Number(s.avg||0))%60; const coords = (s.spot||'').replace(/\[|\]|\s/g,''); const pin = isPinned(s.spot) ? 'Unpin' : 'Pin'; const contestBadge = (state.basis==='contest')? `<span class='wv-badge'>contest ${Math.round(Number(s.contest||0))}</span>`:''; const timeBadge = `<span class='wv-badge'>avg ${mmA}m ${ssA}s</span>`; return `<li data-spot='${s.spot||''}'><span style='display:flex;align-items:center;gap:8px'><span class='wv-badge' style='min-width:54px;text-align:center'>Ward ${idx+1}</span><span class='wv-sub' style='opacity:.8'>${coords}</span></span><span style='display:flex;gap:6px'>${contestBadge}${timeBadge}${s.count? `<span class='wv-badge'>x${s.count}</span>`:''}<button class='tab' data-pin='${esc(String(s.spot||''))}'>${pin}</button></span></li>`; }).join('')+`</ul>`; }
+  function listify(arr){ if(!arr.length) return `<div class='wv-sub'>No data</div>`; return `<ul class='wv-simple'>`+arr.map((s,idx)=>{ const mmA = Math.floor((Number(s.avg||0))/60), ssA = (Number(s.avg||0))%60; const key = String(s.spot||''); const coords = key.replace(/\[|\]|\s/g,''); const pin = isPinned(key) ? 'Unpin' : 'Pin'; const contestBadge = (state.basis==='contest')? `<span class='wv-badge'>contest ${Math.round(Number(s.contest||0))}</span>`:''; const timeBadge = `<span class='wv-badge'>avg ${mmA}m ${ssA}s</span>`; return `<li data-spot='${esc(key)}'><span style='display:flex;align-items:center;gap:8px'><span class='wv-badge' style='min-width:54px;text-align:center'>Ward ${idx+1}</span><span class='wv-sub' style='opacity:.8'>${coords}</span></span><span style='display:flex;gap:6px'>${contestBadge}${timeBadge}${s.count? `<span class='wv-badge'>x${s.count}</span>`:''}<button class='tab' data-pin='${esc(key)}'>${pin}</button></span></li>`; }).join('')+`</ul>`; }
       const bestEl=root.querySelector('#wvBest'); if(bestEl) bestEl.innerHTML = listify(best);
       const worstEl=root.querySelector('#wvWorst'); if(worstEl) worstEl.innerHTML = listify(worst);
       // extras
@@ -936,10 +1503,85 @@
       });
       function bindList(id){ const c=root.querySelector(id); if(!c) return; c.querySelectorAll('li[data-spot]').forEach(li=>{ li.addEventListener('mouseenter',()=>{ const spot=li.getAttribute('data-spot'); svg.closest('.wv-wardmap').classList.add('highlighting'); svg.querySelectorAll('.spot').forEach(n=>{ if(n.getAttribute('data-spot')===spot) n.classList.add('hl'); }); }); li.addEventListener('mouseleave',()=>{ svg.closest('.wv-wardmap').classList.remove('highlighting'); svg.querySelectorAll('.spot.hl').forEach(n=> n.classList.remove('hl')); }); }); }
   bindList('#wvBest'); bindList('#wvWorst');
+  // Click on list to open details (non-button area)
+  function bindListClicks(id){ const c=root.querySelector(id); if(!c) return; c.querySelectorAll('li[data-spot]').forEach(li=>{ li.addEventListener('click',(e)=>{ if(e.target.closest('[data-pin]')) return; const key=li.getAttribute('data-spot'); state.wspot=key||''; persistState(); try{ const map=root.querySelector('#wvMap'); const rect=map.getBoundingClientRect(); openFlyoutAt(rect.left + rect.width - 16, rect.top + 16); }catch(_e){} renderFlyFor(key); }); }); }
+  bindListClicks('#wvBest'); bindListClicks('#wvWorst');
   // Pin buttons in lists
   root.querySelectorAll('[data-pin]').forEach(btn=>{ btn.addEventListener('click', (e)=>{ e.stopPropagation(); const key=btn.getAttribute('data-pin'); togglePin(key); }); });
+  // If there's a selected spot in state, open flyout and attempt to highlight near the spot
+  if(state.wspot){ try{ svg.querySelectorAll('.spot').forEach(n=>{ if(n.getAttribute('data-spot')===state.wspot){ n.classList.add('selected'); const box=n.getBoundingClientRect(); openFlyoutAt((box.left+box.right)/2, (box.top+box.bottom)/2); } }); }catch(_e){} renderFlyFor(state.wspot); }
   // Update pins bar
   setPinsBar();
+  // Update shared context for flyout lookups
+  try{
+    lastCtx.spotIndex = spotIndex;
+    lastCtx.perfForRanking = filteredForRanking;
+    lastCtx.perf2 = perf2;
+    lastCtx.best = best;
+    lastCtx.worst = worst;
+    lastCtx.derived = derived;
+    lastCtx.asset = asset;
+    lastCtx.hasBounds = !!hasBounds;
+    lastCtx.invertY = !!invertY;
+    lastCtx.dynScale = dynScale;
+    lastCtx.obsPct = obsPct;
+    lastCtx.senPct = senPct;
+    lastCtx.sentIdx = sentIdx;
+  lastCtx.pressMap = pressMap;
+  lastCtx.pressMax = maxAcc;
+    // Optional objectives passed via map config or options, with support for shared map_locations.json structure
+    let objectives = (mc && mc.objectives && Array.isArray(mc.objectives) ? mc.objectives : (cfg && cfg.options && Array.isArray(cfg.options.objectives) ? cfg.options.objectives : null)) || null;
+    // If cfg.options.objectivesUrl is provided, try to fetch it and merge lazily
+    async function tryLoadExternalObjectives(url){
+      try{
+        const res = await fetch(url, {cache:'no-store'});
+        if(res.ok){
+          const data = await res.json();
+          // Accept either {items:[...]} or direct array
+          const items = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
+          // Points considered objectives for proximity: explicit objectives and camps
+          const pts = items.filter(it=> (it && (String(it.type||'')==='objective' || String(it.type||'')==='camp')) && Array.isArray(it.points) && it.points.length)
+            .map(it=>({ x: Number(it.points[0].x||0), y: Number(it.points[0].y||0), type: String(it.type||'objective') }));
+          const existing = Array.isArray(objectives) ? objectives.slice() : [];
+          const merged = existing.concat(pts);
+          lastCtx.objectivesNorm = merged.map(pt=>{ const n = norm(pt.x, pt.y); return { nx: Number(n.cx||0)/100, ny: Number(n.cy||0)/100, type: String(pt.type||'') }; });
+          // Also parse regions (polygons) for later use
+          const regs = items.filter(it=> String(it.type||'')==='region' && it.shape && it.shape.kind==='polygon' && Array.isArray(it.points) && it.points.length>=3)
+            .map(it=>({ id:String(it.id||''), name:String(it.name||''),
+                        poly: it.points.map(p=>{ const n=norm(Number(p.x||0), Number(p.y||0)); return [Number(n.cx||0)/100, Number(n.cy||0)/100]; }) }));
+          if(regs.length){ lastCtx.regions = regs; }
+          return;
+        }
+      }catch(_e){}
+      // Fallback to current objectives if fetch failed
+      const arr = Array.isArray(objectives)? objectives : [];
+      lastCtx.objectivesNorm = arr.map(pt=>{ const n = norm(pt.x, pt.y); return { nx: Number(n.cx||0)/100, ny: Number(n.cy||0)/100, type: String(pt.type||'') }; });
+    }
+    if(Array.isArray(objectives)){
+      lastCtx.objectivesNorm = objectives.map(pt=>{ const n = norm(pt.x, pt.y); return { nx: Number(n.cx||0)/100, ny: Number(n.cy||0)/100, type: String(pt.type||'') }; });
+      // If an external URL is configured, augment lazily
+      const url = cfg && cfg.options && cfg.options.objectivesUrl;
+      if(url){ tryLoadExternalObjectives(String(url)); }
+    } else {
+      // No inline objectives: attempt external if configured, else empty
+      const url = cfg && cfg.options && cfg.options.objectivesUrl;
+      if(url){
+        // Try the provided URL first
+        tryLoadExternalObjectives(String(url));
+        // Also attempt common fallbacks if path looks relative to docs/
+        try{
+          const isRel = !/^https?:/i.test(String(url));
+          if(isRel){
+            const rootAlt = String(url).replace(/^\.\/data\//,'../data/').replace(/^data\//,'../data/');
+            if(rootAlt!==url) tryLoadExternalObjectives(rootAlt);
+          }
+        }catch(_e){}
+      }
+      else { lastCtx.objectivesNorm = []; }
+    }
+    // Ensure regions is always an array for downstream
+    if(!Array.isArray(lastCtx.regions)) lastCtx.regions = [];
+  }catch(_e){}
     }
     // initial render
   // Persist initial state (to reflect defaults/params)

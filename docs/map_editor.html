@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dota Map Editor — Regions, Camps, Objectives</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1224;
+      --card: #0f152c;
+      --muted: #9aa7bd;
+      --text: #e5ecf8;
+      --border: rgba(255,255,255,.12);
+      --accent: #6db1ff;
+    }
+    * { box-sizing: border-box }
+    html, body { height:100% }
+    body { margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text) }
+    .wrap { max-width: 1200px; margin: 18px auto; padding: 0 12px }
+    h1 { margin: 0 0 8px; font-size: 20px }
+    .sub { color: var(--muted); font-size: 13px; margin-bottom: 10px }
+
+    .grid { display:grid; grid-template-columns: 1.3fr .7fr; gap: 12px; align-items:start }
+    @media (max-width: 980px){ .grid{ grid-template-columns:1fr } }
+
+    .card { background: var(--card); border:1px solid var(--border); border-radius:12px; padding:10px }
+    .toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px }
+    .toolbar .seg { padding:6px 10px; border:1px solid var(--border); background: rgba(255,255,255,.06); color: var(--text); border-radius: 999px; font-size:12px; cursor:pointer }
+    .toolbar .seg.active { background: linear-gradient(160deg,rgba(110,180,255,.35),rgba(110,175,255,.08)); border-color: rgba(110,180,255,.55) }
+    .toolbar .spacer { flex:1 }
+    .toolbar .right { display:flex; gap:8px; align-items:center }
+
+    .map { position:relative; width:100%; aspect-ratio:1/1; border:1px solid var(--border); border-radius:12px; background:#091022 }
+    .map img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:12px }
+    .map svg { position:absolute; inset:0; width:100%; height:100% }
+
+    .prop { display:grid; grid-template-columns: 1fr; gap:8px }
+    .prop label { display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--muted) }
+    .prop input, .prop select, .prop textarea { width:100%; padding:6px 8px; border-radius:8px; border:1px solid var(--border); background: rgba(255,255,255,.06); color: var(--text); font-size:13px }
+    .prop textarea { min-height: 70px }
+
+    .list { max-height: 360px; overflow:auto; border:1px solid var(--border); border-radius:10px; padding:6px; background: linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02)) }
+    .list .item { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 8px; border-radius:8px; cursor:pointer }
+    .list .item:hover { background: rgba(255,255,255,.06) }
+    .list .item.active { outline:2px solid rgba(109,166,255,.5); background: linear-gradient(180deg,rgba(109,166,255,.2),rgba(109,166,255,.08)) }
+
+    .hint { color: var(--muted); font-size:12px }
+    .badges { display:flex; gap:6px; flex-wrap:wrap }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; background: rgba(255,255,255,.08); border:1px solid var(--border); font-size:12px }
+
+    .row { display:flex; gap:8px; align-items:center }
+    .row > * { flex:1 }
+    .actions { display:flex; gap:8px; flex-wrap:wrap }
+    .btn { padding:6px 10px; border:1px solid var(--border); background: rgba(255,255,255,.06); color: var(--text); border-radius:8px; cursor:pointer; font-size:12px }
+    .btn.primary { background: linear-gradient(160deg,rgba(110,180,255,.35),rgba(110,175,255,.08)); border-color: rgba(110,180,255,.55) }
+    .btn.danger { background: rgba(255,64,64,.25); border-color: rgba(255,64,64,.55) }
+
+    /* drawing styles */
+    .g-point { fill: #fbbf24; stroke: #fbbf24; stroke-width:.8; opacity:.95 }
+    .g-circle { fill: rgba(80,200,120,.18); stroke: #34d399; stroke-width:1.4 }
+    .g-poly { fill: rgba(110,175,255,.18); stroke: #6db1ff; stroke-width:1.6 }
+    .g-handle { fill: #fff; stroke: #6db1ff; stroke-width:1.2 }
+    .g-selected { filter: drop-shadow(0 0 8px rgba(110,180,255,.6)) }
+    /* highlight overlay for selected items */
+    .g-sel-halo { fill: rgba(255,209,102,.14); stroke: #ffd166; stroke-width: 2.4; pointer-events: none }
+    .g-sel-halo.poly { fill: rgba(109,177,255,.22); stroke: #ffffff; stroke-width: 2.6; pointer-events: none }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Map Editor</h1>
+    <div class="sub">Create and edit named locations (regions, camps, objectives) for reuse across components, including the Ward Viewer.</div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="toolbar">
+          <div class="seg" data-tool="select">Select</div>
+          <div class="seg" data-tool="point">Point</div>
+          <div class="seg" data-tool="circle">Circle</div>
+          <div class="seg" data-tool="polygon">Polygon</div>
+          <div class="spacer"></div>
+          <div class="row" style="flex:0 0 280px">
+            <select id="patch"></select>
+            <select id="category">
+              <option value="objective">Objective</option>
+              <option value="camp">Camp</option>
+              <option value="region">Region</option>
+              <option value="poi">POI</option>
+            </select>
+          </div>
+          <div class="right">
+            <button class="btn" id="btnImport">Import</button>
+            <button class="btn" id="btnExport">Export</button>
+            <button class="btn" id="btnDownload">Download JSON</button>
+          </div>
+        </div>
+        <div class="map" id="map">
+          <img id="mapImg" alt="map" />
+          <svg id="svg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="hint" style="margin-top:6px">Tip: Use point for towers/roshan, circle for neutral camps or areas, polygon for custom regions.</div>
+      </div>
+
+      <div class="card">
+        <div class="prop">
+          <label>Name <input id="name" placeholder="e.g., Dire Safe Camp" /></label>
+          <div class="row">
+            <label>Type
+              <select id="type">
+                <option value="objective">Objective</option>
+                <option value="camp">Camp</option>
+                <option value="region">Region</option>
+                <option value="poi">POI</option>
+              </select>
+            </label>
+            <label>Side
+              <select id="side">
+                <option value="">Neutral</option>
+                <option value="Radiant">Radiant</option>
+                <option value="Dire">Dire</option>
+              </select>
+            </label>
+          </div>
+          <label>Tags (comma separated)
+            <input id="tags" placeholder="e.g., t1,tower,mid,roshan" />
+          </label>
+          <label>Notes
+            <textarea id="notes" placeholder="Optional description"></textarea>
+          </label>
+
+          <div class="badges" id="shapeInfo"></div>
+
+          <div class="actions">
+            <button class="btn primary" id="save">Save / Update</button>
+            <button class="btn" id="new">New</button>
+            <button class="btn danger" id="remove">Delete</button>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <div class="row">
+            <input id="search" placeholder="Search name/tag/type/side…" />
+            <select id="filterType">
+              <option value="">All types</option>
+              <option value="objective">Objective</option>
+              <option value="camp">Camp</option>
+              <option value="region">Region</option>
+              <option value="poi">POI</option>
+            </select>
+          </div>
+          <div class="list" id="items"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/map_editor.js"></script>
+</body>
+</html>

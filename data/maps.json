@@ -1,8 +1,8 @@
 {
   "default": "https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg",
   "defaultScale": 127,
-  "defaultObsRadiusPct": 22,
-  "defaultSenRadiusPct": 12,
+  "defaultObsRadiusPct": 28,
+  "defaultSenRadiusPct": 22,
   "current": "7.39",
   "major": {
     "7.39": {
