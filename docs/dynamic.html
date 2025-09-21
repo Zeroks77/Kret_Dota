@@ -97,6 +97,16 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--border)}
 .spinner{width:36px;height:36px;border:3px solid rgba(158,199,255,.3);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+/* Small, low-emphasis button */
+.ghost{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 8px;border-radius:8px;cursor:pointer}
+.ghost:hover{background:rgba(255,255,255,.05);color:var(--text)}
+/* Players: streak row (last 15 games) */
+.streakRow td{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border-top:1px solid var(--border)}
+.streak{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.streak .tok{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;border-radius:5px;font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,.12);text-decoration:none}
+.streak .tok.win{background:#1f3b2e;color:#7be495;border-color:rgba(123,228,149,.35)}
+.streak .tok.loss{background:#3b1f1f;color:#ff8b8b;border-color:rgba(255,139,139,.35)}
+.streak .label{color:var(--muted);margin-right:6px}
 </style>
 <script defer src="js/ward_viewer.js"></script>
 <script defer src="js/lane_duos_viewer.js"></script>
@@ -142,7 +152,11 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     </div>
     <div class="field">
       <label for="playerFilter">Player filter</label>
-      <select id="playerFilter"><option value="">All players</option></select>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <select id="playerFilter"><option value="">All players</option></select>
+        <span id="playerGamesBadge" class="badge" title="Games for selected player in range" style="display:none"></span>
+        <button id="playerClear" class="ghost" title="Clear player filter" style="display:none">Clear</button>
+      </div>
     </div>
     
     <div class="field">
@@ -264,6 +278,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Best Duos</h2>
       <div id="duosMount" class="sub">Select a range (Apply) to compute best player duos and their hero combinations.</div>
+      <div id="duosLoading" class="sub" style="display:none;margin-top:6px"><span class="badge">Loading…</span> Computing all player combinations…</div>
     </section>
   </div>
 
@@ -289,6 +304,8 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 const OD_PLAYER_URL = id => `https://www.opendota.com/players/${id}`;
 const OD_MATCH_URL = id => `https://www.opendota.com/matches/${id}`;
 function fmtPct(x){ return (x*100).toFixed(1)+'%'; }
+// Safe boolean coercion for fields that may be true/false/1/0/'true'/'false'
+function asBool(v){ return v===true || v===1 || v==='true' || v==='1'; }
 function __showLoading(msg){ try{ const el=document.getElementById('dvLoading'); if(el){ el.style.display='flex'; const t=document.getElementById('dvLoadingText'); if(t && msg) t.textContent=msg; } }catch(_e){} }
 function __hideLoading(){ try{ const el=document.getElementById('dvLoading'); if(el){ el.style.display='none'; } }catch(_e){} }
 async function loadJson(url){
@@ -353,7 +370,7 @@ function enableSorting(){
 function aggregate(matches, playerNames, teamNames){
   const teams=new Map(), players=new Map(), teamPlayers=new Map(), heroStats=new Map(), heroPlayerAgg=new Map();
   for(const m of matches){
-    const radWin=!!m.radiant_win, radTeamId=m.radiant_team_id|0, dirTeamId=m.dire_team_id|0;
+    const radWin=asBool(m.radiant_win), radTeamId=m.radiant_team_id|0, dirTeamId=m.dire_team_id|0;
     const radName = teamNames[String(radTeamId)] || m.radiant_name || 'Radiant';
     const dirName = teamNames[String(dirTeamId)] || m.dire_name    || 'Dire';
     function ensureTeam(id,name){ if(!id) return; if(!teams.has(id)) teams.set(id,{team_id:id,name,games:0,wins:0,losses:0}); }
@@ -424,7 +441,7 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
       </div>
     </div>`;
   const hl = (__focusAid>0 && Number(p.account_id)===__focusAid) ? " style='outline:2px solid rgba(109,166,255,.6)'" : '';
-  return `<tr${hl}>
+  return `<tr${hl} data-aid="${p.account_id}" class="player-row">
       <td data-sort="${p.name.toLowerCase()}"><a href='${p.profile}' target='_blank' rel='noopener'>${p.name}</a></td>
       <td data-sort="${p.games}">${p.games}</td>
       <td data-sort="${p.wins/(p.games||1)}"><span class='win'>${p.wins}</span>-<span class='loss'>${p.games-p.wins}</span></td>
@@ -433,6 +450,51 @@ function render({teams,players,teamPlayers,heroStats,heroPlayerAgg}, heroMap){
     </tr>`;
   }).join('');
   document.querySelector('#playersTable tbody').innerHTML = playerRows;
+  // Add click-to-toggle streak row (last 15 matches) under each player row
+  try{
+    const tbody = document.querySelector('#playersTable tbody');
+    const buildStreak = (aid)=>{
+      // Use the current filtered subset if available; fall back to all matches
+      const source = (window.__dvSubsetCache && Array.isArray(window.__dvSubsetCache)) ? window.__dvSubsetCache : (Array.isArray(allMatches) ? allMatches : []);
+      const arr=[]; const A = Number(aid)||0; if(!(A>0)) return arr;
+      for(const m of source){
+        const has = Array.isArray(m.players) ? m.players.some(pp => Number(pp.account_id||0)===A) : false;
+        if(!has) continue;
+        const radWin = asBool(m.radiant_win);
+        let isRad=null; try{ const p=(m.players||[]).find(pp=> Number(pp.account_id||0)===A); if(p){ if(p.isRadiant!==undefined) isRad=!!p.isRadiant; else if(p.is_radiant!==undefined) isRad=!!p.is_radiant; else if(p.player_slot!==undefined) isRad=Number(p.player_slot)<128; } }catch(_e){}
+        const won = (isRad===true) ? radWin : (isRad===false ? !radWin : false);
+        arr.push({ mid: Number(m.match_id||m.matchId||0), won });
+      }
+      // newest left: sort by match_id desc as proxy for time (same as other places)
+      arr.sort((a,b)=> b.mid - a.mid);
+      return arr.slice(0,15);
+    };
+    function renderStreakRow(afterTr, aid){
+      const existing = tbody.querySelector(`tr.streakRow[data-under='${aid}']`);
+      if(existing){ existing.remove(); return; }
+      const data = buildStreak(aid);
+      const td = document.createElement('td'); td.colSpan = 5;
+      const wrap = document.createElement('div'); wrap.className = 'streak';
+      const label = document.createElement('span'); label.className='label'; label.textContent = 'Last 15:'; wrap.appendChild(label);
+      data.forEach((e)=>{
+        const a = document.createElement('a'); a.className = 'tok ' + (e.won? 'win':'loss'); a.textContent = e.won? 'W':'L';
+        if(e.mid>0){ a.href = `https://www.opendota.com/matches/${e.mid}`; a.target = '_blank'; a.rel = 'noopener'; a.title = `Match ${e.mid}`; }
+        wrap.appendChild(a);
+      });
+      if(!data.length){ const s=document.createElement('span'); s.className='sub'; s.textContent='No games in range.'; wrap.appendChild(s); }
+      td.appendChild(wrap);
+      const tr = document.createElement('tr'); tr.className='streakRow'; tr.setAttribute('data-under', String(aid)); tr.appendChild(td);
+      afterTr.insertAdjacentElement('afterend', tr);
+    }
+    tbody.querySelectorAll('tr.player-row').forEach(tr=>{
+      tr.addEventListener('click', (e)=>{
+        // avoid toggling when clicking a link inside the row
+        if(e.target && e.target.closest('a')) return;
+        const aid = tr.getAttribute('data-aid');
+        if(!aid) return; renderStreakRow(tr, aid);
+      });
+    });
+  }catch(_e){}
   // Wire up click-to-toggle for hero pool popovers
   try{
     document.querySelectorAll('[data-action="toggle-pop"]').forEach(btn=>{
@@ -749,7 +811,7 @@ function renderHighlights(high, heroMap, mapConf, label){
     return arr.map(x=>{
       const sec = Number(x.duration||0); const mm=Math.floor(sec/60), ss=sec%60;
       const vs = esc(`${x.radiant||'Radiant'} vs ${x.dire||'Dire'}`);
-      const win = x.radiant_win ? 'Radiant' : 'Dire';
+  const win = asBool(x.radiant_win) ? 'Radiant' : 'Dire';
       const mid = esc(x.match_id||'');
       return `<li><span><a target='_blank' href='${OD_MATCH_URL(mid)}'>${vs}</a></span><span class='badge'>${mm}m ${ss}s</span><span class='badge'>Winner: ${win}</span></li>`;
     }).join('');
@@ -1065,7 +1127,7 @@ async function main(){
           md = {
             match_id: Number(src.match_id)||Number(id)||0,
             start_time: Number(src.start_time)||undefined,
-            radiant_win: !!src.radiant_win,
+            radiant_win: asBool(src.radiant_win),
             radiant_team_id: src.radiant_team_id,
             dire_team_id: src.dire_team_id,
             radiant_name: src.radiant_name,
@@ -1218,7 +1280,7 @@ async function main(){
         }
         // Teammates per match; build duo structures with hero combos and wins
         const rad=[], dire=[]; for(const p of players){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; const hid=Number(p.hero_id||0); const rec={aid,hid}; ((p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128)?rad:dire).push(rec); }
-        const radWin = !!md.radiant_win;
+        const radWin = (md.radiant_win===true || md.radiant_win===1 || md.radiant_win==='true' || md.radiant_win==='1');
         function tally(arr, won){
           for(let i=0;i<arr.length;i++){
             for(let j=i+1;j<arr.length;j++){
@@ -1289,7 +1351,7 @@ async function main(){
           }
         }catch(_e){}
         // Duration
-        const rname = md.radiant_name || 'Radiant'; const dname = md.dire_name || 'Dire'; const dur = Number(md.duration||0); durList.push({match_id:mid,duration:dur,radiant:rname,dire:dname,radiant_win: !!md.radiant_win});
+  const rname = md.radiant_name || 'Radiant'; const dname = md.dire_name || 'Dire'; const dur = Number(md.duration||0); durList.push({match_id:mid,duration:dur,radiant:rname,dire:dname,radiant_win: asBool(md.radiant_win)});
       }catch(e){ console.warn('agg err', mid, e); }
     }
     // Build outputs
@@ -1326,7 +1388,7 @@ async function main(){
       const pb = { account_id:b, name: nameCache.get(b)||`Player ${b}`, profile: OD_PLAYER_URL(b) };
       const heroes = Array.from(rec.heroes.values()).sort((x,y)=> (y.wins/(y.games||1)) - (x.wins/(x.games||1)) || (y.games - x.games)).slice(0,10);
       return { pair:[pa,pb], games:rec.games, wins:rec.wins, heroes };
-    }).sort((x,y)=> (y.wins/(y.games||1)) - (x.wins/(x.games||1)) || (y.games - x.games)).slice(0,50);
+    }).sort((x,y)=> (y.wins/(y.games||1)) - (x.wins/(x.games||1)) || (y.games - x.games));
     // Courier/Stacks
     const courierTop = withNames(topNByCount(courierKillsBy,3));
     const stackTop = withNames(topNByCount(campsStackedBy,3));
@@ -1481,8 +1543,11 @@ async function main(){
   // Mount Best Duos component
   try{
     const dm = document.getElementById('duosMount');
-    if(dm && window.DuosViewer){ window.DuosViewer.mount(dm, { data: high.duosTop || [], heroes: heroMap }); }
-  }catch(e){ console.warn('DuosViewer mount failed', e); }
+    const di = document.getElementById('duosLoading');
+    if(di) di.style.display = '';
+    if(dm && window.DuosViewer){ window.DuosViewer.mount(dm, { data: high.duosTop || [], heroes: heroMap, persistKey: 'dv_duos' }); }
+    if(di) di.style.display = 'none';
+  }catch(e){ console.warn('DuosViewer mount failed', e); const di = document.getElementById('duosLoading'); if(di) di.textContent = 'Failed to compute duos.'; }
   // Mount WardViewer into dedicated Wards tab
   try{
   const container = document.getElementById('dvWardMount');
@@ -1649,6 +1714,8 @@ async function main(){
   // Rebuild player filter dropdown from the filtered subset to avoid non-league entries
   try{
     const sel = document.getElementById('playerFilter');
+    const badge = document.getElementById('playerGamesBadge');
+    const clr = document.getElementById('playerClear');
     if(sel){
       const names = new Map();
       for(const m of statsSubset){
@@ -1669,6 +1736,11 @@ async function main(){
       sel.innerHTML = opts.join('');
       // Preserve selection if still present
       if(prev>0 && names.has(prev)){ sel.value = String(prev); } else { sel.value=''; if(prev>0){ __focusAid=0; __userOnlyAid=0; } }
+      // Update the games badge
+      const aid = Number(sel.value||0)||0;
+      const count = aid>0 ? statsSubset.filter(m=> Array.isArray(m.players) && m.players.some(p=> Number(p.account_id||0)===aid)).length : 0;
+      if(badge){ if(aid>0){ badge.textContent = `${count} games`; badge.style.display='inline-block'; } else { badge.style.display='none'; } }
+      if(clr){ clr.style.display = aid>0 ? 'inline-block' : 'none'; }
     }
   }catch(_e){}
   __subsetCache = statsSubset; __rangeUnix = {from:f,to:t};
@@ -1677,6 +1749,17 @@ async function main(){
     window.__dvSubsetCache = statsSubset;
     window.__dvRangeUnix = { from: f, to: t };
     window.dispatchEvent(new CustomEvent('dv:range-changed', { detail: { from: f, to: t } }));
+  }catch(_e){}
+  // If Player Compare was already loaded once, remount it with the new subset so its
+  // games and player lists strictly reflect the selected range as well.
+  try{
+    if(__compareBooted && window.PlayerCompare && typeof window.PlayerCompare.mount==='function'){
+      const mountEl = document.getElementById('compareMount');
+      if(mountEl){
+        const playersIndex = Array.from((aggregate(statsSubset, playerNames, teamNames).players||new Map()).values());
+        window.PlayerCompare.mount(mountEl, { data: { matches: statsSubset, playersIndex, heroes: heroes }, leagueLock: 18438, useExternalRange: true });
+      }
+    }
   }catch(_e){}
   // Update header with match count to make empty selections obvious
   try{
@@ -1708,8 +1791,11 @@ async function main(){
   // Player filter: selecting a player enforces user-only view
   try{
     const sel = document.getElementById('playerFilter');
+    const badge = document.getElementById('playerGamesBadge');
+    const clr = document.getElementById('playerClear');
     const genBtn = document.getElementById('genUserReport');
     if(sel){ sel.addEventListener('change', ()=>{ const v=Number(sel.value||0)||0; __focusAid=v; __userOnlyAid = v>0 ? v : 0; apply(); }); }
+    if(clr){ clr.addEventListener('click', ()=>{ if(sel){ sel.value=''; } __focusAid=0; __userOnlyAid=0; apply(); }); }
     if(genBtn){ genBtn.addEventListener('click', ()=>{
       const aid = Number((sel&&sel.value)||0)||0; if(!(aid>0)) { alert('Select a player first.'); return; }
       const name = (function(){ try{ const opt=sel.options[sel.selectedIndex]; return (opt&&opt.text)||`Player ${aid}`; }catch(_e){ return `Player ${aid}`; } })();
@@ -1990,7 +2076,7 @@ function computeAwardsFromDetails(details, heroMap){
   const bottleUses = new Map();              // bottle item uses
   const jungleScore = new Map();             // neutral_kills + camps_stacked
 
-  for(const md of details){ if(!md) continue; const isRadWin = !!md.radiant_win;
+  for(const md of details){ if(!md) continue; const isRadWin = asBool(md.radiant_win);
     // Normalize players and synthesize player_slot if missing
     let players = Array.isArray(md.players)? md.players: [];
     const hasSlotsA = players.some(p=>p && p.player_slot!==undefined);
@@ -2420,20 +2506,20 @@ function computeAwardsFromDetails(details, heroMap){
       if(adv.length){
         const minA = Math.min(...adv.filter(isFinite));
         const maxA = Math.max(...adv.filter(isFinite));
-        if((minA<=-10000) && md.radiant_win){
+  if((minA<=-10000) && asBool(md.radiant_win)){
           for(const p of players){ if(p && Number(p.player_slot)<128){ const id=Number(p.account_id||0); if(id>0) comebackKing.set(id, (comebackKing.get(id)||0)+1); } }
         }
-        if((maxA>=10000) && !md.radiant_win){
+  if((maxA>=10000) && !asBool(md.radiant_win)){
           for(const p of players){ if(p && !(Number(p.player_slot)<128)){ const id=Number(p.account_id||0); if(id>0) comebackKing.set(id, (comebackKing.get(id)||0)+1); } }
         }
         // Throw Master: if team had >=10k lead at any point and still lost
-        if((maxA>=10000) && !md.radiant_win){
+  if((maxA>=10000) && !asBool(md.radiant_win)){
           // Radiant had big lead but lost -> credit Radiant players
           for(const p of players){
             if(p && Number(p.player_slot)<128){ const id=Number(p.account_id||0); if(id>0) throwCount.set(id, (throwCount.get(id)||0)+1); }
           }
         }
-        if((minA<=-10000) && md.radiant_win){
+  if((minA<=-10000) && asBool(md.radiant_win)){
           // Dire had big lead but lost -> credit Dire players
           for(const p of players){
             if(p && !(Number(p.player_slot)<128)){ const id=Number(p.account_id||0); if(id>0) throwCount.set(id, (throwCount.get(id)||0)+1); }

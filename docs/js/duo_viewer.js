@@ -19,19 +19,38 @@
   .hpair img{width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1);object-fit:cover}
   `; const st=document.createElement('style'); st.id='duo-viewer-styles'; st.textContent=css; document.head.appendChild(st); }
   function pct(x){ return (x*100).toFixed(1)+'%'; }
-  function mount(host, cfg){ inject(); if(!host) return; const heroes = (cfg&&cfg.heroes)||{}; const arr = Array.isArray(cfg&&cfg.data)? cfg.data: []; let state={ sort:'wr', minGames:0, minWr:0 };
+  function mount(host, cfg){ inject(); if(!host) return; const heroes = (cfg&&cfg.heroes)||{}; const arr = Array.isArray(cfg&&cfg.data)? cfg.data: []; const persistKey = (cfg&&cfg.persistKey)||'dv_duos'; let state={ sort:'wr', minGames:0, minWr:0, playerId:0 };
+    // Build player index for filter
+    const playerMap = (function(){ const mp=new Map(); for(const d of arr){ if(d && Array.isArray(d.pair)){ const a=d.pair[0]||{}; const b=d.pair[1]||{}; if(a.account_id){ const nm=a.name||('Player '+a.account_id); if(!mp.has(a.account_id)) mp.set(a.account_id, nm); } if(b.account_id){ const nm=b.name||('Player '+b.account_id); if(!mp.has(b.account_id)) mp.set(b.account_id, nm); } } } return Array.from(mp.entries()).map(([id,name])=>({id:Number(id),name:String(name)})).sort((x,y)=> x.name.localeCompare(y.name)); })();
+    // Restore persisted state
+    try{ const saved = JSON.parse(localStorage.getItem(persistKey)||'null'); if(saved&&typeof saved==='object'){ if(['wr','games','worst'].includes(saved.sort)) state.sort=saved.sort; if(Number.isFinite(saved.minGames)) state.minGames=Math.max(0,Math.floor(saved.minGames)); if(Number.isFinite(saved.minWr)) state.minWr=Math.max(0,Math.min(100,saved.minWr)); if(Number.isFinite(saved.playerId)) state.playerId=Math.max(0,Math.floor(saved.playerId)); } }catch(_e){}
     const root = h(`<div class='dvduo-wrapper'>
       <div class='dvduo-toolbar'>
         <button class='seg' data-sort='wr'>Sort WR</button>
+        <button class='seg' data-sort='worst'>Worst WR</button>
         <button class='seg' data-sort='games'>Sort Games</button>
+        <label class='sub' style='display:flex;gap:6px;align-items:center'>Spieler
+          <select id='dvduoPlayer'>
+            <option value='0'>Alle Spieler</option>
+          </select>
+        </label>
         <label class='sub' style='display:flex;gap:6px;align-items:center'>Min Games <input type='number' id='dvduoMinG' value='0' min='0' step='1' style='width:80px;background:transparent;color:var(--text);border:1px solid var(--border,rgba(255,255,255,.12));border-radius:8px;padding:4px 6px'></label>
         <label class='sub' style='display:flex;gap:6px;align-items:center'>Min WR % <input type='number' id='dvduoMinWR' value='0' min='0' max='100' step='1' style='width:80px;background:transparent;color:var(--text);border:1px solid var(--border,rgba(255,255,255,.12));border-radius:8px;padding:4px 6px'></label>
       </div>
       <ul class='dvduo-list' id='dvduoList'></ul>
     </div>`);
     host.innerHTML=''; host.appendChild(root);
-    function sortFiltered(){ const filtered = arr.filter(d=> d.games>=state.minGames && ((d.wins/(d.games||1))>=(state.minWr/100))); if(state.sort==='games'){ return filtered.slice().sort((a,b)=> b.games-a.games || (b.wins/b.games)-(a.wins/a.games)); } return filtered.slice().sort((a,b)=> (b.wins/b.games)-(a.wins/a.games) || b.games-a.games); }
-    function setActive(){ root.querySelectorAll('.dvduo-toolbar .seg').forEach(b=> b.classList.toggle('active',(b.getAttribute('data-sort')||'')===state.sort)); const mg=root.querySelector('#dvduoMinG'); const mw=root.querySelector('#dvduoMinWR'); if(mg) mg.value=String(state.minGames); if(mw) mw.value=String(state.minWr); }
+    // Populate player select
+    const sel = root.querySelector('#dvduoPlayer'); if(sel){ sel.innerHTML = ['<option value="0">Alle Spieler</option>'].concat(playerMap.map(p=>`<option value='${p.id}'>${esc(p.name)}</option>`)).join(''); sel.value = String(state.playerId||0); }
+    function sortFiltered(){
+      let filtered = arr.filter(d=> d.games>=state.minGames && ((d.wins/(d.games||1))>=(state.minWr/100)));
+      if(state.playerId>0){ filtered = filtered.filter(d=> Array.isArray(d.pair) && (Number(d.pair[0]?.account_id||0)===state.playerId || Number(d.pair[1]?.account_id||0)===state.playerId)); }
+      if(state.sort==='games') return filtered.slice().sort((a,b)=> b.games-a.games || (b.wins/b.games)-(a.wins/a.games));
+      if(state.sort==='worst') return filtered.slice().sort((a,b)=> (a.wins/a.games)-(b.wins/b.games) || b.games-a.games);
+      return filtered.slice().sort((a,b)=> (b.wins/b.games)-(a.wins/a.games) || b.games-a.games);
+    }
+    function setActive(){ root.querySelectorAll('.dvduo-toolbar .seg').forEach(b=> b.classList.toggle('active',(b.getAttribute('data-sort')||'')===state.sort)); const mg=root.querySelector('#dvduoMinG'); const mw=root.querySelector('#dvduoMinWR'); const pl=root.querySelector('#dvduoPlayer'); if(mg) mg.value=String(state.minGames); if(mw) mw.value=String(state.minWr); if(pl) pl.value=String(state.playerId||0); }
+    function persist(){ try{ localStorage.setItem(persistKey, JSON.stringify(state)); }catch(_e){} }
     function heroImg(hid){ const meta = heroes[String(hid)]||{}; const url = meta.icon || meta.img || ''; return `<img src='${esc(url)}' alt='${esc(meta.name||('#'+hid))}'>`; }
     function heroName(hid){ const meta = heroes[String(hid)]||{}; return esc(meta.name||('#'+hid)); }
     function render(){ setActive(); const list=root.querySelector('#dvduoList'); if(!list) return; const data = sortFiltered(); if(!data.length){ list.innerHTML = `<li class='sub'>Keine Duos</li>`; return; }
@@ -62,9 +81,10 @@
         document.querySelectorAll('.has-fly.open').forEach(n=>{ if(!n.contains(e.target)) n.classList.remove('open'); });
       });
     }
-    root.querySelector('.dvduo-toolbar').addEventListener('click', (e)=>{ const b=e.target.closest('button.seg'); if(!b) return; state.sort=b.getAttribute('data-sort')||'wr'; render(); });
-    root.querySelector('#dvduoMinG').addEventListener('input', (e)=>{ const v=parseInt(e.target.value||'0',10); state.minGames=isNaN(v)?0:Math.max(0,v); render(); });
-    root.querySelector('#dvduoMinWR').addEventListener('input', (e)=>{ const v=parseFloat(e.target.value||'0'); state.minWr=isNaN(v)?0:Math.max(0, Math.min(100,v)); render(); });
+    root.querySelector('.dvduo-toolbar').addEventListener('click', (e)=>{ const b=e.target.closest('button.seg'); if(!b) return; state.sort=b.getAttribute('data-sort')||'wr'; persist(); render(); });
+    root.querySelector('#dvduoMinG').addEventListener('input', (e)=>{ const v=parseInt(e.target.value||'0',10); state.minGames=isNaN(v)?0:Math.max(0,v); persist(); render(); });
+    root.querySelector('#dvduoMinWR').addEventListener('input', (e)=>{ const v=parseFloat(e.target.value||'0'); state.minWr=isNaN(v)?0:Math.max(0, Math.min(100,v)); persist(); render(); });
+    if(sel){ sel.addEventListener('change', ()=>{ state.playerId = parseInt(sel.value||'0',10)||0; persist(); render(); }); }
     render();
   }
   window.DuosViewer = { mount };
