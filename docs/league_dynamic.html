@@ -926,13 +926,13 @@
         try {
           const pre = report && report.highlights && report.highlights.draft;
           if (window.DraftViewer && pre && (Array.isArray(pre.contest) || Array.isArray(pre.firstPicks) || Array.isArray(pre.openingPairs))) {
-            window.DraftViewer.mount(document.getElementById('draftMount'), { data: { contest: pre.contest||[], firstPicks: pre.firstPicks||[], openingPairs: pre.openingPairs||[] }, heroes, persistKey: `lv_draft_${slug}` });
+            window.DraftViewer.mount(document.getElementById('draftMount'), { data: { contest: pre.contest||[], firstPicks: pre.firstPicks||[], openingPairs: pre.openingPairs||[] }, heroes, persistKey: `lv_draft_${slug}`, nameResolver: (__resolver || ((aid)=> (playerNames[String(aid)] || `Player ${aid}`))) });
             return;
           }
         } catch(e){ console.warn('DraftViewer precomputed mount failed, falling back', e); }
         // Fallback to client-side computation when precompute not available
         detailsPromise.then(details => {
-          try { if (window.DraftViewer) { const draftData = window.DraftViewer.compute(details); window.DraftViewer.mount(document.getElementById('draftMount'), { data: draftData, heroes, persistKey: `lv_draft_${slug}` }); } }
+          try { if (window.DraftViewer) { const draftData = window.DraftViewer.compute(details); window.DraftViewer.mount(document.getElementById('draftMount'), { data: draftData, heroes, persistKey: `lv_draft_${slug}`, nameResolver: (__resolver || ((aid)=> (playerNames[String(aid)] || `Player ${aid}`))) }); } }
           catch(e){ console.warn('DraftViewer mount failed', e); }
         });
       };

@@ -1626,7 +1626,8 @@ async function main(){
     if(window.DraftViewer){
       const draftData = window.DraftViewer.compute(details);
       const mount = document.getElementById('draftMount');
-      window.DraftViewer.mount(mount, { data: draftData, heroes: heroMap, persistKey: 'dv_draft_global' });
+      const nameResolver = (aid)=> (playerNames && playerNames[String(aid)]) || `Player ${aid}`;
+      window.DraftViewer.mount(mount, { data: draftData, heroes: heroMap, persistKey: 'dv_draft_global', nameResolver });
     }
   }catch(e){ console.warn('DraftViewer mount failed', e); }
   if(warnNoDetails){
