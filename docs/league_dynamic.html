@@ -38,6 +38,7 @@
       background: linear-gradient(180deg, rgba(109,166,255,.2), rgba(109,166,255,.08));
       border-color: rgba(109,166,255,.45)
     }
+    .tab:focus-visible, .btn:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
     .card { background: linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02)); border:1px solid var(--border); border-radius:14px; padding:12px; overflow:visible }
     .tabpane { margin-top: 6px }
     ul.simple { list-style: none; margin: 0; padding: 0 }
@@ -68,6 +69,8 @@
     .perf-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px }
     .perf-player a { color: var(--text) }
     .perf-value { font-weight: 700; font-size: 18px }
+  /* Screen-reader only utility */
+  .sr-only{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0}
     #calGrid .day { transition: .15s box-shadow, .15s transform }
     #calGrid .day:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 4px 12px -4px rgba(0,0,0,.5); transform: translateY(-2px) }
     @media (max-width: 900px) { .perf-grid { grid-template-columns: repeat(auto-fit, minmax(180px,1fr)) } .summary-grid { grid-template-columns: repeat(auto-fit, minmax(180px,1fr)) } }
@@ -76,34 +79,53 @@
   <script defer src="js/lane_duos_viewer.js"></script>
   <script defer src="js/items_bought_viewer.js"></script>
   <script defer src="js/draft_viewer.js"></script>
+  <script defer src="js/url_params.js"></script>
 </head>
 <body>
-  <div class="wrapper">
+  <div class="wrapper" role="main">
     <div class="header">
       <h1 id="leagueTitle" style="margin:0;font-size:22px">League – Dynamic viewer</h1>
       <div class="badge">League scope</div>
       <div style="flex:1"></div>
-      <button id="btnClearCache" class="tab" title="Lokale Zwischenspeicher für diese Liga löschen">Cache leeren</button>
+      <div id="shareControls" class="sub" style="display:flex;align-items:center;gap:6px">
+        <button id="btnCopyLink" class="tab" title="Copy permalink to this view">Copy link</button>
+        <button id="btnCopyEmbed" class="tab" title="Copy an embeddable iframe snippet">Copy embed</button>
+        <a href="./guide/permalinks.html" class="tab" target="_blank" rel="noopener" title="Open Permalinks guide">Permalinks help</a>
+        <span id="shareStatus" class="sr-only" role="status" aria-live="polite"></span>
+      </div>
+      <button id="btnClearCache" class="tab" title="Clear local cache for this league">Clear cache</button>
     </div>
     <div class="sub" id="headerSub" style="margin:-8px 0 8px 2px"></div>
   <!-- chunkNav removed: processing all league matches now -->
 
     
 
-    <div class="tabs" id="mainTabs" style="margin-top:12px">
-      <button class="tab active" data-tab="highlights">Highlights</button>
-      <button class="tab" data-tab="players">Players</button>
-      <button class="tab" data-tab="heroes">Heroes</button>
-  <button class="tab" data-tab="draft">Draft</button>
-  <button class="tab" data-tab="teams">Teams</button>
-  <button class="tab" data-tab="placement">Placement</button>
-      <button class="tab" data-tab="awards">Awards</button>
-      <button class="tab" data-tab="laneduos">Lane Duos</button>
-      <button class="tab" data-tab="itemsbought">Items Bought</button>
-      <button class="tab" data-tab="wards">Wards</button>
+  <div class="tabs" id="mainTabs" style="margin-top:12px" role="tablist" aria-label="Sections" aria-orientation="horizontal">
+      <button class="tab active" data-tab="highlights" id="tab-highlights" role="tab" aria-selected="true" tabindex="0">Highlights</button>
+      <button class="tab" data-tab="players" id="tab-players" role="tab" aria-selected="false" tabindex="0">Players</button>
+      <button class="tab" data-tab="heroes" id="tab-heroes" role="tab" aria-selected="false" tabindex="0">Heroes</button>
+      <button class="tab" data-tab="draft" id="tab-draft" role="tab" aria-selected="false" tabindex="0">Draft</button>
+      <button class="tab" data-tab="teams" id="tab-teams" role="tab" aria-selected="false" tabindex="0">Teams</button>
+      <button class="tab" data-tab="placement" id="tab-placement" role="tab" aria-selected="false" tabindex="0">Placement</button>
+      <button class="tab" data-tab="awards" id="tab-awards" role="tab" aria-selected="false" tabindex="0">Awards</button>
+      <button class="tab" data-tab="laneduos" id="tab-laneduos" role="tab" aria-selected="false" tabindex="0">Lane Duos</button>
+      <button class="tab" data-tab="itemsbought" id="tab-itemsbought" role="tab" aria-selected="false" tabindex="0">Items Bought</button>
+      <button class="tab" data-tab="wards" id="tab-wards" role="tab" aria-selected="false" tabindex="0">Wards</button>
     </div>
 
-    <div id="pane-highlights" class="tabpane active">
+    <details class="sub" id="a11yDetails" style="margin:4px 0 0">
+      <summary>Accessibility</summary>
+      <ul style="margin:6px 0 0 14px; padding:0">
+        <li>Tabs: Use Tab to focus; Arrow Left/Right to move when the tab bar is focused; Enter/Space to activate.</li>
+        <li>Loading states are announced to screen readers (live regions, aria-busy).</li>
+        <li>Tables: Click column headers to sort; the sort order is announced.</li>
+        <li>Clear keyboard focus outlines are provided (:focus-visible).</li>
+        <li>Shortcuts: 1–0 jump to main tabs (1=first … 0=10th, if present).</li>
+        <li>Up/Down scroll the page. Home focuses the report list on the Index page.</li>
+      </ul>
+    </details>
+
+  <div id="pane-highlights" class="tabpane active" role="tabpanel" aria-labelledby="tab-highlights">
       <div id="highlightsCard" class="card" style="margin-top:12px;display:none">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <h2 style="margin:0;font-size:18px">Highlights</h2>
@@ -113,13 +135,13 @@
       </div>
     </div>
 
-    <div id="pane-players" class="tabpane" style="display:none">
+  <div id="pane-players" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-players" hidden>
       <section class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <h2 style="margin:0;font-size:18px">Players</h2>
           <button class="tab" id="exportPlayersCsv">Export CSV</button>
         </div>
-        <table class="table sortable" id="playersTable">
+  <table class="table sortable" id="playersTable"><caption class="sr-only">Players overview</caption>
           <thead>
             <tr>
               <th data-type="text">Name</th>
@@ -134,13 +156,13 @@
       </section>
     </div>
 
-    <div id="pane-heroes" class="tabpane" style="display:none">
+  <div id="pane-heroes" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-heroes" hidden>
       <section class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <h2 style="margin:0;font-size:18px">Heroes</h2>
           <button class="tab" id="exportHeroesCsv">Export CSV</button>
         </div>
-        <table class="table sortable" id="heroesTable">
+  <table class="table sortable" id="heroesTable"><caption class="sr-only">Heroes overview</caption>
           <thead>
             <tr>
               <th data-type="text">Hero</th>
@@ -156,23 +178,23 @@
       </section>
     </div>
 
-    <div id="pane-draft" class="tabpane" style="display:none">
+  <div id="pane-draft" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-draft" hidden>
       <section class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <h2 style="margin:0;font-size:18px">Draft</h2>
           <button class="tab" id="exportDraftCsv">Export CSV</button>
         </div>
-        <div id="draftMount" class="sub"><span class="spinner"></span> Loading…</div>
+  <div id="draftMount" class="sub" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span> Loading…</div>
       </section>
     </div>
 
-    <div id="pane-teams" class="tabpane" style="display:none">
+  <div id="pane-teams" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-teams" hidden>
       <section class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <h2 style="margin:0;font-size:18px">Teams</h2>
           <button class="tab" id="exportTeamsCsv">Export CSV</button>
         </div>
-        <table class="table sortable" id="teamsTable">
+  <table class="table sortable" id="teamsTable"><caption class="sr-only">Teams overview</caption>
           <thead>
             <tr>
               <th data-type="text">Team</th>
@@ -186,13 +208,13 @@
       </section>
     </div>
 
-    <div id="pane-placement" class="tabpane" style="display:none">
+  <div id="pane-placement" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-placement" hidden>
       <section class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <h2 style="margin:0;font-size:18px">Placement</h2>
           <button class="tab" id="exportPlacementCsv">Export CSV</button>
         </div>
-        <table class="table sortable" id="placementTable">
+  <table class="table sortable" id="placementTable"><caption class="sr-only">Placement overview</caption>
           <thead>
             <tr>
               <th data-type="num">#</th>
@@ -207,39 +229,45 @@
       </section>
     </div>
 
-    <div id="pane-awards" class="tabpane" style="display:none">
+  <div id="pane-awards" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-awards" hidden>
       <section class="card">
         <h2 style="margin:0 0 8px;font-size:18px">🏆 Awards</h2>
         <div id="awardsBody" class="sub"><span class="spinner"></span> Computing…</div>
       </section>
     </div>
 
-    <div id="pane-laneduos" class="tabpane" style="display:none">
+  <div id="pane-laneduos" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-laneduos" hidden>
       <section class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <h2 style="margin:0;font-size:18px">Lane Duos</h2>
           <button class="tab" id="exportLaneDuosCsv">Export CSV</button>
         </div>
-        <div id="ldMount" class="sub"><span class="spinner"></span> Loading…</div>
+  <div id="ldMount" class="sub" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span> Loading…</div>
       </section>
     </div>
+    <footer class="sub" style="margin:16px 2px 0">
+      <a href="./guide/" aria-label="Open project documentation">Project documentation</a>
+      <span aria-hidden="true">·</span>
+      <a href="./index.html">Reports index</a>
+      <span class="sr-only">End of league dynamic viewer content</span>
+    </footer>
 
-  <div id="pane-itemsbought" class="tabpane" style="display:none">
+  <div id="pane-itemsbought" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-itemsbought" hidden>
       <section class="card">
         <h2 style="margin:0 0 8px;font-size:18px">Items Bought</h2>
-        <div id="ibMount" class="sub">Loading…</div>
+  <div id="ibMount" class="sub" role="status" aria-live="polite">Loading…</div>
       </section>
     </div>
 
     
 
-    <div id="pane-wards" class="tabpane" style="display:none">
+  <div id="pane-wards" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-wards" hidden>
       <section class="card" style="margin-top:12px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <h2 style="margin:0;font-size:18px">Wards</h2>
           <div class="sub">League ward stats</div>
         </div>
-        <div id="dvWardMount"><span class="spinner"></span> Preparing…</div>
+  <div id="dvWardMount" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span> Preparing…</div>
       </section>
     </div>
   </div>
@@ -308,17 +336,25 @@
         return asc ? va - vb : vb - va;
       });
       rows.forEach(r => tbody.appendChild(r));
-      table.querySelectorAll('th').forEach(th => th.classList.remove('sorted-asc', 'sorted-desc'));
+      table.querySelectorAll('th').forEach(th => { th.classList.remove('sorted-asc', 'sorted-desc'); th.removeAttribute('aria-sort'); });
       const th = table.querySelectorAll('th')[col];
-      if (th) th.classList.add(asc ? 'sorted-asc' : 'sorted-desc');
+      if (th) { th.classList.add(asc ? 'sorted-asc' : 'sorted-desc'); th.setAttribute('aria-sort', asc ? 'ascending' : 'descending'); }
     }
     function enableSorting() {
       document.querySelectorAll('table.sortable').forEach(table => {
         table.querySelectorAll('th').forEach((th, i) => {
+          th.tabIndex = 0; th.setAttribute('role','columnheader');
           th.addEventListener('click', () => {
             const type = th.dataset.type || 'text';
             const asc = !th.classList.contains('sorted-asc');
             sortTable(table, i, type, asc);
+          });
+          th.addEventListener('keydown', (ev) => {
+            if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault();
+              const type = th.dataset.type || 'text';
+              const asc = !th.classList.contains('sorted-asc');
+              sortTable(table, i, type, asc);
+            }
           });
         });
       });
@@ -427,7 +463,7 @@
           `<tr>
             <td data-sort='${meta.name.toLowerCase()}'>
               <div style='display:flex;align-items:center;gap:8px'>
-                <img src='${meta.img}' loading='lazy' decoding='async' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'>
+                <img src='${meta.img}' alt='${meta.name}' loading='lazy' decoding='async' style='width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.1)'>
                 <span>${meta.name}</span>
               </div>
             </td>
@@ -713,10 +749,19 @@
     async function main() {
       (function () {
         const tabsRoot = document.getElementById('mainTabs'); const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
+        // ensure ids and ARIA linkage
+  tabs.forEach(btn=>{ const name = btn.getAttribute('data-tab'); if(!btn.id) btn.id = `tab-${name}`; btn.setAttribute('role','tab'); btn.setAttribute('aria-selected', btn.classList.contains('active')?'true':'false'); btn.setAttribute('tabindex','0'); const pane = document.getElementById(`pane-${name}`); if(pane){ pane.setAttribute('role','tabpanel'); pane.setAttribute('aria-labelledby', btn.id); if(!btn.classList.contains('active')) pane.setAttribute('hidden',''); }});
         function showTab(name) {
-          ['highlights','players','heroes','draft','teams','placement','awards','laneduos','itemsbought','wards'].forEach(id => { const pane = document.getElementById('pane-' + id); if (pane) pane.style.display = (id === name) ? '' : 'none'; });
-          tabs.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === name));
+          const order = ['highlights','players','heroes','draft','teams','placement','awards','laneduos','itemsbought','wards'];
+          order.forEach(id => { const pane = document.getElementById('pane-' + id); const active = (id === name); if (pane) { pane.style.display = active ? '' : 'none'; if(active) pane.removeAttribute('hidden'); else pane.setAttribute('hidden',''); pane.setAttribute('aria-busy','false'); }});
+          tabs.forEach(b => { const active = (b.getAttribute('data-tab') === name); b.classList.toggle('active', active); b.setAttribute('aria-selected', active?'true':'false'); b.setAttribute('tabindex','0'); });
           try { localStorage.setItem('lv_tab', name || 'highlights'); } catch (_e) {}
+          // Keep URL in sync for sharing
+          try {
+            const url = new URL(location.href);
+            url.searchParams.set('tab', name || 'highlights');
+            history.replaceState(null, '', url);
+          } catch(_e){}
           // Lazy-mount heavy tabs when opened
           if (name === 'draft' && window.__ensureDraft) window.__ensureDraft();
           if (name === 'laneduos' && window.__ensureLaneDuos) window.__ensureLaneDuos();
@@ -724,14 +769,42 @@
           if (name === 'wards' && window.__ensureWards) window.__ensureWards();
           if (name === 'awards' && window.__ensureAwards) window.__ensureAwards();
           if (name === 'placement' && window.__ensurePlacement) window.__ensurePlacement();
+          try{ const activeBtn = tabs.find(b=> b.getAttribute('data-tab')===name); if(activeBtn) activeBtn.focus(); }catch(_e){}
         }
         tabs.forEach(b => b.addEventListener('click', () => showTab(b.getAttribute('data-tab'))));
+        tabsRoot.addEventListener('keydown', (ev)=>{
+          const activeEl = document.activeElement;
+          const idx = tabs.indexOf(activeEl);
+          if (idx === -1) return; // not focused on a tab
+          if (ev.key==='ArrowRight' || ev.key==='ArrowLeft' || ev.key==='Home' || ev.key==='End') { ev.preventDefault(); }
+          if (ev.key==='ArrowRight') { const ni=(idx+1)%tabs.length; tabs[ni].focus(); showTab(tabs[ni].getAttribute('data-tab')); }
+          else if (ev.key==='ArrowLeft') { const ni=(idx-1+tabs.length)%tabs.length; tabs[ni].focus(); showTab(tabs[ni].getAttribute('data-tab')); }
+          else if (ev.key==='Home') { tabs[0].focus(); showTab(tabs[0].getAttribute('data-tab')); }
+          else if (ev.key==='End') { const last=tabs[tabs.length-1]; last.focus(); showTab(last.getAttribute('data-tab')); }
+        });
         window.__lvShowTab = showTab;
       })();
+      // Global digit shortcuts: 1–0 jump to main tabs (1=first … 0=10th). No modifiers, ignore while typing.
+      try{
+        document.addEventListener('keydown', (ev)=>{
+          if (ev.altKey || ev.ctrlKey || ev.metaKey) return;
+          const el = document.activeElement;
+          const tag = (el && el.tagName) ? el.tagName.toLowerCase() : '';
+          const typing = (tag==='input' || tag==='textarea' || tag==='select' || (el && el.isContentEditable));
+          if (typing) return;
+          const key = ev.key; if (!(/^\d$/.test(key))) return;
+          const n = (key === '0') ? 10 : parseInt(key, 10);
+          const root = document.getElementById('mainTabs'); if(!root) return;
+          const tabs = Array.from(root.querySelectorAll('.tab')); if(!tabs.length) return;
+          const idx = n - 1; if (idx < 0 || idx >= tabs.length) return;
+          const target = tabs[idx]; if(!target) return;
+          ev.preventDefault(); target.focus(); if(window.__lvShowTab) window.__lvShowTab(target.getAttribute('data-tab'));
+        });
+      }catch(_e){}
 
-      const REPO = 'Zeroks77/Kret_Dota', BRANCH = 'main';
-      const relBase = '../data', rawBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
-    const sp = new URLSearchParams(location.search); const slug = sp.get('league') || sp.get('l') || 'TI2025';
+  const REPO = 'Zeroks77/Kret_Dota', BRANCH = 'main';
+  const relBase = '../data', rawBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`, rawDocsBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/docs/data`;
+  const sp = (window.UrlParams && UrlParams.canonicalizeInPlace) ? UrlParams.canonicalizeInPlace() : new URLSearchParams(location.search); const slug = sp.get('league') || 'TI2025';
 
     // Optional: explicit folder under docs containing matches.json/report.json (e.g., 'league/2025/TI2025')
     const leaguePath = (sp.get('leaguePath') || '').replace(/^\/+/, '').replace(/\/+$/, '');
@@ -743,11 +816,33 @@
     const fromBases = (p) => relBases.map(b => `${b}/${p}`);
     // Parallelize all initial JSON loads
     const [matchesRaw, heroesRaw, mapConfRaw, report, proPlayers] = await Promise.all([
-      loadFirst([...fromBases(`league/${slug}/matches.json`), `${rawBase}/league/${slug}/matches.json`]),
-      loadFirst([...fromBases(`heroes.json`), `${rawBase}/heroes.json`]),
-      loadFirst([...fromBases(`maps.json`), `${rawBase}/maps.json`]),
-  loadFirst([...fromBases(`league/${slug}/report.json`), `${rawBase}/league/${slug}/report.json`]),
-      loadFirst([ ...fromBases(`cache/OpenDota/proPlayers.json`), `${rawBase}/cache/OpenDota/proPlayers.json` ])
+      // League-specific files primarily live under docs/data/league/<slug>/ ...
+      loadFirst([
+        ...fromBases(`league/${slug}/matches.json`),
+        `${rawBase}/league/${slug}/matches.json`,
+        `${rawDocsBase}/league/${slug}/matches.json`
+      ]),
+      // Core constants exist in both data/ and docs/data/
+      loadFirst([
+        ...fromBases(`heroes.json`),
+        `${rawBase}/heroes.json`,
+        `${rawDocsBase}/heroes.json`
+      ]),
+      loadFirst([
+        ...fromBases(`maps.json`),
+        `${rawBase}/maps.json`,
+        `${rawDocsBase}/maps.json`
+      ]),
+      loadFirst([
+        ...fromBases(`league/${slug}/report.json`),
+        `${rawBase}/league/${slug}/report.json`,
+        `${rawDocsBase}/league/${slug}/report.json`
+      ]),
+      loadFirst([
+        ...fromBases(`cache/OpenDota/proPlayers.json`),
+        `${rawBase}/cache/OpenDota/proPlayers.json`,
+        `${rawDocsBase}/cache/OpenDota/proPlayers.json`
+      ])
     ]);
   const matches = Array.isArray(matchesRaw) ? matchesRaw : (matchesRaw && matchesRaw.matches ? matchesRaw.matches : []);
     const heroes = makeHeroMap(heroesRaw);
@@ -758,7 +853,24 @@
         const times = matches.map(m => m.start_time).filter(Boolean); const min = Math.min(...times), max = Math.max(...times);
         const fmt = s => { const d = new Date(s * 1000); return d.toISOString().slice(0, 10); };
         const hdr = document.getElementById('headerSub');
-        if (hdr) hdr.textContent = `${matches.length} matches · ${isFinite(min) ? fmt(min) : '?'} to ${isFinite(max) ? fmt(max) : '?'} (UTC)`;
+        if (hdr) {
+          let txt = `${matches.length} matches · ${isFinite(min) ? fmt(min) : '?'} to ${isFinite(max) ? fmt(max) : '?'} (UTC)`;
+          // Optional build info (generated_at and commit)
+          try {
+            const genAt = (report && report.meta && (report.meta.generated_at || report.meta.generatedAt)) || (report && (report.generated_at || report.generatedAt));
+            if (genAt) {
+              const dt = new Date(genAt);
+              if (!isNaN(dt.getTime())) txt += ` · data as of ${dt.toISOString().replace('T',' ').slice(0,19)}Z`;
+            }
+            const commit = report && report.meta && (report.meta.commit || report.meta.git_commit || report.meta.sha);
+            if (commit && typeof commit === 'string' && commit.length >= 7) {
+              const short = commit.slice(0,7);
+              const url = `https://github.com/${REPO}/commit/${commit}`;
+              txt += ` · <a href="${url}" target="_blank" rel="noopener">${short}</a>`;
+            }
+          } catch(_e){}
+          hdr.innerHTML = txt;
+        }
         const rl = document.getElementById('rangeLabel'); if (rl) rl.textContent = `${matches.length} matches`;
       } catch (_e) {}
 
@@ -956,50 +1068,48 @@
           catch(e){ console.warn('LaneDuosViewer mount failed', e); }
         });
       };
-      window.__ensureWards = () => {
+      window.__ensureItems = () => {
         if (mountedItems) return; mountedItems = true;
         detailsPromise.then(details => {
           try {
-            const container = document.getElementById('dvWardMount'); if (!container) return;
-            container.innerHTML = '';
-            const mapConf = window.__mapConf || {};
-            // Prefer precomputed viewer block from report.json if available
-            const preV = report && report.highlights && report.highlights.wards && report.highlights.wards.viewer;
-            if (preV && window.WardViewer) {
-              const teamsList = Array.isArray(preV.teams) ? preV.teams : [];
-              const playersList = Array.isArray(preV.players) ? preV.players : [];
-              const spots = Array.isArray(preV.spots) ? preV.spots : [];
-              const sentries = Array.isArray(preV.sentries) ? preV.sentries : [];
-              window.WardViewer.mount(container, { mapConf, data: { spots, sentries, teams: teamsList, players: playersList }, options: { modeDefault: 'best', showExtras: true, showLongest: false, ignorePersistedPlayer: true, ignorePersistedCluster: true, extras: { wardPlayers: {}, wardLongest: [] } } });
-              return;
-            }
-            // Fallback: Build viewer data from details
-            if (__detailsCache && Array.isArray(__detailsCache)) {
-              const consumables = new Set(['tango','flask','healing_salve','enchanted_mango','clarity','faerie_fire','smoke_of_deceit','dust','dust_of_appearance','ward_observer','ward_sentry','sentry_wards','observer_ward','sentry_ward','tpscroll','tp_scroll','enchanted_quiver','bottle','refresher_shard','cheese','tome_of_knowledge','blood_grenade']);
-              function norm(k){ return String(k || '').toLowerCase(); }
-              for (const d of details) {
-                const radWin = !!d.radiant_win;
-                (d.players || []).forEach(p => {
-                  const aid = Number(p.account_id || 0); if (!(aid > 0)) return; const role = roleCache.get(aid) || 'support';
-                  const log = Array.isArray(p.purchase_log) ? p.purchase_log : [];
-                  for (const ev of log) {
-                    const key = norm(ev.key || ev.item || ''); if (!key || /recipe_/.test(key)) continue;
-                    const rec = itemAgg.get(key) || { count: 0, winCount: 0, coreCount: 0, supportCount: 0, cost: 0, consumable: false };
-                    rec.count++; if (role === 'core') rec.coreCount++; else rec.supportCount++;
-                    const won = p.is_radiant ? radWin : !radWin; if (won) rec.winCount++;
-                    if (consumables.has(key)) rec.consumable = true;
-                    itemAgg.set(key, rec);
-                  }
-                });
+            const ib = document.getElementById('ibMount'); if (!ib) return;
+            // Role heuristic via GPM
+            const roleCache = new Map();
+            for (const md of details || []) {
+              for (const p of (md.players || [])) {
+                const aid = Number(p.account_id || 0); if (!(aid > 0)) continue;
+                const gpm = Number(p.gold_per_min || 0);
+                roleCache.set(aid, gpm >= 420 ? 'core' : 'support');
               }
-              if (__highCache) {
-                (__highCache.rapierTop || []).forEach(r => { const key = 'rapier'; const rec = itemAgg.get(key) || { count: 0, winCount: 0, coreCount: 0, supportCount: 0, cost: 6000, consumable: false, display: 'Divine Rapier' }; rec.count += r.count; itemAgg.set(key, rec); });
-                (__highCache.gemTop || []).forEach(r => { const key = 'gem'; const rec = itemAgg.get(key) || { count: 0, winCount: 0, coreCount: 0, supportCount: 0, cost: 900, consumable: true, display: 'Gem of True Sight' }; rec.count += r.count; rec.consumable = true; itemAgg.set(key, rec); });
-              }
-              const items = Array.from(itemAgg.entries()).map(([k, v]) => { const role = v.coreCount === v.supportCount ? (v.coreCount > 0 ? 'core' : 'support') : (v.coreCount > v.supportCount ? 'core' : 'support'); const namePretty = v.display || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); const wins = Number(v.winCount || 0); const wr = v.count ? wins / v.count : 0; return { item: k, name: namePretty, count: v.count, wins, wr, gold: v.cost || 0, role, consumable: v.consumable }; }).sort((a, b) => b.count - a.count || b.gold - a.gold || a.name.localeCompare(b.name));
-              const meta = {}; for (const it of items) { meta[it.item] = { cost: it.gold, consumable: it.consumable, role: it.role }; }
-              window.ItemsBoughtViewer.mount(ib, { data: { items, meta, playerNames } });
             }
+            const itemAgg = new Map();
+            const consumables = new Set(['tango','flask','healing_salve','enchanted_mango','clarity','faerie_fire','smoke_of_deceit','dust','dust_of_appearance','ward_observer','ward_sentry','sentry_wards','observer_ward','sentry_ward','tpscroll','tp_scroll','enchanted_quiver','bottle','refresher_shard','cheese','tome_of_knowledge','blood_grenade']);
+            const norm = (k) => String(k || '').toLowerCase();
+            for (const md of details || []) {
+              for (const p of (md.players || [])) {
+                const aid = Number(p.account_id || 0); if (!(aid > 0)) continue;
+                const role = roleCache.get(aid) || 'support';
+                const log = Array.isArray(p.purchase_log) ? p.purchase_log : [];
+                for (const ev of log) {
+                  const key = norm(ev.key || ev.item || ''); if (!key || /recipe_/.test(key)) continue;
+                  const rec = itemAgg.get(key) || { count: 0, coreCount: 0, supportCount: 0, cost: 0, consumable: false };
+                  rec.count++; if (role === 'core') rec.coreCount++; else rec.supportCount++;
+                  if (consumables.has(key)) rec.consumable = true;
+                  itemAgg.set(key, rec);
+                }
+              }
+            }
+            if (__highCache) {
+              (__highCache.rapierTop || []).forEach(r => { const key = 'rapier'; const rec = itemAgg.get(key) || { count: 0, coreCount: 0, supportCount: 0, cost: 6000, consumable: false, display: 'Divine Rapier' }; rec.count += r.count; itemAgg.set(key, rec); });
+              (__highCache.gemTop || []).forEach(r => { const key = 'gem'; const rec = itemAgg.get(key) || { count: 0, coreCount: 0, supportCount: 0, cost: 900, consumable: true, display: 'Gem of True Sight' }; rec.count += r.count; rec.consumable = true; itemAgg.set(key, rec); });
+            }
+            const items = Array.from(itemAgg.entries()).map(([k, v]) => {
+              const role = v.coreCount === v.supportCount ? (v.coreCount > 0 ? 'core' : 'support') : (v.coreCount > v.supportCount ? 'core' : 'support');
+              const namePretty = v.display || k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+              return { item: k, name: namePretty, count: v.count, gold: v.cost || 0, role, consumable: v.consumable };
+            }).sort((a, b) => b.count - a.count || b.gold - a.gold || a.name.localeCompare(b.name));
+            const meta = {}; for (const it of items) { meta[it.item] = { cost: it.gold, consumable: it.consumable, role: it.role }; }
+            window.ItemsBoughtViewer.mount(ib, { data: { items, meta, playerNames } });
           } catch(e){ console.warn('ItemsBoughtViewer mount failed', e); }
         });
       };
@@ -1158,7 +1268,13 @@
       const times = matches.map(m => m.start_time).filter(Boolean); const max = Math.max(...times);
       
 
-      try { const last = localStorage.getItem('lv_tab'); if (last && window.__lvShowTab) { window.__lvShowTab(last); } } catch (_e) {}
+      // Initial tab selection: prefer URL ?tab=, then persisted last tab
+      try {
+        const urlTab = ((window.UrlParams && UrlParams.getCanonical) ? UrlParams.getCanonical() : new URLSearchParams(location.search)).get('tab');
+        const last = localStorage.getItem('lv_tab');
+        const initial = urlTab || last;
+        if (initial && window.__lvShowTab) { window.__lvShowTab(initial); }
+      } catch (_e) {}
 
       // Wire cache clear button
       try {
@@ -1181,6 +1297,41 @@
           });
         }
       } catch(_e) {}
+
+      // Share controls: Copy link and Copy embed
+      try {
+        const status = document.getElementById('shareStatus');
+        function announce(msg){ if(status){ status.textContent = msg; setTimeout(()=>{ if(status) status.textContent=''; }, 2000); } }
+        function buildPermalink() {
+          const url = new URL(location.href);
+          // ensure key params are present
+          url.searchParams.set('league', slug);
+          if (leaguePath) url.searchParams.set('leaguePath', leaguePath);
+          // include current tab if available
+          try {
+            const tabsRoot = document.getElementById('mainTabs');
+            const activeBtn = Array.from(tabsRoot.querySelectorAll('.tab')).find(b=> b.classList.contains('active'));
+            const tab = activeBtn ? activeBtn.getAttribute('data-tab') : (new URLSearchParams(location.search)).get('tab') || 'highlights';
+            url.searchParams.set('tab', tab);
+          } catch(_e){}
+          return url.toString();
+        }
+        function copyText(txt){
+          if (navigator.clipboard && navigator.clipboard.writeText) { return navigator.clipboard.writeText(txt); }
+          // fallback
+          return new Promise((res)=>{ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(_e){} document.body.removeChild(ta); res(); });
+        }
+        const btnLink = document.getElementById('btnCopyLink');
+        if (btnLink) btnLink.addEventListener('click', async ()=>{ const link = buildPermalink(); await copyText(link); announce('Link copied to clipboard'); btnLink.textContent='Copied!'; setTimeout(()=>{ btnLink.textContent='Copy link'; }, 1000); });
+        const btnEmbed = document.getElementById('btnCopyEmbed');
+        if (btnEmbed) btnEmbed.addEventListener('click', async ()=>{
+          const link = buildPermalink();
+          const html = `<iframe src="${link}" width="100%" height="900" loading="lazy" style="border:0"></iframe>`;
+          await copyText(html);
+          announce('Embed snippet copied to clipboard');
+          btnEmbed.textContent='Copied!'; setTimeout(()=>{ btnEmbed.textContent='Copy embed'; }, 1000);
+        });
+      } catch(_e){}
     }
 
   enableSorting();

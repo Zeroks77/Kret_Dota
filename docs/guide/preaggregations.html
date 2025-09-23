@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pre-aggregations – Kret Dota Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./guide.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="wrap">
+    <aside class="side" aria-label="Documentation navigation">
+      <div class="brand">Kret Dota Reports</div>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html">Overview</a>
+        <a href="./getting-started.html">Getting started</a>
+        <a href="./pipeline.html">Data pipeline</a>
+        <a href="./reports.html">Reports & viewers</a>
+        <a href="./components.html">Components</a>
+        <a href="./preaggregations.html" class="active">Pre-aggregations</a>
+        <a href="./accessibility.html">Accessibility</a>
+        <a href="./development.html">Development</a>
+        <a href="./roadmap.html">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </nav>
+    </aside>
+    <main id="main" class="content" role="main">
+      <h1>Pre-aggregations</h1>
+      <p>Pre-aggregations convert raw match/event logs into compact JSON summaries to keep the viewers fast and client-only.</p>
+
+      <h2>Why</h2>
+      <ul>
+        <li>Reduce client compute: avoid rederiving heavy metrics on every page load.</li>
+        <li>Enable static hosting: no server, all data delivered from <code>docs/</code>.</li>
+        <li>Stabilize schemas: viewers consume consistent shapes across months/patches.</li>
+      </ul>
+
+      <h2>Where it happens</h2>
+      <ul>
+        <li><code>scripts/fetch_opendota_data.ps1</code>: fetch and normalize raw inputs (heroes, patches, matches).</li>
+        <li><code>scripts/create_dynamic_reports.ps1</code>: compute league/month aggregates and write JSON used by viewers.</li>
+        <li><code>scripts/create_league_report.ps1</code>: produce league-scoped manifests and match lists.</li>
+      </ul>
+
+      <h2>Data flow</h2>
+      <pre>
+  [OpenDota]
+       \__ fetch_opendota_data.ps1
+            \__ data/cache/OpenDota/* (raw)
+            \__ data/*.json (normalized)
+                   \__ create_dynamic_reports.ps1
+                        \__ docs/data/*.json (published aggregates)
+                              \__ viewers (tables/maps)
+      </pre>
+
+      <h2>Schema sketch</h2>
+      <div class="note">
+        <p>Common aggregate shapes (illustrative):</p>
+        <pre>{
+  "players": [{"id": 123, "name": "…", "games": 42, "wins": 23, "hero_pool": 17, "kda": 3.4, "gpm": 455, ...}],
+  "heroes": [{"id": 42, "name": "Bristleback", "picks": 21, "wins": 12, "bans": 8, ...}],
+  "teams": [{"team_id": 99, "name": "Dire", "games": 18, "wr": 0.61, ...}],
+  "wards": [{"spot": "[46.2, 72.4]", "count": 12, "total": 1340, "samples": [{"t": 123, "side": "Radiant", "aid": 111}, ...]}]
+}
+        </pre>
+      </div>
+
+      <h2>Consumption in viewers</h2>
+      <ul>
+        <li>Tables (players/heroes/teams) directly bind to pre-aggregated rows, only sorting/filtering client-side.</li>
+        <li>Ward viewer performs lightweight derivations (e.g., contest score, clustering) atop the spot aggregates.</li>
+        <li>Lane duos/draft: may compute on demand from monthly shards; heavy bits can be precomputed incrementally.</li>
+      </ul>
+
+      <h2>Update cadence</h2>
+      <ul>
+        <li>Monthly shards: regenerated per month; last 30/60/120 ranges slice across shards.</li>
+        <li>Leagues: rebuilt when new matches are ingested.</li>
+        <li>Constants (heroes, patches): updated when OpenDota refreshes.</li>
+      </ul>
+
+      <h2>Extending pre-aggregations</h2>
+      <ol>
+        <li>Add fields to the compute scripts output (ensure backward compatibility).</li>
+        <li>Document new fields here and in code comments where consumed.</li>
+        <li>Gate new viewer features behind presence checks to avoid runtime errors.</li>
+      </ol>
+    </main>
+  </div>
+</body>
+</html>

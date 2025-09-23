@@ -91,6 +91,8 @@
   .pc-info:hover{background:rgba(255,255,255,.06)}
   .pc-flyout{display:none;position:absolute;right:0;top:100%;margin-top:6px;max-width:320px;background:rgba(18,18,18,.98);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:12px;color:#d5eaff;z-index:30;box-shadow:0 8px 24px rgba(0,0,0,.35)}
   .pc-flyout.open{display:block}
+  /* Screen-reader only live region */
+  .sr-live{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
     `;
     const s = document.createElement('style'); s.id='pc-styles'; s.textContent = css; document.head.appendChild(s);
   }
@@ -130,7 +132,7 @@
   }
 
   function parseQS(){
-    const p = new URLSearchParams(location.search);
+    const p = (window.UrlParams && UrlParams.getCanonical) ? UrlParams.getCanonical() : new URLSearchParams(location.search);
     const getNum = (k) => (p.get(k) ? Number(p.get(k)) : null);
     const from = p.get('from') ? Number(p.get('from')) : null;
     const to = p.get('to') ? Number(p.get('to')) : null;
@@ -142,7 +144,7 @@
     };
   }
   function writeQS(state){
-    const p = new URLSearchParams(location.search);
+  const p = (window.UrlParams && UrlParams.getCanonical) ? UrlParams.getCanonical() : new URLSearchParams(location.search);
     if (state.playerA) p.set('pcA', String(state.playerA)); else p.delete('pcA');
     if (state.playerB) p.set('pcB', String(state.playerB)); else p.delete('pcB');
     if (state.side && state.side !== 'all') p.set('side', state.side); else p.delete('side');
@@ -525,7 +527,9 @@
     const selA = createEl('select', { class: 'pc-selectA' });
     const selB = createEl('select', { class: 'pc-selectB' });
     const sideSel = createEl('select', { class: 'pc-side' });
-    const copyBtn = createEl('button', { class: 'pc-copy', text: 'Copy link' });
+  const copyBtn = createEl('button', { class: 'pc-copy', text: 'Copy link' });
+  // Live region for copy feedback (a11y)
+  const live = createEl('div', { class: 'sr-live', role: 'status', 'aria-live': 'polite' });
 
   playersToOptions(playersIndex).forEach(o => selA.appendChild(createEl('option', { value:o.value, text:o.label })));
   playersToOptions(playersIndex).forEach(o => selB.appendChild(createEl('option', { value:o.value, text:o.label })));
@@ -542,7 +546,8 @@
     controls.appendChild(selB);
     controls.appendChild(createEl('label', { text: 'Side' }));
     controls.appendChild(sideSel);
-    controls.appendChild(copyBtn);
+  controls.appendChild(copyBtn);
+  controls.appendChild(live);
 
     // Summary area
   const summary = createEl('div', { class: 'pc-summary' });
@@ -789,6 +794,100 @@
       poolB.appendChild(listTop(hsB));
   poolWrap.appendChild(poolA); poolWrap.appendChild(poolO); poolWrap.appendChild(poolB);
   fullWidth.appendChild(poolWrap);
+
+      // Hero vs Hero matchups (A hero vs B hero when facing each other)
+      if (aId && bId) {
+        function computeHeroMatchups(matches, aId, bId, filters, timeWindow){
+          const keyOf = (ha,hb)=> `${ha}|${hb}`;
+          const map = new Map(); // key -> { hA, hB, games, aWins, aK, aD, aA, bK, bD, bA, aKDASamples, bKDASamples }
+          for(const m of matches||[]){
+            // Time filter
+            if (timeWindow){
+              let st = Number(m.start_time);
+              if (!isFinite(st)){
+                const d = Date.parse(m.start_time);
+                st = isNaN(d) ? null : Math.floor(d/1000);
+              }
+              if (st != null && st > 1e12) st = Math.floor(st/1000);
+              if (st != null){
+                if (isFinite(timeWindow.from) && st < timeWindow.from) continue;
+                if (isFinite(timeWindow.to) && st > timeWindow.to) continue;
+              }
+            }
+            const pA = (m.players||[]).find(p => Number(p.account_id)===aId);
+            const pB = (m.players||[]).find(p => Number(p.account_id)===bId);
+            if(!pA || !pB) continue;
+            const aSide = isRadiantFlag(pA);
+            const bSide = isRadiantFlag(pB);
+            if (aSide==null || bSide==null) continue;
+            if (aSide === bSide) continue; // must be on opposing sides
+            if (filters && filters.side && filters.side !== 'all'){
+              if (filters.side === 'radiant' && aSide !== true) continue;
+              if (filters.side === 'dire' && aSide !== false) continue;
+            }
+            const hA = Number(pA.hero_id||0), hB = Number(pB.hero_id||0);
+            if(!(hA>0 && hB>0)) continue;
+            const key = keyOf(hA,hB);
+            if(!map.has(key)) map.set(key, { hA, hB, games:0, aWins:0, aK:0, aD:0, aA:0, bK:0, bD:0, bA:0, aKDASamples:0, bKDASamples:0 });
+            const rec = map.get(key);
+            rec.games++;
+            const radWin = !!m.radiant_win;
+            const aWon = aSide ? radWin : !radWin;
+            if (aWon) rec.aWins++;
+            if (pA.kills !== undefined || pA.deaths !== undefined || pA.assists !== undefined){
+              rec.aK += Number(pA.kills||0); rec.aD += Number(pA.deaths||0); rec.aA += Number(pA.assists||0);
+              rec.aKDASamples++;
+            }
+            if (pB.kills !== undefined || pB.deaths !== undefined || pB.assists !== undefined){
+              rec.bK += Number(pB.kills||0); rec.bD += Number(pB.deaths||0); rec.bA += Number(pB.assists||0);
+              rec.bKDASamples++;
+            }
+          }
+          return Array.from(map.values());
+        }
+        function renderHeroMatchups(hma){
+          // sort by games desc, then A WR desc
+          hma.sort((x,y)=> y.games - x.games || (y.aWins/y.games) - (x.aWins/x.games));
+          const top = hma.slice(0, 10);
+          const card = createEl('div', { class:'pc-card' });
+          const title = createEl('div', { class:'pc-card-title', text:'Hero matchups 🆚' });
+          card.appendChild(title);
+          withInfo(title, 'Head-to-head hero pairs when A and B faced each other on opposing sides within filters. Shows games, A win rate, and average K/D/A when available.');
+          if(!top.length){ card.appendChild(createEl('div', { class:'pc-small', text:'No head-to-head hero pairs found in range' })); return card; }
+          for(const r of top){
+            const aH = heroes && (heroes[String(r.hA)]||heroes[r.hA]) || {};
+            const bH = heroes && (heroes[String(r.hB)]||heroes[r.hB]) || {};
+            const row = createEl('div', { class:'pc-item-row three' });
+            const left = createEl('div', { class:'pc-side a' });
+            if(aH.icon||aH.img){ const imgA = createEl('img', { class:'pc-hero-icon', src:aH.icon||aH.img, alt:aH.name||heroName(heroes,r.hA) }); imgA.onerror=()=>{ try{imgA.remove();}catch(_e){} }; left.appendChild(imgA); }
+            left.appendChild(createEl('span', { text: aH.name || heroName(heroes, r.hA) }));
+            const mid = createEl('div', { class:'pc-item-mid' });
+            const aWr = r.games>0 ? r.aWins/r.games : NaN;
+            mid.appendChild(createEl('span', { class:'pc-badge', title:`Samples: ${r.games}`, text:`${r.games}g · A ${fmtPct(aWr)}` }));
+            const aKdaOk = r.aKDASamples>0;
+            const bKdaOk = r.bKDASamples>0;
+            if(aKdaOk || bKdaOk){
+              const aK = aKdaOk ? (r.aK/Math.max(1,r.aKDASamples)) : NaN;
+              const aD = aKdaOk ? (r.aD/Math.max(1,r.aKDASamples)) : NaN;
+              const aA = aKdaOk ? (r.aA/Math.max(1,r.aKDASamples)) : NaN;
+              const bK = bKdaOk ? (r.bK/Math.max(1,r.bKDASamples)) : NaN;
+              const bD = bKdaOk ? (r.bD/Math.max(1,r.bKDASamples)) : NaN;
+              const bA = bKdaOk ? (r.bA/Math.max(1,r.bKDASamples)) : NaN;
+              const sub = `A ${isFinite(aK)?aK.toFixed(1):'-'}/${isFinite(aD)?aD.toFixed(1):'-'}/${isFinite(aA)?aA.toFixed(1):'-'} vs B ${isFinite(bK)?bK.toFixed(1):'-'}/${isFinite(bD)?bD.toFixed(1):'-'}/${isFinite(bA)?bA.toFixed(1):'-'}`;
+              mid.appendChild(createEl('span', { class:'pc-small', style:'margin-left:8px', text: sub }));
+            }
+            const right = createEl('div', { class:'pc-side b' });
+            if(bH.icon||bH.img){ const imgB = createEl('img', { class:'pc-hero-icon', src:bH.icon||bH.img, alt:bH.name||heroName(heroes,r.hB) }); imgB.onerror=()=>{ try{imgB.remove();}catch(_e){} }; right.appendChild(imgB); }
+            right.appendChild(createEl('span', { text: bH.name || heroName(heroes, r.hB) }));
+            row.appendChild(left); row.appendChild(mid); row.appendChild(right);
+            card.appendChild(row);
+          }
+          return card;
+        }
+        const hmAgg = computeHeroMatchups(data.matches||[], aId, bId, filters, timeWindow);
+        const hmCard = renderHeroMatchups(hmAgg);
+        fullWidth.appendChild(hmCard);
+      }
 
       // Unique picks removed to avoid redundancy
 
@@ -1128,8 +1227,15 @@
     copyBtn.addEventListener('click', () => {
       const url = writeQS({ playerA: selA.value?Number(selA.value):null, playerB: selB.value?Number(selB.value):null, side: sideSel.value });
       navigator.clipboard?.writeText(url).catch(()=>{});
+      // Visual feedback
       copyBtn.textContent = 'Copied!';
       setTimeout(()=> copyBtn.textContent='Copy link', 1000);
+      // a11y: aria-live announcement
+      try{
+        const msg = `Link copied. Player A ${selA.value||'—'}, Player B ${selB.value||'—'}, side ${sideSel.value}.`;
+        const lr = controls.querySelector('.sr-live');
+        if(lr){ lr.textContent = msg; }
+      }catch(_e){}
     });
 
     // Listen for host range changes

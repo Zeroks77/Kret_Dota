@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data pipeline – Kret Dota Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./guide.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="wrap">
+    <aside class="side" aria-label="Documentation navigation">
+      <div class="brand">Kret Dota Reports</div>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html">Overview</a>
+        <a href="./getting-started.html">Getting started</a>
+        <a href="./pipeline.html" class="active">Data pipeline</a>
+        <a href="./reports.html">Reports & viewers</a>
+        <a href="./components.html">Components</a>
+        <a href="./preaggregations.html">Pre-aggregations</a>
+        <a href="./accessibility.html">Accessibility</a>
+        <a href="./development.html">Development</a>
+        <a href="./roadmap.html">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </nav>
+    </aside>
+    <main id="main" class="content" role="main">
+      <h1>Data pipeline</h1>
+      <p>In simple terms: we fetch public data, tidy it up, prepare small files, and publish fast web pages.</p>
+
+      <h2>At a glance</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+        <div class="note"><h3 style="margin-top:6px">1) Fetch</h3><p>Download match and constants from OpenDota into <code>data/cache/</code>.</p></div>
+        <div class="note"><h3 style="margin-top:6px">2) Prepare</h3><p>Create compact JSONs (<code>data/matches/YYYY-MM.json</code>) and constants for the site.</p></div>
+        <div class="note"><h3 style="margin-top:6px">3) Publish</h3><p>Generate HTML wrappers under <code>docs/</code> and open them in your browser.</p></div>
+      </div>
+
+      <h2>Scripts</h2>
+      <ul>
+        <li><code>scripts/fetch_opendota_data.ps1</code> – Fetch constants, matches, manifests; sanitize and cache.</li>
+        <li><code>scripts/create_dynamic_reports.ps1</code> – Build monthly/patch wrapper pages, update <code>docs/reports.json</code>.</li>
+        <li><code>scripts/create_league_report.ps1</code> – Build a league wrapper (e.g., The International).</li>
+        <li><code>scripts/create_user_report.ps1</code> – Temporary user-focused wrappers and cleanup.</li>
+      </ul>
+
+      <h2>Folders</h2>
+      <ul>
+        <li><code>data/</code> – Input JSONs (heroes, maps, manifests) and cache (<code>cache/OpenDota/</code>).</li>
+        <li><code>docs/</code> – Published site with <code>index.html</code>, <code>dynamic.html</code>, league pages, images, and JS viewers.</li>
+      </ul>
+
+      <h2>Schedule (optional)</h2>
+      <ul>
+        <li>Daily: refresh constants (heroes/patch) and new matches.</li>
+        <li>Monthly: rebuild the “last 30 days” report and update <code>reports.json</code>.</li>
+      </ul>
+
+      <h2>Local run</h2>
+      <ol>
+        <li>Open a PowerShell prompt at the repo root.</li>
+        <li>Fetch data: run <code>scripts/fetch_opendota_data.ps1</code>.</li>
+        <li>Generate pages: run <code>scripts/create_dynamic_reports.ps1</code>.</li>
+        <li>Open <code>docs/index.html</code> to browse.</li>
+      </ol>
+    </main>
+  </div>
+</body>
+</html>

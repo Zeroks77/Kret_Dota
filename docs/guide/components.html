@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Components – Kret Dota Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./guide.css">
+  <style>
+    .file{display:flex;align-items:center;gap:8px}
+    .file code{background:rgba(255,255,255,.06)}
+    .diagram{display:block;max-width:820px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.03);margin:12px 0}
+  </style>
+  </head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="wrap">
+    <aside class="side" aria-label="Documentation navigation">
+      <div class="brand">Kret Dota Reports</div>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html">Overview</a>
+        <a href="./getting-started.html">Getting started</a>
+        <a href="./pipeline.html">Data pipeline</a>
+        <a href="./reports.html">Reports & viewers</a>
+        <a href="./components.html" class="active">Components</a>
+        <a href="./preaggregations.html">Pre-aggregations</a>
+        <a href="./accessibility.html">Accessibility</a>
+        <a href="./development.html">Development</a>
+        <a href="./roadmap.html">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </nav>
+    </aside>
+    <main id="main" class="content" role="main">
+      <h1>Components</h1>
+      <p>This page describes the main client-side components (vanilla JS modules) and their responsibilities.</p>
+
+      <h2>Dynamic viewer shell</h2>
+      <div class="note">
+        <div class="file"><code>docs/dynamic.html</code></div>
+        <p>Top-level page mounting all client-side viewers with a shared tablist and controls.</p>
+        <ul>
+          <li>Global loader live-region, keyboard tablist, and shared date/player filters.</li>
+          <li>Lazy initialization of viewers when tabs are activated.</li>
+        </ul>
+      </div>
+
+      <h2>Viewers</h2>
+      <div class="note">
+        <div class="file"><code>docs/js/ward_viewer.js</code></div>
+        <p>Interactive ward map with pins, flyout details, sentry overlays, clustering, and accessibility support.</p>
+        <ul>
+          <li>Keyboardable spots (role=button), pin/unpin chips, copy-link with aria-live.</li>
+          <li>Flyout (role=dialog) with focus return, polite updates, and regional analytics.</li>
+        </ul>
+      </div>
+      <div class="note">
+        <div class="file"><code>docs/js/draft_viewer.js</code></div>
+        <p>Draft analytics with segmented controls (modes/phases), hero stats, and optional ARIA tabs upgrade.</p>
+      </div>
+      <div class="note">
+        <div class="file"><code>docs/js/player_stats_viewer.js</code>, <code>docs/js/items_bought_viewer.js</code>, <code>docs/js/lane_duos_viewer.js</code></div>
+        <p>Table-driven viewers for players, item timings, and lane synergy; sortable headers and captions.</p>
+      </div>
+      <div class="note">
+        <div class="file"><code>docs/js/components/player_compare.js</code></div>
+        <p>Scaffold for A/B player comparison (planned); reuses table primitives and badges.</p>
+      </div>
+
+      <h2>League dynamic wrapper</h2>
+      <div class="note">
+        <div class="file"><code>docs/league_dynamic.html</code></div>
+        <p>League-scoped variant of the dynamic viewer with CSV exports and cached match lists.</p>
+      </div>
+
+      <h2>Shared data assets</h2>
+      <ul>
+        <li><code>docs/data/constants/*.json</code> – Heroes and patch constants consumed by viewers.</li>
+        <li><code>data/matches/YYYY-MM.json</code> – Monthly shards for client-side aggregation.</li>
+        <li><code>data/cache/OpenDota</code> – Raw ingested JSONs kept for reproducibility.</li>
+      </ul>
+
+      <h2>Interaction diagram</h2>
+      <svg class="diagram" viewBox="0 0 820 260" role="img" aria-label="Dynamic page mounts viewers which fetch data and render UI">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#1a244a"/>
+            <stop offset="100%" stop-color="#111a3a"/>
+          </linearGradient>
+          <style>
+            .box{fill:url(#bg);stroke:#3a4a7a;stroke-width:1.2;rx:8}
+            .t{fill:#eef1f7;font:600 13px Inter,Segoe UI,Arial}
+            .s{fill:#9aa3b2;font:400 12px Inter,Segoe UI,Arial}
+            .a{stroke:#6da6ff;stroke-width:1.5;marker-end:url(#arrow)}
+          </style>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#6da6ff"/>
+          </marker>
+        </defs>
+        <rect class="box" x="20" y="20" width="200" height="60"/>
+        <text class="t" x="120" y="46" text-anchor="middle">docs/dynamic.html</text>
+        <text class="s" x="120" y="66" text-anchor="middle">shell (tabs, filters, loader)</text>
+
+        <rect class="box" x="300" y="20" width="210" height="60"/>
+        <text class="t" x="405" y="46" text-anchor="middle">viewers/*</text>
+        <text class="s" x="405" y="66" text-anchor="middle">draft, players, heroes, wards…</text>
+
+        <rect class="box" x="580" y="20" width="220" height="60"/>
+        <text class="t" x="690" y="46" text-anchor="middle">JSON inputs</text>
+        <text class="s" x="690" y="66" text-anchor="middle">docs/data/*, data/matches/*</text>
+
+        <path class="a" d="M 220 50 L 300 50"/>
+        <path class="a" d="M 510 50 L 580 50"/>
+
+        <rect class="box" x="300" y="130" width="210" height="60"/>
+        <text class="t" x="405" y="156" text-anchor="middle">UI</text>
+        <text class="s" x="405" y="176" text-anchor="middle">tables, maps, dialogs (ARIA)</text>
+        <path class="a" d="M 405 80 L 405 130"/>
+      </svg>
+
+      <h2>Project structure (focused)</h2>
+      <ul>
+        <li><code>docs/</code> – Published site and assets
+          <ul>
+            <li><code>docs/index.html</code> – Reports index</li>
+            <li><code>docs/dynamic.html</code> – Main dynamic page</li>
+            <li><code>docs/league_dynamic.html</code> – League wrapper</li>
+            <li><code>docs/js/*.js</code> – Viewers (ward, draft, players, duos, items)</li>
+            <li><code>docs/js/components/*.js</code> – Reusable UI (e.g., player_compare scaffold)</li>
+            <li><code>docs/data/*</code> – Constants and published aggregates</li>
+            <li><code>docs/guide/*</code> – This documentation</li>
+          </ul>
+        </li>
+        <li><code>data/</code> – Inputs and caches
+          <ul>
+            <li><code>data/matches/YYYY-MM.json</code> – Monthly shards</li>
+            <li><code>data/cache/OpenDota/*</code> – Raw fetched JSON</li>
+          </ul>
+        </li>
+        <li><code>scripts/</code> – PowerShell pipeline (see Data pipeline + Pre-aggregations)</li>
+      </ul>
+    </main>
+  </div>
+</body>
+</html>

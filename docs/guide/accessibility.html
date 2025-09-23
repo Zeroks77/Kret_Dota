@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accessibility – Kret Dota Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./guide.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="wrap">
+    <aside class="side" aria-label="Documentation navigation">
+      <div class="brand">Kret Dota Reports</div>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html">Overview</a>
+        <a href="./getting-started.html">Getting started</a>
+        <a href="./pipeline.html">Data pipeline</a>
+        <a href="./reports.html">Reports & viewers</a>
+        <a href="./components.html">Components</a>
+        <a href="./preaggregations.html">Pre-aggregations</a>
+        <a href="./accessibility.html" class="active">Accessibility</a>
+        <a href="./development.html">Development</a>
+        <a href="./roadmap.html">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </nav>
+    </aside>
+    <main id="main" class="content" role="main">
+      <h1>Accessibility</h1>
+      <p>We aim for an inclusive experience with good keyboard and screen reader support across all pages.</p>
+      <div class="note" role="region" aria-label="What this means for you" style="margin:10px 0">
+        <strong>What this means for you</strong>
+        <ul>
+          <li>Everything works with keyboard only.</li>
+          <li>Screen readers hear clear names and live updates.</li>
+          <li>Links and dialogs return focus where you expect.</li>
+          <li>Tables announce sorting so you’re never lost.</li>
+        </ul>
+      </div>
+
+      <h2>Implemented</h2>
+      <ul>
+        <li>ARIA tabs on main navigation; scoped arrow key handling.</li>
+        <li>Loading indicators with text and hidden live regions where appropriate.</li>
+        <li>Tables: captions, <code>aria-sort</code> on headers, keyboard sorting.</li>
+        <li>Focus visibility that respects high-contrast and <code>prefers-reduced-motion</code>.</li>
+        <li>Ward viewer: focusable map spots, keyboardable team/player lists and pins, flyout has <code>role="dialog"</code>, body is <code>aria-live</code>, and focus returns to opener on close.</li>
+        <li>Segmented controls across viewers support Enter/Space and reflect state via <code>aria-pressed</code>.</li>
+        <li>Clipboard actions announce via a polite live region in Ward viewer.</li>
+      </ul>
+
+      <h2>Keyboard quick reference</h2>
+      <ul>
+        <li><kbd>1</kbd>–<kbd>0</kbd>: main tab shortcuts.</li>
+        <li><kbd>←</kbd>/<kbd>→</kbd>: move in a tablist; <kbd>Home</kbd>/<kbd>End</kbd> jump; <kbd>Enter</kbd>/<kbd>Space</kbd> activate.</li>
+        <li>Wards: <kbd>Enter</kbd>/<kbd>Space</kbd> opens details; <kbd>Esc</kbd> closes and returns focus.</li>
+      </ul>
+
+      <h2>Open items</h2>
+      <ul>
+        <li>Optional: promote Draft primary segmented control to ARIA tabs.</li>
+      </ul>
+    </main>
+  </div>
+</body>
+</html>

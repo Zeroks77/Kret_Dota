@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Development – Kret Dota Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./guide.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="wrap">
+    <aside class="side" aria-label="Documentation navigation">
+      <div class="brand">Kret Dota Reports</div>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html">Overview</a>
+        <a href="./getting-started.html">Getting started</a>
+        <a href="./pipeline.html">Data pipeline</a>
+        <a href="./reports.html">Reports & viewers</a>
+        <a href="./components.html">Components</a>
+        <a href="./preaggregations.html">Pre-aggregations</a>
+        <a href="./accessibility.html">Accessibility</a>
+        <a href="./development.html" class="active">Development</a>
+        <a href="./roadmap.html">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </nav>
+    </aside>
+    <main id="main" class="content" role="main">
+      <h1>Development</h1>
+      <div class="note" style="margin:10px 0"><strong>Where to click on the site</strong>
+        <ul>
+          <li>Start at <code>docs/index.html</code> for the list of reports.</li>
+          <li>Open a month or league, then use the tabs to switch viewers.</li>
+          <li>Use “Copy link” to share exactly what you’re seeing.</li>
+        </ul>
+      </div>
+
+      <h2>Prerequisites</h2>
+      <ul>
+        <li>Windows: PowerShell 7+ recommended.</li>
+        <li>Git installed and configured.</li>
+        <li>Optional: Python or Node.js for personal tooling; not required by the site.</li>
+      </ul>
+
+      <h2>Local workflow</h2>
+      <ol>
+        <li>Fetch or update data with <code>scripts/fetch_opendota_data.ps1</code>.</li>
+        <li>Generate wrapper pages with <code>scripts/create_dynamic_reports.ps1</code>.</li>
+        <li>Open <code>docs/index.html</code> in a browser and test viewers.</li>
+      </ol>
+
+      <h2>GitHub Pages</h2>
+      <ol>
+        <li>Settings → Pages → Deploy from branch → Branch <b>main</b>, folder <b>/docs</b>.</li>
+        <li>Commit generated files under <code>docs/</code>. Pages publishes automatically.</li>
+        <li>Documentation lives under <code>docs/guide/</code>.</li>
+      </ol>
+
+      <h2>Project structure</h2>
+      <ul>
+        <li><code>docs/</code> – Published site, reports, static assets, and docs.</li>
+        <li><code>data/</code> – Input data and caches.</li>
+        <li><code>scripts/</code> – PowerShell scripts to fetch and build.</li>
+      </ul>
+    </main>
+  </div>
+</body>
+</html>

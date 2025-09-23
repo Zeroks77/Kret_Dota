@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kret Dota Reports – Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./guide.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="wrap">
+    <aside class="side" aria-label="Documentation navigation">
+      <div class="brand">Kret Dota Reports</div>
+      <div class="muted">Project documentation</div>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html" class="active">Overview</a>
+        <a href="./getting-started.html">Getting started</a>
+        <a href="./pipeline.html">Data pipeline</a>
+        <a href="./reports.html">Reports & viewers</a>
+        <a href="./components.html">Components</a>
+        <a href="./preaggregations.html">Pre-aggregations</a>
+        <a href="./accessibility.html">Accessibility</a>
+        <a href="./permalinks.html">Permalinks</a>
+        <a href="./development.html">Development</a>
+        <a href="./roadmap.html">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </nav>
+    </aside>
+    <main id="main" class="content" role="main">
+      <h1>Overview</h1>
+      <p>This project builds and publishes Dota 2 analytics reports (monthly, patch-based, user-specific, leagues) to GitHub Pages under the <code>docs/</code> folder.</p>
+
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:14px 0">
+        <div class="note">
+          <h3 style="margin-top:6px">60‑second summary</h3>
+          <ul>
+            <li>You open a report page in your browser.</li>
+            <li>The page reads small JSON files we already prepared.</li>
+            <li>You sort tables, switch tabs, and share a link to the exact view.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <h3 style="margin-top:6px">What you get</h3>
+          <ul>
+            <li>Fast, static pages. No logins. Works on mobile.</li>
+            <li>Players, heroes, wards, and draft insights.</li>
+            <li>League wrappers and monthly overviews.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <h3 style="margin-top:6px">Where the data comes from</h3>
+          <ul>
+            <li>Public OpenDota APIs</li>
+            <li>Light caching in this repository</li>
+            <li>Pre‑aggregations for speed</li>
+          </ul>
+        </div>
+      </div>
+      <div class="toc">
+        <a href="./getting-started.html">Getting started</a>
+        <a href="./pipeline.html">Data pipeline</a>
+        <a href="./reports.html">Reports & viewers</a>
+        <a href="./components.html">Components</a>
+        <a href="./preaggregations.html">Pre-aggregations</a>
+  <a href="./permalinks.html">Permalinks & Embeds</a>
+        <a href="./accessibility.html">Accessibility</a>
+        <a href="./development.html">Development</a>
+        <a href="./roadmap.html">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </div>
+
+      <h2>Key features</h2>
+      <ul>
+        <li>Static, fast reports hosted on GitHub Pages (no server required).</li>
+        <li>Automated fetching from OpenDota and report generation via PowerShell scripts.</li>
+        <li>Rich viewers: draft, players, heroes, teams, lane duos, ward map, league wrappers.</li>
+        <li>Robust keyboard accessibility and screen reader support across the site.</li>
+      </ul>
+
+      <h2>How this site is organized</h2>
+      <ul>
+        <li><code>docs/</code> – Published site (reports and this documentation).</li>
+        <li><code>data/</code> – JSON inputs and caches.</li>
+        <li><code>scripts/</code> – PowerShell automation for ingest and generation.</li>
+      </ul>
+
+      <h2>Friendly data flow</h2>
+      <svg viewBox="0 0 760 120" width="100%" height="140" role="img" aria-label="Data flows from OpenDota to cached JSON to published web pages">
+        <defs>
+          <style>
+            .bx{fill:#0e1533;stroke:#3a4a7a;stroke-width:1.2;rx:10}
+            .tx{fill:#eef1f7;font:600 13px Inter,Segoe UI,Arial}
+            .sub{fill:#9aa3b2;font:400 12px Inter,Segoe UI,Arial}
+            .ar{stroke:#6da6ff;stroke-width:1.4;marker-end:url(#arr)}
+          </style>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#6da6ff"/>
+          </marker>
+        </defs>
+        <rect class="bx" x="10" y="20" width="200" height="60"/>
+        <text class="tx" x="110" y="45" text-anchor="middle">OpenDota</text>
+        <text class="sub" x="110" y="65" text-anchor="middle">public APIs</text>
+        <rect class="bx" x="280" y="20" width="200" height="60"/>
+        <text class="tx" x="380" y="45" text-anchor="middle">data/*.json</text>
+        <text class="sub" x="380" y="65" text-anchor="middle">cached + pre‑aggregated</text>
+        <rect class="bx" x="550" y="20" width="200" height="60"/>
+        <text class="tx" x="650" y="45" text-anchor="middle">docs/*</text>
+        <text class="sub" x="650" y="65" text-anchor="middle">static web pages</text>
+        <path class="ar" d="M 210 50 L 280 50"/>
+        <path class="ar" d="M 480 50 L 550 50"/>
+      </svg>
+
+      <div class="note">
+        New here? Start with <a href="./getting-started.html">Getting started</a> for a 2‑minute tour.
+        <br>GitHub Pages: Settings → Pages → Deploy from branch → Branch: <b>main</b>, Folder: <b>/docs</b>. Your documentation is reachable at <code>docs/guide/</code> and reports at <code>docs/</code>.
+      </div>
+
+      <h2>Quick start</h2>
+      <ol>
+        <li>Install prerequisites: PowerShell 7+ recommended; Git; optional Python for local tooling.</li>
+        <li>Configure <code>STEAM_API_KEY</code> in repository Secrets if CI is used.</li>
+        <li>Run data fetch and generate dynamic wrappers locally (see Development page).</li>
+        <li>Commit output under <code>docs/</code>; GitHub Pages serves it automatically.</li>
+      </ol>
+    </main>
+  </div>
+</body>
+</html>

@@ -3,7 +3,7 @@
   function h(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
   function injectBaseStyles(){
     if(document.getElementById('wv-base-styles')) return;
-    const css = `
+  const css = `
   .wv-wardgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:10px;align-items:start}
     @media (max-width: 980px){.wv-wardgrid{grid-template-columns:1fr}}
   .wv-wardmap{margin:6px 0 0;position:relative;width:100%;aspect-ratio:1/1;min-height:260px;background:url('https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg') center/cover no-repeat;border:1px solid var(--border,rgba(255,255,255,.08));border-radius:12px}
@@ -21,6 +21,8 @@
   .wv-wardmap svg .spot.pinned{stroke:#fbbf24 !important; fill:rgba(251,191,36,.18) !important; stroke-width:2 !important}
   .wv-wardmap svg .pindot{fill:#fbbf24; opacity:.95}
   .wv-wardmap svg .spot.selected{ stroke:#9ec7ff !important; fill:rgba(158,199,255,.16) !important; stroke-width:2.2 !important; filter:drop-shadow(0 0 10px rgba(158,199,255,.55)) }
+  /* focus visibility for keyboard users */
+  .wv-wardmap svg .spot:focus{ outline:none; stroke:#9ec7ff !important; stroke-width:2.4 !important; filter:drop-shadow(0 0 8px rgba(158,199,255,.6)); }
   /* tooltip */
   .wv-tooltip{position:absolute;pointer-events:none;z-index:5;min-width:150px;max-width:240px;background:rgba(15,23,42,.95);color:#e5ecf8;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 8px;box-shadow:0 6px 18px rgba(0,0,0,.35);transform:translate(-50%, -110%);opacity:0;transition:opacity .12s}
   .wv-tooltip.show{opacity:1}
@@ -100,6 +102,8 @@
   /* Spot flyout */
   .wv-spot-flyout { position:absolute; min-width:220px; max-width:320px; background:rgba(15,23,42,.98); color:#e5ecf8; border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px; box-shadow:0 10px 26px rgba(0,0,0,.5); z-index:6; display:none }
   .wv-spot-flyout.show { display:block }
+  @media (prefers-reduced-motion: reduce){ .wv-spot-flyout{ transition:none } }
+  .wv-spot-flyout.show { display:block }
   .wv-spot-flyout .hdr { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px }
   .wv-spot-flyout .title { font-weight:600; font-size:14px }
   .wv-spot-flyout .row { display:flex; flex-wrap:wrap; gap:6px }
@@ -122,6 +126,16 @@
   .wv-minibar .b { flex:1; position:relative; height:100%; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); border-radius:3px; overflow:hidden }
   .wv-minibar .b .fill { position:absolute; left:0; right:0; bottom:0; height:0; background:linear-gradient(180deg, rgba(110,180,255,.9), rgba(110,175,255,.55)); box-shadow:0 0 8px rgba(110,180,255,.35) inset }
   .wv-minibar .cap { display:flex; justify-content:space-between; font-size:10px; color:#9aa7bd; margin-top:2px }
+  /* Respect user motion preferences */
+  @media (prefers-reduced-motion: reduce){
+    .wv-wardmap .spot{ transition:none }
+    .wv-tooltip{ transition:none }
+    .wv-details, .wv-settings{ transition:none }
+  }
+  /* High-contrast/forced colors: ensure focus is visible */
+  @media (forced-colors: active){
+    .wv-wardmap .spot:focus{ outline:1px solid Highlight; outline-offset:2px; forced-color-adjust:auto }
+  }
     `;
     const style = document.createElement('style'); style.id='wv-base-styles'; style.textContent=css; document.head.appendChild(style);
   }
@@ -129,6 +143,8 @@
   function mount(host, cfg){
     injectBaseStyles();
     if(!host) return;
+    // Canonicalize URL params in-place if shared utility is present
+    try{ if(window && window.UrlParams && typeof window.UrlParams.canonicalizeInPlace==='function'){ window.UrlParams.canonicalizeInPlace(); } }catch(_e){}
     const data = cfg && cfg.data || {}; const spots = Array.isArray(data.spots) ? data.spots : [];
   const sentries = Array.isArray(data.sentries)? data.sentries: [];
   const teams = Array.isArray(data.teams)? data.teams: [];
@@ -156,7 +172,10 @@
   const sp = getSP();
       const urlMode = String(sp.get('wmode')||'');
       const urlTime = String(sp.get('wtime')||'');
-      const urlTeam = String(sp.get('wteam')||'');
+      // Prefer canonical 'side' when present; fallback to ward-specific 'wteam'
+  const urlSide = String(sp.get('side')||'');
+      const urlTeamRaw = String(sp.get('wteam')||'');
+  const urlTeam = urlTeamRaw || ((urlSide==='Radiant'||urlSide==='Dire'||urlSide.startsWith('team:'))? urlSide : '');
   const urlOv   = String(sp.get('wov')||'');
   const urlGrid = String(sp.get('wgrid')||'');
   const urlHot  = String(sp.get('whot')||'');
@@ -172,14 +191,18 @@
   const urlPins = String(sp.get('wpins')||'');
   const urlPq   = String(sp.get('wpq')||'');
   const urlSpot = String(sp.get('wspot')||'');
-  const urlPl   = String(sp.get('wplayer')||'');
+  // Prefer canonical 'aid' when present; fallback to ward-specific 'wplayer'
+  const urlAid  = String(sp.get('aid')||'');
+  const urlPl   = String(sp.get('wplayer')||'') || urlAid;
       const stMode = urlMode || readStorage(LS_KEY.mode, state.mode);
-      const stTime = (urlTime!==''? urlTime : (sp.has('wtime')? '' : readStorage(LS_KEY.time, state.time)));
-      const stTeam = (urlTeam!==''? urlTeam : (sp.has('wteam')? '' : readStorage(LS_KEY.team, state.team)));
+  const stTime = (urlTime!==''? urlTime : (sp.has('wtime')? '' : readStorage(LS_KEY.time, state.time)));
+  // Respect either 'side' or 'wteam' being explicitly present in URL to suppress LS fallback
+  const hasTeamParam = sp.has('wteam') || sp.has('side');
+  const stTeam = (urlTeam!==''? urlTeam : (hasTeamParam? '' : readStorage(LS_KEY.team, state.team)));
   // Player: allow URL override, but optionally ignore persisted storage to default to "All"
   const stPl   = IGNORE_PLAYER_PERSIST
     ? (urlPl!=='' ? urlPl : '')
-    : (urlPl!==''? urlPl : (sp.has('wplayer')? '' : readStorage(LS_KEY.player, state.player)));
+    : (urlPl!==''? urlPl : ((sp.has('wplayer') || sp.has('aid'))? '' : readStorage(LS_KEY.player, state.player)));
       const stOv   = urlOv!==''? (urlOv==='1'?'1':(urlOv==='0'?'0':'')) : readStorage(LS_KEY.ov, state.overlay? '1':'0');
   const stGrid = urlGrid!==''? (urlGrid==='1'?'1':(urlGrid==='0'?'0':'')) : readStorage(LS_KEY.grid, state.grid? '1':'0');
   const stHot  = urlHot!==''? (urlHot==='1'?'1':(urlHot==='0'?'0':'')) : readStorage(LS_KEY.hot, state.hotSentries? '1':'0');
@@ -253,7 +276,14 @@
       function setOrRemove(key, val, defVal){ if(val===defVal || val==='' || val===null || val===undefined){ sp.delete(key); } else { sp.set(key, String(val)); } }
       setOrRemove('wmode', state.mode, def.mode);
       setOrRemove('wtime', state.time, def.time);
-      setOrRemove('wteam', state.team, def.team);
+      // Write standardized team/side: always prefer canonical 'side' (Radiant|Dire or team:<id>)
+      if(state.team==='Radiant' || state.team==='Dire' || String(state.team||'').startsWith('team:')){
+        setOrRemove('side', state.team, '');
+        try{ sp.delete('wteam'); }catch(_e){}
+      } else {
+        // clear both when no team filter
+        try{ sp.delete('wteam'); sp.delete('side'); }catch(_e){}
+      }
   setOrRemove('wov', state.overlay? '1':'0', def.ov);
   setOrRemove('wgrid', state.grid? '1':'0', def.grid);
   setOrRemove('whot', state.hotSentries? '1':'0', def.hot);
@@ -263,7 +293,9 @@
   setOrRemove('wbasis', state.basis, def.basis);
   
       setOrRemove('wzw', state.includeZeroWorst? '1':'0', def.zw);
-  setOrRemove('wplayer', state.player, def.player);
+      // Standardize player to canonical 'aid'
+      setOrRemove('aid', state.player, '');
+      try{ sp.delete('wplayer'); }catch(_e){}
   setOrRemove('wpins', (state.pins||[]).join(','), def.pins);
   setOrRemove('wpq', state.pquery||'', def.pq);
   setOrRemove('wspot', state.wspot||'', '');
@@ -375,7 +407,8 @@
                 </div>
               </div>` : ''}
             </div>
-            <div class="wv-wardmap enhanced" id="wvMap"><svg></svg><div class="wv-tooltip" id="wvTip" role="tooltip" aria-hidden="true"></div><div class="wv-spot-flyout" id="wvFly"><div class="hdr"><div class="title">Vision Details</div><div style="display:flex;gap:6px"><button class="tab" id="wvFlyCopy">Copy</button><button class="tab" id="wvFlyClose" title="Close">Close</button></div></div><div id="wvFlyBody" class="wv-sub">Pick a ward spot.</div></div></div>
+            <div class="wv-wardmap enhanced" id="wvMap"><svg aria-label="Ward spots map" role="group"></svg><div class="wv-tooltip" id="wvTip" role="tooltip" aria-hidden="true"></div><div class="wv-spot-flyout" id="wvFly" role="dialog" aria-label="Ward spot details" tabindex="-1"><div class="hdr"><div class="title">Vision Details</div><div style="display:flex;gap:6px"><button class="tab" id="wvFlyCopy">Copy</button><button class="tab" id="wvFlyClose" title="Close">Close</button></div></div><div id="wvFlyBody" class="wv-sub" aria-live="polite" aria-atomic="true">Pick a ward spot.</div></div></div>
+            <div id="wvLive" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
             <div class="wv-settings" id="wvSettings" aria-hidden="true">
               <div class="wv-settings-inner">
                 <div class="wv-title" style="margin:0 0 6px">Settings</div>
@@ -510,7 +543,7 @@
       function renderTeams(){
         const wrapInner = tWrap.querySelector('#wvTeamsInner'); const tq = String(state.tquery||'').toLowerCase();
         const list = tItemsBase.filter(c=> !tq || String(c.label||'').toLowerCase().includes(tq) || String(c.v||'').toLowerCase().includes(tq));
-        const html = list.map(c=>`<div class='item ${((c.v||'')===state.team?'active':'')}' role='option' data-team='${esc(c.v)}'><span>${esc(c.label)}</span>${((c.v||'')===state.team?"<span class='wv-badge'>selected</span>":'')}</div>`).join('');
+        const html = list.map(c=>{ const sel = ((c.v||'')===state.team); return `<div class='item ${sel?'active':''}' role='option' aria-selected='${sel?'true':'false'}' tabindex='0' data-team='${esc(c.v)}'><span>${esc(c.label)}</span>${sel?"<span class='wv-badge'>selected</span>":''}</div>`; }).join('');
         if(wrapInner){ wrapInner.innerHTML = html; }
         else { tWrap.innerHTML = html; }
       }
@@ -526,15 +559,18 @@
         return list;
       }
       function renderPlayers(){ if(!pWrap) return; const pInner = pWrap.querySelector('#wvPlayersInner'); const pq = (state.pquery||'').toLowerCase(); const list=[{id:'',name:'All'}].concat(normalizedPlayers().slice().sort((a,b)=> String(a.name||'').localeCompare(String(b.name||''))).map(p=>({id:String(p.id||p.account_id||''), name:String(p.name||`Player ${p.id||p.account_id||''}`)})).filter(c=> !pq || String(c.name||'').toLowerCase().includes(pq) || String(c.id||'').includes(pq)));
-        if(pInner){ pInner.innerHTML = list.map(c=>`<div class='item ${((String(c.id||'')===String(state.player))?'active':'')}' role='option' data-player='${esc(String(c.id||''))}'><span>${esc(c.name)}</span>${(String(c.id||'')===String(state.player)?"<span class='wv-badge'>selected</span>":'')}</div>`).join(''); }
-        else { pWrap.innerHTML = list.map(c=>`<div class='item ${((String(c.id||'')===String(state.player))?'active':'')}' role='option' data-player='${esc(String(c.id||''))}'><span>${esc(c.name)}</span>${(String(c.id||'')===String(state.player)?"<span class='wv-badge'>selected</span>":'')}</div>`).join(''); }
+        const html = list.map(c=>{ const sel = (String(c.id||'')===String(state.player)); return `<div class='item ${sel?'active':''}' role='option' aria-selected='${sel?'true':'false'}' tabindex='0' data-player='${esc(String(c.id||''))}'><span>${esc(c.name)}</span>${sel?"<span class='wv-badge'>selected</span>":''}</div>`; }).join('');
+        if(pInner){ pInner.innerHTML = html; }
+        else { pWrap.innerHTML = html; }
       }
   renderTeams(); renderPlayers();
   const tq = tWrap.querySelector('#wvTq'); if(tq){ tq.value = state.tquery||''; tq.addEventListener('input', ()=>{ state.tquery = String(tq.value||''); renderTeams(); }); }
-      tWrap.addEventListener('click', e=>{ const it=e.target.closest('.item'); if(!it) return; state.team = it.getAttribute('data-team')||''; renderTeams(); persistState(); render(); });
+  tWrap.addEventListener('click', e=>{ const it=e.target.closest('.item'); if(!it) return; state.team = it.getAttribute('data-team')||''; renderTeams(); persistState(); render(); });
+  tWrap.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target && e.target.classList.contains('item')){ e.preventDefault(); const it=e.target; state.team = it.getAttribute('data-team')||''; renderTeams(); persistState(); render(); } });
       if(pWrap){
         const pq = pWrap.querySelector('#wvPq'); if(pq){ pq.value = state.pquery||''; pq.addEventListener('input', ()=>{ state.pquery = String(pq.value||''); persistState(); renderPlayers(); }); }
         pWrap.addEventListener('click', e=>{ const it=e.target.closest('.item'); if(!it) return; state.player = it.getAttribute('data-player')||''; renderPlayers(); persistState(); render(); });
+        pWrap.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target && e.target.classList.contains('item')){ e.preventDefault(); const it=e.target; state.player = it.getAttribute('data-player')||''; renderPlayers(); persistState(); render(); } });
       }
     })();
     // Bind tabs/time
@@ -708,20 +744,21 @@
       const bar = root.querySelector('#wvPinsBar'); if(!bar) return;
       const pins = Array.isArray(state.pins)? state.pins: [];
       if(!pins.length){ bar.innerHTML = `<span>No pins</span>`; return; }
-      const chips = pins.map(k=>`<span class='wv-badge wv-chipbtn' data-unpin='${esc(k)}'>${esc(k)} ✕</span>`).join(' ');
+  const chips = pins.map(k=>`<span class='wv-badge wv-chipbtn' role='button' tabindex='0' aria-label='Unpin ${esc(k)}' data-unpin='${esc(k)}'>${esc(k)} ✕</span>`).join(' ');
       bar.innerHTML = `<div class='wv-chips'>${chips}<span style='flex:1'></span><button class='tab' id='wvCopyPins'>Copy link</button><button class='tab' id='wvClearPins'>Clear</button></div>`;
       bar.querySelectorAll('[data-unpin]').forEach(btn=> btn.addEventListener('click', ()=>{ const k=btn.getAttribute('data-unpin'); state.pins = (state.pins||[]).filter(x=> x!==k); persistState(); render(); }));
-      const copy = bar.querySelector('#wvCopyPins'); if(copy){ copy.addEventListener('click', ()=>{ try{ const sp=new URLSearchParams(location.search); sp.set('wpins', (state.pins||[]).join(',')); navigator.clipboard.writeText(location.pathname + '?' + sp.toString() + location.hash); copy.textContent='Copied'; setTimeout(()=> copy.textContent='Copy link', 1000); }catch(_e){} }); }
-      const clr = bar.querySelector('#wvClearPins'); if(clr){ clr.addEventListener('click', ()=>{ state.pins=[]; persistState(); render(); }); }
+  const copy = bar.querySelector('#wvCopyPins'); if(copy){ copy.addEventListener('click', ()=>{ try{ const sp=new URLSearchParams(location.search); sp.set('wpins', (state.pins||[]).join(',')); navigator.clipboard.writeText(location.pathname + '?' + sp.toString() + location.hash); copy.textContent='Copied'; const live=root.querySelector('#wvLive'); if(live){ live.textContent='Copied pins link to clipboard.'; } setTimeout(()=> copy.textContent='Copy link', 1000); }catch(_e){} }); copy.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); copy.click(); } }); }
+  const clr = bar.querySelector('#wvClearPins'); if(clr){ clr.addEventListener('click', ()=>{ state.pins=[]; persistState(); const live=root.querySelector('#wvLive'); if(live){ live.textContent='Cleared all pins.'; } render(); }); clr.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); clr.click(); } }); }
     }
     function togglePin(spotKey){ spotKey=String(spotKey||''); if(!spotKey) return; const arr = state.pins||[]; const idx = arr.indexOf(spotKey); if(idx===-1){ arr.push(spotKey); } else { arr.splice(idx,1); } state.pins = arr; persistState(); render(); }
     function isPinned(spotKey){ return (state.pins||[]).includes(String(spotKey||'')); }
     // Spot flyout helpers
     function fmtMMSS(secs){ const s=Math.max(0,Math.floor(Number(secs||0))); const m=Math.floor(s/60); const r=s%60; return `${m}m ${r}s`; }
-    function openFlyoutAt(clientX, clientY){ try{ const fly = root.querySelector('#wvFly'); if(!fly) return; const map = root.querySelector('#wvMap'); const box = map.getBoundingClientRect(); let x = clientX - box.left; let y = clientY - box.top; // clamp within map with margin
+    let lastFlyoutOpener = null;
+    function openFlyoutAt(clientX, clientY, opener){ try{ const fly = root.querySelector('#wvFly'); if(!fly) return; if(opener) lastFlyoutOpener = opener; const map = root.querySelector('#wvMap'); const box = map.getBoundingClientRect(); let x = clientX - box.left; let y = clientY - box.top; // clamp within map with margin
       fly.style.visibility = 'hidden'; fly.classList.add('show');
       const margin = 8; const fw = fly.offsetWidth||260; const fh = fly.offsetHeight||160; x = Math.max(margin, Math.min(box.width - fw - margin, x)); y = Math.max(margin, Math.min(box.height - fh - margin, y)); fly.style.left = x + 'px'; fly.style.top = y + 'px'; fly.style.visibility=''; }catch(_e){} }
-    function closeFlyout(){ try{ const fly=root.querySelector('#wvFly'); if(fly){ fly.classList.remove('show'); } state.wspot=''; persistState(); }catch(_e){} }
+    function closeFlyout(){ try{ const fly=root.querySelector('#wvFly'); if(fly){ fly.classList.remove('show'); } const toFocus=lastFlyoutOpener; lastFlyoutOpener=null; state.wspot=''; persistState(); if(toFocus && typeof toFocus.focus==='function'){ setTimeout(()=>{ try{ toFocus.focus(); }catch(_e){} }, 0); } }catch(_e){} }
   function renderFlyFor(spotKey, fallback){
       const body = root.querySelector('#wvFlyBody'); const title = root.querySelector('#wvFly .title'); const copyBtn = root.querySelector('#wvFlyCopy'); const closeBtn = root.querySelector('#wvFlyClose');
       if(!body) return;
@@ -1065,7 +1102,7 @@
         ${friendly}
         <div style='display:flex; gap:6px; margin-top:8px'>
           <button class='tab' id='wvFlyMore'>${flyDetailOpen? 'Hide details':'Show details'}</button>
-          <button class='tab' id='wvDetPin'>${isPinned(key)?'Unpin':'Pin'}</button>
+          <button class='tab' id='wvDetPin' aria-pressed='${isPinned(key)?'true':'false'}'>${isPinned(key)?'Unpin':'Pin'}</button>
         </div>
         <div id='wvFlyDet' style='display:${flyDetailOpen? 'block':'none'}; margin-top:6px'>
           <div class='wv-detail-row' style='margin:4px 0'>${chips}</div>
@@ -1074,10 +1111,10 @@
         </div>
       `;
       // actions
-  const pinBtn = body.querySelector('#wvDetPin'); if(pinBtn){ pinBtn.addEventListener('click', ()=>{ togglePin(key); renderFlyFor(key); }); }
+  const pinBtn = body.querySelector('#wvDetPin'); if(pinBtn){ pinBtn.setAttribute('aria-pressed', String(isPinned(key))); pinBtn.addEventListener('click', ()=>{ togglePin(key); renderFlyFor(key); }); pinBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); togglePin(key); renderFlyFor(key); } }); }
   const moreBtn = body.querySelector('#wvFlyMore'); if(moreBtn){ moreBtn.addEventListener('click', ()=>{ flyDetailOpen = !flyDetailOpen; const det = body.querySelector('#wvFlyDet'); if(det){ det.style.display = flyDetailOpen? 'block':'none'; } moreBtn.textContent = flyDetailOpen? 'Hide details' : 'Show details'; }); }
-      if(copyBtn){ copyBtn.onclick = ()=>{ try{ const sp=new URLSearchParams(location.search); sp.set('wspot', key); navigator.clipboard.writeText(location.pathname + '?' + sp.toString() + location.hash); copyBtn.textContent='Copied'; setTimeout(()=> copyBtn.textContent='Copy', 1000); }catch(_e){} }; }
-      if(closeBtn){ closeBtn.onclick = ()=> closeFlyout(); }
+  if(copyBtn){ copyBtn.onclick = ()=>{ try{ const sp=new URLSearchParams(location.search); sp.set('wspot', key); navigator.clipboard.writeText(location.pathname + '?' + sp.toString() + location.hash); copyBtn.textContent='Copied'; const live=root.querySelector('#wvLive'); if(live){ live.textContent='Copied ward spot link to clipboard.'; } setTimeout(()=> copyBtn.textContent='Copy', 1000); }catch(_e){} }; }
+  if(closeBtn){ closeBtn.onclick = ()=> closeFlyout(); closeBtn.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); closeFlyout(); } }); }
     }
     function render(){
     // (summary chips removed for a cleaner UI)
@@ -1431,6 +1468,15 @@
       if(s.sentryTopStr){ ring.setAttribute('data-sentries', s.sentryTopStr); }
       if(s.senPressure!=null){ ring.setAttribute('data-senp', String(s.senPressure)); }
       if(s.senWithin!=null){ ring.setAttribute('data-senhit', s.senWithin? '1':'0'); }
+      // Make spot focusable/operable
+      try{
+        ring.setAttribute('tabindex','0');
+        ring.setAttribute('role','button');
+        const avgL = Number(s.avg||0); const cntL = Number(s.count||0);
+        const mm = Math.floor(avgL/60), ss = avgL%60;
+        const baseLbl = (state.basis==='contest') ? `Contest ${Math.round(Number(s.contest||0)||0)}` : `Average ${mm}m ${ss}s`;
+        ring.setAttribute('aria-label', `Ward spot ${key.replace(/[\[\]\s]/g,'')} — ${baseLbl}, placements ${cntL}`);
+      }catch(_e){}
       // Color the ring appropriately
       if(state.basis==='contest'){
         const {stroke, fill} = colorForContest(Number(s.contest||0));
@@ -1465,11 +1511,14 @@
         svg.querySelectorAll('.spot.selected').forEach(n=> n.classList.remove('selected'));
         ring.classList.add('selected');
         const box = ring.getBoundingClientRect();
-        openFlyoutAt((box.left+box.right)/2, (box.top+box.bottom)/2);
+  openFlyoutAt((box.left+box.right)/2, (box.top+box.bottom)/2, ring);
         renderFlyFor(key, s);
       }
       ring.addEventListener('click', onPick);
       dot.addEventListener('click', onPick);
+      ring.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); onPick(e); } });
+      ring.addEventListener('focus', ()=>{ try{ showTipFromSpot(ring); }catch(_e){} });
+      ring.addEventListener('blur', ()=>{ try{ const tip=root.querySelector('#wvTip'); if(tip){ tip.classList.remove('show'); tip.setAttribute('aria-hidden','true'); } }catch(_e){} });
     });
   }
   // hotspots and sentry markers first (underlay)
@@ -1483,7 +1532,7 @@
     const legend = root.querySelector('#wvLegend');
   if(legend){ if(state.basis==='contest'){ legend.textContent = 'Green = Safest (low contest), Red = Most contested (high contest). Contest couples local sentry pressure with short-lifetime residuals.'; } else { legend.textContent = 'Green = Best avg lifetime, Red = Worst.'; } }
       // lists
-  function listify(arr){ if(!arr.length) return `<div class='wv-sub'>No data</div>`; return `<ul class='wv-simple'>`+arr.map((s,idx)=>{ const mmA = Math.floor((Number(s.avg||0))/60), ssA = (Number(s.avg||0))%60; const key = String(s.spot||''); const coords = key.replace(/\[|\]|\s/g,''); const pin = isPinned(key) ? 'Unpin' : 'Pin'; const contestBadge = (state.basis==='contest')? `<span class='wv-badge'>contest ${Math.round(Number(s.contest||0))}</span>`:''; const timeBadge = `<span class='wv-badge'>avg ${mmA}m ${ssA}s</span>`; return `<li data-spot='${esc(key)}'><span style='display:flex;align-items:center;gap:8px'><span class='wv-badge' style='min-width:54px;text-align:center'>Ward ${idx+1}</span><span class='wv-sub' style='opacity:.8'>${coords}</span></span><span style='display:flex;gap:6px'>${contestBadge}${timeBadge}${s.count? `<span class='wv-badge'>x${s.count}</span>`:''}<button class='tab' data-pin='${esc(key)}'>${pin}</button></span></li>`; }).join('')+`</ul>`; }
+  function listify(arr){ if(!arr.length) return `<div class='wv-sub'>No data</div>`; return `<ul class='wv-simple'>`+arr.map((s,idx)=>{ const mmA = Math.floor((Number(s.avg||0))/60), ssA = (Number(s.avg||0))%60; const key = String(s.spot||''); const coords = key.replace(/[\[\]\s]/g,''); const pin = isPinned(key) ? 'Unpin' : 'Pin'; const contestBadge = (state.basis==='contest')? `<span class='wv-badge'>contest ${Math.round(Number(s.contest||0))}</span>`:''; const timeBadge = `<span class='wv-badge'>avg ${mmA}m ${ssA}s</span>`; const ariaLbl = (state.basis==='contest')? `Ward ${idx+1}, ${coords}, contest ${Math.round(Number(s.contest||0))}` : `Ward ${idx+1}, ${coords}, avg ${mmA}m ${ssA}s`; return `<li data-spot='${esc(key)}' role='button' tabindex='0' aria-label='${esc(ariaLbl)}'><span style='display:flex;align-items:center;gap:8px'><span class='wv-badge' style='min-width:54px;text-align:center'>Ward ${idx+1}</span><span class='wv-sub' style='opacity:.8'>${coords}</span></span><span style='display:flex;gap:6px'>${contestBadge}${timeBadge}${s.count? `<span class='wv-badge'>x${s.count}</span>`:''}<button class='tab' data-pin='${esc(key)}'>${pin}</button></span></li>`; }).join('')+`</ul>`; }
       const bestEl=root.querySelector('#wvBest'); if(bestEl) bestEl.innerHTML = listify(best);
       const worstEl=root.querySelector('#wvWorst'); if(worstEl) worstEl.innerHTML = listify(worst);
       // extras
@@ -1504,12 +1553,16 @@
       function bindList(id){ const c=root.querySelector(id); if(!c) return; c.querySelectorAll('li[data-spot]').forEach(li=>{ li.addEventListener('mouseenter',()=>{ const spot=li.getAttribute('data-spot'); svg.closest('.wv-wardmap').classList.add('highlighting'); svg.querySelectorAll('.spot').forEach(n=>{ if(n.getAttribute('data-spot')===spot) n.classList.add('hl'); }); }); li.addEventListener('mouseleave',()=>{ svg.closest('.wv-wardmap').classList.remove('highlighting'); svg.querySelectorAll('.spot.hl').forEach(n=> n.classList.remove('hl')); }); }); }
   bindList('#wvBest'); bindList('#wvWorst');
   // Click on list to open details (non-button area)
-  function bindListClicks(id){ const c=root.querySelector(id); if(!c) return; c.querySelectorAll('li[data-spot]').forEach(li=>{ li.addEventListener('click',(e)=>{ if(e.target.closest('[data-pin]')) return; const key=li.getAttribute('data-spot'); state.wspot=key||''; persistState(); try{ const map=root.querySelector('#wvMap'); const rect=map.getBoundingClientRect(); openFlyoutAt(rect.left + rect.width - 16, rect.top + 16); }catch(_e){} renderFlyFor(key); }); }); }
+  function bindListClicks(id){ const c=root.querySelector(id); if(!c) return; c.querySelectorAll('li[data-spot]').forEach(li=>{
+  const activate = (e)=>{ if(e && e.target && e.target.closest && e.target.closest('[data-pin]')) return; const key=li.getAttribute('data-spot'); state.wspot=key||''; persistState(); try{ const map=root.querySelector('#wvMap'); const rect=map.getBoundingClientRect(); openFlyoutAt(rect.left + rect.width - 16, rect.top + 16, li); }catch(_e){} renderFlyFor(key); };
+    li.addEventListener('click', activate);
+    li.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); activate(e); } });
+  }); }
   bindListClicks('#wvBest'); bindListClicks('#wvWorst');
   // Pin buttons in lists
-  root.querySelectorAll('[data-pin]').forEach(btn=>{ btn.addEventListener('click', (e)=>{ e.stopPropagation(); const key=btn.getAttribute('data-pin'); togglePin(key); }); });
+  root.querySelectorAll('[data-pin]').forEach(btn=>{ btn.setAttribute('aria-pressed', String(isPinned(btn.getAttribute('data-pin')))); btn.addEventListener('click', (e)=>{ e.stopPropagation(); const key=btn.getAttribute('data-pin'); togglePin(key); }); btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); const key=btn.getAttribute('data-pin'); togglePin(key); } }); });
   // If there's a selected spot in state, open flyout and attempt to highlight near the spot
-  if(state.wspot){ try{ svg.querySelectorAll('.spot').forEach(n=>{ if(n.getAttribute('data-spot')===state.wspot){ n.classList.add('selected'); const box=n.getBoundingClientRect(); openFlyoutAt((box.left+box.right)/2, (box.top+box.bottom)/2); } }); }catch(_e){} renderFlyFor(state.wspot); }
+  if(state.wspot){ try{ svg.querySelectorAll('.spot').forEach(n=>{ if(n.getAttribute('data-spot')===state.wspot){ n.classList.add('selected'); const box=n.getBoundingClientRect(); openFlyoutAt((box.left+box.right)/2, (box.top+box.bottom)/2, n); } }); }catch(_e){} renderFlyFor(state.wspot); }
   // Update pins bar
   setPinsBar();
   // Update shared context for flyout lookups

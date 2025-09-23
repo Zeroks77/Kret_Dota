@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports & viewers – Kret Dota Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./guide.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="wrap">
+    <aside class="side" aria-label="Documentation navigation">
+      <div class="brand">Kret Dota Reports</div>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html">Overview</a>
+        <a href="./getting-started.html">Getting started</a>
+        <a href="./pipeline.html">Data pipeline</a>
+        <a href="./reports.html" class="active">Reports & viewers</a>
+        <a href="./components.html">Components</a>
+        <a href="./preaggregations.html">Pre-aggregations</a>
+        <a href="./accessibility.html">Accessibility</a>
+        <a href="./development.html">Development</a>
+        <a href="./roadmap.html">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </nav>
+    </aside>
+    <main id="main" class="content" role="main">
+      <h1>Reports & viewers</h1>
+      <p>Pick a report (month/patch/league) and then use the viewers inside the page to answer common questions.</p>
+
+      <h2>Report types</h2>
+      <ul>
+        <li>Monthly reports – month-based snapshots.</li>
+        <li>Patch reports – aggregated by game patch.</li>
+        <li>User reports – temporary user-focused filters.</li>
+        <li>League reports – competition-specific wrappers.</li>
+      </ul>
+
+      <h2>Viewers</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+        <div class="note">
+          <h3 style="margin-top:6px">Players</h3>
+          <p>Who performed best? Sort by KDA, GPM/XPM, or participation.</p>
+        </div>
+        <div class="note">
+          <h3 style="margin-top:6px">Heroes</h3>
+          <p>Which heroes dominated? See win rates and popularity.</p>
+        </div>
+        <div class="note">
+          <h3 style="margin-top:6px">Draft</h3>
+          <p>What mattered in draft? Compare phases, picks, and bans.</p>
+        </div>
+        <div class="note">
+          <h3 style="margin-top:6px">Lane duos</h3>
+          <p>Which lanes worked? Identify strong pairings and outcomes.</p>
+        </div>
+        <div class="note">
+          <h3 style="margin-top:6px">Wards</h3>
+          <p>Where were the key wards? Explore placements on the map.</p>
+        </div>
+      </div>
+
+      <h2>Keyboard model</h2>
+      <ul>
+        <li>Main tab shortcuts: <kbd>1</kbd>–<kbd>0</kbd> activate tabs where available.</li>
+        <li>Tablists: use <kbd>←</kbd>/<kbd>→</kbd> to move focus, <kbd>Home</kbd>/<kbd>End</kbd> to jump; <kbd>Enter</kbd>/<kbd>Space</kbd> to activate.</li>
+        <li>Tables: headers toggled with <kbd>Enter</kbd>/<kbd>Space</kbd>, aria-sort reflects state; captions aid screen readers.</li>
+        <li>Wards flyout: opens on Enter/Space; <kbd>Esc</kbd> closes and returns focus to opener.</li>
+      </ul>
+
+      <h2>Permalinks</h2>
+      <p>Use the “Copy link” or “Share” actions in viewers. The link remembers your current filters and selections.
+        See <a href="./permalinks.html">Permalinks & Embeds</a> for all supported URL parameters and examples.</p>
+    </main>
+  </div>
+</body>
+</html>

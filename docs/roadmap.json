@@ -28,6 +28,122 @@
   },
   "items": [
     {
+      "id": "docs-site",
+      "title": "Documentation Site (Guide)",
+      "status": "done",
+      "priority": 2,
+      "notes": "Built documentation site under docs/guide with navigation and shared styles.",
+      "plan": [
+        { "id": "nav", "title": "Side navigation", "desc": "Consistent nav across all pages" },
+        { "id": "pages", "title": "Core pages", "desc": "Overview, Pipeline, Reports, Accessibility, Development" }
+      ],
+      "acceptance": [
+        "Docs published under docs/guide",
+        "Linked from dynamic pages footer"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "roadmap-kanban",
+      "title": "Roadmap Kanban Visualization",
+      "status": "done",
+      "priority": 2,
+      "notes": "Converted roadmap into a Kanban board with status summary chips and columns.",
+      "plan": [
+        { "id": "summary", "title": "Summary chips", "desc": "done/in-progress/planned/dropped counts" },
+        { "id": "columns", "title": "Kanban columns", "desc": "Backlog, In Progress, Done" }
+      ],
+      "acceptance": [
+        "Kanban renders from roadmap.json",
+        "Counts reflect items"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "permalinks-docs",
+      "title": "Permalinks & Embeds Documentation",
+      "status": "done",
+      "priority": 2,
+      "notes": "Added docs/guide/permalinks.html covering URL params for dynamic.html, league_dynamic.html, and Compare tab, with examples and an iframe snippet. Linked from nav and Reports page.",
+      "plan": [
+        { "id": "page", "title": "Guide page", "desc": "Permalinks & Embeds with examples" },
+        { "id": "nav", "title": "Nav & TOC", "desc": "Sidebar link + Overview TOC" },
+        { "id": "cross", "title": "Cross-link", "desc": "Reports page links to guide" }
+      ],
+      "acceptance": [
+        "docs/guide/permalinks.html exists",
+        "Sidebar contains Permalinks entry",
+        "Reports page references the guide"
+      ],
+      "dependencies": ["docs-site"]
+    },
+    {
+      "id": "ward-clipboard-live",
+      "title": "Ward Clipboard Aria-Live",
+      "status": "done",
+      "priority": 1,
+      "notes": "Added live region announcements for copy and clear actions in ward viewer.",
+      "plan": [
+        { "id": "pins-copy", "title": "Pins copy announce", "desc": "Polite aria-live message" },
+        { "id": "pins-clear", "title": "Pins clear announce", "desc": "Polite aria-live message" },
+        { "id": "fly-copy", "title": "Flyout copy announce", "desc": "Polite aria-live message" }
+      ],
+      "acceptance": [
+        "Screen readers announce clipboard actions",
+        "No regressions to buttons text"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "footer-doc-links",
+      "title": "Footer Documentation Links",
+      "status": "done",
+      "priority": 4,
+      "notes": "Added footer links to Project documentation and Reports index on dynamic pages.",
+      "plan": [
+        { "id": "dynamic", "title": "dynamic.html footer", "desc": "Docs + index links" },
+        { "id": "league", "title": "league_dynamic.html footer", "desc": "Docs + index links" }
+      ],
+      "acceptance": [
+        "Footer visible on both dynamic pages",
+        "Links resolve correctly"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "components-docs",
+      "title": "Components Documentation",
+      "status": "done",
+      "priority": 3,
+      "notes": "Added a Components page documenting viewers, shell, shared assets, and a diagram.",
+      "plan": [
+        { "id": "content", "title": "Per-component sections", "desc": "ward, draft, players, duos, items" },
+        { "id": "diagram", "title": "Interaction diagram", "desc": "Inline SVG" }
+      ],
+      "acceptance": [
+        "Components listed and described",
+        "Diagram renders"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "preaggregations-docs",
+      "title": "Pre-aggregations Documentation",
+      "status": "done",
+      "priority": 3,
+      "notes": "Created page detailing purpose, flow, schema sketches, and consumption in viewers.",
+      "plan": [
+        { "id": "why", "title": "Why & where", "desc": "Motivation and scripts" },
+        { "id": "flow", "title": "Data flow", "desc": "From OpenDota to published JSON" },
+        { "id": "schema", "title": "Schema sketch", "desc": "Common shapes for aggregates" }
+      ],
+      "acceptance": [
+        "Linked in docs nav",
+        "Clear guidance for extending"
+      ],
+      "dependencies": []
+    },
+    {
       "id": "accessibility-improvements",
       "title": "Accessibility & Keyboard Support",
       "status": "done",
@@ -66,34 +182,17 @@
       "dependencies": []
     },
     {
-      "id": "permalinks-docs",
-      "title": "Permalinks & Embeds Documentation",
-      "status": "done",
-      "priority": 2,
-      "notes": "Added docs/guide/permalinks.html covering URL params, examples, and an iframe snippet; linked from nav and Reports page.",
-      "plan": [
-        { "id": "page", "title": "Guide page", "desc": "Permalinks & Embeds with examples" },
-        { "id": "nav", "title": "Nav & TOC", "desc": "Sidebar link + Overview TOC" },
-        { "id": "cross", "title": "Cross-link", "desc": "Reports page links to guide" }
-      ],
-      "acceptance": [
-        "docs/guide/permalinks.html exists",
-        "Sidebar contains Permalinks entry",
-        "Reports page references the guide"
-      ],
-      "dependencies": ["docs-site"]
-    },
-    {
       "id": "player-comparison-tool",
       "title": "Player Comparison Tool",
-      "status": "done",
+      "status": "in-progress",
       "priority": 1,
-  "notes": "Vergleich zweier Spieler über gemeinsame Filter. Outputs: hero pool overlap, laning diff (XPM/GPM, LH@10, Net@10), vision (obs/sen, dewards), stacks, objectives, item timings.",
+      "notes": "Vergleich zweier Spieler über gemeinsame Filter. Outputs: hero pool overlap, hero matchups (A vs B Hero), laning diff (XPM/GPM, LH@10, Net@10), vision (obs/sen, dewards), stacks, objectives, item timings.",
       "plan": [
         { "id": "contract", "title": "Data contract & inputs", "desc": "Inputs playerA/B (account_ids), timeRange, side/role optional; Output-Schema je Gruppe." },
         { "id": "aggregate-core", "title": "Core aggregates", "desc": "Games, W-L, WR, K/D/A, GPM/XPM pro Spieler & Filter." },
         { "id": "laning-diff", "title": "Laning diff", "desc": "LH@10/Net@10/XP@10 (oder Approx). Delta A-B, side-kontext." },
         { "id": "hero-pool", "title": "Hero pool overlap", "desc": "Top-Helden A/B, Overlap, einzigartige Picks, WR pro Held." },
+        { "id": "hero-matchups", "title": "Hero matchups", "desc": "A vs B Heldenpaarungen (Head-to-head) mit Games, A WR, K/D/A." },
         { "id": "vision", "title": "Vision metrics", "desc": "Obs/Sen placed, dewards, ward lifetime per 10m; side-splits." },
         { "id": "stacks", "title": "Stacks", "desc": "Camps stacked total/avg; pulls wenn verfügbar." },
         { "id": "objectives", "title": "Objective participation", "desc": "Teilnahme ±60s um Tower/Roshan Events." },
@@ -102,7 +201,7 @@
         { "id": "perf", "title": "Performance & caching", "desc": "Memoize per-player Aggregates; optional Precompute mini per-player JSONs." }
       ],
       "acceptance": [
-        "A/B wählbar, Filter greifen, alle Gruppen gefüllt",
+        "A/B wählbar, Filter greifen, alle Gruppen gefüllt (inklusiv Hero Matchups)",
         "Overlap/Unique-Picks mit WR je Held",
         "Laning diff zeigt LH/Net@10 oder klaren Hinweis bei fehlenden Daten",
         "Vision mit side-splits sichtbar",
@@ -138,87 +237,41 @@
     {
       "id": "ward-intelligence-toggle",
       "title": "Ward Intelligence (Focused)",
-  "status": "dropped",
-  "priority": 1,
-  "notes": "Entfernt; Fokus bleibt auf Basismetriken (Lifetime/Contest).",
+      "status": "dropped",
+      "priority": 1,
+      "notes": "Entfernt; Fokus bleibt auf Basismetriken (Lifetime/Contest).",
       "plan": [
         { "id": "vision-roi-score", "title": "Vision ROI Score", "desc": "Nähe zu objektiven Zonen/Rotationspfaden, Start mit statischen Regionen." },
         { "id": "conversion-metrics", "title": "Conversion after Placement", "desc": "Kills/Objectives 30/60/90s nach Placement im Quadranten." },
         { "id": "persist-params", "title": "Persistenz & URLs", "desc": "Eigene Intelligence-Parameter (wvi/metric) und konsistente Permalinks." }
       ],
       "acceptance": [
-        "Spots zeigen ROI‑Score (Skala + Legende)",
+        "Spots zeigen ROI-Score (Skala + Legende)",
         "Conversions 30/60/90s pro Spot/Cluster sichtbar",
-        "Permalink stellt Intelligence‑Panel und seine Parameter wieder her"
+        "Permalink stellt Intelligence-Panel und seine Parameter wieder her"
       ],
       "dependencies": [
-        "sen_log/sen_left_log (für Sentry‑Kontext optional)",
+        "sen_log/sen_left_log (für Sentry-Kontext optional)",
         "Eventdaten (kills/roshan/tower) für Conversions",
-        "Map‑Regionen/Wege (statisch in maps.json) für ROI"
+        "Map-Regionen/Wege (statisch in maps.json) für ROI"
       ],
       "reuse": {
         "extends": ["tabs.wards", "shell.map_viewer", "shell.url_state"],
         "ui_reuse": [
-          "Ward‑Map + bestehende Layers",
-          "Toolbar/Copy‑Link"
+          "Ward-Map + bestehende Layers",
+          "Toolbar/Copy-Link"
         ],
         "data_reuse": [
-          "Ward‑Spot‑Daten",
-          "Monats‑Shards, objectives aus match JSON"
+          "Ward-Spot-Daten",
+          "Monats-Shards, objectives aus match JSON"
         ],
         "new_minimal": [
-          "ROI‑Scoring‑Helper",
-          "Conversion‑Aggregator (30/60/90s)"
+          "ROI-Scoring-Helper",
+          "Conversion-Aggregator (30/60/90s)"
         ],
         "avoid_new": [
-          "Kein zweiter Map‑Viewer",
+          "Kein zweiter Map-Viewer",
           "Keine neue Seite außerhalb Wards"
-        ]
-      }
-    },
-    {
-      "id": "replay-parsing",
-      "title": "Replay Parsing & Rich Stats",
-      "status": "planned",
-      "priority": 2,
-      "tags": ["pipeline","parsing","replays","metrics"],
-      "notes": "Eigene Replay-Parsing-Pipeline, um aus Dota 2 DEM/Protobuf zusätzliche Kennzahlen zu extrahieren: Laning @10 (LH/XP/Net), Stacks/Pulls, Smokes, Ward-Lifetimes & Dewards mit Timestamps, Objective-Fenster (Tower/Roshan), Vision-ROIs, Item-Timings; optional Chat/Pings.",
-      "plan": [
-        { "id": "access", "title": "Replay access & storage", "desc": "Replay-URLs/Retention klären, Rate-Limits/Retry-Strategie, Speicher-Policy (Cache/TTL)." },
-        { "id": "parser", "title": "Parser scaffolding", "desc": "Parser-Bibliothek wählen (z. B. Clarity o. ä.) und Grundgerüst mit Event-Callbacks aufsetzen." },
-        { "id": "events", "title": "Event extraction", "desc": "Lane@10, Stacks/Pulls, Smoke-Events, Wards placed/removed inkl. Timestamps/Owner, Objective-Fenster, Item-Timings; optional Chat/Pings." },
-        { "id": "schema", "title": "Enriched schema", "desc": "Output-Schema definieren (per Match + aggregiert) und Merge in Monats-Shards/Manifeste." },
-        { "id": "pipeline", "title": "Pipeline integration", "desc": "scripts/* Schritt hinzufügen (resumefähig), Cache pro Match, Manifest-Version erhöhen, Logs/Timings." },
-        { "id": "perf", "title": "Perf & batching", "desc": "Parallelisierung (Worker), Backoff/Retry, Durchsatzmessung; Limits anpassbar." },
-        { "id": "privacy", "title": "Privacy/Compliance", "desc": "Optionale Redaktionen (z. B. Chat), Opt-out/Filter berücksichtigen." }
-      ],
-      "acceptance": [
-        "Ausgewählte Monate/Ligen werden geparst; Enrichment-Felder erscheinen in Aggregates",
-        "Ward-Lifetimes aus Replay stimmen mit Zählungen überein (Spot-/Cluster-Ebene)",
-        "Item-Timings (Erstkauf) in Aggregates verfügbar und konsistent",
-        "Pipeline-Schritt ist resumefähig, protokolliert Fehler/Timings und cached Ergebnisse"
-      ],
-      "dependencies": [
-        "Replay-Verfügbarkeit (Valve CDN/Retention)",
-        "Bandbreite/Speicherbudget",
-        "Heroes/Items Constants für Mapping"
-      ],
-      "reuse": {
-        "extends": ["data_pipeline.pages_output", "data_pipeline.monthly_shards", "data_pipeline.manifests"],
-        "ui_reuse": [
-          "Bestehende Viewer (Players/Teams/Heroes/Wards) konsumieren neue Kennzahlen"
-        ],
-        "data_reuse": [
-          "Monats-Shards/Manifeste, bestehende Aggregations-Hooks"
-        ],
-        "new_minimal": [
-          "Replay-Downloader (mit Cache)",
-          "Parser-Wrapper + Event-Extractor",
-          "Enrichment-Merger in Aggregates"
-        ],
-        "avoid_new": [
-          "Kein separater UI-Viewer nur für Replays",
-          "Kein proprietäres Datenformat neben JSON"
         ]
       }
     },
@@ -273,7 +326,7 @@
     {
       "id": "player-comparison-ui",
       "title": "Player Comparison UI Wiring",
-      "status": "planned",
+      "status": "done",
       "priority": 2,
       "notes": "Compare-Untertab/Drewer; nutzt vorhandene Render-Primitives und Tabellen.",
       "plan": [
@@ -301,8 +354,8 @@
           "Copy-Link Mechanismus"
         ],
         "data_reuse": [
-          "Players/Heroes Aggregates",
-          "Bestehende Filter/Selector-Funktionen"
+          "Players-Aggregate + Purchase Logs",
+          "Monats-Shards"
         ],
         "new_minimal": [
           "Picker-Controls (A/B)",
@@ -313,6 +366,23 @@
           "Keine zweite Persistenzschicht"
         ]
       }
+    },
+    {
+      "id": "player-comparison-hero-matchups",
+      "title": "Hero Matchups in Compare",
+      "status": "done",
+      "priority": 1,
+      "notes": "Head-to-head Heldenpaarungen zwischen Player A und B: Spiele, A WR, Ø K/D/A; filter-respektierend (Zeit & Side).",
+      "plan": [
+        { "id": "compute", "title": "Aggregations-Helper", "desc": "Pro Match (A vs B, gegnerische Seiten) zu Paarung aggregieren." },
+        { "id": "ui", "title": "Card Rendering", "desc": "Top 10 nach Spielen; Badges mit WR und K/D/A." }
+      ],
+      "acceptance": [
+        "Karte erscheint im Compare-Tab",
+        "Nur Matches mit beiden Spielern auf gegnerischen Seiten",
+        "Sortierung nach Spielen, dann A-WR"
+      ],
+      "dependencies": ["player-comparison-ui", "player-comparison-tool"]
     },
     {
       "id": "objective-control",
@@ -434,11 +504,11 @@
     {
       "id": "qol-filters",
       "title": "QoL Filters & Permalinks",
-      "status": "planned",
+      "status": "in-progress",
       "priority": 4,
-      "notes": "Einheitliche Parameter & Persistenz; Copy-Link überall.",
+  "notes": "Einheitliche Parameter & Persistenz; Copy-Link überall. Implementiert: Global Copy-Link/Embed in dynamic & league views, URL tab= Sync, aria-live feedback; Permalinks guide.",
       "plan": [
-  { "id": "spec", "title": "Param spec", "desc": "time, team, player, wmode, wbasis, cr – Defaults/Doku." },
+        { "id": "spec", "title": "Param spec", "desc": "time, team, player, wmode, wbasis, cr – Defaults/Doku." },
         { "id": "copy", "title": "Copy-link buttons", "desc": "Überall vorhanden; Toast Feedback." },
         { "id": "state", "title": "Hydration order", "desc": "URL > session > localStorage > defaults." },
         { "id": "consistency", "title": "Roundtrip tests", "desc": "Automatisierte Konsistenzprüfungen." }
@@ -570,9 +640,9 @@
     {
       "id": "share-trust",
       "title": "Sharing & Trust Features",
-      "status": "planned",
+      "status": "in-progress",
       "priority": 4,
-      "notes": "Build-Info, Data-Freshness-Banner, Embeds, externe Match-Links.",
+  "notes": "Build-Info, Data-Freshness-Banner, Embeds, externe Match-Links. Implementiert: Data as of + commit hash in league header; Share buttons (Copy link/embed).",
       "plan": [
         { "id": "buildinfo", "title": "Build Info", "desc": "Commit-SHA, Build-Zeit, Match-Counts, API-Version." },
         { "id": "databanner", "title": "Data Freshness Banner", "desc": "„Stand: … (UTC), n=…“ sichtbar im Header." },
@@ -602,7 +672,6 @@
         ]
       }
     },
-
     {
       "id": "meta-patch-awareness",
       "title": "Meta & Patch Awareness",
@@ -696,7 +765,7 @@
           "Kleine Regel-Engine (clientseitig) oder Precompute-Flag"
         ],
         "avoid_new": [
-          "Keine neue Alerts-Seite"
+          "Kein neues Alerts-Seite"
         ]
       }
     },

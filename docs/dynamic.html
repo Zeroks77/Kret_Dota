@@ -55,7 +55,10 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .tabs{display:flex;gap:6px;margin:6px 0 8px}
 .tab{padding:6px 10px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border-radius:10px;color:var(--text);cursor:pointer;font-size:12px}
 .tab.active{outline:2px solid rgba(109,166,255,.5);background:linear-gradient(180deg,rgba(109,166,255,.2),rgba(109,166,255,.08));border-color:rgba(109,166,255,.45)}
+.tab:focus-visible, .btn:focus-visible, button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 .tabpane{margin-top:6px}
+/* Screen-reader only utility */
+.sr-only{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0}
 /* Summary cards */
 .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .summary-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px}
@@ -114,10 +117,11 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 <script defer src="js/items_bought_viewer.js"></script>
 <script defer src="js/draft_viewer.js"></script>
 <script defer src="js/duo_viewer.js"></script>
+<script defer src="js/url_params.js"></script>
 </head>
 <body>
-<div id="dvLoading" class="loading-overlay"><div class="loading-box"><div class="spinner"></div><div id="dvLoadingText" class="sub">Loading…</div></div></div>
-<div class="wrapper">
+<div id="dvLoading" class="loading-overlay" role="status" aria-live="polite" aria-atomic="true"><div class="loading-box"><div class="spinner" aria-hidden="true"></div><div id="dvLoadingText" class="sub">Loading…</div></div></div>
+<div class="wrapper" id="mainContent" role="main">
   <div class="header">
     <h1 id="leagueTitle" style="margin:0;font-size:22px">Dynamic viewer</h1>
     <div class="badge">Client-side</div>
@@ -167,10 +171,20 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
   <span id="rangeMatchBadge" class="badge" title="Matches in selected period" style="align-self:center;display:none"></span>
       </div>
     </div>
+    <div class="field">
+      <label>Share</label>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <button id="copyLink" class="ghost" title="Copy permalink to this view">Copy link</button>
+        <button id="copyEmbed" class="ghost" title="Copy an embeddable iframe snippet">Copy embed</button>
+        <a id="odLeague" class="ghost" href="#" target="_blank" rel="noopener" title="Open league on OpenDota">OpenDota league</a>
+        <a href="./guide/permalinks.html" class="ghost" target="_blank" rel="noopener" title="Open Permalinks guide">Permalinks help</a>
+        <span id="shareLive" class="sr-only" role="status" aria-live="polite"></span>
+      </div>
+    </div>
   </div>
 
   <!-- Main tabs like in All-time report -->
-  <div class="tabs" id="mainTabs" style="margin-top:12px">
+  <div class="tabs" id="mainTabs" style="margin-top:12px" role="tablist" aria-label="Sections" aria-orientation="horizontal">
     <button class="tab active" data-tab="highlights">Highlights</button>
     <button class="tab" data-tab="players">Players</button>
     <button class="tab" data-tab="compare">Compare</button>
@@ -185,7 +199,19 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     <button class="tab" data-tab="calendar">Calendar</button>
   </div>
 
-  <div id="pane-highlights" class="tabpane active">
+  <details class="sub" id="a11yDetails" style="margin:4px 0 0">
+    <summary>Accessibility</summary>
+    <ul style="margin:6px 0 0 14px; padding:0">
+      <li>Tabs: Use Tab to focus; Arrow Left/Right to move when the tab bar is focused; Enter/Space to activate.</li>
+      <li>Loading states are announced to screen readers (live regions, aria-busy).</li>
+      <li>Tables: Click column headers to sort; the sort order is announced.</li>
+      <li>Clear keyboard focus outlines are provided (:focus-visible).</li>
+      <li>Shortcuts: 1–0 jump to main tabs (1=first … 0=10th, if present).</li>
+      <li>Up/Down scroll the page. Home focuses the report list on the Index page.</li>
+    </ul>
+  </details>
+
+  <div id="pane-highlights" class="tabpane active" role="tabpanel" aria-labelledby="tab-highlights">
     <div id="highlightsCard" class="card" style="margin-top:12px;display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <h2 style="margin:0 0 0;font-size:18px">Highlights</h2>
@@ -196,7 +222,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     </div>
   </div>
 
-  <div id="pane-wards" class="tabpane" style="display:none">
+  <div id="pane-wards" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-wards" hidden>
     <section class="card" style="margin-top:12px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <h2 style="margin:0 0 0;font-size:18px">Wards</h2>
@@ -208,48 +234,48 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     </section>
   </div>
 
-  <div id="pane-players" class="tabpane" style="display:none">
+  <div id="pane-players" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-players" hidden>
     <section class="card">
   <h2 style="margin:0 0 8px;font-size:18px">Players <span id="playerFocus" class="sub" style="margin-left:8px;display:none"></span></h2>
-      <table class="table sortable" id="playersTable"><thead><tr>
+      <table class="table sortable" id="playersTable"><caption class="sr-only">Players overview</caption><thead><tr>
         <th data-type="text">Name</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th><th data-type="num">Hero pool</th>
       </tr></thead><tbody></tbody></table>
     </section>
   </div>
 
-  <div id="pane-compare" class="tabpane" style="display:none">
+  <div id="pane-compare" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-compare" hidden>
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Player Comparison</h2>
       <div id="compareMount" class="sub">Pick two players to compare.</div>
     </section>
   </div>
 
-  <div id="pane-heroes" class="tabpane" style="display:none">
+  <div id="pane-heroes" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-heroes" hidden>
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Heroes</h2>
-      <table class="table sortable" id="heroesTable"><thead><tr>
+      <table class="table sortable" id="heroesTable"><caption class="sr-only">Heroes overview</caption><thead><tr>
         <th data-type="text">Hero</th><th data-type="num">Picks</th><th data-type="num">Bans</th><th data-type="num">Wins</th><th data-type="num">WR</th><th data-type="text">Best player</th>
       </tr></thead><tbody></tbody></table>
     </section>
   </div>
 
-  <div id="pane-draft" class="tabpane" style="display:none">
+  <div id="pane-draft" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-draft" hidden>
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Draft</h2>
       <div id="draftMount" class="sub">Select a range (Apply) to load draft stats.</div>
     </section>
   </div>
 
-  <div id="pane-teams" class="tabpane" style="display:none">
+  <div id="pane-teams" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-teams" hidden>
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Teams</h2>
-      <table class="table sortable" id="teamsTable"><thead><tr>
+      <table class="table sortable" id="teamsTable"><caption class="sr-only">Teams overview</caption><thead><tr>
         <th data-type="text">Team</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th>
       </tr></thead><tbody></tbody></table>
     </section>
   </div>
 
-  <div id="pane-awards" class="tabpane" style="display:none">
+  <div id="pane-awards" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-awards" hidden>
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">🏆 Awards</h2>
       <div class="aw-toolbar">
@@ -259,7 +285,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     </section>
   </div>
 
-  <div id="pane-laneduos" class="tabpane" style="display:none">
+  <div id="pane-laneduos" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-laneduos" hidden>
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Lane Duos</h2>
       <div id="ldMount" class="sub">Select a range (Apply) to load lane duos.</div>
@@ -267,22 +293,22 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
   </div>
 
 
-  <div id="pane-itemsbought" class="tabpane" style="display:none">
+  <div id="pane-itemsbought" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-itemsbought" hidden>
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Items Bought</h2>
       <div id="ibMount" class="sub">Select a range (Apply) to load item purchases.</div>
     </section>
   </div>
 
-  <div id="pane-duos" class="tabpane" style="display:none">
+  <div id="pane-duos" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-duos" hidden>
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Best Duos</h2>
       <div id="duosMount" class="sub">Select a range (Apply) to compute best player duos and their hero combinations.</div>
-      <div id="duosLoading" class="sub" style="display:none;margin-top:6px"><span class="badge">Loading…</span> Computing all player combinations…</div>
+  <div id="duosLoading" class="sub" style="display:none;margin-top:6px" role="status" aria-live="polite"><span class="badge" aria-hidden="true">Loading…</span> Computing all player combinations…</div>
     </section>
   </div>
 
-  <div id="pane-calendar" class="tabpane" style="display:none">
+  <div id="pane-calendar" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-calendar" hidden>
     <section class="card">
       <div class="cal">
         <div class="toolbar">
@@ -299,6 +325,13 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     </section>
   </div>
 </div>
+
+<footer class="sub" style="margin:16px 2px 0">
+  <a href="./guide/" aria-label="Open project documentation">Project documentation</a>
+  <span aria-hidden="true">·</span>
+  <a href="./index.html">Reports index</a>
+  <span class="sr-only">End of dynamic viewer content</span>
+</footer>
 
 <script>
 const OD_PLAYER_URL = id => `https://www.opendota.com/players/${id}`;
@@ -333,6 +366,7 @@ async function loadJsonWithFallback(rel, raw){
 function unix(dt){ return Math.floor(dt.getTime()/1000); }
 function toLocalInput(unixSec){ if(!unixSec) return ''; const d=new Date(unixSec*1000); const pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
 function parseLocalInput(val){ if(!val) return NaN; const ms = Date.parse(val); return isNaN(ms)? NaN : Math.floor(ms/1000); }
+function absUrl(url){ try{ return new URL(url, location.origin).toString(); }catch(_e){ return url; } }
 
 // Sorting helpers
 function val(td){
@@ -351,17 +385,26 @@ function sortTable(table, col, type, asc){
     va = parseFloat(va)||0; vb = parseFloat(vb)||0; return asc ? va - vb : vb - va;
   });
   rows.forEach(r=>tbody.appendChild(r));
-  table.querySelectorAll('th').forEach(th=>th.classList.remove('sorted-asc','sorted-desc'));
-  const th=table.querySelectorAll('th')[col]; if(th) th.classList.add(asc?'sorted-asc':'sorted-desc');
+  table.querySelectorAll('th').forEach(th=>{ th.classList.remove('sorted-asc','sorted-desc'); th.removeAttribute('aria-sort'); });
+  const th=table.querySelectorAll('th')[col]; if(th){ th.classList.add(asc?'sorted-asc':'sorted-desc'); th.setAttribute('aria-sort', asc? 'ascending':'descending'); }
 }
 function enableSorting(){
   document.querySelectorAll('table.sortable').forEach(table=>{
     table.querySelectorAll('th').forEach((th,i)=>{
       th.style.cursor='pointer';
+      th.tabIndex = 0; // focusable for keyboard
+      th.setAttribute('role','columnheader');
       th.addEventListener('click', ()=>{
         const type = th.dataset.type || 'text';
         const asc = !th.classList.contains('sorted-asc');
         sortTable(table,i,type,asc);
+      });
+      th.addEventListener('keydown', (ev)=>{
+        if(ev.key==='Enter' || ev.key===' '){ ev.preventDefault();
+          const type = th.dataset.type || 'text';
+          const asc = !th.classList.contains('sorted-asc');
+          sortTable(table,i,type,asc);
+        }
       });
     });
   });
@@ -930,13 +973,40 @@ async function main(){
     const tabsRoot = document.getElementById('mainTabs');
     if (!tabsRoot) return;
     const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
+    // Initialize ARIA semantics for tabs
+    tabs.forEach(btn => {
+      const name = btn.getAttribute('data-tab');
+      btn.id = btn.id || `tab-${name}`;
+      btn.setAttribute('role','tab');
+      btn.setAttribute('aria-selected', btn.classList.contains('active') ? 'true' : 'false');
+      // Keep all tabs tabbable so users can move through tabs with Tab
+      btn.setAttribute('tabindex','0');
+      const pane = document.getElementById(`pane-${name}`);
+      if (pane) {
+        pane.setAttribute('role','tabpanel');
+        pane.setAttribute('aria-labelledby', btn.id);
+        if (!btn.classList.contains('active')) pane.setAttribute('hidden','');
+      }
+    });
     function showTab(name){
-  ['highlights','players','compare','heroes','duos','laneduos','draft','teams','itemsbought','wards','awards','calendar'].forEach(id=>{
+      const order = ['highlights','players','compare','heroes','duos','laneduos','draft','teams','itemsbought','wards','awards','calendar'];
+      order.forEach(id=>{
         const pane = document.getElementById('pane-'+id);
-        if (pane) pane.style.display = (id===name)? '' : 'none';
+        const active = (id===name);
+        if (pane) {
+          pane.style.display = active ? '' : 'none';
+          if (active) pane.removeAttribute('hidden'); else pane.setAttribute('hidden','');
+          pane.setAttribute('aria-busy','false');
+        }
       });
       if(name === 'compare') { try{ bootCompare(); }catch(_e){} }
-      tabs.forEach(b=> b.classList.toggle('active', b.getAttribute('data-tab')===name));
+      tabs.forEach(b=>{
+        const active = (b.getAttribute('data-tab')===name);
+        b.classList.toggle('active', active);
+        b.setAttribute('aria-selected', active ? 'true' : 'false');
+        // Keep all tabs tabbable to support Tab navigation between tabs
+        b.setAttribute('tabindex','0');
+      });
       // Reflect selected tab in URL and localStorage
       try{
         const sp = new URLSearchParams(location.search);
@@ -945,10 +1015,48 @@ async function main(){
         history.replaceState(null, '', url);
       }catch(_e){}
       try{ localStorage.setItem('dv_tab', name||'highlights'); }catch(_e){}
+      // Move focus to active tab when switched programmatically
+      try{ const activeBtn = tabs.find(b=> b.getAttribute('data-tab')===name); if(activeBtn) activeBtn.focus(); }catch(_e){}
     }
     tabs.forEach(b=> b.addEventListener('click', ()=> showTab(b.getAttribute('data-tab'))));
+    // Keyboard navigation for tabs (based on the currently focused tab)
+    tabsRoot.addEventListener('keydown', (ev)=>{
+      const activeEl = document.activeElement;
+      const focusedIdx = tabs.indexOf(activeEl);
+      // Process only when focus is on a tab within this tablist
+      if (focusedIdx === -1) return;
+      if (ev.key==='ArrowRight' || ev.key==='ArrowLeft' || ev.key==='Home' || ev.key==='End') { ev.preventDefault(); }
+      if (ev.key==='ArrowRight') {
+        const ni = (focusedIdx+1) % tabs.length; tabs[ni].focus(); showTab(tabs[ni].getAttribute('data-tab'));
+      } else if (ev.key==='ArrowLeft') {
+        const ni = (focusedIdx-1+tabs.length) % tabs.length; tabs[ni].focus(); showTab(tabs[ni].getAttribute('data-tab'));
+      } else if (ev.key==='Home') {
+        tabs[0].focus(); showTab(tabs[0].getAttribute('data-tab'));
+      } else if (ev.key==='End') {
+        const last = tabs[tabs.length-1]; last.focus(); showTab(last.getAttribute('data-tab'));
+      }
+    });
     // Expose for initial selection via URL
     window.__dvShowTab = showTab;
+    // Global digit shortcuts: 1–0 jump to main tabs (1=first … 0=10th). No modifiers, ignore while typing.
+    try{
+      document.addEventListener('keydown', (ev)=>{
+        if (ev.altKey || ev.ctrlKey || ev.metaKey) return;
+        const el = document.activeElement;
+        const tag = (el && el.tagName) ? el.tagName.toLowerCase() : '';
+        const typing = (tag==='input' || tag==='textarea' || tag==='select' || (el && el.isContentEditable));
+        if (typing) return;
+        const key = ev.key;
+        if (!(/^\d$/.test(key))) return; // only 0-9
+        const n = (key === '0') ? 10 : parseInt(key, 10);
+        const root = document.getElementById('mainTabs'); if(!root) return;
+        const tabs = Array.from(root.querySelectorAll('.tab')); if(!tabs.length) return;
+        const idx = n - 1; if (idx < 0 || idx >= tabs.length) return;
+        const target = tabs[idx]; if(!target) return;
+        ev.preventDefault();
+        target.focus(); if(window.__dvShowTab) window.__dvShowTab(target.getAttribute('data-tab'));
+      });
+    }catch(_e){}
   })();
   // Load from root-level data/ via relative path (local) or raw.githubusercontent.com (GitHub Pages)
   const REPO='Zeroks77/Kret_Dota'; const BRANCH='main';
@@ -1485,7 +1593,9 @@ async function main(){
 
   async function computeHighlightsForSubset(subset, heroMap, mapConf, label){
     const body = document.getElementById('highlightsBody'); const card = document.getElementById('highlightsCard');
-    card.style.display=''; body.innerHTML = `<div class='sub'>Computing highlights for selected range… This may take a few seconds.</div>`;
+    card.style.display='';
+    const pane = document.getElementById('pane-highlights'); if (pane) pane.setAttribute('aria-busy','true');
+    body.innerHTML = `<div class='sub' role='status' aria-live='polite'>Computing highlights for selected range… This may take a few seconds.</div>`;
     // Limit concurrency; fetch details for all matches in range
     const ids = subset.map(m=>m.match_id).filter(Boolean);
     // Guard against extremely large ranges
@@ -1496,6 +1606,7 @@ async function main(){
   const warnNoDetails = okDetails.length===0;
   const high = computeHighlightsFromDetails(details, heroMap);
   renderHighlights(high, heroMap, mapConf, label);
+  const paneHL = document.getElementById('pane-highlights'); if (paneHL) paneHL.setAttribute('aria-busy','false');
   // Mount Lane Duos component
   try{
     const ld = document.getElementById('ldMount');
@@ -1550,14 +1661,14 @@ async function main(){
     const dm = document.getElementById('duosMount');
     const di = document.getElementById('duosLoading');
     if(di) di.style.display = '';
-    if(dm && window.DuosViewer){ window.DuosViewer.mount(dm, { data: high.duosTop || [], heroes: heroMap, persistKey: 'dv_duos' }); }
+  if(dm && window.DuosViewer){ const paneD = document.getElementById('pane-duos'); if (paneD) paneD.setAttribute('aria-busy','true'); window.DuosViewer.mount(dm, { data: high.duosTop || [], heroes: heroMap, persistKey: 'dv_duos' }); if (paneD) paneD.setAttribute('aria-busy','false'); }
     if(di) di.style.display = 'none';
   }catch(e){ console.warn('DuosViewer mount failed', e); const di = document.getElementById('duosLoading'); if(di) di.textContent = 'Failed to compute duos.'; }
   // Mount WardViewer into dedicated Wards tab
   try{
   const container = document.getElementById('dvWardMount');
   const stdHost = document.getElementById('dvWardStd');
-  if(container && stdHost && window.WardViewer){
+  if(container && stdHost && window.WardViewer){ const paneW = document.getElementById('pane-wards'); if (paneW) paneW.setAttribute('aria-busy','true');
       // Build teams from details (names best-effort)
       const teamMap = new Map();
       const playerMap = new Map();
@@ -1622,17 +1733,17 @@ async function main(){
       const teamsList = Array.from(teamMap.values());
       const playersList = Array.from(playerMap.values());
   // Mount a single instance; Ward Viewer manages its own Basis/filters
-  window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, objectivesUrl:'data/map_locations.json', extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } });
+  window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, objectivesUrl:'data/map_locations.json', extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } }); if (paneW) paneW.setAttribute('aria-busy','false');
     }
   }catch(err){ console.warn('WardViewer mount failed', err); }
 
   // Draft: compute from current details and mount component
   try{
-    if(window.DraftViewer){
+  if(window.DraftViewer){ const paneD = document.getElementById('pane-draft'); if (paneD) paneD.setAttribute('aria-busy','true');
       const draftData = window.DraftViewer.compute(details);
       const mount = document.getElementById('draftMount');
       const nameResolver = (aid)=> (playerNames && playerNames[String(aid)]) || `Player ${aid}`;
-      window.DraftViewer.mount(mount, { data: draftData, heroes: heroMap, persistKey: 'dv_draft_global', nameResolver });
+  window.DraftViewer.mount(mount, { data: draftData, heroes: heroMap, persistKey: 'dv_draft_global', nameResolver }); if (paneD) paneD.setAttribute('aria-busy','false');
     }
   }catch(e){ console.warn('DraftViewer mount failed', e); }
   if(warnNoDetails){
@@ -1672,6 +1783,16 @@ async function main(){
     let f = parseLocalInput(from.value); if(!isFinite(f)) f=0;
     let t = parseLocalInput(to.value);   if(!isFinite(t)) t=Number.MAX_SAFE_INTEGER;
     if(f>t){ const tmp=f; f=t; t=tmp; }
+    // Update URL state for QoL permalinks
+    try{
+      const sp = new URLSearchParams(location.search);
+      if(isFinite(f) && f>0) sp.set('from', String(f)); else sp.delete('from');
+      if(isFinite(t) && t>0 && t<Number.MAX_SAFE_INTEGER) sp.set('to', String(t)); else sp.delete('to');
+      if(__focusAid>0) sp.set('aid', String(__focusAid)); else sp.delete('aid');
+      if(__userOnlyAid>0) sp.set('uonly', '1'); else sp.delete('uonly');
+      const url = location.pathname + (sp.toString()? ('?'+sp.toString()):'') + location.hash;
+      history.replaceState(null, '', url);
+    }catch(_e){}
     // Header title/sub
     try{
       const league = (info && (info.league_name||info.league||'')) || "League";
@@ -1683,6 +1804,8 @@ async function main(){
     if(info && info.league_name){ sub += ` · ${info.league_name} (LID ${lid})`; } else { sub += ` · League ${lid}`; }
   }
   if(__userOnlyAid>0){ sub += ' · user-only'; }
+  // Data freshness
+  try{ const ga = Number(info && info.generated_at); if(ga>0){ const d=new Date(ga*1000); sub += ` · Data as of ${d.toISOString().replace('T',' ').slice(0,16)}Z`; } }catch(_e){}
       document.getElementById('headerSub').textContent=sub;
       // Show focused player chip if requested
       const el = document.getElementById('playerFocus');
@@ -1785,6 +1908,14 @@ async function main(){
   // Render calendar for current cursor
   renderCalendarMonth(__subsetCache, __rangeUnix, __calCursor);
   try{ __hideLoading(); }catch(_e){}
+  // Return focus to active tab for keyboard flow
+  try{
+    const tabsRoot = document.getElementById('mainTabs');
+    if(tabsRoot){ const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
+      const active = tabs.find(b=> b.getAttribute('aria-selected')==='true') || tabs.find(b=> b.classList.contains('active')) || tabs[0];
+      if(active) active.focus();
+    }
+  }catch(_e){}
   }
   // Wire hide-empty persistence and change handler
   try{
@@ -1794,6 +1925,36 @@ async function main(){
     if(cb){ cb.checked = saved===null ? true : (saved==='1'); cb.addEventListener('change', ()=>{ localStorage.setItem(key, cb.checked?'1':'0'); if(typeof __lastAwards==='object'){ renderAwards(__lastAwards, heroes, { hideEmpty: cb.checked }); } }); }
   }catch(_e){}
   document.getElementById('apply').addEventListener('click', apply);
+  // Share controls
+  (function wireShare(){
+    try{
+      const od = document.getElementById('odLeague'); if(od){ od.href = `https://www.opendota.com/leagues/${__leagueIdTarget||18438}`; }
+    }catch(_e){}
+    function buildPermalink(){
+      try{
+        const sp = new URLSearchParams(location.search);
+        // ensure latest from/to/aid/uonly are set from current inputs/state
+        const f = parseLocalInput(document.getElementById('from').value);
+        const t = parseLocalInput(document.getElementById('to').value);
+        if(isFinite(f) && f>0) sp.set('from', String(f)); else sp.delete('from');
+        if(isFinite(t) && t>0) sp.set('to', String(t)); else sp.delete('to');
+        if(__focusAid>0) sp.set('aid', String(__focusAid)); else sp.delete('aid');
+        if(__userOnlyAid>0) sp.set('uonly', '1'); else sp.delete('uonly');
+        const url = location.pathname + (sp.toString()? ('?'+sp.toString()):'');
+        return absUrl(url);
+      }catch(_e){ return location.href; }
+    }
+    function buildEmbed(){
+      const link = buildPermalink();
+      const url = (function(){ try{ const u=new URL(link); u.searchParams.set('ui','readonly'); return u.toString(); }catch(_e){ return link; } })();
+      return `<iframe src="${url}" title="Kret's EU Dota League" width="100%" height="720" style="border:0"></iframe>`;
+    }
+    try{
+      const live = document.getElementById('shareLive');
+      const btnL = document.getElementById('copyLink'); if(btnL){ btnL.addEventListener('click', ()=>{ const u=buildPermalink(); navigator.clipboard?.writeText(u).catch(()=>{}); if(live){ live.textContent = 'Link copied'; } btnL.textContent='Copied!'; setTimeout(()=> btnL.textContent='Copy link', 1000); }); }
+      const btnE = document.getElementById('copyEmbed'); if(btnE){ btnE.addEventListener('click', ()=>{ const s=buildEmbed(); navigator.clipboard?.writeText(s).catch(()=>{}); if(live){ live.textContent = 'Embed code copied'; } btnE.textContent='Copied!'; setTimeout(()=> btnE.textContent='Copy embed', 1000); }); }
+    }catch(_e){}
+  })();
   // Player filter: selecting a player enforces user-only view
   try{
     const sel = document.getElementById('playerFilter');
@@ -1836,15 +1997,16 @@ async function main(){
   const now = Math.floor(Date.now()/1000);
   // URL params support: ?range=30|60|120|patch|all or ?from=...&to=... (epoch or YYYY-MM-DD)
   (function initFromUrl(){
-    const sp = new URLSearchParams(location.search);
+    // Canonicalize aliases first (URL > session > localStorage > defaults)
+    const sp = (window.UrlParams && UrlParams.canonicalizeInPlace) ? UrlParams.canonicalizeInPlace() : new URLSearchParams(location.search);
     const pr = sp.get('range');
     const pf = sp.get('from');
     const pt = sp.get('to');
     const ptab = sp.get('tab');
-  const plock = sp.get('lock') || sp.get('readonly') || sp.get('ui');
-  const paid = sp.get('aid') || sp.get('account') || sp.get('player');
+  const plock = sp.get('ui') || sp.get('lock') || sp.get('readonly');
+  const paid = sp.get('aid');
   __focusAid = paid ? Number(paid) : 0;
-  const uonly = sp.get('uonly') || sp.get('useronly') || sp.get('only');
+  const uonly = sp.get('uonly');
   __userOnlyAid = (__focusAid>0 && uonly && String(uonly).toLowerCase()!=='0' && String(uonly).toLowerCase()!=='false') ? __focusAid : 0;
     function parseDateish(s){ if(!s) return NaN; if(/^\d{10}$/.test(s)) return Number(s); const ms = Date.parse(s); return isNaN(ms)? NaN : Math.floor(ms/1000); }
     let fux = NaN, tux = NaN;

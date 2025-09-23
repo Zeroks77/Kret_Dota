@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Permalinks & Embeds</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./guide.css">
+  <style>
+    code.k { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,.08) }
+    .note { border: 1px solid var(--border); border-radius: 12px; padding: 10px; background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace }
+  </style>
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="wrap">
+    <aside class="side" aria-label="Documentation navigation">
+      <div class="brand">Kret Dota Reports</div>
+      <div class="muted">Project documentation</div>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html">Overview</a>
+        <a href="./getting-started.html">Getting started</a>
+        <a href="./pipeline.html">Data pipeline</a>
+        <a href="./reports.html">Reports & viewers</a>
+        <a href="./components.html">Components</a>
+        <a href="./preaggregations.html">Pre-aggregations</a>
+        <a href="./accessibility.html">Accessibility</a>
+        <a href="./development.html">Development</a>
+        <a href="./roadmap.html">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </nav>
+    </aside>
+    <main id="main" class="content" role="main">
+      <h1>Permalinks & Embeds</h1>
+      <p>Every viewer supports shareable links that open the exact same view. You can also copy an embeddable iframe snippet.</p>
+      <div class="note">Tip: You don’t need to memorize these. Use the <b>Copy link</b> and <b>Copy embed</b> buttons in the UI. This page documents the parameters for power users.</div>
+
+      <h2>Dynamic viewer (docs/dynamic.html)</h2>
+      <ul>
+        <li><code class="k">tab</code>: highlights | players | compare | heroes | duos | laneduos | draft | teams | itemsbought | wards | awards | calendar</li>
+        <li><code class="k">range</code>: 30 | 60 | 120 | patch | all (alternative to from/to)</li>
+        <li><code class="k">from</code>, <code class="k">to</code>: Unix seconds or date (YYYY-MM-DD). UTC timezone.</li>
+        <li><code class="k">aid</code>: Focus account ID (switches to Players by default).</li>
+        <li><code class="k">uonly</code>: 1 to restrict to matches involving <code>aid</code>.</li>
+        <li><code class="k">ui</code>: readonly hides controls when present (e.g., <code>ui=readonly</code>).</li>
+      </ul>
+      <p class="mono">Example: <br>
+        <a target="_blank" rel="noopener" href="../dynamic.html?tab=players&range=60&aid=123456789&uonly=1">dynamic.html?tab=players&range=60&aid=123456789&uonly=1</a>
+      </p>
+
+      <h3>Compare tab state</h3>
+      <ul>
+        <li><code class="k">pcA</code>, <code class="k">pcB</code>: Player account IDs to compare.</li>
+        <li><code class="k">side</code>: radiant | dire | any (filters matches for A vs B features).</li>
+      </ul>
+      <p class="mono">Example (Compare): <br>
+        <a target="_blank" rel="noopener" href="../dynamic.html?tab=compare&pcA=123&pcB=456&side=any">dynamic.html?tab=compare&pcA=123&pcB=456&side=any</a>
+      </p>
+
+      <h2>League viewer (docs/league_dynamic.html)</h2>
+      <ul>
+        <li><code class="k">league</code> or <code class="k">l</code>: League slug (e.g., <code>TI2025</code>).</li>
+        <li><code class="k">leaguePath</code>: Optional path prefix under <code>docs/data/</code> if not standard.</li>
+        <li><code class="k">tab</code>: highlights | players | heroes | draft | teams | placement | awards | laneduos | itemsbought | wards</li>
+      </ul>
+      <p class="mono">Example: <br>
+        <a target="_blank" rel="noopener" href="../league_dynamic.html?league=TI2025&tab=awards">league_dynamic.html?league=TI2025&tab=awards</a>
+      </p>
+
+      <h2>Ward viewer deep-links</h2>
+      <p>The ward map supports focused deep-links and shareable selections.</p>
+      <ul>
+        <li><code class="k">wspot</code> (alias: <code class="k">spot</code>): Focus a specific ward coordinate (e.g., <code class="k">123,456</code>).</li>
+        <li><code class="k">wpins</code> (alias: <code class="k">pins</code>): Comma-separated list of pinned spots (e.g., <code class="k">"123,456,321,654"</code>).</li>
+        <li><code class="k">aid</code>: Player filter (only observer placements by this account).</li>
+        <li><code class="k">side</code> (alias: <code class="k">wteam</code>): Team filter: <code class="k">Radiant</code> | <code class="k">Dire</code> or explicit <code class="k">team:&lt;id&gt;</code>.</li>
+        <li><code class="k">wmode</code>: <code class="k">best</code> | <code class="k">worst</code></li>
+        <li><code class="k">wbasis</code>: <code class="k">lifetime</code> | <code class="k">contest</code></li>
+        <li><code class="k">wtime</code>: <code class="k">early</code> | <code class="k">mid</code> | <code class="k">earlylate</code> | <code class="k">late</code> | <code class="k">superlate</code></li>
+        <li><code class="k">wmin</code>: Minimum occurrences threshold (e.g., 1,2,3,5)</li>
+        <li><code class="k">wtop</code>: Limit list size (e.g., 10,15,25,50,all)</li>
+        <li><code class="k">wcr</code>: Cluster radius percent (0,1,1.5,2,3,4)</li>
+        <li><code class="k">wzw</code>: Include zero-second durations in worst list (1/0)</li>
+        <li><code class="k">wov</code>, <code class="k">wgrid</code>: Overlay/grid toggles (1/0)</li>
+        <li><code class="k">wsen</code>, <code class="k">whot</code>: Sentry markers/hotspots toggles (1/0)</li>
+      </ul>
+      <p class="mono">Examples:<br>
+        <a target="_blank" rel="noopener" href="../dynamic.html?tab=wards&wspot=123,456&wbasis=contest&side=Radiant">dynamic.html?tab=wards&wspot=123,456&wbasis=contest&side=Radiant</a><br>
+        <a target="_blank" rel="noopener" href="../dynamic.html?tab=wards&wpins=123,456,321,654&aid=123456789">dynamic.html?tab=wards&wpins=123,456,321,654&aid=123456789</a>
+      </p>
+
+      <h2>Embeds</h2>
+      <p>Use the embed snippets produced by the UI, or construct one manually:</p>
+      <pre class="mono"><code>&lt;iframe src="https://YOUR_SITE/docs/dynamic.html?tab=players&amp;range=30" title="Kret's EU Dota League" width="100%" height="720" style="border:0"&gt;&lt;/iframe&gt;</code></pre>
+      <p>For read-only embeds add <code class="k">ui=readonly</code> to the URL.</p>
+
+      <h2>Hydration order</h2>
+      <p>The viewers resolve state using this order:</p>
+      <ol>
+        <li><b>URL parameters</b> (highest precedence)</li>
+        <li><b>Session state</b> (current page runtime)</li>
+        <li><b>LocalStorage</b> (saved last tab, etc.)</li>
+        <li><b>Defaults</b> (e.g., last 30 days)</li>
+      </ol>
+      <p>This ensures permalinks always reproduce the exact view even if previous session data exists.</p>
+
+      <h2>Parameter spec (quick reference)</h2>
+      <div class="note">
+        Canonical names and common aliases the viewers understand.
+      </div>
+      <ul>
+        <li><b>tab</b>: section id (players, heroes, …)</li>
+        <li><b>range</b>: 30 | 60 | 120 | patch | all</li>
+        <li><b>from</b>/<b>to</b>: unix seconds or YYYY-MM-DD (UTC)</li>
+        <li><b>aid</b> (aliases: account, player): account id</li>
+        <li><b>uonly</b> (aliases: useronly, only): 1 to restrict to matches involving <b>aid</b></li>
+        <li><b>ui</b> (aliases: lock, readonly): readonly/locked controls</li>
+        <li><b>pcA</b>/<b>pcB</b>: Compare player ids</li>
+        <li><b>side</b>: radiant | dire | any (Compare filters)</li>
+        <li><b>league</b> (alias: l): league slug for league viewer</li>
+        <li><b>leaguePath</b>: explicit docs/data folder path when non-standard</li>
+      </ul>
+
+      <h2>Notes</h2>
+      <ul>
+        <li>All dates are interpreted as UTC.</li>
+        <li>Unknown parameters are ignored.</li>
+        <li>When both <code class="k">range</code> and <code class="k">from/to</code> are present, <code>from/to</code> wins.</li>
+        <li>Copy buttons announce success to assistive tech via live regions.</li>
+      </ul>
+
+      <h2>Wann welche Parameter?</h2>
+      <p>Empfehlungen für typische Anwendungsfälle:</p>
+      <ul>
+        <li><b>„Letzte 30 Tage“ Ansicht teilen</b>: setze <code class="k">range=30</code> und optional <code class="k">tab</code>.</li>
+        <li><b>Exakte Zeitspanne reproduzieren</b>: setze <code class="k">from</code> und <code class="k">to</code> (Unix Sekunden oder YYYY-MM-DD). Lass <code>range</code> weg.</li>
+        <li><b>Spieler-fokussierte Sicht</b>: setze <code class="k">aid</code> plus <code class="k">uonly=1</code> (beschränkt die Daten auf Spiele mit diesem Spieler).</li>
+        <li><b>Vergleich A vs. B</b>: setze <code class="k">pcA</code>, <code class="k">pcB</code> und optional <code class="k">side</code> (radiant|dire|any).</li>
+        <li><b>League-Viewer direkt</b>: setze <code class="k">league</code> (Slug) und optional <code class="k">leaguePath</code> bei abweichendem Pfad; <code class="k">tab</code> für Start-Reiter.</li>
+        <li><b>Read-only Einbettung</b>: füge <code class="k">ui=readonly</code> hinzu, um die Bedien-Controls zu verbergen.</li>
+      </ul>
+    </main>
+  </div>
+</body>
+</html>

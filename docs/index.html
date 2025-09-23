@@ -33,6 +33,7 @@ a{color:var(--accent)}
 .hovercard .title{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:6px}
 .hovercard a{display:inline-block;margin:2px 6px 2px 0;background:var(--chip);padding:3px 8px;border-radius:999px}
 .has-hover:hover > .hovercard{display:block}
+.has-hover.open > .hovercard{display:block}
 /* Hero gallery inside hovercard */
 .hovercard .heroes{max-width:520px}
 /* Picklists: always white with black text (future-proof if selects are added) */
@@ -44,6 +45,9 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
 .ix-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:bd 1s infinite}
 .ix-dot:nth-child(2){animation-delay:.15s}.ix-dot:nth-child(3){animation-delay:.3s}
 @keyframes bd{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
+/* Focus visible for keyboard users */
+.btn:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.sr-only{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0}
 </style>
 </head>
 <body>
@@ -54,7 +58,8 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
     </div>
     <div id='ixSpin' class='ix-spinner'><div class='ix-dot'></div><div class='ix-dot'></div><div class='ix-dot'></div><span>Loading list…</span></div>
   <!-- Filters removed; Dynamic view is available as a pinned list entry below -->
-    <input id='q' class='search' type='text' placeholder='Search (date/range) ...'>
+  <label for='q' class='sr-only'>Search reports by name, date, or range</label>
+  <input id='q' class='search' type='text' placeholder='Search (date/range) ...' aria-label='Search reports by name, date, or range'>
     <ul id='list' class='list tree'>
       <li class="leaf item" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html">Dynamic view (custom timeframe)</a></li>
       <li class="node" id="node-monthly"><details open>
@@ -75,6 +80,7 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
       </details></li>
     </ul>
   <div class='sub' style='margin-top:8px;opacity:.9'>Data and imagery powered by <a href='https://www.opendota.com/' target='_blank' rel='noopener'>OpenDota</a>.</div>
+  <div class='sub' style='margin-top:4px;opacity:.95'>Read the <a href='./guide/'>project documentation</a>.</div>
   </aside>
 
   <main class='viewer'>
@@ -142,6 +148,19 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
   prevBtn.addEventListener('click', ()=> select(selIndex-1));
   nextBtn.addEventListener('click', ()=> select(selIndex+1));
   document.addEventListener('keydown', ev=>{ if (ev.key==='ArrowUp'){ev.preventDefault(); select(selIndex-1);} if (ev.key==='ArrowDown'){ev.preventDefault(); select(selIndex+1);} });
+  // Global: Home focuses the report list and selects current/first visible when not typing
+  document.addEventListener('keydown', ev=>{
+    if (ev.key !== 'Home') return;
+    if (ev.altKey || ev.ctrlKey || ev.metaKey) return;
+    const el = document.activeElement; const tag = (el && el.tagName) ? el.tagName.toLowerCase() : '';
+    const typing = (tag==='input' || tag==='textarea' || tag==='select' || (el && el.isContentEditable));
+    if (typing) return;
+    ev.preventDefault();
+    const v = vis(); if (!v.length) return;
+    list.focus && list.focus();
+    // keep current selection if valid; otherwise select first visible
+    if (selIndex<0 || selIndex>=v.length) select(0); else select(selIndex);
+  });
 
   function monthName(num){ const M=['January','February','March','April','May','June','July','August','September','October','November','December']; const i=Number(num)-1; return (i>=0&&i<12)?M[i]:String(num); }
 
@@ -268,6 +287,32 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
     apply();
   }
   init();
+})();
+</script>
+<script>
+// Hovercard accessibility: toggle on focus/Enter, close on Esc and on blur
+(function(){
+  const triggers = Array.from(document.querySelectorAll('.has-hover'));
+  // Assign ids and aria controls
+  triggers.forEach((wrap, i)=>{
+    const card = wrap.querySelector('.hovercard'); if(!card) return;
+    const id = card.id || `hovercard-${i+1}`; card.id = id;
+    // Make the wrapper focusable (acts as trigger)
+    wrap.setAttribute('tabindex','0');
+    wrap.setAttribute('role','button');
+    wrap.setAttribute('aria-controls', id);
+    wrap.setAttribute('aria-expanded','false');
+    // Open helpers
+    function open(){ wrap.classList.add('open'); wrap.setAttribute('aria-expanded','true'); }
+    function close(){ wrap.classList.remove('open'); wrap.setAttribute('aria-expanded','false'); }
+    wrap.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' || e.key===' '){ e.preventDefault(); if(wrap.classList.contains('open')) close(); else open(); }
+      if(e.key==='Escape'){ e.preventDefault(); close(); wrap.focus(); }
+      if(e.key==='ArrowDown'){ if(!wrap.classList.contains('open')) open(); const first = card.querySelector('a,button,[tabindex]'); if(first) first.focus(); }
+    });
+    wrap.addEventListener('blur', (e)=>{ if(!wrap.contains(e.relatedTarget)){ close(); } }, true);
+    card.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ e.preventDefault(); close(); wrap.focus(); } });
+  });
 })();
 </script>
 </body>

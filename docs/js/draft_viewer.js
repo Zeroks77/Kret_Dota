@@ -301,8 +301,8 @@
     }
     function render(){
       if(!body) return;
-      // primary nav
-      const tabs = root.querySelectorAll('.seg[data-pmode]'); tabs.forEach(b=> b.classList.toggle('active', b.getAttribute('data-pmode')===primary));
+  // primary nav
+  const tabs = root.querySelectorAll('.seg[data-pmode]'); tabs.forEach(b=> { const is=b.getAttribute('data-pmode')===primary; b.classList.toggle('active', is); b.setAttribute('aria-pressed', String(is)); });
       const mc = root.querySelector('#dv-match-count'); if(mc){ const tm = Number(data.totalMatches||0); mc.textContent = tm? `${tm} matches` : ''; }
       const hf = (heroFilter||'').trim().toLowerCase();
       const nameMatches = (hid)=>{ if(!hf) return true; const meta = hmeta(hid); const nm = String(meta.name||'').toLowerCase(); return nm.includes(hf) || String(hid).includes(hf); };
@@ -321,10 +321,10 @@
         if(mgWrap) mgWrap.style.display = (primary==='pairs') ? 'inline-flex' : 'none';
         if(mwWrap) mwWrap.style.display = (primary==='pairs') ? 'inline-flex' : 'none';
         // reflect active buttons
-        if(sideBox){ sideBox.querySelectorAll('button[data-side]').forEach(b=> b.classList.toggle('active', b.getAttribute('data-side')===sideSel)); }
-        if(phaseBox){ phaseBox.querySelectorAll('button[data-phase]').forEach(b=> b.classList.toggle('active', b.getAttribute('data-phase')===phaseSel)); }
-        if(picksSubBox){ picksSubBox.querySelectorAll('button[data-picks-sub]').forEach(b=> b.classList.toggle('active', b.getAttribute('data-picks-sub')===picksSub)); }
-        if(bansSubBox){ bansSubBox.querySelectorAll('button[data-bans-sub]').forEach(b=> b.classList.toggle('active', b.getAttribute('data-bans-sub')===bansSub)); }
+  if(sideBox){ sideBox.querySelectorAll('button[data-side]').forEach(b=> { const is=b.getAttribute('data-side')===sideSel; b.classList.toggle('active', is); b.setAttribute('aria-pressed', String(is)); }); }
+  if(phaseBox){ phaseBox.querySelectorAll('button[data-phase]').forEach(b=> { const is=b.getAttribute('data-phase')===phaseSel; b.classList.toggle('active', is); b.setAttribute('aria-pressed', String(is)); }); }
+  if(picksSubBox){ picksSubBox.querySelectorAll('button[data-picks-sub]').forEach(b=> { const is=b.getAttribute('data-picks-sub')===picksSub; b.classList.toggle('active', is); b.setAttribute('aria-pressed', String(is)); }); }
+  if(bansSubBox){ bansSubBox.querySelectorAll('button[data-bans-sub]').forEach(b=> { const is=b.getAttribute('data-bans-sub')===bansSub; b.classList.toggle('active', is); b.setAttribute('aria-pressed', String(is)); }); }
       }catch(_e){}
       if(primary==='overview'){
         // Overview with charts + captains
@@ -398,7 +398,10 @@
     }
     render();
     // Wire handlers
-    root.querySelectorAll('.seg[data-pmode]').forEach(btn=> btn.addEventListener('click', ()=>{ primary = btn.getAttribute('data-pmode'); persist(); render(); }));
+    root.querySelectorAll('.seg[data-pmode]').forEach(btn=> {
+      btn.addEventListener('click', ()=>{ primary = btn.getAttribute('data-pmode'); persist(); render(); });
+      btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); primary = btn.getAttribute('data-pmode'); persist(); render(); } });
+    });
     const mg = root.querySelector('#dv-min-games'); const mw = root.querySelector('#dv-min-wr');
     // reflect persisted values in inputs
     try{ if(mg) mg.value = String(minGames); if(mw) mw.value = String(minWR); const hfEl = root.querySelector('#dv-hero-filter'); if(hfEl) hfEl.value = heroFilter; }catch(_e){}
@@ -408,10 +411,22 @@
     const ex = root.querySelector('#dv-export-csv'); if(ex){ ex.addEventListener('click', ()=>{ try{ const csv = toCSV(); if(!csv) return; const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `draft_${curMode}.csv`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 0); }catch(_e){} }); }
     const rs = root.querySelector('#dv-reset'); if(rs){ rs.addEventListener('click', ()=>{ heroFilter=''; minGames=0; minWR=0; try{ const hfI=root.querySelector('#dv-hero-filter'); if(hfI) hfI.value=''; if(mg) mg.value='0'; if(mw) mw.value='0'; }catch(_e){} persist(); render(); }); }
     // side and phase switches
-    const sideBox = root.querySelector('#dv-side-switch'); if(sideBox){ sideBox.querySelectorAll('button[data-side]').forEach(b=> b.addEventListener('click', ()=>{ sideSel = b.getAttribute('data-side') || 'all'; persist(); render(); })); }
-    const phaseBox = root.querySelector('#dv-phase-switch'); if(phaseBox){ phaseBox.querySelectorAll('button[data-phase]').forEach(b=> b.addEventListener('click', ()=>{ phaseSel = b.getAttribute('data-phase') || 'P1'; persist(); render(); })); }
-    const picksSubBox = root.querySelector('#dv-subnav-picks'); if(picksSubBox){ picksSubBox.querySelectorAll('button[data-picks-sub]').forEach(b=> b.addEventListener('click', ()=>{ picksSub = b.getAttribute('data-picks-sub') || 'first'; persist(); render(); })); }
-    const bansSubBox = root.querySelector('#dv-subnav-bans'); if(bansSubBox){ bansSubBox.querySelectorAll('button[data-bans-sub]').forEach(b=> b.addEventListener('click', ()=>{ bansSub = b.getAttribute('data-bans-sub') || 'top'; persist(); render(); })); }
+    const sideBox = root.querySelector('#dv-side-switch'); if(sideBox){
+      sideBox.querySelectorAll('button[data-side]').forEach(b=> b.addEventListener('click', ()=>{ sideSel = b.getAttribute('data-side') || 'all'; persist(); render(); }));
+      sideBox.addEventListener('keydown', (e)=>{ const btn=e.target.closest && e.target.closest('button[data-side]'); if(!btn) return; if(e.key==='Enter' || e.key===' '){ e.preventDefault(); sideSel = btn.getAttribute('data-side') || 'all'; persist(); render(); } });
+    }
+    const phaseBox = root.querySelector('#dv-phase-switch'); if(phaseBox){
+      phaseBox.querySelectorAll('button[data-phase]').forEach(b=> b.addEventListener('click', ()=>{ phaseSel = b.getAttribute('data-phase') || 'P1'; persist(); render(); }));
+      phaseBox.addEventListener('keydown', (e)=>{ const btn=e.target.closest && e.target.closest('button[data-phase]'); if(!btn) return; if(e.key==='Enter' || e.key===' '){ e.preventDefault(); phaseSel = btn.getAttribute('data-phase') || 'P1'; persist(); render(); } });
+    }
+    const picksSubBox = root.querySelector('#dv-subnav-picks'); if(picksSubBox){
+      picksSubBox.querySelectorAll('button[data-picks-sub]').forEach(b=> b.addEventListener('click', ()=>{ picksSub = b.getAttribute('data-picks-sub') || 'first'; persist(); render(); }));
+      picksSubBox.addEventListener('keydown', (e)=>{ const btn=e.target.closest && e.target.closest('button[data-picks-sub]'); if(!btn) return; if(e.key==='Enter' || e.key===' '){ e.preventDefault(); picksSub = btn.getAttribute('data-picks-sub') || 'first'; persist(); render(); } });
+    }
+    const bansSubBox = root.querySelector('#dv-subnav-bans'); if(bansSubBox){
+      bansSubBox.querySelectorAll('button[data-bans-sub]').forEach(b=> b.addEventListener('click', ()=>{ bansSub = b.getAttribute('data-bans-sub') || 'top'; persist(); render(); }));
+      bansSubBox.addEventListener('keydown', (e)=>{ const btn=e.target.closest && e.target.closest('button[data-bans-sub]'); if(!btn) return; if(e.key==='Enter' || e.key===' '){ e.preventDefault(); bansSub = btn.getAttribute('data-bans-sub') || 'top'; persist(); render(); } });
+    }
     // hero click => filter
     root.addEventListener('click', (ev)=>{
       const el = ev.target && (ev.target.closest && ev.target.closest('.dv-hero'));

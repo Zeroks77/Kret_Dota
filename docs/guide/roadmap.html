@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Roadmap – Kret Dota Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./guide.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="wrap">
+    <aside class="side" aria-label="Documentation navigation">
+      <div class="brand">Kret Dota Reports</div>
+      <nav class="nav" aria-label="Primary">
+        <a href="./index.html">Overview</a>
+        <a href="./pipeline.html">Data pipeline</a>
+        <a href="./reports.html">Reports & viewers</a>
+        <a href="./components.html">Components</a>
+        <a href="./preaggregations.html">Pre-aggregations</a>
+        <a href="./accessibility.html">Accessibility</a>
+        <a href="./development.html">Development</a>
+        <a href="./roadmap.html" class="active">Roadmap</a>
+        <a href="./glossary.html">Glossary</a>
+        <a href="./faq.html">FAQ</a>
+      </nav>
+    </aside>
+    <main id="main" class="content" role="main">
+      <h1>Roadmap</h1>
+  <p>This page summarizes the project roadmap from <code>roadmap.json</code> and highlights what is done vs. planned.</p>
+  <div id="buildBanner" class="note" style="display:none"></div>
+
+      <h2>Architecture sketch</h2>
+      <pre>
+ [OpenDota APIs] --> [scripts/fetch_opendota_data.ps1] --> [data/* JSON]
+                                         |                               
+                                         v                               
+                          [scripts/create_*_report.ps1] --> [docs/* HTML + assets]
+                                                                  |           
+                                                                  v           
+                                                          [GitHub Pages]
+      </pre>
+
+      <h2>Status</h2>
+      <div id="status" class="grid"></div>
+      <div id="filters" class="filters" role="group" aria-label="Filters">
+        <button id="fOnlyDone" class="chip" type="button" aria-pressed="false" title="Nur erledigte Items anzeigen">Only Done</button>
+        <button id="fPrioTop" class="chip" type="button" aria-pressed="false" title="Nur Priorität ≤ 2 anzeigen">Priority ≤ 2</button>
+        <label for="fSearch" class="sr-only">Search roadmap</label>
+        <input id="fSearch" type="search" placeholder="Search title, notes, tags…" aria-label="Search roadmap" style="background:var(--chip);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:6px 8px;min-width:220px" />
+        <button id="fReset" class="chip" type="button" title="Reset filters">Reset</button>
+      </div>
+      <div id="tagFilters" class="filters" role="group" aria-label="Tag filters" style="display:none"></div>
+
+      <div class="filters" aria-label="Export">
+        <button id="expJson" class="chip" type="button" title="Download filtered items as JSON">Export JSON</button>
+        <button id="expCsv" class="chip" type="button" title="Download filtered items as CSV">Export CSV</button>
+      </div>
+
+      <div class="charts">
+        <div class="card">
+          <h3 style="margin-top:0">Status overview</h3>
+          <svg id="statusDonut" viewBox="0 0 120 120" width="240" height="240" role="img" aria-label="Status distribution donut"></svg>
+          <div class="chart-legend" id="statusLegend"></div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Priority mix</h3>
+          <svg id="priorityBars" viewBox="0 0 320 160" width="100%" height="200" role="img" aria-label="Items by priority"></svg>
+        </div>
+      </div>
+
+      <h2>Highlights</h2>
+      <div id="highlights" class="grid"></div>
+
+      <h2>Kanban</h2>
+  <div id="kanban" class="grid" style="grid-template-columns:repeat(4,1fr)">
+        <div>
+          <h3 style="margin-top:0">Backlog <span id="count-backlog" class="muted" aria-live="polite" aria-atomic="true">(0)</span></h3>
+          <div id="col-backlog" class="grid kanban-col"></div>
+        </div>
+        <div>
+          <h3 style="margin-top:0">In Progress <span id="count-progress" class="muted" aria-live="polite" aria-atomic="true">(0)</span></h3>
+          <div id="col-progress" class="grid kanban-col"></div>
+        </div>
+        <div>
+          <h3 style="margin-top:0">Done <span id="count-done" class="muted" aria-live="polite" aria-atomic="true">(0)</span></h3>
+          <div id="col-done" class="grid kanban-col"></div>
+        </div>
+        <div>
+          <h3 style="margin-top:0">Dropped <span id="count-dropped" class="muted" aria-live="polite" aria-atomic="true">(0)</span></h3>
+          <div id="col-dropped" class="grid kanban-col"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  (async function(){
+  const status = document.getElementById('status');
+  const statusSvg = document.getElementById('statusDonut');
+  const statusLegend = document.getElementById('statusLegend');
+  const prSvg = document.getElementById('priorityBars');
+  const colBacklog = document.getElementById('col-backlog');
+  const colProgress = document.getElementById('col-progress');
+  const colDone = document.getElementById('col-done');
+  const colDropped = document.getElementById('col-dropped');
+  const buildBanner = document.getElementById('buildBanner');
+  const fOnlyDone = document.getElementById('fOnlyDone');
+  const fPrioTop = document.getElementById('fPrioTop');
+  const fSearch = document.getElementById('fSearch');
+  const fReset = document.getElementById('fReset');
+  const expJson = document.getElementById('expJson');
+  const expCsv = document.getElementById('expCsv');
+  const cBacklog = document.getElementById('count-backlog');
+  const cProgress = document.getElementById('count-progress');
+  const cDone = document.getElementById('count-done');
+  const cDropped = document.getElementById('count-dropped');
+  const tagFilters = document.getElementById('tagFilters');
+    function chip(s){
+      const span=document.createElement('span'); span.className='chip ' + (s==='done'?'done':(s==='in-progress'?'progress':'planned')); span.textContent = s; return span;
+    }
+    try{
+  const res = await fetch('../roadmap.json');
+      const data = await res.json();
+      const masterList = Array.isArray(data.items)? data.items: [];
+
+      // optional build-info banner
+      try{
+        const br = await fetch('../build-info.json', { cache:'no-store' });
+        if(br.ok){ const bi = await br.json(); const ts = bi.buildTime||bi.build_time||bi.timestamp; const sha = bi.commit||bi.sha||''; const when = ts? new Date(ts).toLocaleString(): 'unknown'; buildBanner.innerHTML = `<b>Last updated:</b> ${when}${sha? ` · <code>${String(sha).slice(0,7)}</code>`:''}`; buildBanner.style.display='block'; }
+      }catch(e){ /* ignore */ }
+
+      let filterOnlyDone=false, filterPrioTop=false, searchQuery='';
+      let selectedTags = new Set();
+      let allTags = [];
+      let currentFilteredList = [];
+      function norm(v){ return String(v||'').toLowerCase(); }
+      function applyFilters(list){
+        let out=list.slice();
+        if(filterOnlyDone){ out = out.filter(it=> norm(it.status)==='done'); }
+        if(filterPrioTop){ out = out.filter(it=> (it.priority||99) <= 2); }
+        const q = norm(searchQuery).trim();
+        if(q){
+          out = out.filter(it=>{
+            const title = norm(it.title||it.id);
+            const notes = norm(it.notes);
+            const status = norm(it.status);
+            const tags = Array.isArray(it.tags)? it.tags.map(norm).join(' '): '';
+            return title.includes(q) || notes.includes(q) || status.includes(q) || tags.includes(q);
+          });
+        }
+        if(selectedTags.size){
+          out = out.filter(it=>{
+            if(!Array.isArray(it.tags) || it.tags.length===0) return false;
+            for(const t of it.tags){ if(selectedTags.has(norm(t))) return true; }
+            return false;
+          });
+        }
+        return out;
+      }
+      function computeAllTags(items){
+        const map = new Map();
+        items.forEach(it=>{
+          if(Array.isArray(it.tags)) it.tags.forEach(t=>{ const k=norm(t); map.set(k, (map.get(k)||0)+1); });
+        });
+        return Array.from(map.entries()).sort((a,b)=> b[1]-a[1]).map(([k,count])=>({k,count}));
+      }
+      function renderTagChips(){
+        tagFilters.innerHTML = '';
+        if(!allTags.length){ tagFilters.style.display='none'; return; }
+        const top = allTags.slice(0, 10);
+        top.forEach(({k,count})=>{
+          const btn = document.createElement('button');
+          btn.type='button'; btn.className='chip'; btn.textContent = `${k} (${count})`;
+          btn.setAttribute('aria-pressed', selectedTags.has(k)? 'true':'false');
+          if(selectedTags.has(k)) btn.classList.add('active');
+          btn.addEventListener('click', ()=>{
+            if(selectedTags.has(k)) selectedTags.delete(k); else selectedTags.add(k);
+            btn.classList.toggle('active');
+            btn.setAttribute('aria-pressed', selectedTags.has(k)? 'true':'false');
+            saveFilters(); render();
+          });
+          tagFilters.appendChild(btn);
+        });
+        tagFilters.style.display='flex';
+      }
+
+      function render(){
+  const list = applyFilters(masterList);
+  currentFilteredList = list;
+        // Derive summary counts & priority counts
+        const counts = { done:0, planned:0, dropped:0, inprogress:0 };
+        const prCounts = {1:0,2:0,3:0,4:0,5:0};
+        list.forEach(it=>{
+          const s = String(it.status||'').toLowerCase();
+          if(s==='done' || s==='complete' || s==='completed') counts.done++;
+          else if(s==='in-progress') counts.inprogress++;
+          else if(s==='dropped' || s==='removed') counts.dropped++;
+          else counts.planned++;
+          if(it.priority!=null && prCounts[String(it.priority)]!==undefined){ prCounts[String(it.priority)]++; }
+        });
+        status.innerHTML = `
+          <div class="note"><b>Summary${(filterOnlyDone||filterPrioTop)? ' (filtered)':''}:</b>
+            <span class="chip done">done: ${counts.done}</span>
+            <span class="chip progress">in-progress: ${counts.inprogress}</span>
+            <span class="chip planned">planned: ${counts.planned}</span>
+            <span class="chip">dropped: ${counts.dropped}</span>
+          </div>`;
+
+        // Status donut
+        const total = counts.done+counts.inprogress+counts.planned+counts.dropped;
+        const segments = [
+          {key:'done', val:counts.done, color:'#1a6a4b'},
+          {key:'in-progress', val:counts.inprogress, color:'#6e4fa3'},
+          {key:'planned', val:counts.planned, color:'#2f4f9a'},
+          {key:'dropped', val:counts.dropped, color:'#5a5a5a'}
+        ].filter(s=>s.val>0);
+        statusSvg.innerHTML=''; statusLegend.innerHTML='';
+        let acc = -Math.PI/2; const cx=60, cy=60, r=45, sw=22;
+        segments.forEach(seg=>{
+          const frac = seg.val/Math.max(total,1);
+          const ang = frac*2*Math.PI;
+          const x1 = cx + r*Math.cos(acc), y1 = cy + r*Math.sin(acc);
+          const x2 = cx + r*Math.cos(acc+ang), y2 = cy + r*Math.sin(acc+ang);
+          const large = ang>Math.PI ? 1:0;
+          const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+          path.setAttribute('d',`M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`);
+          path.setAttribute('fill','none');
+          path.setAttribute('stroke', seg.color);
+          path.setAttribute('stroke-width', sw);
+          path.setAttribute('stroke-linecap','butt');
+          statusSvg.appendChild(path);
+          acc += ang;
+          const li = document.createElement('div'); li.className='legend-item';
+          const dot = document.createElement('span'); dot.className='legend-dot'; dot.style.background=seg.color;
+          const txt = document.createElement('span'); txt.textContent = `${seg.key} (${seg.val})`;
+          li.append(dot, txt); statusLegend.append(li);
+        });
+
+        // Priority bars (1..5)
+        prSvg.innerHTML='';
+        const barMax = Math.max(...Object.values(prCounts));
+        const barW = 40, gap = 20, startX = 30, baseY = 140, scale = barMax? 100/barMax: 0;
+        for(let p=1;p<=5;p++){
+          const h = prCounts[p]*scale;
+          const x = startX + (p-1)*(barW+gap);
+          const y = baseY - h;
+          const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+          rect.setAttribute('x', x); rect.setAttribute('y', y);
+          rect.setAttribute('width', barW); rect.setAttribute('height', h);
+          rect.setAttribute('fill', '#2f4f9a'); rect.setAttribute('stroke', '#3a4a7a');
+          prSvg.appendChild(rect);
+          const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+          label.setAttribute('x', x + barW/2); label.setAttribute('y', baseY + 14);
+          label.setAttribute('text-anchor','middle'); label.setAttribute('fill','#9aa3b2'); label.setAttribute('font-size','12');
+          label.textContent = `P${p}`; prSvg.appendChild(label);
+          const val = document.createElementNS('http://www.w3.org/2000/svg','text');
+          val.setAttribute('x', x + barW/2); val.setAttribute('y', y - 6);
+          val.setAttribute('text-anchor','middle'); val.setAttribute('fill','#eef1f7'); val.setAttribute('font-size','12');
+          val.textContent = prCounts[p]; prSvg.appendChild(val);
+        }
+
+        // Kanban
+        colBacklog.innerHTML = '';
+        colProgress.innerHTML = '';
+        colDone.innerHTML = '';
+        colDropped.innerHTML = '';
+        let nBacklog=0, nProgress=0, nDone=0, nDropped=0;
+        list.forEach(it=>{
+          const s = String(it.status||'planned').toLowerCase();
+          if(s==='done' || s==='complete' || s==='completed'){ pushCard(colDone, it); nDone++; }
+          else if(s==='in-progress'){ pushCard(colProgress, it); nProgress++; }
+          else if(s==='dropped' || s==='removed'){ pushCard(colDropped, it); nDropped++; }
+          else { pushCard(colBacklog, it); nBacklog++; }
+        });
+        if(cBacklog) cBacklog.textContent = `(${nBacklog})`;
+        if(cProgress) cProgress.textContent = `(${nProgress})`;
+        if(cDone) cDone.textContent = `(${nDone})`;
+        if(cDropped) cDropped.textContent = `(${nDropped})`;
+
+        // Highlights
+        const highlightsEl = document.getElementById('highlights');
+        const doneFirst = list.filter(it=>String(it.status||'').toLowerCase()==='done');
+        const plannedTop = list.filter(it=>String(it.status||'').toLowerCase()!=='done').sort((a,b)=> (a.priority||9)-(b.priority||9));
+        highlightsEl.innerHTML='';
+        [...doneFirst.slice(-3), ...plannedTop.slice(0,2)].forEach(it=> pushCard(highlightsEl, it));
+      }
+
+      function prioColor(p){ if(p===1) return '#ff6d6d'; if(p===2) return '#ffb36d'; if(p===3) return '#ffd36d'; if(p===4) return '#7bb8ff'; return '#9aa3b2'; }
+      function pushCard(target, it){
+        const card = document.createElement('div'); card.className='note';
+        const s = String(it.status||'planned').toLowerCase();
+        const h3 = document.createElement('h3'); h3.style.marginTop='4px'; h3.textContent = it.title || it.id || 'Item';
+        const meta = document.createElement('div'); meta.append(chip(s)); if(it.priority!=null){ const pr=document.createElement('span'); pr.className='chip'; pr.textContent='prio '+it.priority; pr.style.marginLeft='6px'; meta.append(pr); }
+        const p = document.createElement('p'); p.textContent = it.notes || '';
+        const mini = document.createElement('div'); mini.style.height='6px'; mini.style.borderRadius='999px'; mini.style.background=prioColor(it.priority||5); mini.style.margin='4px 0 8px'; mini.style.width=`${Math.max(20, (6 - (it.priority||5))*18)}%`;
+        // small sublist of plan bullets if present
+        if(Array.isArray(it.plan) && it.plan.length){ const ul=document.createElement('ul'); ul.style.marginTop='6px'; it.plan.slice(0,3).forEach(pl=>{ const li=document.createElement('li'); li.textContent = (pl.title||pl.id||'-') + (pl.desc? (': '+pl.desc):''); ul.append(li); }); card.append(ul); }
+        card.append(h3, mini, meta, p);
+        target.append(card);
+      }
+      function setChip(btn, on){ btn.classList.toggle('active', on); btn.setAttribute('aria-pressed', on? 'true':'false'); }
+      function saveFilters(){
+        try{
+          localStorage.setItem('roadmapFilters', JSON.stringify({
+            onlyDone:filterOnlyDone,
+            prioTop:filterPrioTop,
+            q:searchQuery,
+            tags:Array.from(selectedTags)
+          }));
+        }catch(e){}
+      }
+      function toggleOnlyDone(){ filterOnlyDone = !filterOnlyDone; setChip(fOnlyDone, filterOnlyDone); saveFilters(); render(); }
+      function togglePrioTop(){ filterPrioTop = !filterPrioTop; setChip(fPrioTop, filterPrioTop); saveFilters(); render(); }
+      fOnlyDone.addEventListener('click', toggleOnlyDone);
+      fPrioTop.addEventListener('click', togglePrioTop);
+      fSearch.addEventListener('input', (e)=>{ searchQuery = e.target.value||''; saveFilters(); render(); });
+      fReset.addEventListener('click', ()=>{ filterOnlyDone=false; filterPrioTop=false; searchQuery=''; fSearch.value=''; setChip(fOnlyDone,false); setChip(fPrioTop,false); saveFilters(); render(); });
+
+      function download(name, content, type){
+        const blob = new Blob([content], {type});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      }
+      function toCSV(arr){
+        const esc = (v)=> '"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+        const rows = [['id','title','status','priority','tags','notes']].concat(arr.map(it=>[
+          it.id||'', it.title||'', it.status||'', it.priority==null?'':it.priority, Array.isArray(it.tags)? it.tags.join(';'):'', it.notes||''
+        ]));
+        return rows.map(r=> r.map(esc).join(',')).join('\n');
+      }
+      expJson.addEventListener('click', ()=>{ download('roadmap-filtered.json', JSON.stringify(currentFilteredList, null, 2), 'application/json'); });
+      expCsv.addEventListener('click', ()=>{ download('roadmap-filtered.csv', toCSV(currentFilteredList), 'text/csv'); });
+
+      // build tag list (once)
+      allTags = computeAllTags(masterList);
+      renderTagChips();
+
+      // restore saved filters
+      try{
+        const raw = localStorage.getItem('roadmapFilters');
+        if(raw){ const obj = JSON.parse(raw); if(obj){
+          filterOnlyDone = !!obj.onlyDone; filterPrioTop = !!obj.prioTop; searchQuery = obj.q || '';
+          selectedTags = new Set(Array.isArray(obj.tags)? obj.tags.map(norm): []);
+          setChip(fOnlyDone, filterOnlyDone); setChip(fPrioTop, filterPrioTop); fSearch.value = searchQuery;
+        } }
+      }catch(e){}
+      // re-render tags to reflect restored selection
+      renderTagChips();
+      render();
+      // old one-off fill moved into render()
+    }catch(e){ status.textContent = 'Failed to load roadmap.json'; console.warn(e); }
+  })();
+  </script>
+</body>
+</html>
