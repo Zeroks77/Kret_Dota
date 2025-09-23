@@ -1,0 +1,30 @@
+name: League Ingest
+
+on:
+  workflow_dispatch:
+    inputs:
+      league:
+        description: 'League code (e.g., TI2025)'
+        required: true
+      mappingCsv:
+        description: 'Path to mapping CSV'
+        required: false
+        default: 'scripts/replay_mapping.csv'
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install PowerShell
+        uses: PowerShell/PowerShell@v1
+        with:
+          pwsh-allow-prerelease: false
+      - name: Run League Ingest (batch<=5)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File scripts/ingest_league.ps1 -LeagueCode '${{ github.event.inputs.league }}' -MappingCsv '${{ github.event.inputs.mappingCsv }}' -ParserCmd "node scripts/parser/stub.js --in {in} --out {out}" -BatchSize 5

@@ -1,0 +1,31 @@
+name: Kret Daily Ingest
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date (YYYY-MM-DD)'
+        required: false
+      mappingCsv:
+        description: 'Path to mapping CSV'
+        required: false
+        default: 'scripts/replay_mapping.csv'
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install PowerShell
+        uses: PowerShell/PowerShell@v1
+        with:
+          pwsh-allow-prerelease: false
+      - name: Run Daily Ingest (batch<=5)
+        shell: pwsh
+        run: |
+          $date = if ('${{ github.event.inputs.date }}') { '${{ github.event.inputs.date }}' } else { (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd') }
+          pwsh -NoProfile -File scripts/ingest_daily.ps1 -Date $date -MappingCsv '${{ github.event.inputs.mappingCsv }}' -ParserCmd "node scripts/parser/stub.js --in {in} --out {out}" -BatchSize 5

@@ -14,6 +14,8 @@ node_modules/
 # By default we ignored /data/cache. If you want to commit cached OpenDota/Steam JSONs, comment the next line out or remove it.
 #/data/cache/
 /data/*.bak
+/data/replays/
+/data/enriched/matches/*.tmp
 
 # Python caches, if any
 __pycache__/

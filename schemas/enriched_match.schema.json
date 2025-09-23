@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EnrichedMatch",
+  "type": "object",
+  "required": ["match_id", "enriched", "meta"],
+  "properties": {
+    "match_id": { "type": ["integer", "string"] },
+    "enriched": {
+      "type": "object",
+      "properties": {
+        "item_first_purchase": {
+          "description": "Per account_id mapping of first purchase times (seconds since game start)",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "object", "properties": { "item": {"type":"string"}, "time": {"type":"integer"} }, "required": ["item", "time"] }
+          }
+        },
+        "wards": {
+          "type": "object",
+          "properties": {
+            "observer": { "$ref": "#/definitions/WardEventList" },
+            "sentry": { "$ref": "#/definitions/WardEventList" }
+          },
+          "required": ["observer", "sentry"]
+        },
+        "stacks": { "$ref": "#/definitions/StackEventList" },
+        "smokes": { "$ref": "#/definitions/SmokeEventList" },
+        "objectives": { "$ref": "#/definitions/ObjectiveEventList" },
+        "camps": {
+          "description": "Per account_id camps info: stacked/blocked counts and farmed splits",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "stacked": { "type": ["integer","null"] },
+              "blocked": { "type": ["integer","null"] },
+              "farmed": {
+                "type": "object",
+                "properties": {
+                  "neutral_kills": { "type": ["integer","null"] },
+                  "lane_kills": { "type": ["integer","null"] },
+                  "ancient_kills": { "type": ["integer","null"] }
+                },
+                "required": ["neutral_kills","lane_kills","ancient_kills"]
+              }
+            },
+            "required": ["stacked","farmed"]
+          }
+        },
+        
+        "farming": {
+          "description": "Per account_id farming patterns and preferences",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "lh10": { "type": ["integer","null"] },
+              "lh20": { "type": ["integer","null"] },
+              "dn10": { "type": ["integer","null"] },
+              "gpm": { "type": ["integer","number","null"] },
+              "xpm": { "type": ["integer","number","null"] },
+              "neutral_vs_lane_ratio": { "type": ["number","null"] },
+              "creep_preference": { "type": ["string","null"], "enum": ["neutral","lane","mixed", null] }
+            },
+            "required": ["gpm","xpm"]
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string" },
+        "generated_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["source", "generated_at"],
+      "additionalProperties": true
+    }
+  },
+  "definitions": {
+    "WardEvent": {
+      "type": "object",
+      "properties": {
+        "owner_aid": { "type": ["integer","string"] },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "time": { "type": "integer" },
+        "removed_at": { "type": ["integer", "null"] },
+        "lifetime": { "type": ["integer", "null"] }
+      },
+      "required": ["owner_aid","x","y","time"]
+    },
+    "WardEventList": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/WardEvent" }
+    },
+    "StackEvent": {
+      "type": "object",
+      "properties": {
+        "time": { "type": "integer" },
+        "team": { "type": "string", "enum": ["Radiant","Dire"] },
+        "lane": { "type": ["string","null"] },
+        "camp": { "type": ["string","integer","null"] },
+        "by_aid": { "type": ["integer","string","null"] }
+      },
+      "required": ["time","team"]
+    },
+    "StackEventList": { "type": "array", "items": { "$ref": "#/definitions/StackEvent" } },
+    "SmokeEvent": {
+      "type": "object",
+      "properties": {
+        "time": { "type": "integer" },
+        "team": { "type": "string", "enum": ["Radiant","Dire"] },
+        "by_aid": { "type": ["integer","string","null"] }
+      },
+      "required": ["time","team"]
+    },
+    "SmokeEventList": { "type": "array", "items": { "$ref": "#/definitions/SmokeEvent" } },
+    "ObjectiveEvent": {
+      "type": "object",
+      "properties": {
+        "time": { "type": "integer" },
+        "type": { "type": "string", "enum": ["tower","roshan","aegis","glyph","other"] },
+        "team": { "type": ["string","null"], "enum": ["Radiant","Dire", null] },
+        "details": { "type": "object" }
+      },
+      "required": ["time","type"]
+    },
+    "ObjectiveEventList": { "type": "array", "items": { "$ref": "#/definitions/ObjectiveEvent" } }
+  }
+}
