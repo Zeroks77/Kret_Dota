@@ -183,22 +183,19 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
         return /\/docs\/[0-9]{4}-[^/]+-Report(?:\/|\/index\.html)?$/i.test(path);
       }catch(_e){ return false; }
     }
-    function isTrustedMonthlyAncestor(){
-      // Check parent first, then (if accessible) top window as a fallback
-      if (isTrustedMonthlyEmbed()) return true;
+    function isSameOriginEmbedded(){
       try{
-        if (window.top && window.top !== window.self){
-          const o = window.top.location.origin; const p = window.top.location.pathname || '';
-          if (o === location.origin && /\/docs\/[0-9]{4}-[^/]+-Report(?:\/|\/index\.html)?$/i.test(p)) return true;
-        }
-      }catch(_e){}
-      return false;
+        if (window.top === window.self) return false; // not embedded
+        // Accessing parent.location succeeds only if same-origin
+        const o = window.parent.location.origin;
+        return (o === location.origin);
+      }catch(_e){ return false; }
     }
     async function initGate(){
       const sp = new URLSearchParams(location.search);
-      // Bypass gate immediately when embedded in a trusted Monthly Report iframe and lock=1 is set
-      const lock = sp.get('lock');
-      if (lock === '1' && isTrustedMonthlyAncestor()) { hideGate(); showMain(); return; }
+  // Bypass gate immediately when embedded in a same-origin wrapper and lock=1 is set
+  const lock = sp.get('lock');
+  if (lock === '1' && isSameOriginEmbedded()) { hideGate(); showMain(); return; }
       // Otherwise, proceed with hash-based unlocking
       const want = await fetchGateHash();
       const key = sp.get('key') || getStoredKey();

@@ -17,5 +17,20 @@
     <div>Monthly Report - August 2025 - 7.39</div>
   </div>
   <iframe src="../dynamic.html?from=1754006400&to=1756684799&tab=highlights&lock=1&map=7.39&v=20250921" loading="eager" referrerpolicy="no-referrer"></iframe>
+  <script>
+    // Ensure the inner dynamic.html loads a fresh copy by adding a cache-buster
+    (function(){
+      function bust(){
+        try{
+          var f = document.querySelector('iframe'); if(!f) return;
+          var src = f.getAttribute('src'); if(!src) return;
+          var u = new URL(src, location.href);
+          u.searchParams.set('cb', Date.now().toString());
+          f.src = u.pathname + u.search;
+        }catch(_e){}
+      }
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bust); else bust();
+    })();
+  </script>
 </body>
 </html>

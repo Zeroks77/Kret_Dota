@@ -896,6 +896,14 @@ $html = @"
     <!-- Wrapper is at docs/league/<year>/<slug>/ so 3 levels up to reach docs root -->
   </div>
   <iframe src='../../../$dynamicFile$query' loading='eager' referrerpolicy='no-referrer'></iframe>
+  <script>
+    (function(){
+      function bust(){
+        try{ var f=document.querySelector('iframe'); if(!f) return; var src=f.getAttribute('src'); if(!src) return; var u=new URL(src, location.href); u.searchParams.set('cb', Date.now().toString()); f.src = u.pathname + u.search; }catch(_e){}
+      }
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bust); else bust();
+    })();
+  </script>
 </body>
 </html>
 "@

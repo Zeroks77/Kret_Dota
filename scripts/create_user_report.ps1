@@ -72,6 +72,14 @@ function Write-Wrapper([string]$outDir,[string]$title,[string]$query){
     <div>$(ConvertTo-HtmlEncoded $title)<div class='sub'>Temporary user report (auto-deletes after $PersistDays days)</div></div>
   </div>
   <iframe src="../../dynamic.html$query" loading="eager" referrerpolicy="no-referrer"></iframe>
+  <script>
+    (function(){
+      function bust(){
+        try{ var f=document.querySelector('iframe'); if(!f) return; var src=f.getAttribute('src'); if(!src) return; var u=new URL(src, location.href); u.searchParams.set('cb', Date.now().toString()); f.src = u.pathname + u.search; }catch(_e){}
+      }
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bust); else bust();
+    })();
+  </script>
 </body>
 </html>
 "@
