@@ -1,0 +1,40 @@
+name: Publish Gate
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute gate hash
+        id: hash
+        run: |
+          set -e
+          if [ -z "${{ secrets.DYNAMIC_VIEW_KEY }}" ]; then
+            echo "No secret set; writing empty gate.json"
+            echo '{"hash":""}' > docs/gate.json
+          else
+            H=$(printf "%s" "${{ secrets.DYNAMIC_VIEW_KEY }}" | sha256sum | awk '{print $1}')
+            jq -n --arg h "$H" '{hash:$h}' > docs/gate.json
+          fi
+
+      - name: Commit gate.json
+        run: |
+          set -e
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/gate.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update gate.json"
+            git push
+          fi

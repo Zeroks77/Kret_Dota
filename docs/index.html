@@ -61,7 +61,7 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
   <label for='q' class='sr-only'>Search reports by name, date, or range</label>
   <input id='q' class='search' type='text' placeholder='Search (date/range) ...' aria-label='Search reports by name, date, or range'>
     <ul id='list' class='list tree'>
-      <li class="leaf item" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html">Dynamic view (custom timeframe)</a></li>
+  <li class="leaf item" id="li-dynamic" data-range="dynamic" data-time="9223372036854775807" style="display:none"><a href="./dynamic.html" id="a-dynamic">Dynamic view (custom timeframe)</a></li>
       <li class="node" id="node-monthly"><details open>
         <summary>📅 Monthly Reports</summary>
         <ul class="children" id="tree-monthly"></ul>
@@ -98,6 +98,20 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
 
 <script>
 (function(){
+  // Soft gate for showing the Dynamic view link only when a correct key is provided.
+  // Expected flow: a small gate file docs/gate.json contains { "hash": "<sha256-of-secret>" }
+  // Users append ?key=<secret> to the index URL; we compute SHA-256(key) in browser and compare to gate.hash.
+  async function sha256Hex(text){ const enc=new TextEncoder(); const data=enc.encode(text); const buf=await crypto.subtle.digest('SHA-256', data); const arr=Array.from(new Uint8Array(buf)); return arr.map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  async function maybeShowDynamic(){
+    const li = document.getElementById('li-dynamic'); if(!li) return;
+    try{
+      const res = await fetch('./gate.json', { cache: 'no-store' }); if(!res.ok) { li.style.display='none'; return; }
+      const gate = await res.json(); const want = String((gate && gate.hash) || '').toLowerCase(); if(!want) { li.style.display='none'; return; }
+      const sp = new URLSearchParams(location.search); const key = sp.get('key'); if(!key){ li.style.display='none'; return; }
+      const got = (await sha256Hex(String(key))).toLowerCase(); if(got === want){ li.style.display=''; return; } else { li.style.display='none'; }
+    }catch(_e){ li.style.display='none'; }
+  }
+  maybeShowDynamic();
   const list = document.getElementById('list');
   let items = Array.from(list.querySelectorAll('.leaf.item'));
   const q = document.getElementById('q');
