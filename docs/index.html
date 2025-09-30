@@ -48,9 +48,15 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
 /* Focus visible for keyboard users */
 .btn:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 .sr-only{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0}
+/* Global loading overlay */
+.ix-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(9,12,24,.85);z-index:99999}
+.ix-box{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--border)}
+.ix-spin{width:32px;height:32px;border:3px solid rgba(158,199,255,.3);border-top-color:var(--accent);border-radius:50%;animation:ixs 1s linear infinite}
+@keyframes ixs{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+  <div id="ixOverlay" class="ix-overlay" role="status" aria-live="polite"><div class="ix-box"><div class="ix-spin" aria-hidden="true"></div><div class="sub">Loading…</div></div></div>
   <aside class='sidebar'>
     <div class='brand'>
       <h1>Reports - Kret&#39;s EU Dota League</h1>
@@ -98,7 +104,6 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
       <div class='nav'>
         <button class='btn' id='prevBtn' title='Previous (ArrowUp)'><- Previous</button>
         <button class='btn' id='nextBtn' title='Next (ArrowDown)'>Next -></button>
-        <a class='btn' id='openNew' target='_blank' rel='noopener'>Open in new tab</a>
       </div>
     </div>
     
@@ -154,7 +159,7 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
   const q = document.getElementById('q');
   const frame = document.getElementById('frame');
   const title = document.getElementById('viewerTitle');
-  const openNew = document.getElementById('openNew');
+  // removed openNew per request
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   let selIndex = -1;
@@ -172,11 +177,12 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
     // Show/hide and auto-open nodes based on visible children
     document.querySelectorAll('.node').forEach(node=>{
       const ul = node.querySelector('ul.children'); const details = node.querySelector('details'); if(!ul||!details) return;
-      const anyChildVisible = Array.from(ul.querySelectorAll(':scope > li.leaf')).some(li => li.style.display !== 'none');
+      // Consider nested leaves as well (Monthly groups months by year)
+      const anyChildVisible = Array.from(ul.querySelectorAll('li.leaf')).some(li => li.style.display !== 'none');
       node.style.display = anyChildVisible ? '' : 'none';
       if (anyChildVisible && term){ details.open = true; }
     });
-    if (n===0){ selIndex=-1; frame.src='about:blank'; title.textContent='No results'; openNew.removeAttribute('href'); }
+  if (n===0){ selIndex=-1; frame.src='about:blank'; title.textContent='No results'; }
     else if (selIndex<0){ select(0); }
     sync();
   }
@@ -186,7 +192,7 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
     v.forEach(li => li.classList.remove('active'));
     const li=v[i]; li.classList.add('active');
     const a=li.querySelector('a');
-    if (a){ const href=a.getAttribute('href'); frame.src=href; title.textContent=a.textContent.trim(); openNew.setAttribute('href',href); history.replaceState(null,'','#file='+encodeURIComponent(href)); }
+  if (a){ const href=a.getAttribute('href'); frame.src=href; title.textContent=a.textContent.trim(); history.replaceState(null,'','#file='+encodeURIComponent(href)); }
     selIndex=i; li.scrollIntoView({block:'nearest'}); sync();
   }
   function sync(){ const v=vis(); prevBtn.disabled = (selIndex<=0 || !v.length); nextBtn.disabled = (selIndex>=v.length-1 || !v.length); }
@@ -333,9 +339,22 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
 
   async function init(){
   await loadReports();
+  // Ensure the dynamic-link gate finished before interpreting #file
+  if (typeof maybeShowDynamic === 'function'){
+    try { await maybeShowDynamic(); } catch(_e){}
+  }
   const file = new URLSearchParams(location.hash.replace(/^#/, '')).get('file');
-    if (file){ const t=items.find(li => li.querySelector('a')?.getAttribute('href')===file); if (t){ const v=items; const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } } }
+    if (file){
+      const t=items.find(li => li.querySelector('a')?.getAttribute('href')===file);
+      if (t){
+        // Only honor the hash if the item is currently visible (not gated/hidden)
+        const isVisible = (t.style.display !== 'none') && (typeof getComputedStyle==='function' ? getComputedStyle(t).display !== 'none' : true);
+        if (isVisible){ const v=items; const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } }
+      }
+    }
     apply();
+    // Hide the global overlay now that initial selection is done
+    const ov=document.getElementById('ixOverlay'); if(ov){ ov.style.display='none'; }
   }
   init();
 })();

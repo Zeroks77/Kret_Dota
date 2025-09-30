@@ -894,7 +894,6 @@ $html = @"
   <div class='bar'>
     <div>$(HtmlEncode $title)</div>
     <!-- Wrapper is at docs/league/<year>/<slug>/ so 3 levels up to reach docs root -->
-    <div><a href='../../../$dynamicFile$query' target='_blank' rel='noopener'>Open in new tab</a></div>
   </div>
   <iframe src='../../../$dynamicFile$query' loading='eager' referrerpolicy='no-referrer'></iframe>
 </body>

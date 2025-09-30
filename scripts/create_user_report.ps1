@@ -70,7 +70,6 @@ function Write-Wrapper([string]$outDir,[string]$title,[string]$query){
 <body>
   <div class='bar'>
     <div>$(ConvertTo-HtmlEncoded $title)<div class='sub'>Temporary user report (auto-deletes after $PersistDays days)</div></div>
-    <div><a href="../../dynamic.html$query" target="_blank" rel="noopener">Open in new tab</a></div>
   </div>
   <iframe src="../../dynamic.html$query" loading="eager" referrerpolicy="no-referrer"></iframe>
 </body>

@@ -110,6 +110,24 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 .streak .tok.win{background:#1f3b2e;color:#7be495;border-color:rgba(123,228,149,.35)}
 .streak .tok.loss{background:#3b1f1f;color:#ff8b8b;border-color:rgba(255,139,139,.35)}
 .streak .label{color:var(--muted);margin-right:6px}
+/* Responsive adjustments */
+@media (max-width: 860px){
+  .wrapper{padding:10px}
+  .header{flex-wrap:wrap;gap:8px}
+  .grid{grid-template-columns:1fr}
+  .grid3{grid-template-columns:1fr}
+  .grid2{grid-template-columns:1fr}
+  .summary-grid{grid-template-columns:1fr}
+  .controls{flex-direction:column;align-items:stretch}
+  .controls .field{width:100%}
+  .tabs{position:sticky;top:0;z-index:1000;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;background:linear-gradient(180deg,rgba(0,0,0,.15),transparent)}
+  .tab{min-width:92px}
+  /* Make wide tables scrollable on small screens */
+  table.table{display:block;overflow-x:auto;white-space:nowrap}
+  .table th,.table td{padding:6px}
+  .hero{width:56px}
+  .hero img{width:56px;height:32px}
+}
 </style>
 <script defer src="js/ward_viewer.js"></script>
 <script defer src="js/lane_duos_viewer.js"></script>
@@ -144,9 +162,33 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     function showGate(msg){ const w=document.getElementById('dynGateWrap'); if(w) w.style.display='block'; const m=document.getElementById('dynMsg'); if(m){ if(msg){ m.textContent=String(msg); m.style.display='block'; } else { m.textContent=''; m.style.display='none'; } } }
     function hideGate(){ const w=document.getElementById('dynGateWrap'); if(w) w.style.display='none'; const m=document.getElementById('dynMsg'); if(m){ m.textContent=''; m.style.display='none'; } }
     function showMain(){ const mc=document.getElementById('mainContent'); if(mc) mc.style.display=''; }
+    function isTrustedMonthlyEmbed(){
+      try{
+        if (window.top === window.self) return false; // must be embedded
+        // First try referrer (may be empty if referrerpolicy=no-referrer)
+        let path = '';
+        let origin = '';
+        if (document.referrer) {
+          const u = new URL(document.referrer);
+          origin = u.origin; path = u.pathname || '';
+        } else {
+          // Fallback: inspect parent location if same-origin access is allowed
+          try {
+            origin = window.parent.location.origin;
+            path = window.parent.location.pathname || '';
+          } catch(_e) { return false; }
+        }
+        if (origin !== location.origin) return false; // same-origin only
+        // Expect path like /.../docs/2025-August-Report/ or .../index.html
+        return /\/docs\/[0-9]{4}-[^/]+-Report\//.test(path);
+      }catch(_e){ return false; }
+    }
     async function initGate(){
       const want = await fetchGateHash();
       const sp = new URLSearchParams(location.search);
+      // Bypass gate when embedded in a trusted Monthly Report iframe and lock=1 is set
+      const lock = sp.get('lock');
+      if (lock === '1' && isTrustedMonthlyEmbed()) { hideGate(); showMain(); return; }
       const key = sp.get('key') || getStoredKey();
       const ok = await unlockWith(key, want);
       const btn = document.getElementById('dynUnlock'); const inp = document.getElementById('dynKey');
