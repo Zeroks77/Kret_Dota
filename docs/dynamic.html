@@ -157,7 +157,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     function isLocal(){ try{ return location.protocol==='file:' || /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/i.test(String(location.hostname||'')); }catch(_e){ return false; } }
     function getStoredKey(){ try{ return sessionStorage.getItem('dv_key') || ''; }catch(_e){ return ''; } }
     function setStoredKey(k){ try{ if(k){ sessionStorage.setItem('dv_key', k); } }catch(_e){} }
-    async function fetchGateHash(){ try{ const res = await fetch('./gate.json', { cache: 'no-store' }); if(!res.ok) return ''; const j = await res.json(); return String((j && j.hash) || ''); }catch(_e){ return ''; } }
+  async function fetchGateHash(){ try{ const res = await fetch('./gate.json', { cache: 'no-store' }); if(!res.ok) return ''; const j = await res.json(); return String((j && j.hash) || ''); }catch(_e){ return ''; } }
     async function unlockWith(key, want){ if(!key) return false; if(isLocal() && key==='123admin') return true; if(!want) return false; const got=(await sha256Hex(String(key))).toLowerCase(); return got===String(want).toLowerCase(); }
     function showGate(msg){ const w=document.getElementById('dynGateWrap'); if(w) w.style.display='block'; const m=document.getElementById('dynMsg'); if(m){ if(msg){ m.textContent=String(msg); m.style.display='block'; } else { m.textContent=''; m.style.display='none'; } } }
     function hideGate(){ const w=document.getElementById('dynGateWrap'); if(w) w.style.display='none'; const m=document.getElementById('dynMsg'); if(m){ m.textContent=''; m.style.display='none'; } }
@@ -179,16 +179,28 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
           } catch(_e) { return false; }
         }
         if (origin !== location.origin) return false; // same-origin only
-        // Expect path like /.../docs/2025-August-Report/ or .../index.html
-        return /\/docs\/[0-9]{4}-[^/]+-Report\//.test(path);
+        // Expect path like /.../docs/2025-August-Report/ or .../2025-August-Report/index.html
+        return /\/docs\/[0-9]{4}-[^/]+-Report(?:\/|\/index\.html)?$/i.test(path);
       }catch(_e){ return false; }
     }
+    function isTrustedMonthlyAncestor(){
+      // Check parent first, then (if accessible) top window as a fallback
+      if (isTrustedMonthlyEmbed()) return true;
+      try{
+        if (window.top && window.top !== window.self){
+          const o = window.top.location.origin; const p = window.top.location.pathname || '';
+          if (o === location.origin && /\/docs\/[0-9]{4}-[^/]+-Report(?:\/|\/index\.html)?$/i.test(p)) return true;
+        }
+      }catch(_e){}
+      return false;
+    }
     async function initGate(){
-      const want = await fetchGateHash();
       const sp = new URLSearchParams(location.search);
-      // Bypass gate when embedded in a trusted Monthly Report iframe and lock=1 is set
+      // Bypass gate immediately when embedded in a trusted Monthly Report iframe and lock=1 is set
       const lock = sp.get('lock');
-      if (lock === '1' && isTrustedMonthlyEmbed()) { hideGate(); showMain(); return; }
+      if (lock === '1' && isTrustedMonthlyAncestor()) { hideGate(); showMain(); return; }
+      // Otherwise, proceed with hash-based unlocking
+      const want = await fetchGateHash();
       const key = sp.get('key') || getStoredKey();
       const ok = await unlockWith(key, want);
       const btn = document.getElementById('dynUnlock'); const inp = document.getElementById('dynKey');
