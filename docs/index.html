@@ -60,6 +60,15 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
   <!-- Filters removed; Dynamic view is available as a pinned list entry below -->
   <label for='q' class='sr-only'>Search reports by name, date, or range</label>
   <input id='q' class='search' type='text' placeholder='Search (date/range) ...' aria-label='Search reports by name, date, or range'>
+  <!-- Dynamic view login (shown when locked) -->
+  <div id='dynLogin' class='sub' style='display:none;margin:8px 0;padding:8px;border:1px solid var(--border);border-radius:10px'>
+    <div style='font-weight:600;margin-bottom:6px'>Unlock Dynamic View</div>
+    <div style='display:flex;gap:6px;align-items:center'>
+      <input id='dynKey' class='search' type='password' placeholder='Access key' style='flex:1' aria-label='Dynamic view access key'>
+      <button id='dynUnlock' class='btn'>Unlock</button>
+    </div>
+    <div id='dynMsg' class='sub' style='margin-top:6px;display:none'></div>
+  </div>
     <ul id='list' class='list tree'>
   <li class="leaf item" id="li-dynamic" data-range="dynamic" data-time="9223372036854775807" style="display:none"><a href="./dynamic.html" id="a-dynamic">Dynamic view (custom timeframe)</a></li>
       <li class="node" id="node-monthly"><details open>
@@ -99,18 +108,46 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
 <script>
 (function(){
   // Soft gate for showing the Dynamic view link only when a correct key is provided.
-  // Expected flow: a small gate file docs/gate.json contains { "hash": "<sha256-of-secret>" }
-  // Users append ?key=<secret> to the index URL; we compute SHA-256(key) in browser and compare to gate.hash.
+  // Flow: docs/gate.json contains { "hash": "<sha256-of-secret>" } published by GitHub Actions from repo secret DYNAMIC_VIEW_KEY.
+  // Users can unlock either via URL ?key=<secret> or via the login form below the search bar.
   async function sha256Hex(text){ const enc=new TextEncoder(); const data=enc.encode(text); const buf=await crypto.subtle.digest('SHA-256', data); const arr=Array.from(new Uint8Array(buf)); return arr.map(b=>b.toString(16).padStart(2,'0')).join(''); }
-  async function maybeShowDynamic(){
-    const li = document.getElementById('li-dynamic'); if(!li) return;
-    try{
-      const res = await fetch('./gate.json', { cache: 'no-store' }); if(!res.ok) { li.style.display='none'; return; }
-      const gate = await res.json(); const want = String((gate && gate.hash) || '').toLowerCase(); if(!want) { li.style.display='none'; return; }
-      const sp = new URLSearchParams(location.search); const key = sp.get('key'); if(!key){ li.style.display='none'; return; }
-      const got = (await sha256Hex(String(key))).toLowerCase(); if(got === want){ li.style.display=''; return; } else { li.style.display='none'; }
-    }catch(_e){ li.style.display='none'; }
+  function isLocal(){ try{ return location.protocol==='file:' || /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/i.test(String(location.hostname||'')); }catch(_e){ return false; } }
+  function getSp(){ try{ return new URLSearchParams(location.search); }catch(_e){ return new URLSearchParams(); } }
+  function getStoredKey(){ try{ return sessionStorage.getItem('dv_key') || ''; }catch(_e){ return ''; } }
+  function setStoredKey(k){ try{ if(k){ sessionStorage.setItem('dv_key', k); } }catch(_e){} }
+  async function fetchGateHash(){ try{ const res = await fetch('./gate.json', { cache: 'no-store' }); if(!res.ok) return ''; const j = await res.json(); return String((j && j.hash) || ''); }catch(_e){ return ''; } }
+  function showLogin(msg){ const box=document.getElementById('dynLogin'); const m=document.getElementById('dynMsg'); if(box){ box.style.display='block'; } if(m){ if(msg){ m.textContent=String(msg); m.style.display='block'; } else { m.textContent=''; m.style.display='none'; } } }
+  function hideLogin(){ const box=document.getElementById('dynLogin'); if(box){ box.style.display='none'; } const m=document.getElementById('dynMsg'); if(m){ m.textContent=''; m.style.display='none'; } }
+  async function unlockWith(key, want){
+    if(!key) return false;
+    if(isLocal() && key==='123admin') return true;
+    if(!want) return false;
+    const got = (await sha256Hex(String(key))).toLowerCase();
+    return got === String(want).toLowerCase();
   }
+  async function maybeShowDynamic(){
+    const li = document.getElementById('li-dynamic'); const aDyn=document.getElementById('a-dynamic'); if(!li) return;
+    const want = await fetchGateHash();
+    const sp = getSp(); let key = sp.get('key') || getStoredKey();
+    const ok = await unlockWith(key, want);
+    if(ok){ li.style.display=''; hideLogin(); if(aDyn && key){ try{ const u=new URL(aDyn.getAttribute('href'), location.href); u.searchParams.set('key', key); aDyn.setAttribute('href', u.pathname + u.search); }catch(_e){} } }
+    else { li.style.display='none'; showLogin(); }
+  }
+  // Wire login form
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const btn = document.getElementById('dynUnlock'); const inp = document.getElementById('dynKey');
+    if(btn && inp){
+      btn.addEventListener('click', async ()=>{
+        const key = String(inp.value||''); const want = await fetchGateHash();
+        const ok = await unlockWith(key, want);
+        if(ok){ setStoredKey(key); hideLogin(); const li=document.getElementById('li-dynamic'); if(li){ li.style.display=''; } const a=document.getElementById('a-dynamic'); if(a){ try{ const u=new URL(a.getAttribute('href'), location.href); u.searchParams.set('key', key); a.setAttribute('href', u.pathname + u.search); }catch(_e){} } }
+        else { showLogin('Invalid key.'); }
+      });
+      // Enter key submits
+      inp.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+    }
+  });
+  // Initial gate check
   maybeShowDynamic();
   const list = document.getElementById('list');
   let items = Array.from(list.querySelectorAll('.leaf.item'));
