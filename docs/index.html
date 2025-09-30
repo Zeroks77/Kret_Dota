@@ -164,6 +164,8 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
   const nextBtn = document.getElementById('nextBtn');
   let selIndex = -1;
 
+  function hideOverlay(){ const ov=document.getElementById('ixOverlay'); if(ov){ ov.style.display='none'; } }
+
   function vis(){ return items.filter(li => li.style.display !== 'none'); }
   function txt(li){ const a=li.querySelector('a'); return a ? a.textContent.trim() : li.getAttribute('data-range'); }
 
@@ -349,12 +351,12 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
       if (t){
         // Only honor the hash if the item is currently visible (not gated/hidden)
         const isVisible = (t.style.display !== 'none') && (typeof getComputedStyle==='function' ? getComputedStyle(t).display !== 'none' : true);
-        if (isVisible){ const v=items; const idx=v.indexOf(t); if (idx>=0){ select(idx); return; } }
+        if (isVisible){ const v=items; const idx=v.indexOf(t); if (idx>=0){ select(idx); hideOverlay(); return; } }
       }
     }
     apply();
     // Hide the global overlay now that initial selection is done
-    const ov=document.getElementById('ixOverlay'); if(ov){ ov.style.display='none'; }
+    hideOverlay();
   }
   init();
 })();
