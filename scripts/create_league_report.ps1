@@ -880,6 +880,7 @@ if(-not (Test-Path -LiteralPath $folder)){ New-Item -ItemType Directory -Path $f
 $dynamicFile = if($UseDynamicFallback){ 'dynamic.html' } else { 'league_dynamic.html' }
 $title = "League Report - $leagueNameResolved"
 $query = "?from=$fromUnix`&to=$toUnix`&tab=highlights`&lock=1`&league=$slug`&leaguePath=data"
+if($UseDynamicFallback){ $query += "`&bypass=monthly" }
 $html = @"
 <!doctype html>
 <html lang='en'>

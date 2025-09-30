@@ -186,16 +186,22 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
     function isSameOriginEmbedded(){
       try{
         if (window.top === window.self) return false; // not embedded
-        // Accessing parent.location succeeds only if same-origin
+        // Prefer ancestorOrigins when available
+        try{
+          const ao = (window.location && window.location.ancestorOrigins) ? Array.from(window.location.ancestorOrigins) : [];
+          if (ao.length && ao.every(o=> o === location.origin)) return true;
+        }catch(_e){}
+        // Fallback: Accessing parent.location succeeds only if same-origin
         const o = window.parent.location.origin;
         return (o === location.origin);
       }catch(_e){ return false; }
     }
     async function initGate(){
       const sp = new URLSearchParams(location.search);
-  // Bypass gate immediately when embedded in a same-origin wrapper and lock=1 is set
+  // Bypass gate immediately when embedded in a same-origin wrapper and lock=1 or explicit bypass is set
   const lock = sp.get('lock');
-  if (lock === '1' && isSameOriginEmbedded()) { hideGate(); showMain(); return; }
+  const bypass = sp.get('bypass');
+  if ((lock === '1' || bypass === 'monthly') && isSameOriginEmbedded()) { hideGate(); showMain(); return; }
       // Otherwise, proceed with hash-based unlocking
       const want = await fetchGateHash();
       const key = sp.get('key') || getStoredKey();

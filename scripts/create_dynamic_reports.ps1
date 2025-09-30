@@ -188,7 +188,7 @@ function Write-Dynamic-Wrapper([string]$outDir,[string]$title,[string]$query){
   <div class='bar'>
     <div>$(ConvertTo-HtmlEncoded $title)</div>
   </div>
-  <iframe src="../dynamic.html$query" loading="eager" referrerpolicy="no-referrer"></iframe>
+  <iframe src="../dynamic.html$query`&bypass=monthly" loading="eager" referrerpolicy="no-referrer"></iframe>
   <script>
     (function(){
       function bust(){
