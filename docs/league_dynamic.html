@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>League Dynamic Viewer</title>
+  <base href="./">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -802,47 +803,48 @@
         });
       }catch(_e){}
 
-  const REPO = 'Zeroks77/Kret_Dota', BRANCH = 'main';
-  const relBase = '../data', rawBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`, rawDocsBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/docs/data`;
+  // Allow overriding repo/branch and raw preference via URL params to avoid 404s when browsing locally or on a non-main branch
+  const __sp_local = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
+  const REPO = (__sp_local.get('repo') || 'Zeroks77/Kret_Dota');
+  const BRANCH = (__sp_local.get('branch') || 'main');
+  const PREFER_RAW = (__sp_local.get('preferRaw') === '1' || __sp_local.get('raw') === '1');
+  const relBase = (typeof location !== 'undefined' && (/\.github\.io$/i.test(String(location.hostname||'')) || /\/docs\/?$/i.test(String(location.pathname||'')))) ? 'data' : '../data';
+  const rawBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`, rawDocsBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/docs/data`;
   const sp = (window.UrlParams && UrlParams.canonicalizeInPlace) ? UrlParams.canonicalizeInPlace() : new URLSearchParams(location.search); const slug = sp.get('league') || 'TI2025';
 
     // Optional: explicit folder under docs containing matches.json/report.json (e.g., 'league/2025/TI2025')
     const leaguePath = (sp.get('leaguePath') || '').replace(/^\/+/, '').replace(/\/+$/, '');
     const relBases = [
       ...(leaguePath ? [leaguePath] : []),
-      '../data',
-      'data'
+      // Prefer docs/data when running under GH Pages; otherwise prefer ../data when browsing repo locally
+      ...(IS_GHPAGES ? ['data','../data'] : ['../data','data'])
     ];
     const fromBases = (p) => relBases.map(b => `${b}/${p}`);
     // Parallelize all initial JSON loads
+    function pref(relArr, rawArr){ return PREFER_RAW ? [...rawArr, ...relArr] : [...relArr, ...rawArr]; }
     const [matchesRaw, heroesRaw, mapConfRaw, report, proPlayers] = await Promise.all([
       // League-specific files primarily live under docs/data/league/<slug>/ ...
-      loadFirst([
-        ...fromBases(`league/${slug}/matches.json`),
-        `${rawBase}/league/${slug}/matches.json`,
-        `${rawDocsBase}/league/${slug}/matches.json`
-      ]),
+      loadFirst(pref(
+        fromBases(`league/${slug}/matches.json`),
+        [`${rawBase}/league/${slug}/matches.json`, `${rawDocsBase}/league/${slug}/matches.json`]
+      )),
       // Core constants exist in both data/ and docs/data/
-      loadFirst([
-        ...fromBases(`heroes.json`),
-        `${rawBase}/heroes.json`,
-        `${rawDocsBase}/heroes.json`
-      ]),
-      loadFirst([
-        ...fromBases(`maps.json`),
-        `${rawBase}/maps.json`,
-        `${rawDocsBase}/maps.json`
-      ]),
-      loadFirst([
-        ...fromBases(`league/${slug}/report.json`),
-        `${rawBase}/league/${slug}/report.json`,
-        `${rawDocsBase}/league/${slug}/report.json`
-      ]),
-      loadFirst([
-        ...fromBases(`cache/OpenDota/proPlayers.json`),
-        `${rawBase}/cache/OpenDota/proPlayers.json`,
-        `${rawDocsBase}/cache/OpenDota/proPlayers.json`
-      ])
+      loadFirst(pref(
+        fromBases(`heroes.json`),
+        [`${rawBase}/heroes.json`, `${rawDocsBase}/heroes.json`]
+      )),
+      loadFirst(pref(
+        fromBases(`maps.json`),
+        [`${rawBase}/maps.json`, `${rawDocsBase}/maps.json`]
+      )),
+      loadFirst(pref(
+        fromBases(`league/${slug}/report.json`),
+        [`${rawBase}/league/${slug}/report.json`, `${rawDocsBase}/league/${slug}/report.json`]
+      )),
+      loadFirst(pref(
+        fromBases(`cache/OpenDota/proPlayers.json`),
+        [`${rawBase}/cache/OpenDota/proPlayers.json`, `${rawDocsBase}/cache/OpenDota/proPlayers.json`]
+      ))
     ]);
   const matches = Array.isArray(matchesRaw) ? matchesRaw : (matchesRaw && matchesRaw.matches ? matchesRaw.matches : []);
     const heroes = makeHeroMap(heroesRaw);
@@ -1040,7 +1042,8 @@
         try {
           const pre = report && report.highlights && report.highlights.draft;
           if (window.DraftViewer && pre && (Array.isArray(pre.contest) || Array.isArray(pre.firstPicks) || Array.isArray(pre.openingPairs))) {
-            window.DraftViewer.mount(document.getElementById('draftMount'), { data: { contest: pre.contest||[], firstPicks: pre.firstPicks||[], openingPairs: pre.openingPairs||[] }, heroes, persistKey: `lv_draft_${slug}`, nameResolver: (__resolver || ((aid)=> (playerNames[String(aid)] || `Player ${aid}`))) });
+            // Pass full precomputed draft block so charts (top picked/banned), captains, and totals are available
+            window.DraftViewer.mount(document.getElementById('draftMount'), { data: pre, heroes, persistKey: `lv_draft_${slug}`, nameResolver: (__resolver || ((aid)=> (playerNames[String(aid)] || `Player ${aid}`))) });
             return;
           }
         } catch(e){ console.warn('DraftViewer precomputed mount failed, falling back', e); }

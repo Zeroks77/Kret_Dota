@@ -285,6 +285,9 @@ $draftPickStats = @{}     # hid -> @{ picks=0; wins=0 }
 $draftBanCount = @{}      # hid -> count
 $draftFirstPick = @{}     # hid -> @{ count=0; wins=0 }
 $draftOpeningPairs = @{}  # "a-b" -> @{ a=0; b=0; games=0; wins=0 }
+# Additional draft helpers
+$draftMatches = 0         # matches with usable picks_bans
+$captainMap = @{}         # aid -> @{ games=0; wins=0 }
 
 foreach($m in $detailed){
   $mid = [int64]$m.match_id
@@ -498,6 +501,13 @@ foreach($m in $detailed){
     $purch = @(); try{ $purch = @($p.purchase_log) }catch{}
     foreach($pl in $purch){ if((''+$pl.key) -eq 'rapier'){ if(-not $rapierMap.ContainsKey($aid)){ $rapierMap[$aid]=@() }; $rapierMap[$aid] += $mid } }
   }
+  # Captains (if present in details)
+  try {
+    $rc = 0; try { $rc = [int64]$m.radiant_captain } catch {}
+    $dc = 0; try { $dc = [int64]$m.dire_captain } catch {}
+    if($rc -gt 0){ if(-not $captainMap.ContainsKey($rc)){ $captainMap[$rc] = @{ games=0; wins=0 } }; $captainMap[$rc].games++; if($radWin){ $captainMap[$rc].wins++ } }
+    if($dc -gt 0){ if(-not $captainMap.ContainsKey($dc)){ $captainMap[$dc] = @{ games=0; wins=0 } }; $captainMap[$dc].games++; if(-not $radWin){ $captainMap[$dc].wins++ } }
+  } catch {}
 }
 
 # Compute ward lifetimes per (x,y) and build viewer samples + bySide/byTeam aggregates
@@ -574,6 +584,7 @@ try {
     $radWin = $false; try{ $radWin = [bool]$m.radiant_win }catch{}
     $pbs = @(); try{ $pbs = @($m.picks_bans) }catch{}
     if((@($pbs)).Count -eq 0){ continue }
+    $draftMatches++
     $radList = New-Object System.Collections.Generic.List[object]
     $dirList = New-Object System.Collections.Generic.List[object]
     foreach($pb in $pbs){
@@ -722,6 +733,42 @@ $draftContest = @()
 foreach($hid in $draftPickStats.Keys){ $pk=$draftPickStats[$hid]; $bn= if($draftBanCount.ContainsKey($hid)){ [int]$draftBanCount[$hid] } else { 0 }; $draftContest += [pscustomobject]@{ hid=[int]$hid; picks=[int]$pk.picks; pickWins=[int]$pk.wins; bans=$bn; contest=[int]($pk.picks + $bn); wrPick= if($pk.picks -gt 0){ [double]$pk.wins/$pk.picks } else { 0 } } }
 $draftFirst = @(); foreach($hid in $draftFirstPick.Keys){ $fp=$draftFirstPick[$hid]; $draftFirst += [pscustomobject]@{ hid=[int]$hid; count=[int]$fp.count; wins=[int]$fp.wins; wr= if($fp.count -gt 0){ [double]$fp.wins/$fp.count } else { 0 } } }
 $draftPairs = @(); foreach($k in $draftOpeningPairs.Keys){ $v=$draftOpeningPairs[$k]; $draftPairs += [pscustomobject]@{ a=[int]$v.a; b=[int]$v.b; games=[int]$v.games; wins=[int]$v.wins; wr= if($v.games -gt 0){ [double]$v.wins/$v.games } else { 0 } } }
+# Build top bans table with rates
+$draftTopBans = @()
+foreach($hid in $draftBanCount.Keys){
+  $bans = [int]$draftBanCount[$hid]
+  $picks = if($draftPickStats.ContainsKey($hid)){ [int]$draftPickStats[$hid].picks } else { 0 }
+  $contestCnt = $picks + $bans
+  $banRate = if($draftMatches -gt 0){ [double]$bans / $draftMatches } else { 0 }
+  $contestRate = if($draftMatches -gt 0){ [double]$contestCnt / $draftMatches } else { 0 }
+  $draftTopBans += [pscustomobject]@{ hid=[int]$hid; bans=$bans; banRate=$banRate; contestRate=$contestRate; picks=$picks }
+}
+$draftTopBans = $draftTopBans | Sort-Object -Property bans, banRate -Descending
+# Captains list (top by WR then games)
+$captArr = @()
+foreach($aid in $captainMap.Keys){
+  $v = $captainMap[$aid]
+  $wr = if($v.games -gt 0){ [double]$v.wins/$v.games } else { 0 }
+  $captArr += [pscustomobject]@{ aid=[int64]$aid; games=[int]$v.games; wins=[int]$v.wins; wr=$wr }
+}
+$captArr = $captArr | Sort-Object -Property wr, games -Descending | Select-Object -First 10
+
+# Precompute charts for Draft viewer
+$chartTopPicked = @()
+$topPickedSrc = $draftContest | Sort-Object -Property picks, wrPick -Descending | Select-Object -First 5
+foreach($it in $topPickedSrc){ $chartTopPicked += [pscustomobject]@{ hid=[int]$it.hid; picks=[int]$it.picks; wr=[double]$it.wrPick } }
+$chartTopBanned = @()
+$topBannedSrc = $draftTopBans | Select-Object -First 5
+foreach($it in $topBannedSrc){
+  $hid = [int]$it.hid
+  $wr = 0.0
+  if($draftPickStats.ContainsKey($hid)){
+    $p = [int]$draftPickStats[$hid].picks
+    $w = [int]$draftPickStats[$hid].wins
+    if($p -gt 0){ $wr = [double]$w / [double]$p }
+  }
+  $chartTopBanned += [pscustomobject]@{ hid=$hid; bans=[int]$it.bans; wr=$wr }
+}
 # Sort & limit like client
 $draftContest = $draftContest | Sort-Object -Property contest, picks, bans -Descending | Select-Object -First 20
 $draftFirst = $draftFirst | Sort-Object -Property count, wr -Descending | Select-Object -First 20
@@ -753,7 +800,7 @@ $report = [ordered]@{
   playerTeams = @($playerTeams);
   highlights = [ordered]@{
   duos = @{ offlane= @($duosOffArr); safelane= @($duosSafeArr) };
-  draft = @{ contest=@($draftContest); firstPicks=@($draftFirst); openingPairs=@($draftPairs) };
+  draft = @{ contest=@($draftContest); firstPicks=@($draftFirst); openingPairs=@($draftPairs); topBans=@($draftTopBans); totalMatches=[int]$draftMatches; captains=@($captArr); charts=@{ topPicked=@($chartTopPicked); topBanned=@($chartTopBanned) } };
   heroes = @{ best=@($bestHeroes); worst=@($worstHeroes); all=@($heroesAll) };
   wards = @{ bestSpots=@($bestSpots); worstSpots=@($worstSpots); mostDewards=@($mostDewards); allSpots=@($wardAll); viewer = @{ spots=@($viewerSpots); sentries=@($viewerSentries); teams=@($viewerTeams); players=@($viewerPlayers) } };
   players = @{ rampages=@($rampages); rapiers=@($rapiers); aegisSnatch=@($aegis); all=@($playersAll) };
@@ -781,13 +828,27 @@ try {
   if(-not (Test-Path -LiteralPath $publicLeagueDataDir)) { New-Item -ItemType Directory -Path $publicLeagueDataDir -Force | Out-Null }
   Copy-Item -LiteralPath $reportFile -Destination (Join-Path $publicLeagueDataDir 'report.json') -Force
   if(Test-Path -LiteralPath $leagueMatchesFile){ Copy-Item -LiteralPath $leagueMatchesFile -Destination (Join-Path $publicLeagueDataDir 'matches.json') -Force }
-  # Ensure shared heroes.json is published once under docs/data for icon rendering
-  $heroesSrc = Join-Path (Join-Path $PSScriptRoot '..') 'data\heroes.json'
-  $heroesDestDir = Join-Path $docs 'data'
-  if(Test-Path -LiteralPath $heroesSrc){ if(-not (Test-Path -LiteralPath $heroesDestDir)){ New-Item -ItemType Directory -Path $heroesDestDir -Force | Out-Null }
-    $heroesDest = Join-Path $heroesDestDir 'heroes.json'
-    if(-not (Test-Path -LiteralPath $heroesDest)) { Copy-Item -LiteralPath $heroesSrc -Destination $heroesDest -Force }
+  # Ensure shared data files are published under docs/data for the viewers
+  $dataSrcDir = Join-Path (Join-Path $PSScriptRoot '..') 'data'
+  $dataDestDir = Join-Path $docs 'data'
+  if(-not (Test-Path -LiteralPath $dataDestDir)) { New-Item -ItemType Directory -Path $dataDestDir -Force | Out-Null }
+  foreach($fn in 'heroes.json','maps.json','manifest.json','info.json'){
+    try{
+      $srcFile = Join-Path $dataSrcDir $fn
+      if(Test-Path -LiteralPath $srcFile){ Copy-Item -LiteralPath $srcFile -Destination (Join-Path $dataDestDir $fn) -Force }
+    }catch{ Write-Warning ("Failed to publish {0}: {1}" -f $fn, $_.Exception.Message) }
   }
+  # Publish monthly shards if present (data/matches/*.json) to docs/data/matches
+  try{
+    $matchesSrcDir = Join-Path $dataSrcDir 'matches'
+    if(Test-Path -LiteralPath $matchesSrcDir){
+      $matchesDestDir = Join-Path $dataDestDir 'matches'
+      if(-not (Test-Path -LiteralPath $matchesDestDir)) { New-Item -ItemType Directory -Path $matchesDestDir -Force | Out-Null }
+      Get-ChildItem -LiteralPath $matchesSrcDir -Filter '*.json' | ForEach-Object {
+        Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $matchesDestDir $_.Name) -Force
+      }
+    }
+  }catch{ Write-Warning ("Failed to publish monthly shards: {0}" -f $_.Exception.Message) }
   # Publish constants (heroes/patch) into docs/data/constants for any viewer
   $constSrcDir = Join-Path (Join-Path $PSScriptRoot '..') 'data\cache\OpenDota\constants'
   if(Test-Path -LiteralPath $constSrcDir){
@@ -798,6 +859,15 @@ try {
       if(Test-Path -LiteralPath $srcFile){ Copy-Item -LiteralPath $srcFile -Destination (Join-Path $constOutDir $fn) -Force }
     }
   }
+  # Publish pro players list for league viewer lookups
+  try{
+    $proSrc = Join-Path (Join-Path $PSScriptRoot '..') 'data\cache\OpenDota\proPlayers.json'
+    if(Test-Path -LiteralPath $proSrc){
+      $ppOutDir = Join-Path $docs 'data/cache/OpenDota'
+      if(-not (Test-Path -LiteralPath $ppOutDir)){ New-Item -ItemType Directory -Path $ppOutDir -Force | Out-Null }
+      Copy-Item -LiteralPath $proSrc -Destination (Join-Path $ppOutDir 'proPlayers.json') -Force
+    }
+  }catch{ Write-Warning ("Failed to publish proPlayers.json: {0}" -f $_.Exception.Message) }
   Write-Host ("Published league data into docs: {0}" -f $publicLeagueDataDir)
 } catch { Write-Warning ("Failed to publish league data into docs: {0}" -f $_.Exception.Message) }
 
@@ -809,7 +879,7 @@ if(-not (Test-Path -LiteralPath $folder)){ New-Item -ItemType Directory -Path $f
 # Decide which dynamic file to embed
 $dynamicFile = if($UseDynamicFallback){ 'dynamic.html' } else { 'league_dynamic.html' }
 $title = "League Report - $leagueNameResolved"
-$query = "?from=$fromUnix`&to=$toUnix`&tab=highlights`&lock=1`&league=$slug"
+$query = "?from=$fromUnix`&to=$toUnix`&tab=highlights`&lock=1`&league=$slug`&leaguePath=data"
 $html = @"
 <!doctype html>
 <html lang='en'>

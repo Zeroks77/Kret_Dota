@@ -1,0 +1,650 @@
+﻿[
+    {
+        "match_id":  8373246188,
+        "start_time":  1752425024,
+        "radiant_win":  false,
+        "radiant_team_id":  362098,
+        "dire_team_id":  7980509,
+        "radiant_name":  "Team Pipsi",
+        "dire_name":  "GeT//e\\\\Rektm8",
+        "players":  [
+                        {
+                            "account_id":  1803122431,
+                            "hero_id":  53,
+                            "is_radiant":  true,
+                            "personaname":  "Gary the Carry",
+                            "team_id":  362098
+                        },
+                        {
+                            "account_id":  226354794,
+                            "hero_id":  39,
+                            "is_radiant":  true,
+                            "personaname":  "Kret",
+                            "team_id":  362098
+                        },
+                        {
+                            "account_id":  61566555,
+                            "hero_id":  131,
+                            "is_radiant":  true,
+                            "personaname":  "Nelow",
+                            "team_id":  362098
+                        },
+                        {
+                            "account_id":  35804562,
+                            "hero_id":  64,
+                            "is_radiant":  true,
+                            "personaname":  "A Tired Parent",
+                            "team_id":  362098
+                        },
+                        {
+                            "account_id":  922645723,
+                            "hero_id":  98,
+                            "is_radiant":  true,
+                            "personaname":  "what is a clit?(visual learner)",
+                            "team_id":  362098
+                        },
+                        {
+                            "account_id":  183063377,
+                            "hero_id":  26,
+                            "is_radiant":  false,
+                            "personaname":  "Zero",
+                            "team_id":  7980509
+                        },
+                        {
+                            "account_id":  199627625,
+                            "hero_id":  23,
+                            "is_radiant":  false,
+                            "personaname":  "✪ Captain Vodka",
+                            "team_id":  7980509
+                        },
+                        {
+                            "account_id":  431599342,
+                            "hero_id":  46,
+                            "is_radiant":  false,
+                            "personaname":  "T\u0027erreL",
+                            "team_id":  7980509
+                        },
+                        {
+                            "account_id":  1127238076,
+                            "hero_id":  107,
+                            "is_radiant":  false,
+                            "personaname":  "Virvacus",
+                            "team_id":  7980509
+                        },
+                        {
+                            "account_id":  343877559,
+                            "hero_id":  25,
+                            "is_radiant":  false,
+                            "personaname":  "Should I Call You Mista?",
+                            "team_id":  7980509
+                        }
+                    ]
+    },
+    {
+        "match_id":  8379442953,
+        "start_time":  1752855314,
+        "radiant_win":  false,
+        "radiant_team_id":  9834572,
+        "dire_team_id":  9833697,
+        "radiant_name":  "Fairbrandt",
+        "dire_name":  "Kret Dire",
+        "players":  [
+                        {
+                            "account_id":  183063377,
+                            "hero_id":  135,
+                            "is_radiant":  true,
+                            "personaname":  "Zero",
+                            "team_id":  9834572
+                        },
+                        {
+                            "account_id":  431599342,
+                            "hero_id":  13,
+                            "is_radiant":  true,
+                            "personaname":  "T\u0027erreL",
+                            "team_id":  9834572
+                        },
+                        {
+                            "account_id":  1127238076,
+                            "hero_id":  51,
+                            "is_radiant":  true,
+                            "personaname":  "Virvacus",
+                            "team_id":  9834572
+                        },
+                        {
+                            "account_id":  121905961,
+                            "hero_id":  54,
+                            "is_radiant":  true,
+                            "personaname":  "Fiend",
+                            "team_id":  9834572
+                        },
+                        {
+                            "account_id":  56352644,
+                            "hero_id":  53,
+                            "is_radiant":  true,
+                            "personaname":  "StolteSomFaa",
+                            "team_id":  9834572
+                        },
+                        {
+                            "account_id":  1803122431,
+                            "hero_id":  11,
+                            "is_radiant":  false,
+                            "personaname":  "Gary the Carry",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  226354794,
+                            "hero_id":  36,
+                            "is_radiant":  false,
+                            "personaname":  "Kret",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  1877912379,
+                            "hero_id":  123,
+                            "is_radiant":  false,
+                            "personaname":  "流",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  114003462,
+                            "hero_id":  26,
+                            "is_radiant":  false,
+                            "personaname":  "MooMoo",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  199627625,
+                            "hero_id":  69,
+                            "is_radiant":  false,
+                            "personaname":  "✪ Captain Vodka",
+                            "team_id":  9833697
+                        }
+                    ]
+    },
+    {
+        "match_id":  8379556584,
+        "start_time":  1752860645,
+        "radiant_win":  false,
+        "radiant_team_id":  9834594,
+        "dire_team_id":  9833697,
+        "radiant_name":  "Pleb Gods",
+        "dire_name":  "Kret Dire",
+        "players":  [
+                        {
+                            "account_id":  199627625,
+                            "hero_id":  2,
+                            "is_radiant":  true,
+                            "personaname":  "✪ Captain Vodka",
+                            "team_id":  9834594
+                        },
+                        {
+                            "account_id":  431599342,
+                            "hero_id":  15,
+                            "is_radiant":  true,
+                            "personaname":  "T\u0027erreL",
+                            "team_id":  9834594
+                        },
+                        {
+                            "account_id":  183063377,
+                            "hero_id":  86,
+                            "is_radiant":  true,
+                            "personaname":  "Zero",
+                            "team_id":  9834594
+                        },
+                        {
+                            "account_id":  56352644,
+                            "hero_id":  30,
+                            "is_radiant":  true,
+                            "personaname":  "StolteSomFaa",
+                            "team_id":  9834594
+                        },
+                        {
+                            "account_id":  1877912379,
+                            "hero_id":  39,
+                            "is_radiant":  true,
+                            "personaname":  "流",
+                            "team_id":  9834594
+                        },
+                        {
+                            "account_id":  1803122431,
+                            "hero_id":  70,
+                            "is_radiant":  false,
+                            "personaname":  "Gary the Carry",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  226354794,
+                            "hero_id":  19,
+                            "is_radiant":  false,
+                            "personaname":  "Kret",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  57839727,
+                            "hero_id":  96,
+                            "is_radiant":  false,
+                            "personaname":  "Great Love",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  1127238076,
+                            "hero_id":  3,
+                            "is_radiant":  false,
+                            "personaname":  "Virvacus",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  121905961,
+                            "hero_id":  112,
+                            "is_radiant":  false,
+                            "personaname":  "Fiend",
+                            "team_id":  9833697
+                        }
+                    ]
+    },
+    {
+        "match_id":  8388767637,
+        "start_time":  1753459680,
+        "radiant_win":  true,
+        "radiant_team_id":  9833687,
+        "dire_team_id":  9833697,
+        "radiant_name":  "Zelenskyy\u0027s Boys",
+        "dire_name":  "Kret Dire",
+        "players":  [
+                        {
+                            "account_id":  1803122431,
+                            "hero_id":  7,
+                            "is_radiant":  true,
+                            "personaname":  "Gary the Carry",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  219481866,
+                            "hero_id":  26,
+                            "is_radiant":  true,
+                            "personaname":  "POKLESS PUNK",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  149970209,
+                            "hero_id":  53,
+                            "is_radiant":  true,
+                            "personaname":  "sputn1k",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  1877912379,
+                            "hero_id":  90,
+                            "is_radiant":  true,
+                            "personaname":  "流",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  114003462,
+                            "hero_id":  77,
+                            "is_radiant":  true,
+                            "personaname":  "MooMoo",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  61566555,
+                            "hero_id":  30,
+                            "is_radiant":  false,
+                            "personaname":  "Nelow",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  78489654,
+                            "hero_id":  40,
+                            "is_radiant":  false,
+                            "personaname":  "\\[T]/.Dr.Kunzel",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  164067051,
+                            "hero_id":  97,
+                            "is_radiant":  false,
+                            "personaname":  "Moox",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  226354794,
+                            "hero_id":  25,
+                            "is_radiant":  false,
+                            "personaname":  "Kret",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  431599342,
+                            "hero_id":  70,
+                            "is_radiant":  false,
+                            "personaname":  "T\u0027erreL",
+                            "team_id":  9833697
+                        }
+                    ]
+    },
+    {
+        "match_id":  8388828751,
+        "start_time":  1753462465,
+        "radiant_win":  false,
+        "radiant_team_id":  9833687,
+        "dire_team_id":  935859,
+        "radiant_name":  "Zelenskyy\u0027s Boys",
+        "dire_name":  "0PlanGamers",
+        "players":  [
+                        {
+                            "account_id":  1803122431,
+                            "hero_id":  93,
+                            "is_radiant":  true,
+                            "personaname":  "Gary the Carry",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  61566555,
+                            "hero_id":  37,
+                            "is_radiant":  true,
+                            "personaname":  "Nelow",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  219481866,
+                            "hero_id":  105,
+                            "is_radiant":  true,
+                            "personaname":  "POKLESS PUNK",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  188889560,
+                            "hero_id":  14,
+                            "is_radiant":  true,
+                            "personaname":  "HUNDSCHeiSSE",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  149970209,
+                            "hero_id":  2,
+                            "is_radiant":  true,
+                            "personaname":  "sputn1k",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  1877912379,
+                            "hero_id":  126,
+                            "is_radiant":  false,
+                            "personaname":  "流",
+                            "team_id":  935859
+                        },
+                        {
+                            "account_id":  57839727,
+                            "hero_id":  114,
+                            "is_radiant":  false,
+                            "personaname":  "Great Love",
+                            "team_id":  935859
+                        },
+                        {
+                            "account_id":  164067051,
+                            "hero_id":  129,
+                            "is_radiant":  false,
+                            "personaname":  "Moox",
+                            "team_id":  935859
+                        },
+                        {
+                            "account_id":  431599342,
+                            "hero_id":  3,
+                            "is_radiant":  false,
+                            "personaname":  "T\u0027erreL",
+                            "team_id":  935859
+                        },
+                        {
+                            "account_id":  78489654,
+                            "hero_id":  87,
+                            "is_radiant":  false,
+                            "personaname":  "\\[T]/.Dr.Kunzel",
+                            "team_id":  935859
+                        }
+                    ]
+    },
+    {
+        "match_id":  8394421974,
+        "start_time":  1753804408,
+        "radiant_win":  false,
+        "radiant_team_id":  9833687,
+        "dire_team_id":  9834594,
+        "radiant_name":  "Zelenskyy\u0027s Boys",
+        "dire_name":  "Pleb Gods",
+        "players":  [
+                        {
+                            "account_id":  1803122431,
+                            "hero_id":  136,
+                            "is_radiant":  true,
+                            "personaname":  "Gary the Carry",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  431599342,
+                            "hero_id":  59,
+                            "is_radiant":  true,
+                            "personaname":  "T\u0027erreL",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  1127238076,
+                            "hero_id":  51,
+                            "is_radiant":  true,
+                            "personaname":  "Virvacus",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  149970209,
+                            "hero_id":  69,
+                            "is_radiant":  true,
+                            "personaname":  "sputn1k",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  44505340,
+                            "hero_id":  29,
+                            "is_radiant":  true,
+                            "personaname":  ".:Azure\u003c\u003eFire.Ice:.",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  164067051,
+                            "hero_id":  70,
+                            "is_radiant":  false,
+                            "personaname":  "Moox",
+                            "team_id":  9834594
+                        },
+                        {
+                            "account_id":  188889560,
+                            "hero_id":  16,
+                            "is_radiant":  false,
+                            "personaname":  "HUNDSCHeiSSE",
+                            "team_id":  9834594
+                        },
+                        {
+                            "account_id":  183063377,
+                            "hero_id":  20,
+                            "is_radiant":  false,
+                            "personaname":  "Zero",
+                            "team_id":  9834594
+                        },
+                        {
+                            "account_id":  226354794,
+                            "hero_id":  17,
+                            "is_radiant":  false,
+                            "personaname":  "Kret",
+                            "team_id":  9834594
+                        },
+                        {
+                            "account_id":  78489654,
+                            "hero_id":  75,
+                            "is_radiant":  false,
+                            "personaname":  "\\[T]/.Dr.Kunzel",
+                            "team_id":  9834594
+                        }
+                    ]
+    },
+    {
+        "match_id":  8395729684,
+        "start_time":  1753889817,
+        "radiant_win":  false,
+        "radiant_team_id":  9833687,
+        "dire_team_id":  9833697,
+        "radiant_name":  "Zelenskyy\u0027s Boys",
+        "dire_name":  "Kret Dire",
+        "players":  [
+                        {
+                            "account_id":  1803122431,
+                            "hero_id":  11,
+                            "is_radiant":  true,
+                            "personaname":  "Gary the Carry",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  183063377,
+                            "hero_id":  50,
+                            "is_radiant":  true,
+                            "personaname":  "Zero",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  44505340,
+                            "hero_id":  2,
+                            "is_radiant":  true,
+                            "personaname":  ".:Azure\u003c\u003eFire.Ice:.",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  1127238076,
+                            "hero_id":  77,
+                            "is_radiant":  true,
+                            "personaname":  "Virvacus",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  431599342,
+                            "hero_id":  26,
+                            "is_radiant":  true,
+                            "personaname":  "T\u0027erreL",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  226354794,
+                            "hero_id":  17,
+                            "is_radiant":  false,
+                            "personaname":  "Kret",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  190115398,
+                            "hero_id":  104,
+                            "is_radiant":  false,
+                            "personaname":  "M1xed",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  1877912379,
+                            "hero_id":  63,
+                            "is_radiant":  false,
+                            "personaname":  "流",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  149970209,
+                            "hero_id":  70,
+                            "is_radiant":  false,
+                            "personaname":  "sputn1k",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  188889560,
+                            "hero_id":  128,
+                            "is_radiant":  false,
+                            "personaname":  "HUNDSCHeiSSE",
+                            "team_id":  9833697
+                        }
+                    ]
+    },
+    {
+        "match_id":  8395827504,
+        "start_time":  1753894143,
+        "radiant_win":  false,
+        "radiant_team_id":  9833687,
+        "dire_team_id":  9833697,
+        "radiant_name":  "Zelenskyy\u0027s Boys",
+        "dire_name":  "Kret Dire",
+        "players":  [
+                        {
+                            "account_id":  190115398,
+                            "hero_id":  107,
+                            "is_radiant":  true,
+                            "personaname":  "M1xed",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  1803122431,
+                            "hero_id":  11,
+                            "is_radiant":  true,
+                            "personaname":  "Gary the Carry",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  1127238076,
+                            "hero_id":  100,
+                            "is_radiant":  true,
+                            "personaname":  "Virvacus",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  1877912379,
+                            "hero_id":  126,
+                            "is_radiant":  true,
+                            "personaname":  "流",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  431599342,
+                            "hero_id":  135,
+                            "is_radiant":  true,
+                            "personaname":  "T\u0027erreL",
+                            "team_id":  9833687
+                        },
+                        {
+                            "account_id":  164067051,
+                            "hero_id":  1,
+                            "is_radiant":  false,
+                            "personaname":  "Moox",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  188889560,
+                            "hero_id":  7,
+                            "is_radiant":  false,
+                            "personaname":  "HUNDSCHeiSSE",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  44505340,
+                            "hero_id":  49,
+                            "is_radiant":  false,
+                            "personaname":  ".:Azure\u003c\u003eFire.Ice:.",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  226354794,
+                            "hero_id":  17,
+                            "is_radiant":  false,
+                            "personaname":  "Kret",
+                            "team_id":  9833697
+                        },
+                        {
+                            "account_id":  183063377,
+                            "hero_id":  26,
+                            "is_radiant":  false,
+                            "personaname":  "Zero",
+                            "team_id":  9833697
+                        }
+                    ]
+    }
+]
