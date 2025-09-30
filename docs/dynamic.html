@@ -121,7 +121,44 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 </head>
 <body>
 <div id="dvLoading" class="loading-overlay" role="status" aria-live="polite" aria-atomic="true"><div class="loading-box"><div class="spinner" aria-hidden="true"></div><div id="dvLoadingText" class="sub">Loading…</div></div></div>
-<div class="wrapper" id="mainContent" role="main">
+<!-- Soft lock: require key match before showing content -->
+<div class="wrapper" id="dynGateWrap" role="dialog" aria-modal="true" style="display:none;max-width:560px">
+  <section class="card">
+    <h2 style="margin:0 0 6px">Unlock Dynamic View</h2>
+    <div class="sub" style="margin-bottom:6px">Enter the access key to view this page.</div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <input id="dynKey" type="password" placeholder="Access key" aria-label="Dynamic view access key" style="flex:1;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)">
+      <button id="dynUnlock" class="ghost">Unlock</button>
+    </div>
+    <div id="dynMsg" class="sub" style="margin-top:6px;display:none"></div>
+    <div class="sub" style="margin-top:8px">Tip: locally you can use <code>123admin</code>.</div>
+  </section>
+  <div class="sub" style="margin-top:8px"><a href="./index.html">Back to index</a></div>
+  <script>
+  (function(){
+    async function sha256Hex(text){ const enc=new TextEncoder(); const data=enc.encode(text); const buf=await crypto.subtle.digest('SHA-256', data); const arr=Array.from(new Uint8Array(buf)); return arr.map(b=>b.toString(16).padStart(2,'0')).join(''); }
+    function isLocal(){ try{ return location.protocol==='file:' || /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/i.test(String(location.hostname||'')); }catch(_e){ return false; } }
+    function getStoredKey(){ try{ return sessionStorage.getItem('dv_key') || ''; }catch(_e){ return ''; } }
+    function setStoredKey(k){ try{ if(k){ sessionStorage.setItem('dv_key', k); } }catch(_e){} }
+    async function fetchGateHash(){ try{ const res = await fetch('./gate.json', { cache: 'no-store' }); if(!res.ok) return ''; const j = await res.json(); return String((j && j.hash) || ''); }catch(_e){ return ''; } }
+    async function unlockWith(key, want){ if(!key) return false; if(isLocal() && key==='123admin') return true; if(!want) return false; const got=(await sha256Hex(String(key))).toLowerCase(); return got===String(want).toLowerCase(); }
+    function showGate(msg){ const w=document.getElementById('dynGateWrap'); if(w) w.style.display='block'; const m=document.getElementById('dynMsg'); if(m){ if(msg){ m.textContent=String(msg); m.style.display='block'; } else { m.textContent=''; m.style.display='none'; } } }
+    function hideGate(){ const w=document.getElementById('dynGateWrap'); if(w) w.style.display='none'; const m=document.getElementById('dynMsg'); if(m){ m.textContent=''; m.style.display='none'; } }
+    function showMain(){ const mc=document.getElementById('mainContent'); if(mc) mc.style.display=''; }
+    async function initGate(){
+      const want = await fetchGateHash();
+      const sp = new URLSearchParams(location.search);
+      const key = sp.get('key') || getStoredKey();
+      const ok = await unlockWith(key, want);
+      const btn = document.getElementById('dynUnlock'); const inp = document.getElementById('dynKey');
+      if(ok){ setStoredKey(key); hideGate(); showMain(); }
+      else { showGate(); if(btn && inp){ btn.addEventListener('click', async ()=>{ const k=String(inp.value||''); const ok2 = await unlockWith(k, want); if(ok2){ setStoredKey(k); hideGate(); showMain(); } else { showGate('Invalid key.'); } }); inp.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } }); } }
+    }
+    if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', initGate); } else { initGate(); }
+  })();
+  </script>
+</div>
+<div class="wrapper" id="mainContent" role="main" style="display:none">
   <div class="header">
     <h1 id="leagueTitle" style="margin:0;font-size:22px">Dynamic viewer</h1>
     <div class="badge">Client-side</div>
