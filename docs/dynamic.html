@@ -322,7 +322,20 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
         <div class="sub">Best/Worst by time window and team filter</div>
       </div>
       <div id="dvWardMount">
-        <div id="dvWardStd"></div>
+        <div class="tabs" id="wardSubTabs" role="tablist" aria-label="Ward subtabs">
+          <button class="tab active" data-wtab="spots" role="tab" aria-selected="true">Spots</button>
+          <button class="tab" data-wtab="players" role="tab" aria-selected="false">Players</button>
+          <button class="tab" data-wtab="trend" role="tab" aria-selected="false">Trend</button>
+        </div>
+        <div id="wtab-spots" class="tabpane active" role="tabpanel" aria-labelledby="wtab-btn-spots">
+          <div id="dvWardStd"></div>
+        </div>
+        <div id="wtab-players" class="tabpane" role="tabpanel" aria-labelledby="wtab-btn-players" style="display:none">
+          <div id="dvWardPlayers" class="sub">Select a range to load ward player stats.</div>
+        </div>
+        <div id="wtab-trend" class="tabpane" role="tabpanel" aria-labelledby="wtab-btn-trend" style="display:none">
+          <div id="dvWardTrend" class="sub">Select a range to see the observer lifetime trend over time.</div>
+        </div>
       </div>
     </section>
   </div>
@@ -460,6 +473,20 @@ function unix(dt){ return Math.floor(dt.getTime()/1000); }
 function toLocalInput(unixSec){ if(!unixSec) return ''; const d=new Date(unixSec*1000); const pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
 function parseLocalInput(val){ if(!val) return NaN; const ms = Date.parse(val); return isNaN(ms)? NaN : Math.floor(ms/1000); }
 function absUrl(url){ try{ return new URL(url, location.origin).toString(); }catch(_e){ return url; } }
+// Build a normalized list of patches with unix timestamps
+function buildPatchList(src){
+  const out=[]; if(!src) return out;
+  const push = (name, d)=>{ let ts=0; if(typeof d==='number'){ ts=Math.floor(d); } else if(typeof d==='string'){ const ms=Date.parse(d); if(!isNaN(ms)) ts=Math.floor(ms/1000); }
+    if(name && ts>0) out.push({ name:String(name), ts }); };
+  try{
+    if(Array.isArray(src)){
+      for(const o of src){ if(!o) continue; const name=o.name||o.version||o.patch||o.id; const d=o.date||o.time||o.released||o.start_date; push(name,d); }
+    } else if(typeof src==='object'){
+      for(const k in src){ const o=src[k]||{}; const name=o.name||o.version||o.patch||k; const d=o.date||o.time||o.released||o.start_date; push(name,d); }
+    }
+  }catch(_e){}
+  return out.sort((a,b)=> a.ts-b.ts);
+}
 
 // Sorting helpers
 function val(td){
@@ -1154,11 +1181,12 @@ async function main(){
   // Load from root-level data/ via relative path (local) or raw.githubusercontent.com (GitHub Pages)
   const REPO='Zeroks77/Kret_Dota'; const BRANCH='main';
   const relBase='../data'; const rawBase=`https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
-  const [manifest, heroesRaw, info, mapConf] = await Promise.all([
+  const [manifest, heroesRaw, info, mapConf, patchRaw] = await Promise.all([
     loadJsonWithFallback(`${relBase}/manifest.json`, `${rawBase}/manifest.json`),
     loadJsonWithFallback(`${relBase}/heroes.json`, `${rawBase}/heroes.json`),
     loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({})),
-    loadJsonWithFallback(`${relBase}/maps.json`, `${rawBase}/maps.json`).catch(()=>null)
+    loadJsonWithFallback(`${relBase}/maps.json`, `${rawBase}/maps.json`).catch(()=>null),
+    loadJsonWithFallback(`${relBase}/constants/patch.json`, `${rawBase}/constants/patch.json`).catch(()=>null)
   ]);
   // Hard-lock to Kret's league (18438), ignoring URL/info overrides
   let __leagueIdTarget = 18438;
@@ -1202,6 +1230,9 @@ async function main(){
     }
     return out;
   })(heroesRaw);
+  // Normalize patch list for quick lookups in Trend
+  const patches = buildPatchList(patchRaw);
+  try{ window.__dvPatches = patches; }catch(_e){}
   // Names map (mutable): we'll populate this from the CURRENT FILTERED SUBSET in apply()
   let playerNames = {}; let teamNames = {};
   // Initial player filter list is kept minimal; it'll be rebuilt after Apply() using the filtered subset
@@ -1585,6 +1616,25 @@ async function main(){
     const mostPlaced = withNames(topNByCount(obsPlacedBy, 5));
     const mostDewards = withNames(topNByCount(dewardsBy, 5));
     const longestAvg = withNames(Array.from(lifeBy.entries()).map(([aid,arr])=>({account_id:Number(aid), name:`Player ${aid}`, profile: OD_PLAYER_URL(aid), avgSeconds: arr.length? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0, samples: arr.length})).sort((a,b)=> b.avgSeconds-a.avgSeconds).slice(0,5));
+    // Full per-player ward stats across the selected range (not only top lists)
+    const allIds = (function(){
+      const s = new Set();
+      try{ obsPlacedBy.forEach((_,k)=> s.add(Number(k))); }catch(_e){}
+      try{ dewardsBy.forEach((_,k)=> s.add(Number(k))); }catch(_e){}
+      try{ lifeBy.forEach((_,k)=> s.add(Number(k))); }catch(_e){}
+      try{ gemBy.forEach((_,k)=> s.add(Number(k))); }catch(_e){}
+      return Array.from(s.values()).filter(id=>id>0);
+    })();
+    const wardPlayersFullRaw = allIds.map(aid=>{
+      const placed = Number(obsPlacedBy.get(String(aid))||obsPlacedBy.get(aid)||0) || 0;
+      const dews   = Number(dewardsBy.get(String(aid))||dewardsBy.get(aid)||0) || 0;
+      const arr    = lifeBy.get(aid) || lifeBy.get(String(aid)) || [];
+      const samples = Array.isArray(arr)? arr.length : 0;
+      const avgSeconds = samples>0 ? Math.round(arr.reduce((s,x)=>s+x,0)/samples) : 0;
+      const gems  = Number(gemBy.get(String(aid))||gemBy.get(aid)||0) || 0;
+      return { account_id: Number(aid), name:`Player ${aid}`, profile: OD_PLAYER_URL(aid), placed, dewards: dews, avgSeconds, samples, gems };
+    });
+    const wardPlayersFull = withNames(wardPlayersFullRaw).sort((a,b)=> (b.placed-a.placed) || (b.dewards-a.dewards) || (b.avgSeconds-a.avgSeconds) || String(a.name).localeCompare(String(b.name)));
     // Teammates pairs top (by games for highlights block)
     const teammates = Array.from(pairCounts.entries()).map(([k,games])=>{ const [a,b]=k.split('-').map(Number); return {a,b, name1: nameCache.get(a)||`Player ${a}`, name2: nameCache.get(b)||`Player ${b}`, profile1: OD_PLAYER_URL(a), profile2: OD_PLAYER_URL(b), games: Number(games)}; }).sort((a,b)=> b.games-a.games || String(a.name1).localeCompare(String(b.name1))).slice(0,3);
     // Build full player duet list with hero combos
@@ -1660,7 +1710,8 @@ async function main(){
       wardPoints,
       wardEvents,
       wardLongest,
-      wardPlayers: { mostPlaced, mostDewards, longestAvg },
+  wardPlayers: { mostPlaced, mostDewards, longestAvg },
+  wardPlayersFull,
       teammates,
       courierTop,
       stackTop,
@@ -1826,7 +1877,374 @@ async function main(){
       const teamsList = Array.from(teamMap.values());
       const playersList = Array.from(playerMap.values());
   // Mount a single instance; Ward Viewer manages its own Basis/filters
-  window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:true, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, objectivesUrl:'data/map_locations.json', extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } }); if (paneW) paneW.setAttribute('aria-busy','false');
+      window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:false, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, objectivesUrl:'data/map_locations.json', extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } }); if (paneW) paneW.setAttribute('aria-busy','false');
+      // Initialize ward subtabs (Spots/Players/Trend) once
+      if(!window.__wardSubTabsBooted){
+        try{
+          const bar = document.getElementById('wardSubTabs');
+          if(bar){
+            const buttons = Array.from(bar.querySelectorAll('.tab'));
+            function show(name){
+              const a = (name==='players' || name==='trend') ? name : 'spots';
+              const spotsPane = document.getElementById('wtab-spots');
+              const playersPane = document.getElementById('wtab-players');
+              const trendPane = document.getElementById('wtab-trend');
+              if(spotsPane && playersPane){
+                const onPlayers = (a==='players');
+                const onTrend = (a==='trend');
+                spotsPane.style.display = (onPlayers||onTrend)? 'none' : '';
+                playersPane.style.display = onPlayers? '' : 'none';
+                if(trendPane) trendPane.style.display = onTrend? '' : 'none';
+              }
+              buttons.forEach(b=>{
+                const active = b.getAttribute('data-wtab')===a;
+                b.classList.toggle('active', active);
+                b.setAttribute('aria-selected', active? 'true' : 'false');
+              });
+            }
+            buttons.forEach(b=> b.addEventListener('click', ()=> show(b.getAttribute('data-wtab'))));
+            window.__wardSubTabsBooted = true;
+          }
+        }catch(_e){}
+      }
+      // Render players subtab content
+      try{
+        const mount = document.getElementById('dvWardPlayers');
+        if(mount){
+          const fmtMMSS = (secs)=>{ const s=Math.max(0,Math.floor(Number(secs||0))); const m=Math.floor(s/60); const r=s%60; return `${m}m ${r}s`; };
+          // Build team list (same as map)
+          const teamsList = (()=>{ const out=[]; try{ teamMap.forEach(v=> out.push(v)); }catch(_e){} return out.sort((a,b)=> String(a.name||'').localeCompare(String(b.name||''))); })();
+          // Compute filtered ward stats directly from match details
+          function computePlayers({side='', teamId=0}){
+            const index = new Map();
+            function rec(aid){ aid = Number(aid)||0; if(!aid) return null; if(!index.has(aid)) index.set(aid,{ account_id:aid, name: playerNames[String(aid)]||`Player ${aid}`, profile: OD_PLAYER_URL(aid), obsP:0, senP:0, deobs:0, desen:0, life:[], gems:0 }); return index.get(aid); }
+            for(const md of details){ if(!md) continue; const pls = Array.isArray(md.players)? md.players:[]; const rId=Number(md.radiant_team_id||0), dId=Number(md.dire_team_id||0);
+              const heroToAccount = new Map();
+              // pre-map hero -> player for fallback deward attribution
+              for(const p of pls){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; const hid=Number(p.hero_id||0); if(hid>0) heroToAccount.set(hid, aid); }
+              const leftAll = [];
+              for(const p of pls){ const aid=Number(p.account_id||0); if(!(aid>0)) continue; const isRad = (p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128); const sideStr = isRad? 'Radiant':'Dire'; const tid = isRad? rId : dId;
+                // Team filter has priority
+                if(teamId>0){ if(tid!==teamId) continue; }
+                else if(side && (side==='Radiant'||side==='Dire')){ if(sideStr!==side) continue; }
+                const r = rec(aid); if(!r) continue;
+                // Placements
+                const obsLog = Array.isArray(p.obs_log)? p.obs_log:[]; r.obsP += obsLog.length;
+                const senLog = Array.isArray(p.sen_log)? p.sen_log:[]; r.senP += senLog.length;
+                // Dewards (obs & sentry)
+                const ok = Number(p.obs_kills||p.obs_killed||p.observer_kills||0); if(ok>0) r.deobs += ok;
+                const sk = Number(p.sen_kills||p.sentry_kills||p.sen_killed||p.sentry_wards_destroyed||0); if(sk>0) r.desen += sk;
+                // Lifetime samples per player (pairing within player)
+                const leftLog = Array.isArray(p.obs_left_log)? p.obs_left_log:[];
+                const P = obsLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b);
+                const L = leftLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b);
+                // collect left events for fallback deward counting via attacker hero
+                for(const ev of leftLog){ if(ev && ev.attackername) leftAll.push(ev); }
+                let j=0; for(let i=0;i<P.length;i++){ const tP=P[i]; while(j<L.length && L[j]<tP) j++; let life=360; if(j<L.length){ life=Math.max(0, L[j]-tP); j++; } r.life.push(Math.min(360, life)); }
+                // Gems
+                const plog = Array.isArray(p.purchase_log)? p.purchase_log:[]; for(const ev of plog){ const key=String(ev.key||ev.item||'').toLowerCase(); if(!key) continue; if(key==='gem' || key==='gem_of_true_sight') r.gems++; }
+              }
+              // Fallback deward inference from obs_left_log attacker hero name
+              try{
+                // hero tag mapping already present in heroes (includes .tag)
+                const tag2id = {};
+                for(const id in heroes){ const v=heroes[id]; if(v && v.tag) tag2id[v.tag]=Number(id); }
+                for(const ev of leftAll){ const an=String(ev && ev.attackername || ''); if(an.startsWith('npc_dota_hero_')){ const tag = an.replace(/^npc_dota_hero_/,''); const hid = tag2id[tag]; const killerAid = heroToAccount.get(hid); if(killerAid){ const r = rec(killerAid); if(r) r.deobs += 1; } } }
+              }catch(_e){}
+            }
+            return Array.from(index.values()).map(o=>{ const n=o.life.length; const avg = n? Math.round(o.life.reduce((a,b)=>a+b,0)/n) : 0; const med = (function(a){ if(!a.length) return 0; const s=a.slice().sort((x,y)=>x-y); const m=s.length>>1; return (s.length%2)? s[m] : Math.floor((s[m-1]+s[m])/2); })(o.life); const dist=(function(a){ const d={le5:0,le30:0,le150:0,gt150:0}; for(const v of a){ if(v<=5) d.le5++; else if(v<=30) d.le30++; else if(v<=150) d.le150++; else d.gt150++; } return d; })(o.life); return { account_id:o.account_id, name:o.name, profile:o.profile, placed:o.obsP, senPlaced:o.senP, dewards:o.deobs, senDewards:o.desen, avgSeconds:avg, medianSeconds:med, samples:n, gems:o.gems, dist }; });
+          }
+          // State and renderers
+          let sideSel = '';
+          let teamSel = '';
+          function teamIdFromSel(){ if(!teamSel) return 0; if(teamSel.startsWith('team:')) return Number(teamSel.split(':')[1]||0); const n=Number(teamSel)||0; return n>0? n: 0; }
+          function controlsHtml(){
+            const teamOptions = ['<option value="">All</option>'].concat(teamsList.map(t=>`<option value="team:${t.id}">${t.name||('Team '+t.id)}</option>`)).join('');
+            return `
+              <div class='controls' style='margin-bottom:8px'>
+                <div class='field'>
+                  <label class='sub'>Side</label>
+                  <div class='tabs' id='wpSide'>
+                    <button class='tab ${sideSel===''?'active':''}' data-side=''>All</button>
+                    <button class='tab ${sideSel==='Radiant'?'active':''}' data-side='Radiant'>Radiant</button>
+                    <button class='tab ${sideSel==='Dire'?'active':''}' data-side='Dire'>Dire</button>
+                  </div>
+                </div>
+                <div class='field'>
+                  <label class='sub'>Team</label>
+                  <select id='wpTeam'>${teamOptions}</select>
+                  <div class='sub'>Team überschreibt Side</div>
+                </div>
+              </div>`;
+          }
+          function miniBar(avg, med){ const cap=360; const pa=Math.max(0,Math.min(100, Math.round(100*avg/ cap))); const pm=Math.max(0,Math.min(100, Math.round(100*med/ cap))); return `<div style='height:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:6px;position:relative'><div style='position:absolute;left:0;top:0;bottom:0;width:${pa}%;background:linear-gradient(90deg, rgba(110,180,255,.9), rgba(110,175,255,.55));box-shadow:0 0 6px rgba(110,180,255,.35) inset;border-radius:6px'></div><div style='position:absolute;left:${pm}%;top:-2px;bottom:-2px;width:2px;background:#fbbf24;opacity:.95'></div></div>`; }
+          function renderTable(){
+            const tid = teamIdFromSel();
+            const rowsData = computePlayers({ side: sideSel, teamId: tid }).sort((a,b)=> (b.placed - a.placed) || (b.dewards - a.dewards) || (b.avgSeconds - a.avgSeconds) || String(a.name).localeCompare(String(b.name)));
+            if(!rowsData.length){ mount.innerHTML = controlsHtml() + `<div class='sub'>No ward player stats for this filter.</div>`; bindControls(); return; }
+            function distSpark(d){ const total = Math.max(1, (d.le5||0)+(d.le30||0)+(d.le150||0)+(d.gt150||0)); const w=80,h=8; const p1=Math.round(100*(d.le5||0)/total), p2=Math.round(100*(d.le30||0)/total), p3=Math.round(100*(d.le150||0)/total), p4=100-p1-p2-p3; const seg=(pct,color)=>`<div style='height:${h}px;width:${pct}%;background:${color}'></div>`; const tip=`<=5s:${d.le5||0} | <=30s:${d.le30||0} | <=150s:${d.le150||0} | >150s:${d.gt150||0}`; return `<div title='${tip}' style='display:flex;border:1px solid rgba(255,255,255,.12);border-radius:6px;overflow:hidden;width:${w}px'>${seg(p1,'#94a3b8')}${seg(p2,'#60a5fa')}${seg(p3,'#fbbf24')}${seg(p4,'#22c55e')}</div>`; }
+            const rows = rowsData.map(p=>{
+              const nm = p.name || `Player ${p.account_id}`;
+              const prof = p.profile || (p.account_id? `https://www.opendota.com/players/${p.account_id}` : '#');
+              const avg = Number(p.avgSeconds||0), med=Number(p.medianSeconds||0);
+              const bar = miniBar(avg, med);
+              const dist = distSpark(p.dist||{});
+              return `<tr>
+                <td data-sort='${String(nm).toLowerCase()}'><a href='${prof}' target='_blank' rel='noopener'>${nm}</a></td>
+                <td data-sort='${p.placed||0}'>${p.placed||0}</td>
+                <td data-sort='${p.senPlaced||0}'>${p.senPlaced||0}</td>
+                <td data-sort='${p.dewards||0}'>${p.dewards||0}</td>
+                <td data-sort='${p.senDewards||0}'>${p.senDewards||0}</td>
+                <td data-sort='${avg}'>${bar}<div class='sub'>avg ${fmtMMSS(avg)} · med ${fmtMMSS(med)}</div></td>
+                <td data-sort='${(p.dist&&p.dist.le30)||0}'>${dist}</td>
+                <td data-sort='${p.samples||0}'>${p.samples||0}</td>
+                <td data-sort='${p.gems||0}'>${p.gems||0}</td>
+              </tr>`;
+            }).join('');
+            mount.innerHTML = controlsHtml() + `
+              <table class='table sortable' id='wardPlayersTable'>
+                <caption class='sr-only'>Ward player stats (filterable)</caption>
+                <thead>
+                  <tr>
+                    <th data-type='text'>Player</th>
+                    <th data-type='num' title='Observer wards placed'>Obs placed</th>
+                    <th data-type='num' title='Sentry wards placed'>Sen placed</th>
+                    <th data-type='num' title='Observer wards dewarded'>Dewards (obs)</th>
+                    <th data-type='num' title='Sentry wards dewarded'>Dewards (sen)</th>
+                    <th data-type='num' title='Avg/Median lifetime of their observers'>Lifetime</th>
+                    <th data-type='num' title='Lifetime distribution (≤5s, ≤30s, ≤150s, >150s)'>Dist</th>
+                    <th data-type='num' title='Number of observer placements used for lifetime stats'>Samples</th>
+                    <th data-type='num' title='Gems bought'>Gems</th>
+                  </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>`;
+            try{ if(typeof enableSorting==='function') enableSorting(); }catch(_e){}
+            bindControls();
+          }
+          function bindControls(){ try{ const sideWrap = document.getElementById('wpSide'); const sel = document.getElementById('wpTeam'); if(sideWrap){ sideWrap.querySelectorAll('.tab').forEach(b=> b.addEventListener('click', ()=>{ sideSel = String(b.getAttribute('data-side')||''); // Reset team when side changes
+              renderTable(); })); }
+              if(sel){ sel.value = teamSel||''; sel.addEventListener('change', ()=>{ teamSel = String(sel.value||''); renderTable(); }); }
+            }catch(_e){}
+          }
+          renderTable();
+        }
+      }catch(_e){}
+
+      // Render trend subtab content (average observer lifetime over time)
+      try{
+        const mount = document.getElementById('dvWardTrend');
+        if(mount){
+          const fmtMMSS = (secs)=>{ const s=Math.max(0,Math.floor(Number(secs||0))); const m=Math.floor(s/60); const r=s%60; return `${m}m ${r}s`; };
+          const teamsList = (()=>{ const out=[]; try{ teamMap.forEach(v=> out.push(v)); }catch(_e){} return out.sort((a,b)=> String(a.name||'').localeCompare(String(b.name||''))); })();
+          // Trend state (preserved across re-renders)
+          let wtSideSel = '';
+          let wtTeamSel = '';
+          let wtPlayerSel = 0;
+
+          function buildPlayersList(){
+            // Build unique player list from details; resolve names via playerNames map
+            const m = new Map();
+            try{
+              for(const md of details||[]){
+                for(const p of (md.players||[])){
+                  const aid = Number(p.account_id||0); if(!(aid>0)) continue;
+                  if(!m.has(aid)){
+                    const nm = (playerNames && playerNames[String(aid)]) || String(p.personaname||'') || `Player ${aid}`;
+                    m.set(aid, nm);
+                  }
+                }
+              }
+            }catch(_e){}
+            return Array.from(m.entries()).map(([id,name])=>({ id:Number(id), name:String(name) }))
+              .sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
+          }
+          function controlsHtml(){
+            const players = buildPlayersList();
+            const teamOptions = [`<option value="" ${wtTeamSel===''?'selected':''}>All</option>`]
+              .concat(teamsList.map(t=>`<option value="team:${t.id}" ${wtTeamSel===`team:${t.id}`?'selected':''}>${t.name||('Team '+t.id)}</option>`)).join('');
+            const playerOptions = [`<option value="" ${wtPlayerSel? '' : 'selected'}>All players</option>`]
+              .concat(players.map(p=>`<option value="${p.id}" ${wtPlayerSel===p.id?'selected':''}>${p.name||('Player '+p.id)}</option>`)).join('');
+            const sideBtn = (val,label)=> `<button class='tab ${wtSideSel===val?'active':''}' data-side='${val}'>${label}</button>`;
+            const sideDisabled = wtTeamSel && String(wtTeamSel).length>0;
+            const sideStyle = sideDisabled? 'opacity:.55;pointer-events:none' : '';
+            const filterSummary = (function(){
+              const sideTxt = wtTeamSel? '' : (wtSideSel||'All');
+              const teamTxt = (function(){ if(!wtTeamSel) return ''; const id=Number((wtTeamSel.split(':')[1]||'0')); const t = teamsList.find(x=>x.id===id); return t? (t.name||('Team '+id)) : ('Team '+id); })();
+              const playerTxt = (function(){ if(!(wtPlayerSel>0)) return ''; const p = players.find(x=>x.id===wtPlayerSel); return p? (p.name||('Player '+wtPlayerSel)) : ('Player '+wtPlayerSel); })();
+              const parts = [];
+              if(teamTxt) parts.push(`Team: ${teamTxt}`); else if(sideTxt) parts.push(`Side: ${sideTxt}`);
+              if(playerTxt) parts.push(`Player: ${playerTxt}`);
+              return parts.length? `<div class='sub' style='margin:4px 0 0'>Showing ${parts.join(' · ')}</div>` : '';
+            })();
+            return `
+              <div class='controls' style='margin-bottom:8px; display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end'>
+                <div class='field' style='min-width:180px'>
+                  <label class='sub'>Side</label>
+                  <div class='tabs' id='wtSide' style='gap:8px; ${sideStyle}' title='${sideDisabled? 'Disabled because Team is selected' : ''}'>
+                    ${sideBtn('','All')}
+                    ${sideBtn('Radiant','Radiant')}
+                    ${sideBtn('Dire','Dire')}
+                  </div>
+                </div>
+                <div class='field' style='min-width:280px'>
+                  <label class='sub'>Team</label>
+                  <select id='wtTeam' style='min-width:260px'>${teamOptions}</select>
+                  <div class='sub' style='opacity:.8'>Team overrides Side</div>
+                </div>
+                <div class='field' style='min-width:280px'>
+                  <label class='sub'>Player</label>
+                  <select id='wtPlayer' style='min-width:260px'>${playerOptions}</select>
+                </div>
+                <div style='margin-left:auto'>
+                  <button id='wtReset' style='padding:6px 10px;border:1px solid rgba(255,255,255,.15);border-radius:6px;background:rgba(255,255,255,.06);color:#fff'>Reset</button>
+                </div>
+              </div>${filterSummary}`;
+          }
+          function bucketize(details, {side='', teamId=0, playerId=0}){
+            const from = (window.__dvRangeUnix && window.__dvRangeUnix.from) || 0;
+            const to = (window.__dvRangeUnix && window.__dvRangeUnix.to) || 0;
+            const span = Math.max(1, to-from);
+            const days = Math.max(1, Math.ceil(span/86400));
+            const maxBuckets = 60;
+            const stepDays = Math.max(1, Math.ceil(days/maxBuckets));
+            const step = stepDays*86400;
+            const first = from>0? from : (details && details.length && Number(details[0].start_time||0)) || 0;
+            const last = to>0? to : (details && details.length && Number(details[details.length-1].start_time||0)) || (first+step);
+            const count = Math.max(1, Math.ceil((last-first)/step));
+            const buckets = new Array(count).fill(0).map((_,i)=>({ s:first+i*step, e:first+(i+1)*step, lifeObs:[], lifeSen:[], samplesObs:0, samplesSen:0 }));
+            for(const md of details||[]){
+              const startT = Number(md.start_time||0); const dur = Number(md.duration||0);
+              // find bucket index
+              let idx = (startT>0 && step>0) ? Math.floor((startT-first)/step) : 0; if(idx<0) idx=0; if(idx>=buckets.length) idx=buckets.length-1;
+              const rid=Number(md.radiant_team_id||0), did=Number(md.dire_team_id||0);
+              for(const p of (md.players||[])){
+                const aid=Number(p.account_id||0); if(!(aid>0)) continue;
+                if(playerId>0 && aid!==playerId) continue;
+                const isRad = (p.isRadiant===true || p.is_radiant===true || Number(p.player_slot)<128);
+                const sideStr = isRad? 'Radiant':'Dire';
+                const tid = isRad? rid: did;
+                if(teamId>0){ if(tid!==teamId) continue; }
+                else if(side && (side==='Radiant'||side==='Dire')){ if(sideStr!==side) continue; }
+                const obsLog = Array.isArray(p.obs_log)? p.obs_log:[];
+                const leftLog = Array.isArray(p.obs_left_log)? p.obs_left_log:[];
+                const P = obsLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b);
+                const L = leftLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b);
+                let j=0; for(let i=0;i<P.length;i++){ const tP=P[i]; while(j<L.length && L[j]<tP) j++; let life=360; if(j<L.length){ life=Math.max(0, L[j]-tP); j++; } else { life=Math.max(0, Math.min(360, dur - tP)); } buckets[idx].lifeObs.push(Math.min(360, life)); buckets[idx].samplesObs++; }
+                // sentry lifetime if available
+                const senLog = Array.isArray(p.sen_log)? p.sen_log:[];
+                const senLeft = Array.isArray(p.sen_left_log)? p.sen_left_log:[];
+                const PS = senLog.map(o=>Number(o.time||0)).sort((a,b)=>a-b);
+                const LS = senLeft.map(o=>Number(o.time||0)).sort((a,b)=>a-b);
+                let js=0; for(let i=0;i<PS.length;i++){ const tP=PS[i]; while(js<LS.length && LS[js]<tP) js++; let life=360; if(js<LS.length){ life=Math.max(0, LS[js]-tP); js++; } else { life=Math.max(0, Math.min(360, dur - tP)); } buckets[idx].lifeSen.push(Math.min(360, life)); buckets[idx].samplesSen++; }
+              }
+            }
+            const medOf = (arr)=>{ if(!arr.length) return 0; const s=arr.slice().sort((x,y)=>x-y); const m=s.length>>1; return (s.length%2)? s[m] : Math.floor((s[m-1]+s[m])/2); };
+            const avgOf = (arr)=> arr.length? Math.round(arr.reduce((a,c)=>a+c,0)/arr.length) : 0;
+            const arr = buckets.map(b=>({ s:b.s, e:b.e,
+              avg: avgOf(b.lifeObs), med: medOf(b.lifeObs), samples:b.samplesObs,
+              avgS: avgOf(b.lifeSen), medS: medOf(b.lifeSen), samplesS: b.samplesSen
+            }));
+            // forward-fill: on buckets with no samples, carry last known values
+            let lastAvg = 0, lastMed = 0, lastAvgS=0, lastMedS=0;
+            for(const b of arr){ if(b.samples>0){ lastAvg = b.avg; lastMed = b.med; } else { b.avg = lastAvg; b.med = lastMed; }
+                                 if(b.samplesS>0){ lastAvgS = b.avgS; lastMedS = b.medS; } else { b.avgS = lastAvgS; b.medS = lastMedS; } }
+            return arr;
+          }
+          function miniLegend(){ return `<div class='sub' style='display:flex;align-items:center;gap:12px;margin:6px 0 4px'>
+              <span style='display:inline-flex;align-items:center;gap:6px'><span style='width:18px;height:2px;background:#6db0ff;display:inline-block'></span>Obs Avg</span>
+              <span style='display:inline-flex;align-items:center;gap:6px'><span style='width:18px;height:2px;background:#fbbf24;display:inline-block'></span>Obs Median</span>
+              <span style='display:inline-flex;align-items:center;gap:6px'><span style='width:18px;height:2px;background:#a78bfa;display:inline-block'></span>Sen Avg</span>
+              <span style='display:inline-flex;align-items:center;gap:6px'><span style='width:18px;height:2px;background:#ddd6fe;display:inline-block'></span>Sen Median</span>
+            </div>`; }
+          function renderTrend(){
+            const side = wtSideSel || '';
+            const teamId = (function(){ const v=String(wtTeamSel||''); if(v.startsWith('team:')) return Number(v.split(':')[1]||0); const n=Number(v)||0; return n>0?n:0; })();
+            const playerId = wtPlayerSel>0 ? wtPlayerSel : 0;
+            const series = bucketize(details, { side, teamId, playerId });
+            // Build SVG
+            const W = 780, H = 160, P = 22; // padding
+            const n = Math.max(1, series.length);
+            const xmax = n-1, ymax = 360;
+            const sx = (i)=> P + (i/xmax) * (W-2*P);
+            const sy = (v)=> H - P - (v/ymax)*(H-2*P);
+            const line = (vals)=> vals.map((p,i)=> `${sx(i)},${sy(p)}`).join(' ');
+            const avgPts  = line(series.map(s=>s.avg));
+            const medPts  = line(series.map(s=>s.med));
+            const avgPtsS = line(series.map(s=>s.avgS));
+            const medPtsS = line(series.map(s=>s.medS));
+            // x-axis labels: start and end date
+            const fmtD = (u)=>{ if(!u) return ''; const d=new Date(u*1000); return d.toISOString().slice(5,10); };
+            const xStart = series[0] ? fmtD(series[0].s) : '';
+            const xEnd = series[n-1] ? fmtD(series[n-1].e) : '';
+            const tFirst = series[0]? series[0].s : 0; const tLast = series[n-1]? series[n-1].e : 0;
+            const patchLines = (function(){ try{ const arr = (window.__dvPatches||[]).filter(p=> p.ts>=tFirst && p.ts<=tLast); return arr.map(p=>({ x: P + ((p.ts - tFirst)/(tLast - tFirst)) * (W-2*P), label: p.name })); }catch(_e){ return []; } })();
+            // Build table rows for quick inspection
+            const rows = series.map(s=>`<tr><td data-sort='${s.s}'>${fmtD(s.s)}</td><td data-sort='${s.avg}'>${fmtMMSS(s.avg)}</td><td data-sort='${s.med}'>${fmtMMSS(s.med)}</td><td data-sort='${s.samples}'>${s.samples}</td><td data-sort='${s.avgS}'>${fmtMMSS(s.avgS)}</td><td data-sort='${s.medS}'>${fmtMMSS(s.medS)}</td><td data-sort='${s.samplesS}'>${s.samplesS}</td></tr>`).join('');
+            mount.innerHTML = controlsHtml() + miniLegend() + `
+              <div id='wtGraphWrap' style='position:relative; overflow:auto'>
+                <svg id='wtSvg' viewBox='0 0 ${W} ${H}' width='100%' height='${H}' role='img' aria-label='Observer lifetime trend'>
+                  <rect x='0' y='0' width='${W}' height='${H}' fill='transparent' />
+                  <line x1='${P}' y1='${sy(0)}' x2='${W-P}' y2='${sy(0)}' stroke='rgba(255,255,255,.2)' stroke-width='1' />
+                  <polyline fill='none' stroke='#6db0ff' stroke-width='2' points='${avgPts}' />
+                  <polyline fill='none' stroke='#fbbf24' stroke-width='2' points='${medPts}' />
+                  <polyline fill='none' stroke='#a78bfa' stroke-width='2' points='${avgPtsS}' />
+                  <polyline fill='none' stroke='#ddd6fe' stroke-width='2' points='${medPtsS}' />
+                  <g id='wtHoverLayer' pointer-events='none'>
+                    <line id='wtHoverLine' x1='${P}' x2='${P}' y1='${P}' y2='${H-P}' stroke='rgba(255,255,255,.5)' stroke-width='1' stroke-dasharray='3 3' style='display:none' />
+                  </g>
+                  ${patchLines.map(pl=>`<line x1='${pl.x}' y1='${P}' x2='${pl.x}' y2='${H-P}' stroke='rgba(158,199,255,.35)' stroke-width='1' />`).join('')}
+                  ${patchLines.map(pl=>`<text x='${pl.x+2}' y='${P+10}' fill='rgba(158,199,255,.85)' font-size='10' transform='rotate(0, ${pl.x+2}, ${P+10})'>${pl.label}</text>`).join('')}
+                  <text x='${P}' y='${H-4}' fill='rgba(255,255,255,.6)' font-size='10'>${xStart}</text>
+                  <text x='${W-P-28}' y='${H-4}' fill='rgba(255,255,255,.6)' font-size='10' text-anchor='end'>${xEnd}</text>
+                  <text x='${P-6}' y='${sy(360)}' fill='rgba(255,255,255,.6)' font-size='10' text-anchor='end'>360s</text>
+                  <text x='${P-6}' y='${sy(180)}' fill='rgba(255,255,255,.6)' font-size='10' text-anchor='end'>180s</text>
+                  <text x='${P-6}' y='${sy(0)}' fill='rgba(255,255,255,.6)' font-size='10' text-anchor='end'>0</text>
+                </svg>
+                <div id='wtTip' style='position:absolute; top:6px; left:0; transform:translateX(-50%); background:rgba(10,12,16,.92); border:1px solid rgba(255,255,255,.15); padding:6px 8px; border-radius:6px; font-size:12px; line-height:1.3; display:none; pointer-events:none; white-space:nowrap'></div>
+              </div>
+              <table class='table sortable' id='wardTrendTable' style='margin-top:6px'>
+                <thead><tr><th data-type='num'>Bucket</th><th data-type='num'>Obs Avg</th><th data-type='num'>Obs Median</th><th data-type='num'>Obs Samples</th><th data-type='num'>Sen Avg</th><th data-type='num'>Sen Median</th><th data-type='num'>Sen Samples</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>`;
+            try{ if(typeof enableSorting==='function') enableSorting(); }catch(_e){}
+            // bind controls
+            try{
+              const playerSel2 = document.getElementById('wtPlayer');
+              const sideWrap = document.getElementById('wtSide');
+              sideWrap.querySelectorAll('.tab').forEach(btn=> btn.addEventListener('click', ()=>{
+                wtSideSel = String(btn.getAttribute('data-side')||'');
+                // Visual update handled by re-render
+                renderTrend();
+              }));
+              const sel = document.getElementById('wtTeam');
+              sel.addEventListener('change', ()=>{ wtTeamSel = String(sel.value||''); renderTrend(); });
+              if(playerSel2) playerSel2.addEventListener('change', ()=>{ wtPlayerSel = Number(playerSel2.value)||0; renderTrend(); });
+              const resetBtn = document.getElementById('wtReset');
+              if(resetBtn){ resetBtn.addEventListener('click', ()=>{ wtSideSel=''; wtTeamSel=''; wtPlayerSel=0; renderTrend(); }); }
+              // hover interactions
+              const svg = document.getElementById('wtSvg');
+              const tip = document.getElementById('wtTip');
+              const hoverLine = document.getElementById('wtHoverLine');
+              const wrap = document.getElementById('wtGraphWrap');
+              function showAtIndex(i){ i=Math.max(0,Math.min(n-1, i)); const s=series[i]; const x=sx(i); if(hoverLine){ hoverLine.setAttribute('x1', String(x)); hoverLine.setAttribute('x2', String(x)); hoverLine.style.display=''; }
+                if(tip && svg && wrap){
+                  const rect=svg.getBoundingClientRect(); const rx = (x / W) * rect.width; const left = Math.max(8, Math.min(rect.width-8, rx)); tip.style.left = `${left}px`; tip.style.display='';
+                  const teamTxt = (function(){ if(!wtTeamSel) return ''; const id=Number((wtTeamSel.split(':')[1]||'0')); const t = teamsList.find(x=>x.id===id); return t? (t.name||('Team '+id)) : ('Team '+id); })();
+                  const playerTxt = (function(){ if(!(wtPlayerSel>0)) return ''; const p = (buildPlayersList()||[]).find(x=>x.id===wtPlayerSel); return p? (p.name||('Player '+wtPlayerSel)) : ('Player '+wtPlayerSel); })();
+                  const scope = playerTxt ? ` · Player: ${playerTxt}` : (teamTxt ? ` · Team: ${teamTxt}` : (wtSideSel? ` · Side: ${wtSideSel}` : ''));
+                  tip.innerHTML = `${fmtD(s.s)} · Obs ${fmtMMSS(s.avg)}s/${fmtMMSS(s.med)}s (${s.samples}) · Sen ${fmtMMSS(s.avgS)}s/${fmtMMSS(s.medS)}s (${s.samplesS})${scope}`;
+                }
+              }
+              function svgPoint(evt){ const pt = svg.createSVGPoint(); pt.x=evt.clientX; pt.y=evt.clientY; const cur = pt.matrixTransform(svg.getScreenCTM().inverse()); return cur; }
+              function onMove(e){ if(!svg) return; const cur=svgPoint(e); const x = Math.max(P, Math.min(W-P, cur.x)); const i = Math.round(((x - P)/(W - 2*P)) * (n-1)); showAtIndex(i); }
+              function onLeave(){ if(hoverLine) hoverLine.style.display='none'; if(tip) tip.style.display='none'; }
+              if(svg){ svg.addEventListener('mousemove', onMove); svg.addEventListener('mouseleave', onLeave); }
+            }catch(_e){}
+          }
+          renderTrend();
+        }
+      }catch(_e){}
     }
   }catch(err){ console.warn('WardViewer mount failed', err); }
 
