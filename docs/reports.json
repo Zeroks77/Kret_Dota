@@ -1,25 +1,25 @@
 {
   "items": [
     {
-      "title": "September 2025",
-      "href": "2025-September-Report/",
-      "group": "monthly",
-      "time": "2025-10-01T03:28:17Z",
-      "sort": "2025-09"
-    },
-    {
-      "title": "DreamLeague Season 26",
-      "href": "league/2025/DS26/",
+      "title": "PGL Wallachia 2025 Season 5",
+      "href": "league/2025/PW2025S5/",
       "group": "league",
-      "time": "2025-09-30T12:22:28Z",
-      "sort": "2025-DS26"
+      "time": "2025-09-30T12:22:59Z",
+      "sort": "2025-PW2025S5"
     },
     {
-      "title": "August 2025",
-      "href": "2025-August-Report/",
+      "title": "October 2025",
+      "href": "2025-October-Report/",
       "group": "monthly",
-      "time": "2025-09-19T15:26:33Z",
-      "sort": "2025-08"
+      "time": "2025-11-01T03:28:15Z",
+      "sort": "2025-10"
+    },
+    {
+      "title": "FISSURE Universe Episode 6",
+      "href": "league/2025/FUE6/",
+      "group": "league",
+      "time": "2025-09-30T12:22:49Z",
+      "sort": "2025-FUE6"
     },
     {
       "title": "Clavision DOTA2 Masters 2025: Snow-Ruyi",
@@ -29,13 +29,6 @@
       "sort": "2025-CDM2025SR"
     },
     {
-      "title": "Esports World Cup 2025",
-      "href": "league/2025/EWC2025/",
-      "group": "league",
-      "time": "2025-09-30T12:22:37Z",
-      "sort": "2025-EWC2025"
-    },
-    {
       "title": "The International 2025",
       "href": "league/2025/TI2025/",
       "group": "league",
@@ -43,18 +36,32 @@
       "sort": "2025-TI2025"
     },
     {
-      "title": "PGL Wallachia 2025 Season 5",
-      "href": "league/2025/PW2025S5/",
-      "group": "league",
-      "time": "2025-09-30T12:22:59Z",
-      "sort": "2025-PW2025S5"
+      "title": "August 2025",
+      "href": "2025-August-Report/",
+      "group": "monthly",
+      "time": "2025-09-19T15:26:33Z",
+      "sort": "2025-08"
     },
     {
-      "title": "FISSURE Universe Episode 6",
-      "href": "league/2025/FUE6/",
+      "title": "September 2025",
+      "href": "2025-September-Report/",
+      "group": "monthly",
+      "time": "2025-10-01T03:28:17Z",
+      "sort": "2025-09"
+    },
+    {
+      "title": "Esports World Cup 2025",
+      "href": "league/2025/EWC2025/",
       "group": "league",
-      "time": "2025-09-30T12:22:49Z",
-      "sort": "2025-FUE6"
+      "time": "2025-09-30T12:22:37Z",
+      "sort": "2025-EWC2025"
+    },
+    {
+      "title": "DreamLeague Season 26",
+      "href": "league/2025/DS26/",
+      "group": "league",
+      "time": "2025-09-30T12:22:28Z",
+      "sort": "2025-DS26"
     }
   ]
 }
