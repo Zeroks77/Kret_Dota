@@ -813,6 +813,25 @@ function renderSummary(subsetAgg, heroMap){
   sec.style.display='';
 }
 
+// Merge detailed banCounts into the currently rendered hero table by updating
+// the underlying aggregate and re-rendering. No-op for user-only views.
+function __updateHeroesBansFromDetails(banCounts, heroMap){
+  try{
+    if(!banCounts) return;
+    if(typeof __userOnlyAid==='number' && __userOnlyAid>0) return; // per-player view shows no bans
+    const agg = (window && window.__dvAgg) ? window.__dvAgg : null;
+    if(!agg || !agg.heroStats || typeof agg.heroStats.set!=='function') return;
+    for(const [hid,cnt] of banCounts.entries ? banCounts.entries() : Object.entries(banCounts)){
+      const id = Number(hid)||0; if(!(id>0)) continue;
+      let hs = agg.heroStats.get(id);
+      if(!hs){ hs = { picks:0, wins:0, bans:0 }; agg.heroStats.set(id, hs); }
+      hs.bans = Number(cnt)||0;
+    }
+    // Re-render using updated aggregate. This updates only the visible tables and keeps sorting behavior.
+    render(agg, heroMap);
+  }catch(_e){}
+}
+
 function renderHighlights(high, heroMap, mapConf, label){
   const card = document.getElementById('highlightsCard');
   const body = document.getElementById('highlightsBody');
@@ -1549,9 +1568,22 @@ async function main(){
             M.get(rk).games++; M.get(dk).games++; if((rAvg-dAvg)>=0) M.get(rk).wins++; else M.get(dk).wins++;
           }
         }
-        // Picks/Bans aggregation
+        // Picks/Bans aggregation (with fallback to draft_timings when picks_bans missing)
         try{
-          const pbs = Array.isArray(md.picks_bans)? md.picks_bans : [];
+          let pbs = Array.isArray(md.picks_bans)? md.picks_bans : null;
+          if(!pbs || pbs.length===0){
+            // Map draft_timings to picks_bans-like objects
+            const dt = Array.isArray(md.draft_timings)? md.draft_timings : [];
+            if(dt.length){
+              pbs = dt.map(ev=>({
+                hero_id: Number(ev.hero_id||0),
+                is_pick: !!ev.pick,
+                // Normalize team: OpenDota active_team 2=Radiant, 3=Dire → picks_bans team 0/1
+                team: (Number(ev.active_team)===2? 0 : 1),
+                order: Number(ev.order||0)
+              }));
+            } else { pbs = []; }
+          }
           for(const pb of pbs){ if(pb && pb.is_pick===false){ const hid = Number(pb.hero_id||0); if(hid>0) banCounts.set(hid, (banCounts.get(hid)||0)+1); } }
         }catch(_e){}
         // Objectives: Roshan, Aegis snatch, Tormentor
@@ -2268,6 +2300,8 @@ async function main(){
       const arr = Array.from(high.banCounts.entries()).map(([hid,cnt])=>({hid:Number(hid), bans:Number(cnt)})).sort((a,b)=> b.bans-a.bans).slice(0,3);
   const html = arr.map(h=>{ const meta = heroMap[String(h.hid)]||{}; return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${meta.img||''}' alt='${meta.name||('#'+h.hid)}'><span class='name'>${meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Bans: ${h.bans}</span></span></li>`; }).join('');
       ul.innerHTML = html || `<li><span class='sub'>no data</span></li>`;
+      // Also reflect bans in the Heroes table by overlaying onto aggregate
+      try{ __updateHeroesBansFromDetails(high.banCounts, heroMap); }catch(_e){}
     }
   }catch(_e){}
   // Compute awards in parallel with same details
@@ -2410,6 +2444,7 @@ async function main(){
   // Init calendar cursor to month of 'to'
   const dTo = new Date(t*1000); __calCursor = {y:dTo.getUTCFullYear(), m:dTo.getUTCMonth()};
   const agg = aggregate(statsSubset, playerNames, teamNames);
+  try{ window.__dvAgg = agg; }catch(_e){}
   renderSummary(agg, heroes);
     render(agg, heroes);
   // Compute highlights live for this arbitrary range

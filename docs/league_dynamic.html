@@ -387,12 +387,24 @@
           is_radiant: !!(p.isRadiant ?? p.is_radiant ?? ((p.player_slot|0) < 128)),
           personaname: p.personaname || null
         })) : [];
-        const picks_bans = Array.isArray(d.picks_bans) ? d.picks_bans.map(pb => ({
-          hero_id: Number(pb.hero_id || 0),
-          is_pick: !!pb.is_pick,
-          team: (pb.team !== undefined ? Number(pb.team) : (pb.is_radiant ? 0 : 1)),
-          order: Number(pb.order || pb.pick_order || pb.draft_order || 0)
-        })) : [];
+        // Prefer native picks_bans; fallback to draft_timings when not provided by OpenDota for this match
+        let picks_bans = [];
+        if (Array.isArray(d.picks_bans) && d.picks_bans.length) {
+          picks_bans = d.picks_bans.map(pb => ({
+            hero_id: Number(pb.hero_id || 0),
+            is_pick: !!pb.is_pick,
+            team: (pb.team !== undefined ? Number(pb.team) : (pb.is_radiant ? 0 : 1)),
+            order: Number(pb.order || pb.pick_order || pb.draft_order || 0)
+          }));
+        } else if (Array.isArray(d.draft_timings) && d.draft_timings.length) {
+          picks_bans = d.draft_timings.map(dt => ({
+            hero_id: Number(dt.hero_id || 0),
+            is_pick: !!(dt.pick || dt.is_pick),
+            // active_team in OD draft_timings is 2/3 – map to 0/1 but it's not used in aggregation for bans
+            team: (dt.active_team === 2 ? 0 : 1),
+            order: Number(dt.order || dt.pick_order || dt.draft_order || 0)
+          }));
+        }
         out.push({
           match_id: mid,
           radiant_win: !!d.radiant_win,
@@ -1141,7 +1153,7 @@
               }
               renderTrend();
             }
-          }
+          } catch(_e){}
         });
       };
 
