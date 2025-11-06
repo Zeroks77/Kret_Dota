@@ -315,21 +315,6 @@
     "series_type": 1
   },
   {
-    "match_id": 8372946230,
-    "radiant_win": true,
-    "start_time": 1752413340,
-    "duration": 2066,
-    "leagueid": 18375,
-    "radiant_score": 22,
-    "dire_score": 6,
-    "radiant_team_id": 8599101,
-    "radiant_team_name": null,
-    "dire_team_id": 9823272,
-    "dire_team_name": null,
-    "series_id": 993234,
-    "series_type": 1
-  },
-  {
     "match_id": 8372950733,
     "radiant_win": true,
     "start_time": 1752413579,
@@ -345,18 +330,18 @@
     "series_type": 1
   },
   {
-    "match_id": 8372859638,
-    "radiant_win": false,
-    "start_time": 1752409803,
-    "duration": 1959,
+    "match_id": 8372946230,
+    "radiant_win": true,
+    "start_time": 1752413340,
+    "duration": 2066,
     "leagueid": 18375,
-    "radiant_score": 7,
-    "dire_score": 45,
-    "radiant_team_id": 8597976,
+    "radiant_score": 22,
+    "dire_score": 6,
+    "radiant_team_id": 8599101,
     "radiant_team_name": null,
-    "dire_team_id": 8291895,
+    "dire_team_id": 9823272,
     "dire_team_name": null,
-    "series_id": 993229,
+    "series_id": 993234,
     "series_type": 1
   },
   {
@@ -372,6 +357,21 @@
     "dire_team_id": 8599101,
     "dire_team_name": null,
     "series_id": 993234,
+    "series_type": 1
+  },
+  {
+    "match_id": 8372859638,
+    "radiant_win": false,
+    "start_time": 1752409803,
+    "duration": 1959,
+    "leagueid": 18375,
+    "radiant_score": 7,
+    "dire_score": 45,
+    "radiant_team_id": 8597976,
+    "radiant_team_name": null,
+    "dire_team_id": 8291895,
+    "dire_team_name": null,
+    "series_id": 993229,
     "series_type": 1
   },
   {
@@ -435,21 +435,6 @@
     "series_type": 1
   },
   {
-    "match_id": 8371514783,
-    "radiant_win": false,
-    "start_time": 1752328560,
-    "duration": 2064,
-    "leagueid": 18375,
-    "radiant_score": 18,
-    "dire_score": 33,
-    "radiant_team_id": 9303484,
-    "radiant_team_name": null,
-    "dire_team_id": 8597976,
-    "dire_team_name": null,
-    "series_id": 992797,
-    "series_type": 1
-  },
-  {
     "match_id": 8371535428,
     "radiant_win": true,
     "start_time": 1752329400,
@@ -462,6 +447,21 @@
     "dire_team_id": 39,
     "dire_team_name": null,
     "series_id": 992798,
+    "series_type": 1
+  },
+  {
+    "match_id": 8371514783,
+    "radiant_win": false,
+    "start_time": 1752328560,
+    "duration": 2064,
+    "leagueid": 18375,
+    "radiant_score": 18,
+    "dire_score": 33,
+    "radiant_team_id": 9303484,
+    "radiant_team_name": null,
+    "dire_team_id": 8597976,
+    "dire_team_name": null,
+    "series_id": 992797,
     "series_type": 1
   },
   {
@@ -555,21 +555,6 @@
     "series_type": 1
   },
   {
-    "match_id": 8370366920,
-    "radiant_win": true,
-    "start_time": 1752252303,
-    "duration": 2359,
-    "leagueid": 18375,
-    "radiant_score": 42,
-    "dire_score": 13,
-    "radiant_team_id": 8291895,
-    "radiant_team_name": null,
-    "dire_team_id": 9467224,
-    "dire_team_name": null,
-    "series_id": 992562,
-    "series_type": 1
-  },
-  {
     "match_id": 8370372201,
     "radiant_win": true,
     "start_time": 1752252303,
@@ -585,16 +570,16 @@
     "series_type": 1
   },
   {
-    "match_id": 8370281197,
+    "match_id": 8370366920,
     "radiant_win": true,
-    "start_time": 1752248401,
-    "duration": 1905,
+    "start_time": 1752252303,
+    "duration": 2359,
     "leagueid": 18375,
-    "radiant_score": 28,
-    "dire_score": 12,
-    "radiant_team_id": 9467224,
+    "radiant_score": 42,
+    "dire_score": 13,
+    "radiant_team_id": 8291895,
     "radiant_team_name": null,
-    "dire_team_id": 8291895,
+    "dire_team_id": 9467224,
     "dire_team_name": null,
     "series_id": 992562,
     "series_type": 1
@@ -612,6 +597,21 @@
     "dire_team_id": 9303484,
     "dire_team_name": null,
     "series_id": 992565,
+    "series_type": 1
+  },
+  {
+    "match_id": 8370281197,
+    "radiant_win": true,
+    "start_time": 1752248401,
+    "duration": 1905,
+    "leagueid": 18375,
+    "radiant_score": 28,
+    "dire_score": 12,
+    "radiant_team_id": 9467224,
+    "radiant_team_name": null,
+    "dire_team_id": 8291895,
+    "dire_team_name": null,
+    "series_id": 992562,
     "series_type": 1
   },
   {
@@ -675,21 +675,6 @@
     "series_type": 3
   },
   {
-    "match_id": 8369888320,
-    "radiant_win": false,
-    "start_time": 1752228550,
-    "duration": 2201,
-    "leagueid": 18375,
-    "radiant_score": 19,
-    "dire_score": 26,
-    "radiant_team_id": 9729720,
-    "radiant_team_name": null,
-    "dire_team_id": 9467224,
-    "dire_team_name": null,
-    "series_id": 992482,
-    "series_type": 3
-  },
-  {
     "match_id": 8369893270,
     "radiant_win": false,
     "start_time": 1752228661,
@@ -702,6 +687,21 @@
     "dire_team_id": 8291895,
     "dire_team_name": null,
     "series_id": 992484,
+    "series_type": 3
+  },
+  {
+    "match_id": 8369888320,
+    "radiant_win": false,
+    "start_time": 1752228550,
+    "duration": 2201,
+    "leagueid": 18375,
+    "radiant_score": 19,
+    "dire_score": 26,
+    "radiant_team_id": 9729720,
+    "radiant_team_name": null,
+    "dire_team_id": 9467224,
+    "dire_team_name": null,
+    "series_id": 992482,
     "series_type": 3
   },
   {
@@ -765,21 +765,6 @@
     "series_type": 3
   },
   {
-    "match_id": 8368736355,
-    "radiant_win": false,
-    "start_time": 1752147001,
-    "duration": 2898,
-    "leagueid": 18375,
-    "radiant_score": 33,
-    "dire_score": 44,
-    "radiant_team_id": 8254145,
-    "radiant_team_name": null,
-    "dire_team_id": 9131584,
-    "dire_team_name": null,
-    "series_id": 992226,
-    "series_type": 3
-  },
-  {
     "match_id": 8368746002,
     "radiant_win": false,
     "start_time": 1752147480,
@@ -795,18 +780,18 @@
     "series_type": 3
   },
   {
-    "match_id": 8368656917,
+    "match_id": 8368736355,
     "radiant_win": false,
-    "start_time": 1752141840,
-    "duration": 2858,
+    "start_time": 1752147001,
+    "duration": 2898,
     "leagueid": 18375,
-    "radiant_score": 14,
-    "dire_score": 34,
-    "radiant_team_id": 8261500,
+    "radiant_score": 33,
+    "dire_score": 44,
+    "radiant_team_id": 8254145,
     "radiant_team_name": null,
-    "dire_team_id": 8597976,
+    "dire_team_id": 9131584,
     "dire_team_name": null,
-    "series_id": 992205,
+    "series_id": 992226,
     "series_type": 3
   },
   {
@@ -822,6 +807,21 @@
     "dire_team_id": 9828954,
     "dire_team_name": null,
     "series_id": 992204,
+    "series_type": 3
+  },
+  {
+    "match_id": 8368656917,
+    "radiant_win": false,
+    "start_time": 1752141840,
+    "duration": 2858,
+    "leagueid": 18375,
+    "radiant_score": 14,
+    "dire_score": 34,
+    "radiant_team_id": 8261500,
+    "radiant_team_name": null,
+    "dire_team_id": 8597976,
+    "dire_team_name": null,
+    "series_id": 992205,
     "series_type": 3
   },
   {
@@ -1005,21 +1005,6 @@
     "series_type": 3
   },
   {
-    "match_id": 8367494848,
-    "radiant_win": false,
-    "start_time": 1752060602,
-    "duration": 2794,
-    "leagueid": 18375,
-    "radiant_score": 20,
-    "dire_score": 35,
-    "radiant_team_id": 9247354,
-    "radiant_team_name": null,
-    "dire_team_id": 9131584,
-    "dire_team_name": null,
-    "series_id": 992012,
-    "series_type": 3
-  },
-  {
     "match_id": 8367506206,
     "radiant_win": true,
     "start_time": 1752061089,
@@ -1032,6 +1017,21 @@
     "dire_team_id": 8254145,
     "dire_team_name": null,
     "series_id": 992014,
+    "series_type": 3
+  },
+  {
+    "match_id": 8367494848,
+    "radiant_win": false,
+    "start_time": 1752060602,
+    "duration": 2794,
+    "leagueid": 18375,
+    "radiant_score": 20,
+    "dire_score": 35,
+    "radiant_team_id": 9247354,
+    "radiant_team_name": null,
+    "dire_team_id": 9131584,
+    "dire_team_name": null,
+    "series_id": 992012,
     "series_type": 3
   },
   {
@@ -1155,21 +1155,6 @@
     "series_type": 3
   },
   {
-    "match_id": 8366650162,
-    "radiant_win": false,
-    "start_time": 1751993044,
-    "duration": 2837,
-    "leagueid": 18375,
-    "radiant_score": 16,
-    "dire_score": 26,
-    "radiant_team_id": 9729720,
-    "radiant_team_name": null,
-    "dire_team_id": 8291895,
-    "dire_team_name": null,
-    "series_id": 991820,
-    "series_type": 3
-  },
-  {
     "match_id": 8366657083,
     "radiant_win": false,
     "start_time": 1751992681,
@@ -1185,18 +1170,18 @@
     "series_type": 3
   },
   {
-    "match_id": 8366548746,
+    "match_id": 8366650162,
     "radiant_win": false,
-    "start_time": 1751987881,
-    "duration": 2729,
+    "start_time": 1751993044,
+    "duration": 2837,
     "leagueid": 18375,
-    "radiant_score": 22,
-    "dire_score": 38,
-    "radiant_team_id": 9823272,
+    "radiant_score": 16,
+    "dire_score": 26,
+    "radiant_team_id": 9729720,
     "radiant_team_name": null,
-    "dire_team_id": 9467224,
+    "dire_team_id": 8291895,
     "dire_team_name": null,
-    "series_id": 991815,
+    "series_id": 991820,
     "series_type": 3
   },
   {
@@ -1212,6 +1197,21 @@
     "dire_team_id": 8291895,
     "dire_team_name": null,
     "series_id": 991820,
+    "series_type": 3
+  },
+  {
+    "match_id": 8366548746,
+    "radiant_win": false,
+    "start_time": 1751987881,
+    "duration": 2729,
+    "leagueid": 18375,
+    "radiant_score": 22,
+    "dire_score": 38,
+    "radiant_team_id": 9823272,
+    "radiant_team_name": null,
+    "dire_team_id": 9467224,
+    "dire_team_name": null,
+    "series_id": 991815,
     "series_type": 3
   },
   {
@@ -1305,21 +1305,6 @@
     "series_type": 3
   },
   {
-    "match_id": 8366137206,
-    "radiant_win": true,
-    "start_time": 1751965908,
-    "duration": 2817,
-    "leagueid": 18375,
-    "radiant_score": 26,
-    "dire_score": 13,
-    "radiant_team_id": 7119388,
-    "radiant_team_name": null,
-    "dire_team_id": 8261500,
-    "dire_team_name": null,
-    "series_id": 991753,
-    "series_type": 3
-  },
-  {
     "match_id": 8366140862,
     "radiant_win": true,
     "start_time": 1751966193,
@@ -1332,6 +1317,21 @@
     "dire_team_id": 8597976,
     "dire_team_name": null,
     "series_id": 991754,
+    "series_type": 3
+  },
+  {
+    "match_id": 8366137206,
+    "radiant_win": true,
+    "start_time": 1751965908,
+    "duration": 2817,
+    "leagueid": 18375,
+    "radiant_score": 26,
+    "dire_score": 13,
+    "radiant_team_id": 7119388,
+    "radiant_team_name": null,
+    "dire_team_id": 8261500,
+    "dire_team_name": null,
+    "series_id": 991753,
     "series_type": 3
   }
 ]

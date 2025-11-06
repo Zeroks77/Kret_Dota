@@ -628,8 +628,17 @@
   const [matchesRaw, heroesRaw, mapConfRaw, report, proPlayers, patchRaw] = await Promise.all([
       // League-specific files primarily live under docs/data/league/<slug>/ ...
       loadFirst(pref(
-        fromBases(`league/${slug}/matches.json`),
-        [`${rawBase}/league/${slug}/matches.json`, `${rawDocsBase}/league/${slug}/matches.json`]
+        [
+          ...fromBases(`league/${slug}/matches.json`),
+          // extra fallbacks for historical layouts
+          ...fromBases(`chunks/league/${slug}/matches.json`)
+        ],
+        [
+          `${rawBase}/league/${slug}/matches.json`,
+          `${rawDocsBase}/league/${slug}/matches.json`,
+          `${rawBase}/chunks/league/${slug}/matches.json`,
+          `${rawDocsBase}/chunks/league/${slug}/matches.json`
+        ]
       )),
       // Core constants exist in both data/ and docs/data/
       loadFirst(pref(
@@ -641,8 +650,17 @@
         [`${rawBase}/maps.json`, `${rawDocsBase}/maps.json`]
       )),
       loadFirst(pref(
-        fromBases(`league/${slug}/report.json`),
-        [`${rawBase}/league/${slug}/report.json`, `${rawDocsBase}/league/${slug}/report.json`]
+        [
+          ...fromBases(`league/${slug}/report.json`),
+          // extra fallbacks for historical layouts
+          ...fromBases(`chunks/league/${slug}/report.json`)
+        ],
+        [
+          `${rawBase}/league/${slug}/report.json`,
+          `${rawDocsBase}/league/${slug}/report.json`,
+          `${rawBase}/chunks/league/${slug}/report.json`,
+          `${rawDocsBase}/chunks/league/${slug}/report.json`
+        ]
       )),
       loadFirst(pref(
         fromBases(`cache/OpenDota/proPlayers.json`),
@@ -927,9 +945,8 @@
       };
       
       
-  window.__ensureWards = () => {
-        if (mountedWards) return; mountedWards = true;
-        detailsPromise.then(details => {
+  // Extracted to avoid nested brace/parser ambiguity
+  function __mountWardsWith(details){
           // Mount Spots into std host using WardViewer (no extras)
           try {
             const stdHost = document.getElementById('dvWardStd');
@@ -1016,7 +1033,6 @@
           }catch(_e){}
 
           // Players subtab with extra filters and Dist legend
-          try{
             const mountPl = document.getElementById('dvWardPlayers');
             if(mountPl){
               const teamsList = (function(){ const m=new Map(); try{ for(const md of details||[]){ const rid=Number(md.radiant_team_id||0), did=Number(md.dire_team_id||0); const r=(md.radiant_team&&md.radiant_team.name)||md.radiant_name||teamNames[String(rid)]||'Radiant'; const d=(md.dire_team&&md.dire_team.name)||md.dire_name||teamNames[String(did)]||'Dire'; if(rid) m.set(rid, r); if(did) m.set(did, d);} }catch(_e){} return Array.from(m.entries()).map(([id,name])=>({id:Number(id),name:String(name)})).sort((a,b)=> String(a.name||'').localeCompare(String(b.name||''))); })();
@@ -1068,7 +1084,6 @@
               }
               renderPlayers();
             }
-          }catch(_e){}
 
           // Trend subtab with Player mode
           try{
@@ -1090,7 +1105,7 @@
                 const series = bucketize(details, { side, teamId, playerId });
                 const W=780, H=160, P=22;
                 const n=Math.max(1, series.length);
-                const xmax=n-1, ymax=360;
+                const xmax=Math.max(1, n-1), ymax=360;
                 const sx=(i)=> P + (i/xmax)*(W-2*P);
                 const sy=(val)=> H - P - (val/ymax)*(H-2*P);
                 const line=(vals)=> vals.map((p,i)=> `${sx(i)},${sy(p)}`).join(' ');
@@ -1103,7 +1118,10 @@
                 const xEnd=series[n-1]? fmtD(series[n-1].e):'';
                 const tFirst=series[0]? series[0].s:0;
                 const tLast=series[n-1]? series[n-1].e:0;
-                const patchLines=(patches||[]).filter(p=> p.ts>=tFirst && p.ts<=tLast).map(p=>({ x: P + ((p.ts-tFirst)/(tLast-tFirst))*(W-2*P), label:p.name }));
+                const denom = Math.max(1, (tLast - tFirst));
+                const patchLines=(patches||[]).filter(p=> p.ts>=tFirst && p.ts<=tLast).map(p=>({ x: P + ((p.ts-tFirst)/denom)*(W-2*P), label:p.name }));
+                const patchLinesSvg = patchLines.map(pl=>`<line x1='${pl.x}' y1='${P}' x2='${pl.x}' y2='${H-P}' stroke='rgba(158,199,255,.35)' stroke-width='1' />`).join('');
+                const patchLabelsSvg = patchLines.map(pl=>`<text x='${pl.x+2}' y='${P+10}' fill='rgba(158,199,255,.85)' font-size='10'>${pl.label}</text>`).join('');
                 const rows = series.map(s=>`<tr><td data-sort='${s.s}'>${fmtD(s.s)}</td><td data-sort='${s.avg}'>${fmtMMSS(s.avg)}</td><td data-sort='${s.med}'>${fmtMMSS(s.med)}</td><td data-sort='${s.samples}'>${s.samples}</td><td data-sort='${s.avgS}'>${fmtMMSS(s.avgS)}</td><td data-sort='${s.medS}'>${fmtMMSS(s.medS)}</td><td data-sort='${s.samplesS}'>${s.samplesS}</td></tr>`).join('');
                 mountTr.innerHTML = controlsHtml() + miniLegend() + `
                   <div id='wtGraphWrapLv' style='position:relative; overflow:auto'>
@@ -1117,8 +1135,8 @@
                       <g id='wtHoverLayerLv' pointer-events='none'>
                         <line id='wtHoverLineLv' x1='${P}' x2='${P}' y1='${P}' y2='${H-P}' stroke='rgba(255,255,255,.5)' stroke-width='1' stroke-dasharray='3 3' style='display:none' />
                       </g>
-                      ${patchLines.map(pl=>`<line x1='${pl.x}' y1='${P}' x2='${pl.x}' y2='${H-P}' stroke='rgba(158,199,255,.35)' stroke-width='1' />`).join('')}
-                      ${patchLines.map(pl=>`<text x='${pl.x+2}' y='${P+10}' fill='rgba(158,199,255,.85)' font-size='10'>${pl.label}</text>`).join('')}
+                      ${patchLinesSvg}
+                      ${patchLabelsSvg}
                       <text x='${P}' y='${H-4}' fill='rgba(255,255,255,.6)' font-size='10'>${xStart}</text>
                       <text x='${W-P-28}' y='${H-4}' fill='rgba(255,255,255,.6)' font-size='10' text-anchor='end'>${xEnd}</text>
                       <text x='${P-6}' y='${sy(360)}' fill='rgba(255,255,255,.6)' font-size='10' text-anchor='end'>360s</text>
@@ -1154,7 +1172,10 @@
               renderTrend();
             }
           } catch(_e){}
-        });
+  }
+  window.__ensureWards = () => {
+        if (mountedWards) return; mountedWards = true;
+        detailsPromise.then(__mountWardsWith);
       };
 
       // Placement tab mounting from report.json
@@ -1290,7 +1311,7 @@
         });
       } catch(_e){}
     }
-
+  }
   enableSorting();
   main();
   </script>
