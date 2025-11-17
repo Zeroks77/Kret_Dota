@@ -666,8 +666,10 @@ function Request-Parse-ForMissing(){
         if(-not $hasPlayers){ $reasons += 'no players' }
         if(-not $hasObjectives){ $reasons += 'no objectives' }
         if(-not $hasUsage){ $reasons += 'no usage logs' }
-        $flag = $null; try{ if($md.od_data -and $md.od_data.has_parsed -ne $null){ $flag = [string]$md.od_data.has_parsed } }catch{}
-        Write-Log ("Needs parse: match={0}, heuristic_parsed={1}, od_data.has_parsed={2}, reasons=[{3}]" -f $mid, $parsedHeuristic, ($flag ?? 'n/a'), ($reasons -join ', '))
+  $flag = $null; try{ if($md.od_data -and $md.od_data.has_parsed -ne $null){ $flag = [string]$md.od_data.has_parsed } }catch{}
+  # PowerShell 5.1 does not support C# null-coalescing; emulate explicitly without using that operator text
+  $flagDisplay = if($null -eq $flag -or [string]::IsNullOrWhiteSpace($flag)){ 'n/a' } else { $flag }
+  Write-Log ("Needs parse: match={0}, heuristic_parsed={1}, od_data.has_parsed={2}, reasons=[{3}]" -f $mid, $parsedHeuristic, $flagDisplay, ($reasons -join ', '))
       }
     } catch { $needs=$true }
     if($needs){
@@ -677,7 +679,9 @@ function Request-Parse-ForMissing(){
         try{
           $elapsedNow = ((Get-Date) - $start).TotalSeconds
           $remaining = if($ParseBudgetSec -gt 0){ [Math]::Max(0,[int]([Math]::Round($ParseBudgetSec - $elapsedNow))) } else { -1 }
-          Write-Log ("POST /request -> match={0}, attempt {1}/{2}, elapsed={3:n1}s, remaining={4}" -f $mid, $a, $attempts, $elapsedNow, ($remaining -ne -1 ? ($remaining.ToString()+'s') : 'n/a'))
+          # Emulate ternary operator for PowerShell 5.1
+          $remainingDisplay = if($remaining -ne -1){ ($remaining.ToString()+'s') } else { 'n/a' }
+          Write-Log ("POST /request -> match={0}, attempt {1}/{2}, elapsed={3:n1}s, remaining={4}" -f $mid, $a, $attempts, $elapsedNow, $remainingDisplay)
           $resp = Invoke-Json -Method POST -Uri ("https://api.opendota.com/api/request/{0}" -f $mid)
           try{
             $desc = ''
