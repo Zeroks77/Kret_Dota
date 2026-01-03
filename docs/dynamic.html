@@ -1197,15 +1197,31 @@ async function main(){
       });
     }catch(_e){}
   })();
-  // Load from docs-local data/ (GitHub Pages / static hosting) with raw.githubusercontent.com fallback.
+  // Load data from either docs/data (GitHub Pages) or ../data (repo root) – pick the freshest manifest.
   // You can override repo/branch via URL params (?repo=owner/name&branch=main) when previewing forks.
   const __sp_local = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
   const REPO = (__sp_local.get('repo') || 'Zeroks77/Kret_Dota');
   const BRANCH = (__sp_local.get('branch') || 'main');
-  const relBase='data';
-  const rawBase=`https://raw.githubusercontent.com/${REPO}/${BRANCH}/docs/data`;
-  const [manifest, heroesRaw, info, mapConf, patchRaw] = await Promise.all([
-    loadJsonWithFallback(`${relBase}/manifest.json`, `${rawBase}/manifest.json`),
+  const relDocsBase = 'data';
+  const relRepoBase = '../data';
+  const rawDocsBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/docs/data`;
+  const rawRepoBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
+
+  let manifest = null;
+  let relBase = relDocsBase;
+  let rawBase = rawDocsBase;
+
+  const manDocs = await loadJsonWithFallback(`${relDocsBase}/manifest.json`, `${rawDocsBase}/manifest.json`).catch(()=>null);
+  const manRepo = await loadJsonWithFallback(`${relRepoBase}/manifest.json`, `${rawRepoBase}/manifest.json`).catch(()=>null);
+  const docsUpdated = Number(manDocs && manDocs.updated) || 0;
+  const repoUpdated = Number(manRepo && manRepo.updated) || 0;
+  if(manRepo && (!manDocs || repoUpdated > docsUpdated)){
+    manifest = manRepo; relBase = relRepoBase; rawBase = rawRepoBase;
+  } else {
+    manifest = manDocs; relBase = relDocsBase; rawBase = rawDocsBase;
+  }
+
+  const [heroesRaw, info, mapConf, patchRaw] = await Promise.all([
     loadJsonWithFallback(`${relBase}/heroes.json`, `${rawBase}/heroes.json`),
     loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({})),
     loadJsonWithFallback(`${relBase}/maps.json`, `${rawBase}/maps.json`).catch(()=>null),
@@ -2323,7 +2339,14 @@ async function main(){
       if(!ids.length) return [];
       const details = await pMap(ids, 6, id=> fetchMatchDetail(id));
       const ok = new Set();
-      for(const d of details){ if(d && Number(d.leagueid||0)===L){ ok.add(Number(d.match_id||0)); } }
+      let anyLeagueId = false;
+      for(const d of details){
+        const lid2 = d ? Number(d.leagueid||0) : 0;
+        if(lid2>0) anyLeagueId = true;
+        if(d && lid2===L){ ok.add(Number(d.match_id||0)); }
+      }
+      // If we couldn't determine league ids at all (no cache + API blocked), do NOT wipe the view.
+      if(!anyLeagueId || ok.size===0){ return subset; }
       return subset.filter(m => ok.has(Number(m.match_id||m.matchId||0)));
     }catch(_e){ return subset; }
   }
