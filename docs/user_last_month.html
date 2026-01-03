@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dynamic – Last Month (Exclude Current)</title>
+  <base href="./">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b1020;--panel:#121832;--muted:#9aa3b2;--text:#eef1f7;--accent:#6da6ff;--chip:#1a2142;--border:rgba(255,255,255,.08)}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;height:100vh;display:flex;flex-direction:column}
+    a{color:var(--accent)}
+    .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.03)}
+    .title{font-weight:700}
+    .sub{color:var(--muted);font-size:12px}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--text);font-size:12px}
+    .wrap{flex:1;display:flex;min-height:0}
+    iframe{border:0;flex:1;width:100%;height:100%}
+    .msg{padding:14px 12px}
+  </style>
+  <script defer src="js/url_params.js"></script>
+</head>
+<body>
+  <div class="bar">
+    <div>
+      <div class="title" id="tTitle">Dynamic – Last Month</div>
+      <div class="sub" id="tSub">Dynamic viewer with the current month always excluded. Defaults to last completed calendar month (UTC).</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span class="pill" id="tPeriod">-</span>
+      <a class="sub" href="./index.html">Back to index</a>
+    </div>
+  </div>
+
+  <div class="wrap" id="wrap">
+    <iframe id="frame" src="about:blank" loading="eager"></iframe>
+  </div>
+
+  <div class="msg" id="msg" style="display:none"></div>
+
+  <script>
+    (function(){
+      function getCanonicalParams(){
+        try{
+          if (window.UrlParams && typeof window.UrlParams.getCanonical === 'function') return window.UrlParams.getCanonical();
+        } catch(_e) {}
+        try{ return new URLSearchParams(location.search); }catch(_e){ return new URLSearchParams(); }
+      }
+
+      function computePrevMonthRangeUtc(){
+        const now = new Date();
+        const y = now.getUTCFullYear();
+        const m = now.getUTCMonth();
+        const start = new Date(Date.UTC(y, m - 1, 1, 0, 0, 0));
+        const end = new Date(Date.UTC(y, m, 0, 23, 59, 59));
+        return {
+          from: Math.floor(start.getTime()/1000),
+          to: Math.floor(end.getTime()/1000),
+          label: start.toISOString().slice(0,10) + ' to ' + end.toISOString().slice(0,10) + ' (UTC)'
+        };
+      }
+
+      function showMessage(html){
+        const wrap = document.getElementById('wrap');
+        const msg = document.getElementById('msg');
+        if (wrap) wrap.style.display = 'none';
+        if (msg){ msg.style.display = 'block'; msg.innerHTML = html; }
+      }
+
+      const sp = getCanonicalParams();
+      const range = computePrevMonthRangeUtc();
+      const period = document.getElementById('tPeriod');
+      if (period) period.textContent = range.label;
+
+      // Build iframe URL to dynamic.html, using same-origin embed bypass (no key prompt).
+      const child = new URL('./dynamic.html', location.href);
+      child.searchParams.set('bypass', 'monthly');
+      // Always exclude current month matches in the child view
+      child.searchParams.set('excur', '1');
+      child.searchParams.set('from', String(range.from));
+      child.searchParams.set('to', String(range.to));
+      // Optional: allow selecting an initial tab via wrapper URL
+      const tab = sp.get('tab');
+      if (tab) child.searchParams.set('tab', String(tab));
+
+      const title = document.getElementById('tTitle');
+      if (title) title.textContent = 'Dynamic – Last Month (current month excluded)';
+
+      const frame = document.getElementById('frame');
+      if (frame) frame.src = child.toString();
+    })();
+  </script>
+</body>
+</html>

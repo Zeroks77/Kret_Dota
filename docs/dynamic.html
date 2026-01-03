@@ -1197,9 +1197,13 @@ async function main(){
       });
     }catch(_e){}
   })();
-  // Load from root-level data/ via relative path (local) or raw.githubusercontent.com (GitHub Pages)
-  const REPO='Zeroks77/Kret_Dota'; const BRANCH='main';
-  const relBase='../data'; const rawBase=`https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
+  // Load from docs-local data/ (GitHub Pages / static hosting) with raw.githubusercontent.com fallback.
+  // You can override repo/branch via URL params (?repo=owner/name&branch=main) when previewing forks.
+  const __sp_local = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
+  const REPO = (__sp_local.get('repo') || 'Zeroks77/Kret_Dota');
+  const BRANCH = (__sp_local.get('branch') || 'main');
+  const relBase='data';
+  const rawBase=`https://raw.githubusercontent.com/${REPO}/${BRANCH}/docs/data`;
   const [manifest, heroesRaw, info, mapConf, patchRaw] = await Promise.all([
     loadJsonWithFallback(`${relBase}/manifest.json`, `${rawBase}/manifest.json`),
     loadJsonWithFallback(`${relBase}/heroes.json`, `${rawBase}/heroes.json`),
@@ -1292,6 +1296,7 @@ async function main(){
   let __rangeUnix = {from:0,to:0};
   let __calCursor = null; // {y,m}
   let __partialCount = 0; // number of matches loaded via partial/skeleton
+  let __excludeCurrentMonth = false; // when true, always drop matches from the current (UTC) month
   // ---- Helpers to compute highlights client-side for any range ----
   function mapHeroTag(heroMap){ const out={}; try{ for(const k in heroMap){ const v=heroMap[k]; if(v && v.tag){ out[String(v.tag)] = Number(v.id||k); } } }catch(_e){} return out; }
   function getTeamByObjective(ev, md){
@@ -2349,6 +2354,7 @@ async function main(){
     if(info && info.league_name){ sub += ` · ${info.league_name} (LID ${lid})`; } else { sub += ` · League ${lid}`; }
   }
   if(__userOnlyAid>0){ sub += ' · user-only'; }
+  if(__excludeCurrentMonth){ sub += ' · excluding current month'; }
   // Data freshness
   try{ const ga = Number(info && info.generated_at); if(ga>0){ const d=new Date(ga*1000); sub += ` · Data as of ${d.toISOString().replace('T',' ').slice(0,16)}Z`; } }catch(_e){}
       document.getElementById('headerSub').textContent=sub;
@@ -2366,8 +2372,15 @@ async function main(){
         }
       }
   }catch(_e){}
-  // Build base subset by time; derive stats vs view subsets
-  const baseSubset = allMatches.filter(m=> (m.start_time>=f) && (m.start_time<=t) );
+  // Build base subset by time; optionally exclude current month (UTC)
+  let baseSubset = allMatches.filter(m=> (m.start_time>=f) && (m.start_time<=t) );
+  if(__excludeCurrentMonth){
+    try{
+      const nowD = new Date();
+      const monthStart = Math.floor(Date.UTC(nowD.getUTCFullYear(), nowD.getUTCMonth(), 1, 0, 0, 0) / 1000);
+      baseSubset = baseSubset.filter(m => Number(m.start_time||0) < monthStart);
+    }catch(_e){}
+  }
   const hasAid = (m, aid)=> Array.isArray(m.players) && m.players.some(p=> Number(p.account_id||0)===aid);
   let statsSubset = baseSubset;
   if(__userOnlyAid>0){ statsSubset = baseSubset.filter(m => hasAid(m, __userOnlyAid)); }
@@ -2554,6 +2567,11 @@ async function main(){
   __focusAid = paid ? Number(paid) : 0;
   const uonly = sp.get('uonly');
   __userOnlyAid = (__focusAid>0 && uonly && String(uonly).toLowerCase()!=='0' && String(uonly).toLowerCase()!=='false') ? __focusAid : 0;
+  // Optional: always exclude matches from the current month (UTC)
+  try{
+    const ex = sp.get('excur') || sp.get('excludeCurrentMonth') || sp.get('noCurrentMonth');
+    __excludeCurrentMonth = !!(ex && String(ex).toLowerCase()!=='0' && String(ex).toLowerCase()!=='false');
+  }catch(_e){ __excludeCurrentMonth = false; }
     function parseDateish(s){ if(!s) return NaN; if(/^\d{10}$/.test(s)) return Number(s); const ms = Date.parse(s); return isNaN(ms)? NaN : Math.floor(ms/1000); }
     let fux = NaN, tux = NaN;
     if(pf||pt){ fux = parseDateish(pf); tux = parseDateish(pt); }

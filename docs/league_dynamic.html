@@ -25,10 +25,171 @@
     }
     a { color: var(--accent); text-decoration: none }
     .wrapper { max-width: 1180px; margin: 0 auto; padding: 16px }
+    .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .sub{color:var(--muted);font-size:12px}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--text);font-size:12px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:12px;overflow:visible}
+    .tabs{display:flex;gap:6px;margin:6px 0 8px}
+    .tab{padding:6px 10px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border-radius:10px;color:var(--text);cursor:pointer;font-size:12px}
+    .tab.active{outline:2px solid rgba(109,166,255,.5);background:linear-gradient(180deg,rgba(109,166,255,.2),rgba(109,166,255,.08));border-color:rgba(109,166,255,.45)}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px;text-align:left}
+    .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .summary-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px}
+    .perf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .perf-card{display:flex;align-items:center;justify-content:space-between;padding:10px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025))}
+    .perf-left{display:flex;align-items:center;gap:10px}
+    .perf-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:radial-gradient(22px 22px at 30% 30%, rgba(158,199,255,.45), rgba(158,199,255,.12));border:1px solid rgba(158,199,255,.25);font-size:16px}
+  /* Mini avatar used in popovers (match dynamic viewer) */
+  .logo{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.1);margin-right:6px}
+  /* Hover popover helpers (match dynamic viewer) */
+  .has-hover{position:relative}
+  .has-hover .hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:10000;background:rgba(10,16,34,.96);border:1px solid var(--border);border-radius:10px;padding:8px;min-width:220px;box-shadow:0 8px 20px rgba(0,0,0,.4);pointer-events:auto}
+  .has-hover:hover .hovercard{display:block}
+  .has-hover.open .hovercard{display:block}
+    /* Calendar */
+    .cal{margin-top:8px}
+    .cal .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .cal .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .cal .dow div{color:var(--muted);font-size:12px;text-align:center}
+    .cal .day{min-height:90px;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015))}
+    .cal .date{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:4px}
+    .cal .matches{display:flex;flex-wrap:wrap;gap:4px}
+    .cal .matches a{display:inline-block;background:var(--chip);color:var(--text);border-radius:999px;font-size:11px;padding:2px 6px}
   </style>
 </head>
 <body>
-  <div class="wrapper">
+  <div class="wrapper" id="mainContent">
+
+    <div class="header">
+      <h1 id="leagueTitle" style="margin:0;font-size:22px">League viewer</h1>
+      <div class="badge">Client-side</div>
+    </div>
+    <div class="sub" id="headerSub" style="margin:-8px 0 8px 2px"></div>
+
+    <div class="tabs" id="mainTabs" role="tablist" aria-label="Sections" aria-orientation="horizontal">
+      <button class="tab active" data-tab="highlights">Highlights</button>
+      <button class="tab" data-tab="players">Players</button>
+      <button class="tab" data-tab="heroes">Heroes</button>
+      <button class="tab" data-tab="compare">Compare</button>
+      <button class="tab" data-tab="draft">Draft</button>
+      <button class="tab" data-tab="teams">Teams</button>
+      <button class="tab" data-tab="placement">Placement</button>
+      <button class="tab" data-tab="awards">Awards</button>
+      <button class="tab" data-tab="itemsbought">Items Bought</button>
+      <button class="tab" data-tab="wards">Wards</button>
+      <button class="tab" data-tab="calendar">Calendar</button>
+    </div>
+
+    <div id="pane-highlights" class="tabpane active" role="tabpanel" aria-labelledby="tab-highlights">
+      <div id="highlightsCard" class="card" style="margin-top:12px;display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h2 style="margin:0 0 0;font-size:18px">Highlights</h2>
+          <div class="sub">Precomputed where available, else computed from details</div>
+        </div>
+        <div id="highlightsBody"></div>
+      </div>
+    </div>
+
+    <div id="pane-players" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-players" hidden>
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h2 style="margin:0 0 0;font-size:18px">Players</h2>
+          <button id="exportPlayersCsv" class="tab" title="Export CSV">Export CSV</button>
+        </div>
+        <table class="table sortable" id="playersTable"><thead><tr>
+          <th data-type="text">Name</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th><th data-type="num">Hero pool</th>
+        </tr></thead><tbody></tbody></table>
+      </section>
+    </div>
+
+    <div id="pane-heroes" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-heroes" hidden>
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h2 style="margin:0 0 0;font-size:18px">Heroes</h2>
+          <button id="exportHeroesCsv" class="tab" title="Export CSV">Export CSV</button>
+        </div>
+        <table class="table sortable" id="heroesTable"><thead><tr>
+          <th data-type="text">Hero</th><th data-type="num">Picks</th><th data-type="num">Bans</th><th data-type="num">Wins</th><th data-type="num">WR</th><th data-type="text">Best player</th>
+        </tr></thead><tbody></tbody></table>
+      </section>
+    </div>
+
+    <div id="pane-compare" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-compare" hidden>
+      <section class="card">
+        <h2 style="margin:0 0 8px;font-size:18px">Player Comparison</h2>
+        <div id="compareMount" class="sub">Pick two players to compare.</div>
+      </section>
+    </div>
+
+    <div id="pane-draft" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-draft" hidden>
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h2 style="margin:0 0 0;font-size:18px">Draft</h2>
+          <button id="exportDraftCsv" class="tab" title="Export CSV">Export CSV</button>
+        </div>
+        <div id="draftMount" class="sub">Loading…</div>
+      </section>
+    </div>
+
+    <div id="pane-teams" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-teams" hidden>
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h2 style="margin:0 0 0;font-size:18px">Teams</h2>
+          <button id="exportTeamsCsv" class="tab" title="Export CSV">Export CSV</button>
+        </div>
+        <table class="table sortable" id="teamsTable"><thead><tr>
+          <th data-type="text">Team</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th>
+        </tr></thead><tbody></tbody></table>
+      </section>
+    </div>
+
+    <div id="pane-placement" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-placement" hidden>
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h2 style="margin:0 0 0;font-size:18px">Placement</h2>
+          <button id="exportPlacementCsv" class="tab" title="Export CSV">Export CSV</button>
+        </div>
+        <table class="table sortable" id="placementTable"><thead><tr>
+          <th data-type="num">Place</th><th data-type="text">Team</th><th data-type="num">Games</th><th data-type="num">W-L</th><th data-type="num">WR</th>
+        </tr></thead><tbody></tbody></table>
+      </section>
+    </div>
+
+    <div id="pane-awards" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-awards" hidden>
+      <section class="card">
+        <h2 style="margin:0 0 8px;font-size:18px">🏆 Awards</h2>
+        <div id="awardsBody" class="sub">Select tab to compute awards.</div>
+      </section>
+    </div>
+
+    
+
+    
+
+    <div id="pane-itemsbought" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-itemsbought" hidden>
+      <section class="card">
+        <h2 style="margin:0 0 8px;font-size:18px">Items Bought</h2>
+        <div id="ibMount" class="sub">Loading…</div>
+      </section>
+    </div>
+
+    <div id="pane-calendar" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-calendar" hidden>
+      <section class="card">
+        <div class="cal">
+          <div class="toolbar">
+            <button class="tab" id="calPrev">← Prev</button>
+            <div class="title" id="calTitle">-</div>
+            <button class="tab" id="calNext">Next →</button>
+          </div>
+          <div class="dow grid7">
+            <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+          </div>
+          <div id="calGrid" class="grid7" style="margin-top:6px"></div>
+        </div>
+      </section>
+    </div>
 
   <div id="pane-wards" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-wards" hidden>
       <section class="card" style="margin-top:12px">
@@ -54,12 +215,35 @@
         </div>
       </section>
     </div>
+    <!-- Share / Cache controls -->
+    <div class="card" style="margin-top:12px">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button id="btnCopyLink" class="tab">Copy link</button>
+        <button id="btnCopyEmbed" class="tab">Copy embed</button>
+        <button id="btnClearCache" class="tab">Clear cache</button>
+        <span id="shareStatus" class="sub" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+
   </div>
 
+  <!-- Ensure required component libraries are available -->
+  <!-- Shared components -->
+  <script src="js/components/players_table.js"></script>
+  <script src="js/ward_viewer.js"></script>
+  <script src="js/items_bought_viewer.js"></script>
+  <script src="js/draft_viewer.js"></script>
+  <script src="js/url_params.js"></script>
   <script>
     const OD_PLAYER_URL = id => `https://www.opendota.com/players/${id}`;
     const OD_MATCH_URL = id => `https://www.opendota.com/matches/${id}`;
     function fmtPct(x) { return (x * 100).toFixed(1) + '%'; }
+    function fmtMMSS(sec){
+      const s = Math.max(0, Math.floor(Number(sec)||0));
+      const m = Math.floor(s/60);
+      const r = s % 60;
+      return `${m}m ${r}s`;
+    }
     function buildPatchList(src){
       const out=[]; const push=(name,d)=>{ let ts=0; if(typeof d==='number'){ ts=Math.floor(d);} else if(typeof d==='string'){ const ms=Date.parse(d); if(!isNaN(ms)) ts=Math.floor(ms/1000);} if(name && ts>0) out.push({name:String(name), ts}); };
       try{
@@ -95,12 +279,13 @@
         const id = String(obj.id || obj.hero_id || obj.npc_id || obj.key || obj.key_id || obj.code || obj.slug || obj);
         if (!/^[0-9]+$/.test(id)) return;
         const name = obj.localized_name || obj.name_localized || obj.displayName || obj.name || `Hero ${id}`;
+        const tag = (obj.name ? String(obj.name).replace(/^npc_dota_hero_/,'') : (obj.tag || ''));
         let img = obj.img || obj.icon || '';
         if (img && !/^https?:/i.test(img)) {
           // OpenDota/Valve asset paths start with /apps/dota2/...; prefix Valve CDN for absolute access
           img = `https://cdn.cloudflare.steamstatic.com${img}`;
         }
-        map[id] = { id: Number(id), name, img };
+        map[id] = { id: Number(id), name, img, tag };
       };
       if (Array.isArray(heroesRaw)) { heroesRaw.forEach(add); }
       else if (typeof heroesRaw === 'object') { Object.values(heroesRaw).forEach(add); }
@@ -208,25 +393,15 @@
       if (__userOnlyAid > 0) plist = plist.filter(p => Number(p.account_id) === __userOnlyAid);
       if (__focusAid > 0) { const idx = plist.findIndex(p => Number(p.account_id) === __focusAid); if (idx > 0) { const [it] = plist.splice(idx, 1); plist.unshift(it); } }
 
-      const playerRows = plist.map(p => {
-        const wr = p.games ? p.wins / p.games : 0; const poolSize = Object.keys(p.heroes || {}).length;
-        const resolvedTeam = teamResolver ? (teamResolver(p.account_id) || '') : '';
-        const pt = primaryTeamByAid[String(p.account_id)];
-        const teamName = resolvedTeam || (pt && pt.name) || '';
-        const teamLabel = teamName ? ` <span class='sub' style='margin-left:6px'>(${teamName})</span>` : '';
-        return (
-          `<tr>
-            <td data-sort='${p.name.toLowerCase()} ${teamName ? teamName.toLowerCase() : ''}'>
-              <a href='${p.profile}' target='_blank'>${p.name}</a>${teamLabel}
-            </td>
-            <td data-sort='${p.games}'>${p.games}</td>
-            <td data-sort='${p.wins / (p.games || 1)}'><span class='win'>${p.wins}</span>-<span class='loss'>${p.games - p.wins}</span></td>
-            <td data-sort='${wr}'>${fmtPct(wr)}</td>
-            <td data-sort='${poolSize}'>${poolSize}</td>
-          </tr>`
-        );
-      }).join('');
-      document.querySelector('#playersTable tbody').innerHTML = playerRows;
+      // Render Players via shared component
+      try{
+        const rowsHtml = (window.PlayersTable && window.PlayersTable.renderRows)
+          ? window.PlayersTable.renderRows(plist, heroMap, { teamResolver, primaryTeamByAid })
+          : '';
+        const tb = document.querySelector('#playersTable tbody');
+        if (tb) tb.innerHTML = rowsHtml;
+        if (window.PlayersTable && window.PlayersTable.wirePopovers) window.PlayersTable.wirePopovers(document);
+      }catch(_e){}
 
       const teamRows = Array.from(teams.values()).map(t => {
         const wr = t.games ? t.wins / t.games : 0;
@@ -239,7 +414,10 @@
           </tr>`
         );
       }).join('');
-      document.querySelector('#teamsTable tbody').innerHTML = teamRows;
+      {
+        const tb = document.querySelector('#teamsTable tbody');
+        if (tb) tb.innerHTML = teamRows;
+      }
 
       const heroRows = Array.from(heroStats.keys()).map(hid => {
         const hs = heroStats.get(hid);
@@ -267,12 +445,15 @@
           </tr>`
         );
       }).join('');
-      document.querySelector('#heroesTable tbody').innerHTML = heroRows;
+      {
+        const tb = document.querySelector('#heroesTable tbody');
+        if (tb) tb.innerHTML = heroRows;
+      }
 
       if (!window.__lvSortedOnce) {
-        sortTable(document.getElementById('playersTable'), 3, 'num', false);
-        sortTable(document.getElementById('teamsTable'), 3, 'num', false);
-        sortTable(document.getElementById('heroesTable'), 1, 'num', false);
+        const pt = document.getElementById('playersTable'); if (pt) sortTable(pt, 3, 'num', false);
+        const tt = document.getElementById('teamsTable'); if (tt) sortTable(tt, 3, 'num', false);
+        const ht = document.getElementById('heroesTable'); if (ht) sortTable(ht, 1, 'num', false);
         window.__lvSortedOnce = true;
       }
     }
@@ -294,11 +475,34 @@
     }
 
     async function fetchMatchDetail(id, relBase, rawBase) {
-      const localPreferred = `${relBase}/cache/OpenDota/matches/${id}.json`;
-      const localAlt = `data/cache/OpenDota/matches/${id}.json`;
-      const remote = `${rawBase}/cache/OpenDota/matches/${id}.json`;
-      const order = IS_GHPAGES ? [remote, localPreferred, localAlt] : [localPreferred, localAlt, remote];
-      return await loadFirst(order);
+      // Try multiple relative bases (leaguePath-aware) plus raw fallbacks so details are found both locally and on GH Pages
+      try {
+        const bases = (typeof relBases !== 'undefined' && Array.isArray(relBases) && relBases.length)
+          ? relBases
+          : (function(){
+              // Fallback: guess from current path
+              const arr = [];
+              // If we are under /docs/, data lives at data/
+              arr.push('data');
+              // Also try ../data for non-docs hosting
+              arr.push('../data');
+              if (relBase) arr.unshift(relBase);
+              return Array.from(new Set(arr));
+            })();
+        const relCandidates = bases.map(b => `${b}/cache/OpenDota/matches/${id}.json`);
+        const rawCandidates = [
+          `${rawBase}/cache/OpenDota/matches/${id}.json`,
+          (typeof rawDocsBase !== 'undefined' ? `${rawDocsBase}/cache/OpenDota/matches/${id}.json` : null)
+        ].filter(Boolean);
+        const order = (typeof pref === 'function') ? pref(relCandidates, rawCandidates)
+                    : (IS_GHPAGES ? [...rawCandidates, ...relCandidates] : [...relCandidates, ...rawCandidates]);
+        return await loadFirst(order);
+      } catch(_e) {
+        // Final minimal fallback
+        const local = `${relBase||'data'}/cache/OpenDota/matches/${id}.json`;
+        const remote = `${rawBase}/cache/OpenDota/matches/${id}.json`;
+        return await loadFirst(IS_GHPAGES ? [remote, local] : [local, remote]);
+      }
     }
 
     function computeHighlightsFromDetails(details, resolver, teamResolver) {
@@ -551,12 +755,18 @@
     
 
     async function main() {
+      // Be robust against execution before DOM is fully constructed (can happen with aggressive caching / injected wrappers)
+      if (document.readyState === 'loading') {
+        await new Promise(res => document.addEventListener('DOMContentLoaded', res, { once: true }));
+      }
       (function () {
-        const tabsRoot = document.getElementById('mainTabs'); const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
+        const tabsRoot = document.getElementById('mainTabs');
+        if (!tabsRoot) { return; }
+        const tabs = Array.from(tabsRoot.querySelectorAll('.tab'));
         // ensure ids and ARIA linkage
   tabs.forEach(btn=>{ const name = btn.getAttribute('data-tab'); if(!btn.id) btn.id = `tab-${name}`; btn.setAttribute('role','tab'); btn.setAttribute('aria-selected', btn.classList.contains('active')?'true':'false'); btn.setAttribute('tabindex','0'); const pane = document.getElementById(`pane-${name}`); if(pane){ pane.setAttribute('role','tabpanel'); pane.setAttribute('aria-labelledby', btn.id); if(!btn.classList.contains('active')) pane.setAttribute('hidden',''); }});
         function showTab(name) {
-          const order = ['highlights','players','heroes','draft','teams','placement','awards','laneduos','itemsbought','wards'];
+          const order = ['highlights','players','heroes','compare','draft','teams','placement','awards','itemsbought','wards','calendar'];
           order.forEach(id => { const pane = document.getElementById('pane-' + id); const active = (id === name); if (pane) { pane.style.display = active ? '' : 'none'; if(active) pane.removeAttribute('hidden'); else pane.setAttribute('hidden',''); pane.setAttribute('aria-busy','false'); }});
           tabs.forEach(b => { const active = (b.getAttribute('data-tab') === name); b.classList.toggle('active', active); b.setAttribute('aria-selected', active?'true':'false'); b.setAttribute('tabindex','0'); });
           try { localStorage.setItem('lv_tab', name || 'highlights'); } catch (_e) {}
@@ -567,12 +777,13 @@
             history.replaceState(null, '', url);
           } catch(_e){}
           // Lazy-mount heavy tabs when opened
+          if (name === 'compare' && window.__ensureCompare) window.__ensureCompare();
           if (name === 'draft' && window.__ensureDraft) window.__ensureDraft();
-          if (name === 'laneduos' && window.__ensureLaneDuos) window.__ensureLaneDuos();
           if (name === 'itemsbought' && window.__ensureItems) window.__ensureItems();
           if (name === 'wards' && window.__ensureWards) window.__ensureWards();
           if (name === 'awards' && window.__ensureAwards) window.__ensureAwards();
           if (name === 'placement' && window.__ensurePlacement) window.__ensurePlacement();
+          if (name === 'calendar' && window.__ensureCalendar) window.__ensureCalendar();
           try{ const activeBtn = tabs.find(b=> b.getAttribute('data-tab')===name); if(activeBtn) activeBtn.focus(); }catch(_e){}
         }
         tabs.forEach(b => b.addEventListener('click', () => showTab(b.getAttribute('data-tab'))));
@@ -676,6 +887,12 @@
     const heroes = makeHeroMap(heroesRaw);
   const mapConf = mapConfRaw || {};
   const patches = buildPatchList(patchRaw);
+      // Expose core data for debugging in browser console
+      try {
+        window.__lvMatches = matches;
+        window.__lvReport = report;
+        window.__lvTeamNames = teamNames;
+      } catch(_e){}
       try {
         const name = (report && ((report.meta && (report.meta.name || report.meta.title)) || (report.league && report.league.name))) || slug;
         document.getElementById('leagueTitle').textContent = `${name} – League viewer`;
@@ -863,7 +1080,7 @@
       }).catch(e => console.warn('Details processing failed', e));
 
       // Lazy mount helpers for heavy tabs
-  let mountedDraft = false, mountedLaneDuos = false, mountedItems = false, mountedWards = false, mountedAwards = false, mountedPlacement = false;
+  let mountedDraft = false, mountedLaneDuos = false, mountedItems = false, mountedWards = false, mountedAwards = false, mountedPlacement = false, mountedCompare = false, mountedCalendar = false;
       window.__ensureDraft = () => {
         if (mountedDraft) return; mountedDraft = true;
         try {
@@ -880,23 +1097,79 @@
           catch(e){ console.warn('DraftViewer mount failed', e); }
         });
       };
-      window.__ensureLaneDuos = () => {
-        if (mountedLaneDuos) return; mountedLaneDuos = true;
-        try {
-          const mountEl = document.getElementById('ldMount');
-          const pre = report && report.highlights && report.highlights.duos;
-          if (window.LaneDuosViewer && pre) {
-            const safe = Array.isArray(pre.safelane) ? pre.safelane : [];
-            const off = Array.isArray(pre.offlane) ? pre.offlane : [];
-            window.LaneDuosViewer.mount(mountEl, { data: { safe, off }, heroes, persistKey: `lv_laneduos_${slug}` });
-            return;
-          }
-        } catch(e){ console.warn('LaneDuosViewer precomputed mount failed, falling back', e); }
-        // Fallback to client-side computation when precompute not available
-        detailsPromise.then(() => {
-          try { if (window.LaneDuosViewer && __highCache) { window.LaneDuosViewer.mount(document.getElementById('ldMount'), { data: { safe: __highCache.safeDuos || [], off: __highCache.offDuos || [] }, heroes, persistKey: `lv_laneduos_${slug}` }); } }
-          catch(e){ console.warn('LaneDuosViewer mount failed', e); }
+      // Lane Duos intentionally hidden in League viewer
+      // Compare tab: lazy-load component and mount with league matches (prefer details-derived matches)
+      window.__ensureCompare = () => {
+        if (mountedCompare) return; mountedCompare = true;
+        const mountEl = document.getElementById('compareMount'); if (!mountEl) return;
+        (async ()=>{
+          try{
+            await new Promise((res, rej)=>{ const s=document.createElement('script'); s.src='js/components/player_compare.js'; s.async=true; s.onload=()=>res(); s.onerror=()=>rej(new Error('load player_compare.js failed')); document.head.appendChild(s); });
+            const run = (arr, detailsOpt)=>{
+              if (window.PlayerCompare && typeof window.PlayerCompare.mount==='function'){
+                const playersIndex = Array.from((aggregate(arr, playerNames, teamNames).players||new Map()).values());
+                window.PlayerCompare.mount(mountEl, { data:{ matches: arr, playersIndex, heroes }, useExternalRange:false, details: (detailsOpt && Array.isArray(detailsOpt)) ? detailsOpt : undefined, fetchDetail: async (id)=> await fetchMatchDetail(id, relBase, rawBase) });
+              } else { mountEl.textContent = 'Player compare component not available.'; }
+            };
+            try{
+              const details = await detailsPromise;
+              const mf = detailsToMatches(details, matches);
+              run(mf.length? mf : matches, details);
+            } catch(_e){ run(matches, null); }
+          }catch(e){ console.warn('PlayerCompare mount failed', e); mountEl.textContent = 'Failed to load comparison component.'; }
+        })();
+      };
+
+
+      // Awards tab: compute from details
+      window.__ensureAwards = () => {
+        if (mountedAwards) return; mountedAwards = true;
+        const root = document.getElementById('awardsBody'); if (root) root.textContent = 'Computing awards…';
+        detailsPromise.then(details => {
+          try{
+            const resolver = __resolver || ((aid)=> (playerNames[String(aid)] || `Player ${aid}`));
+            const aw = computeAwardsFromDetails(details, resolver);
+            renderAwards(aw);
+          }catch(e){ console.warn('Awards render failed', e); if(root) root.textContent='Failed to compute awards.'; }
         });
+      };
+
+      // Calendar tab from league matches (Series view: Team A vs Team B)
+      window.__ensureCalendar = () => {
+        if (mountedCalendar) return; mountedCalendar = true;
+        const grid=document.getElementById('calGrid'); const title=document.getElementById('calTitle'); const prev=document.getElementById('calPrev'); const next=document.getElementById('calNext'); if(!grid||!title||!prev||!next) return;
+        function ymFrom(ts){ const d=new Date(ts*1000); return { y:d.getFullYear(), m:d.getMonth()+1 }; }
+        function firstYM(){ const times = matches.map(m=>m.start_time).filter(Boolean).sort(); if(times.length) return ymFrom(times[0]); const d=new Date(); return { y:d.getFullYear(), m:d.getMonth()+1 }; }
+        let cursor = firstYM();
+        function monthMatches(y,m){ const pad=n=>String(n).padStart(2,'0'); const key=(d)=> `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; const start=new Date(y, m-1, 1); const end=new Date(y, m, 1); const map=new Map(); for(const mt of matches){ const t=Number(mt.start_time||0); if(!t) continue; const d=new Date(t*1000); if(d>=start && d<end){ const k=key(d); if(!map.has(k)) map.set(k, []); map.get(k).push(mt); } } return map; }
+        function render(){ const y=cursor.y, m=cursor.m; title.textContent = `${y}-${String(m).padStart(2,'0')}`; grid.innerHTML=''; const dow=(d)=> (d.getDay()+6)%7; const first=new Date(y, m-1, 1); const days=new Date(y, m, 0).getDate(); const lead=dow(first); for(let i=0;i<lead;i++){ const div=document.createElement('div'); grid.appendChild(div); }
+          const byDay = monthMatches(y,m);
+          for(let day=1; day<=days; day++){
+            const cell=document.createElement('div'); cell.className='day'; const pad=n=>String(n).padStart(2,'0'); const key=`${y}-${pad(m)}-${pad(day)}`;
+            const list=byDay.get(key)||[];
+            const dateDiv=document.createElement('div'); dateDiv.className='date'; dateDiv.textContent = String(day); cell.appendChild(dateDiv);
+            const wrap=document.createElement('div'); wrap.className='matches';
+            // Group into series by team pairing (names or IDs), ignoring side
+            const seriesMap = new Map();
+            for(const mt of list){
+              const rid = Number(mt.radiant_team_id||0), did = Number(mt.dire_team_id||0);
+              const rName = teamNames[String(rid)] || mt.radiant_name || 'Radiant';
+              const dName = teamNames[String(did)] || mt.dire_name || 'Dire';
+              const a = String(rName||'Radiant'), b = String(dName||'Dire');
+              const lab = a.localeCompare(b)<=0 ? `${a} vs ${b}` : `${b} vs ${a}`;
+              const cur = seriesMap.get(lab) || { count:0, first:mt };
+              cur.count += 1; if(!cur.first) cur.first = mt; seriesMap.set(lab, cur);
+            }
+            const seriesList = Array.from(seriesMap.entries()).sort((a,b)=> b[1].count - a[1].count || a[0].localeCompare(b[0]));
+            seriesList.slice(0,6).forEach(([label,info])=>{
+              const a=document.createElement('a'); a.href = info.first && info.first.match_id ? OD_MATCH_URL(info.first.match_id) : '#'; a.target='_blank'; a.rel='noopener'; a.textContent = info.count>1 ? `${label} (x${info.count})` : label; wrap.appendChild(a);
+            });
+            if(seriesList.length>6){ const more=document.createElement('span'); more.className='badge'; more.textContent = `+${seriesList.length-6}`; wrap.appendChild(more); }
+            cell.appendChild(wrap); grid.appendChild(cell);
+          }
+        }
+        function shift(months){ let y=cursor.y, m=cursor.m+months; while(m<=0){ m+=12; y--; } while(m>12){ m-=12; y++; } cursor={y,m}; render(); }
+        prev.addEventListener('click', ()=> shift(-1)); next.addEventListener('click', ()=> shift(1)); render();
       };
       window.__ensureItems = () => {
         if (mountedItems) return; mountedItems = true;
@@ -1009,6 +1282,8 @@
               const teamsList = Array.from(teamNameByIdLocal.entries()).map(([id,name])=>({ id:Number(id), name:String(name||`Team ${id}`) })).sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
               const playersList = Array.from(playersSet.entries()).map(([id,name])=>({ id:Number(id), name:String(name||`Player ${id}`), count: placerCount.get(id)||0 })).filter(p=>p.count>0).sort((a,b)=> String(a.name||'').localeCompare(String(b.name||'')));
               window.WardViewer.mount(stdHost, { mapConf, data: { spots, sentries, teams: teamsList, players: playersList }, options: { modeDefault: 'best', showExtras: false, showLongest: false, ignorePersistedPlayer: true, ignorePersistedCluster: true, extras: { wardPlayers: {}, wardLongest: [] } } });
+            } else if (stdHost) {
+              stdHost.textContent = 'Wards component not available.';
             }
           } catch(err){ console.warn('WardViewer mount failed', err); }
 
@@ -1152,8 +1427,10 @@
                 try { enableSorting(); } catch(_e) {}
                 try{
                   const pSel2=document.getElementById('wtPlayerLv');
-                  const sideWrap2=document.getElementById('wtSideLv'); sideWrap2.querySelectorAll('.tab').forEach(btn=> btn.addEventListener('click', ()=>{ wtSideSelLv=String(btn.getAttribute('data-side')||''); renderTrend(); }));
-                  const sel2=document.getElementById('wtTeamLv'); sel2.addEventListener('change', ()=>{ wtTeamSelLv=String(sel2.value||''); renderTrend(); });
+                  const sideWrap2=document.getElementById('wtSideLv');
+                  if(sideWrap2){ sideWrap2.querySelectorAll('.tab').forEach(btn=> btn.addEventListener('click', ()=>{ wtSideSelLv=String(btn.getAttribute('data-side')||''); renderTrend(); })); }
+                  const sel2=document.getElementById('wtTeamLv');
+                  if(sel2){ sel2.addEventListener('change', ()=>{ wtTeamSelLv=String(sel2.value||''); renderTrend(); }); }
                   if(pSel2) pSel2.addEventListener('change', ()=>{ wtPlayerSelLv = Number(pSel2.value)||0; renderTrend(); });
                   const resetBtnLv = document.getElementById('wtResetLv'); if(resetBtnLv){ resetBtnLv.addEventListener('click', ()=>{ wtSideSelLv=''; wtTeamSelLv=''; wtPlayerSelLv=0; renderTrend(); }); }
                   // hover interactions
@@ -1175,16 +1452,84 @@
   }
   window.__ensureWards = () => {
         if (mountedWards) return; mountedWards = true;
-        detailsPromise.then(__mountWardsWith);
+        const stdHost = document.getElementById('dvWardStd');
+        if (stdHost) stdHost.textContent = 'Loading ward data…';
+        // Try precomputed summary first: docs/data/league/<slug>/ward_summary.json (with raw fallbacks)
+        (async ()=>{
+          try{
+            const summary = await loadFirst(pref(
+              [
+                ...fromBases(`league/${slug}/ward_summary.json`),
+                ...fromBases(`chunks/league/${slug}/ward_summary.json`)
+              ],
+              [
+                `${rawBase}/league/${slug}/ward_summary.json`,
+                `${rawDocsBase}/league/${slug}/ward_summary.json`,
+                `${rawBase}/chunks/league/${slug}/ward_summary.json`,
+                `${rawDocsBase}/chunks/league/${slug}/ward_summary.json`
+              ]
+            ));
+            if (summary && (Array.isArray(summary.spots) && summary.spots.length)){
+              try{
+                window.WardViewer && window.WardViewer.mount(stdHost, { mapConf, data: { spots: summary.spots||[], sentries: summary.sentries||[], teams: summary.teams||[], players: summary.players||[] }, options: { modeDefault: 'best', showExtras: false, showLongest: false, ignorePersistedPlayer: true, ignorePersistedCluster: true, extras: { wardPlayers: {}, wardLongest: [] } } });
+                if (stdHost) stdHost.removeAttribute('aria-busy');
+                // Defer details-based computation for Players/Trend until user navigates or until later
+                return; // Skip immediate details mount when precomputed is present
+              }catch(e){ console.warn('Precomputed WardViewer mount failed, falling back to details', e); }
+            }
+          }catch(e){ console.warn('Precomputed ward summary load failed', e); }
+          // Fallback: compute from details
+          detailsPromise.then(__mountWardsWith).catch(err => {
+            console.warn('Ward details failed', err);
+            if (stdHost) stdHost.textContent = 'Failed to load ward stats.';
+          });
+        })();
       };
+
+      // Proactively mount Wards in the background so it doesn't stay on "Preparing…" if the tab is opened later
+      try { if (window.__ensureWards) setTimeout(() => { try{ window.__ensureWards(); } catch(_e){} }, 0); } catch(_e) {}
+
+      // If this minimal page has no main tab bar, show and mount the Wards pane automatically
+      try {
+        const tabsRoot = document.getElementById('mainTabs');
+        if (!tabsRoot) {
+          const wp = document.getElementById('pane-wards');
+          if (wp) { wp.style.display = ''; wp.removeAttribute('hidden'); }
+          if (window.__ensureWards) window.__ensureWards();
+        }
+      } catch(_e){}
+    // Proactively mount Placement once data is ready (cheap) so it never stays empty due to early clicks
+    try { if (window.__ensurePlacement) setTimeout(() => { try{ window.__ensurePlacement(); } catch(_e){} }, 0); } catch(_e) {}
+
 
       // Placement tab mounting from report.json
       window.__ensurePlacement = () => {
-        if (mountedPlacement) return; mountedPlacement = true;
+        // Allow re-attempt if previous mount produced no rows (e.g., user clicked before data loaded)
+        const existingRows = (function(){ const tb = document.querySelector('#placementTable tbody'); return tb ? tb.rows.length : 0; })();
+        if (mountedPlacement && existingRows > 0) return; // already mounted with data
+        // Defer setting mounted flag until we attempt rendering so retries are possible if data wasn't ready
         try {
+          console.debug('[Placement] mount start', { mountedPlacement, existingRows, hasReport: !!report, reportType: typeof report, matchesCount: (matches||[]).length, reportHasPlacements: !!(report && report.placements && report.placements.length) });
           const tbl = document.getElementById('placementTable'); if (!tbl) return;
           const tbody = tbl.tBodies && tbl.tBodies[0]; if (!tbody) return;
-          const arr = (report && (report.placements || (report.highlights && report.highlights.placements))) || [];
+          let arr = (report && (report.placements || (report.highlights && report.highlights.placements))) || [];
+          if (!Array.isArray(arr)) { console.debug('[Placement] arr not array, value:', arr); }
+          if (!Array.isArray(arr) || !arr.length) {
+            // Fallback: compute table from league matches
+            const map = new Map();
+            for (const m of matches || []){
+              const radWin = !!m.radiant_win;
+              const rid = Number(m.radiant_team_id||0), did = Number(m.dire_team_id||0);
+              const rName = teamNames[String(rid)] || m.radiant_name || 'Radiant';
+              const dName = teamNames[String(did)] || m.dire_name || 'Dire';
+              const ensure = (id,name)=>{ const k = id? `id:${id}` : `name:${name}`; if(!map.has(k)) map.set(k,{ key:k, id, name, games:0, wins:0, losses:0 }); return map.get(k); };
+              const rt = ensure(rid, rName); const dt = ensure(did, dName);
+              rt.games++; dt.games++; if(radWin){ rt.wins++; dt.losses++; } else { dt.wins++; rt.losses++; }
+            }
+            const rows = Array.from(map.values());
+            rows.sort((a,b)=> b.wins - a.wins || b.games - a.games || (b.wins/(b.games||1)) - (a.wins/(a.games||1)) || String(a.name||'').localeCompare(String(b.name||'')));
+            let place = 1; arr = rows.map(r=>({ place: place++, name:r.name, games:r.games, wins:r.wins, losses:r.losses }));
+          }
           if (Array.isArray(arr) && arr.length) {
             const rows = arr.map(p => {
               const wr = p.games ? (p.wins / p.games) : 0;
@@ -1198,11 +1543,23 @@
             }).join('');
             tbody.innerHTML = rows;
             sortTable(tbl, 0, 'num', true);
+            mountedPlacement = true; // mark success
+            console.debug('[Placement] rendered rows', { rowCount: tbody.rows.length });
+            try { window.__lvPlacementRows = tbody.rows.length; } catch(_e){}
+            try { const pane = document.getElementById('pane-placement'); if (pane) { pane.style.display=''; pane.removeAttribute('hidden'); } } catch(_e){}
           } else {
             tbody.innerHTML = "<tr><td colspan='5' class='sub'>no placement data</td></tr>";
+            mountedPlacement = true; // no data but don't keep retrying infinitely
+            console.debug('[Placement] no data after attempt');
           }
         } catch(e){ console.warn('Placement render failed', e); }
       };
+
+      // Proactively mount Placement if tab is already active (user clicked early) once data is available
+      try { setTimeout(()=>{ try {
+        const activePlacement = document.getElementById('tab-placement')?.classList.contains('active');
+        if (activePlacement && window.__ensurePlacement) window.__ensurePlacement();
+      } catch(_e){} }, 0); } catch(_e){}
 
       // CSV export wiring
       function tableToCSV(tableId) {
@@ -1237,10 +1594,7 @@
           const mount = document.getElementById('draftMount'); const csv = mount && mount.__getDraftCSV ? mount.__getDraftCSV() : '';
           if (csv) downloadCSV(`draft${suffix}.csv`, csv);
         });
-        const eld = document.getElementById('exportLaneDuosCsv'); if (eld) eld.addEventListener('click', () => {
-          const mount = document.getElementById('ldMount'); const csv = mount && mount.__getLaneDuosCSV ? mount.__getLaneDuosCSV() : '';
-          if (csv) downloadCSV(`lane_duos${suffix}.csv`, csv);
-        });
+        // Lane Duos export intentionally removed in League viewer
       } catch (_e) {}
 
       const times = matches.map(m => m.start_time).filter(Boolean); const max = Math.max(...times);
@@ -1288,7 +1642,7 @@
           // include current tab if available
           try {
             const tabsRoot = document.getElementById('mainTabs');
-            const activeBtn = Array.from(tabsRoot.querySelectorAll('.tab')).find(b=> b.classList.contains('active'));
+            const activeBtn = tabsRoot ? Array.from(tabsRoot.querySelectorAll('.tab')).find(b=> b.classList.contains('active')) : null;
             const tab = activeBtn ? activeBtn.getAttribute('data-tab') : (new URLSearchParams(location.search)).get('tab') || 'highlights';
             url.searchParams.set('tab', tab);
           } catch(_e){}

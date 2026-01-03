@@ -16,6 +16,15 @@
  */
 
 (function(){
+  // Environment and URL param helpers (align with league viewer)
+  const IS_GHPAGES = (typeof location !== 'undefined' && /\.github\.io$/i.test(String(location.hostname||'')));
+  const __sp = new URLSearchParams((typeof location !== 'undefined' && location.search) || '');
+  const REPO = (__sp.get('repo') || 'Zeroks77/Kret_Dota');
+  const BRANCH = (__sp.get('branch') || 'main');
+  const PREFER_RAW = (__sp.get('preferRaw') === '1' || __sp.get('raw') === '1');
+  const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${BRANCH}`;
+  const rawBaseData = `${RAW_BASE}/data`;
+  const rawDocsBaseData = `${RAW_BASE}/docs/data`;
   function ensureStyles(){
     if(document.getElementById('pc-styles')) return;
     const css = `
@@ -259,7 +268,7 @@
       const hasLog = Array.isArray(p?.purchase_log) && p.purchase_log.length>0;
       if(!hasLog){
         try{
-          const md = await fetchDetail(m.match_id||m.id);
+          const md = await fetchDetail(m.match_id||m.id, injected);
           if(md && Array.isArray(md.players)){
             const found = md.players.find(pp => Number(pp.account_id)===playerId);
             if(found) p = found;
@@ -373,7 +382,7 @@
       const hasAny = have(p?.lh_t)||have(p?.last_hits_t)||have(p?.net_worth_t)||have(p?.gold_t)||have(p?.xp_t);
       if(!hasAny){
         try{
-          const md = await fetchDetail(m.match_id||m.id);
+          const md = await fetchDetail(m.match_id||m.id, injected);
           if(md && Array.isArray(md.players)){
             const found = md.players.find(pp => Number(pp.account_id)===playerId);
             if(found) p = found;
@@ -417,38 +426,43 @@
 
   // --- Detail fallback loader (cache) ---
   const __detailCache = new Map();
-  async function fetchDetail(mid){
+  async function fetchDetail(mid, injected){
     try{ const key = Number(mid)||0; if(key>0 && __detailCache.has(key)) return __detailCache.get(key); }catch(_e){}
+    // If host provided an override (detail resolver or pre-fetched details), prefer that
+    try{
+      if (injected && typeof injected.fetchDetail === 'function'){
+        const md = await injected.fetchDetail(mid);
+        if (md) { const key = Number(mid)||0; if(key>0) __detailCache.set(key, md); return md; }
+      }
+      if (injected && injected.detailsById){
+        const md = injected.detailsById.get(Number(mid));
+        if (md) { const key = Number(mid)||0; if(key>0) __detailCache.set(key, md); return md; }
+      }
+    }catch(_e){}
     const paths = (function(){
       const list = [];
-      // relative to current doc
-      list.push(`data/cache/OpenDota/matches/${mid}.json`);
-      list.push(`../data/cache/OpenDota/matches/${mid}.json`);
-      list.push(`../../data/cache/OpenDota/matches/${mid}.json`);
-      // absolute from site root
-      try{ list.push(`${new URL(`/data/cache/OpenDota/matches/${mid}.json`, location.origin).toString()}`); }catch(_e){}
-      // absolute anchored at repo root before /docs/
+      // Relative to current doc (common cases)
+      list.push(`data/cache/OpenDota/matches/${mid}.json`);         // docs/data when page under /docs
+      list.push(`../data/cache/OpenDota/matches/${mid}.json`);      // repo browsing fallback
+      list.push(`../../data/cache/OpenDota/matches/${mid}.json`);   // deep paths
+      // Absolute paths (site root)
+      try{ list.push(new URL(`/data/cache/OpenDota/matches/${mid}.json`, location.origin).toString()); }catch(_e){}
+      // Absolute anchored at repo root before /docs/
       try{
-        const p = location.pathname||'';
-        const i = p.indexOf('/docs/');
-        if(i>=0){
-          const root = location.origin + p.slice(0, i+1);
-          list.push(root + `data/cache/OpenDota/matches/${mid}.json`);
-        }
+        const p = location.pathname||''; const i = p.indexOf('/docs/');
+        if(i>=0){ const root = location.origin + p.slice(0, i+1); list.push(root + `data/cache/OpenDota/matches/${mid}.json`); }
       }catch(_e){}
-      // raw.githubusercontent.com fallback (works reliably on GitHub Pages)
-      try{
-        const m = String(location.pathname||'');
-        const m2 = m.match(/^\/(.+?)\/([^\/]+)\/docs\//); // /<owner>/<repo>/docs/
-        const owner = (m2 && m2[1]) || 'Zeroks77';
-        const repo = (m2 && m2[2]) || 'Kret_Dota';
-        list.push(`https://raw.githubusercontent.com/${owner}/${repo}/main/data/cache/OpenDota/matches/${mid}.json`);
-      }catch(_e){}
+      // Raw fallbacks (prefer these on GH Pages or when preferRaw=1)
+      list.push(`${rawBaseData}/cache/OpenDota/matches/${mid}.json`);
+      list.push(`${rawDocsBaseData}/cache/OpenDota/matches/${mid}.json`);
       return list;
     })();
     async function tryLoad(url){ try{ const r=await fetch(url,{cache:'force-cache'}); if(r && r.ok){ return await r.json(); } }catch(_e){} return null; }
     let md = null;
-    for(const u of paths){ md = await tryLoad(u); if(md) break; }
+    const relCandidates = paths.filter(u => !/^https:\/\/raw\.githubusercontent\.com\//.test(u));
+    const rawCandidates = paths.filter(u => /^https:\/\/raw\.githubusercontent\.com\//.test(u));
+    const order = PREFER_RAW || IS_GHPAGES ? [...rawCandidates, ...relCandidates] : [...relCandidates, ...rawCandidates];
+    for(const u of order){ md = await tryLoad(u); if(md) break; }
     if(!md){ try{ const api = await tryLoad(`https://api.opendota.com/api/matches/${mid}`); md = api||null; }catch(_e){}
     }
     if(!md) md = null;
@@ -466,7 +480,7 @@
       const needsDetail = !(p && (Number.isFinite(p.kills) || Number.isFinite(p.gold_per_min) || Number.isFinite(p.xp_per_min)));
       if(needsDetail){
         try{
-          const md = await fetchDetail(m.match_id||m.id);
+          const md = await fetchDetail(m.match_id||m.id, injected);
           if(md && Array.isArray(md.players)){
             const found = md.players.find(pp => Number(pp.account_id)===playerId);
             if(found) p = found;
@@ -512,6 +526,19 @@
 
   function mount(container, options){
     ensureStyles();
+    // optional injected details/fetcher from host
+    const injected = (function(){
+      const obj = {};
+      try{
+        if (options && Array.isArray(options.details)){
+          const byId = new Map();
+          for(const d of options.details){ const id = Number(d && (d.match_id||d.id) || 0); if(id>0) byId.set(id, d); }
+          obj.detailsById = byId;
+        }
+        if (options && typeof options.fetchDetail === 'function') obj.fetchDetail = options.fetchDetail;
+      }catch(_e){}
+      return obj;
+    })();
     // hydrate from URL, then localStorage fallback
     const ls = (()=>{ try{ return JSON.parse(localStorage.getItem('pc_state')||'{}'); }catch(_e){ return {}; } })();
   const state = Object.assign({ playerA:null, playerB:null, side:'all', from:null, to:null }, parseQS(), ls);
@@ -605,6 +632,13 @@
       const bId = selB.value ? Number(selB.value) : null;
       const timeWindow = await computeTimeWindow();
 
+  const nameOf = (id)=>{
+    if(!(id>0)) return '';
+    try{ const p = (playersIndex||[]).find(x=> Number(x.account_id)===Number(id)); return (p && p.name) || `Player ${id}`; }catch(_e){ return `Player ${id}`; }
+    };
+    const nameA = aId? nameOf(aId) : 'A';
+    const nameB = bId? nameOf(bId) : 'B';
+
   const aggA = computeCoreAggregates(data.matches||[], aId, filters, timeWindow);
   const aggB = computeCoreAggregates(data.matches||[], bId, filters, timeWindow);
 
@@ -628,13 +662,13 @@
         rows.forEach(r => card.appendChild(r));
         return card;
       };
-      const barCompare = (label, aVal, bVal, fmtFn=(x)=>String(x), max=null) => {
+      const barCompare = (label, aVal, bVal, fmtFn=(x)=>String(x), max=null, labelA=nameA, labelB=nameB) => {
         const row = createEl('div', { class: 'pc-row' });
         row.appendChild(createEl('div', { class:'sub', text: label }));
         const box = createEl('div', { style:'flex:1;display:flex;flex-direction:column;gap:4px;align-items:stretch' });
         const top = createEl('div', { class:'pc-row' }, [
-          createEl('span', { class:'pc-badge', text: `A ${fmtFn(aVal)}` }),
-          createEl('span', { class:'pc-badge', text: `B ${fmtFn(bVal)}` }),
+          createEl('span', { class:'pc-badge', text: `${labelA} ${fmtFn(aVal)}` }),
+          createEl('span', { class:'pc-badge', text: `${labelB} ${fmtFn(bVal)}` }),
         ]);
         const bar = createEl('div', { class:'pc-bar dual' });
         const safe = (n)=> !isFinite(n) || n<0 ? 0 : n;
@@ -666,17 +700,18 @@
         const seg = createEl('div', { class:'pc-dmb-seg', style:`left:${segL}%;width:${Math.max(0, segR - segL)}%` });
   const a = createEl('div', { class:'pc-dmb-a', style:`left:${aPct}%` });
   const b = createEl('div', { class:'pc-dmb-b', style:`left:${bPct}%` });
-  const aLbl = createEl('div', { class:'pc-dmb-dotLabel', style:`left:${aPct}%`, text:'A' });
-  const bLbl = createEl('div', { class:'pc-dmb-dotLabel', style:`left:${bPct}%`, text:'B' });
+  const short = (s)=>{ const t=String(s||'').trim(); if(!t) return ''; return t.length>14? (t.slice(0,13)+'…') : t; };
+  const aLbl = createEl('div', { class:'pc-dmb-dotLabel', style:`left:${aPct}%`, text: short(nameA) || 'A' });
+  const bLbl = createEl('div', { class:'pc-dmb-dotLabel', style:`left:${bPct}%`, text: short(nameB) || 'B' });
   const minLbl = createEl('div', { class:'pc-dmb-min', text:'0' });
   const maxLbl = createEl('div', { class:'pc-dmb-max', text: String(Math.round(m)) });
   track.appendChild(line); track.appendChild(seg); track.appendChild(a); track.appendChild(b); track.appendChild(aLbl); track.appendChild(bLbl); track.appendChild(minLbl); track.appendChild(maxLbl);
         row.appendChild(track);
         const d = safe(aVal) - safe(bVal);
-        const deltaTxt = d>0? `A +${fmt(Math.abs(d))}` : d<0? `B +${fmt(Math.abs(d))}` : 'Even';
+        const deltaTxt = d>0? `${nameA} +${fmt(Math.abs(d))}` : d<0? `${nameB} +${fmt(Math.abs(d))}` : 'Even';
         const values = createEl('div', { class:'pc-dmb-values' }, [
-          createEl('span', { class:'pc-badge', text:`A ${fmtFn(aVal)}` }),
-          createEl('span', { class:'pc-badge', style:'margin-left:6px', text:`B ${fmtFn(bVal)}` }),
+          createEl('span', { class:'pc-badge', text:`${nameA} ${fmtFn(aVal)}` }),
+          createEl('span', { class:'pc-badge', style:'margin-left:6px', text:`${nameB} ${fmtFn(bVal)}` }),
           createEl('span', { class:'pc-diff ' + (d>0?'pc-delta pos':d<0?'pc-delta neg':''), style:'margin-left:8px', text: deltaTxt })
         ]);
         row.appendChild(values);
@@ -691,7 +726,7 @@
         itemsA.push(`K/D/A: ${fmt(aggA.k)}/${fmt(aggA.d)}/${fmt(aggA.a)}`);
         itemsA.push(`GPM/XPM: ${fmt(aggA.gpm)}/${fmt(aggA.xpm)}`);
       }
-  colA.appendChild(makeCard('Summary A 🧑', itemsA, 'Averages across matches in range for Player A after side/time filters.'));
+  colA.appendChild(makeCard(`Summary ${nameA||'A'} 🧑`, itemsA, 'Averages across matches in range for Player A after side/time filters.'));
 
   const itemsB = [];
       if (!aggB || aggB.games===0) itemsB.push('No games in range');
@@ -701,7 +736,7 @@
         itemsB.push(`K/D/A: ${fmt(aggB.k)}/${fmt(aggB.d)}/${fmt(aggB.a)}`);
         itemsB.push(`GPM/XPM: ${fmt(aggB.gpm)}/${fmt(aggB.xpm)}`);
       }
-  colB.appendChild(makeCard('Summary B 🧑', itemsB, 'Averages across matches in range for Player B after side/time filters.'));
+  colB.appendChild(makeCard(`Summary ${nameB||'B'} 🧑`, itemsB, 'Averages across matches in range for Player B after side/time filters.'));
 
   // Quick compare bars (WR, GPM, XPM)
       const renderBars = (aVals, bVals) => {
@@ -727,10 +762,10 @@
       };
       function makeH2HCard(aVals, bVals){
         const card = createEl('div', { class:'pc-card', 'data-h2h':'1' });
-        const t = createEl('div', { class:'pc-card-title', text:'Head-to-head 📊' });
+        const t = createEl('div', { class:'pc-card-title', text:`Head-to-head 📊 — ${nameA||'A'} vs ${nameB||'B'}` });
         card.appendChild(t);
         withInfo(t, 'Direct comparison of per-match averages and rates between Player A and B using included matches.');
-        const add = (label, a, b, fmtF=fmt)=> card.appendChild(barCompare(label, a, b, fmtF));
+        const add = (label, a, b, fmtF=fmt)=> card.appendChild(barCompare(label, a, b, fmtF, null, nameA, nameB));
         add('Winrate', aVals.wr*100, bVals.wr*100, n=>isFinite(n)? n.toFixed(1)+'%':'-');
         add('KDA', aVals.kda, bVals.kda, n=> isFinite(n)? n.toFixed(2) : '-');
         add('GPM', aVals.gpm, bVals.gpm);
@@ -863,7 +898,7 @@
             left.appendChild(createEl('span', { text: aH.name || heroName(heroes, r.hA) }));
             const mid = createEl('div', { class:'pc-item-mid' });
             const aWr = r.games>0 ? r.aWins/r.games : NaN;
-            mid.appendChild(createEl('span', { class:'pc-badge', title:`Samples: ${r.games}`, text:`${r.games}g · A ${fmtPct(aWr)}` }));
+            mid.appendChild(createEl('span', { class:'pc-badge', title:`Samples: ${r.games}`, text:`${r.games}g · ${nameA||'A'} ${fmtPct(aWr)}` }));
             const aKdaOk = r.aKDASamples>0;
             const bKdaOk = r.bKDASamples>0;
             if(aKdaOk || bKdaOk){
@@ -873,7 +908,7 @@
               const bK = bKdaOk ? (r.bK/Math.max(1,r.bKDASamples)) : NaN;
               const bD = bKdaOk ? (r.bD/Math.max(1,r.bKDASamples)) : NaN;
               const bA = bKdaOk ? (r.bA/Math.max(1,r.bKDASamples)) : NaN;
-              const sub = `A ${isFinite(aK)?aK.toFixed(1):'-'}/${isFinite(aD)?aD.toFixed(1):'-'}/${isFinite(aA)?aA.toFixed(1):'-'} vs B ${isFinite(bK)?bK.toFixed(1):'-'}/${isFinite(bD)?bD.toFixed(1):'-'}/${isFinite(bA)?bA.toFixed(1):'-'}`;
+              const sub = `${nameA||'A'} ${isFinite(aK)?aK.toFixed(1):'-'}/${isFinite(aD)?aD.toFixed(1):'-'}/${isFinite(aA)?aA.toFixed(1):'-'} vs ${nameB||'B'} ${isFinite(bK)?bK.toFixed(1):'-'}/${isFinite(bD)?bD.toFixed(1):'-'}/${isFinite(bA)?bA.toFixed(1):'-'}`;
               mid.appendChild(createEl('span', { class:'pc-small', style:'margin-left:8px', text: sub }));
             }
             const right = createEl('div', { class:'pc-side b' });
@@ -967,7 +1002,7 @@
   const itemEntriesB = getPlayerEntries(data.matches||[], bId, filters, timeWindow);
   const aItems = extractItemTimes(itemEntriesA);
   const bItems = extractItemTimes(itemEntriesB);
-      const renderItemsCard = (mapA, mapB) => {
+  const renderItemsCard = (mapA, mapB) => {
         // Render as time list: centered item (icon+name), sides show A/B times with +/- for slower/faster
         const keys = new Set([ ...Array.from(mapA.keys()), ...Array.from(mapB.keys()) ]);
         const items = [];
@@ -1013,7 +1048,7 @@
         let card;
         if(listRows.length){
           card = createEl('div', { class:'pc-card' });
-          card.appendChild(createEl('div', { class:'pc-card-title', text:'Key item timings ⏱️ (median first purchase)' }));
+          card.appendChild(createEl('div', { class:'pc-card-title', text:`Key item timings ⏱️ (median first purchase) — ${nameA||'A'} vs ${nameB||'B'}` }));
           listRows.forEach(r=> card.appendChild(r));
         } else {
           // Fallback: top observed items (name only) if truly nothing
@@ -1091,7 +1126,7 @@
           const has = (x)=> Number.isFinite(p?.[x]);
           if(!(has('obs_placed')||has('sen_placed')||has('observer_kills')||has('sentry_kills')||has('camps_stacked'))){
             try{
-              const md = await fetchDetail(m.match_id||m.id);
+              const md = await fetchDetail(m.match_id||m.id, injected);
               if(md && Array.isArray(md.players)){
                 const found = md.players.find(pp => Number(pp.account_id)===playerId);
                 if(found) p = found;
@@ -1108,14 +1143,14 @@
         }
         return { games:g, obs, sen, dewards: ok+sk, stacks };
       }
-      (async ()=>{
+  (async ()=>{
         const [va, vb] = await Promise.all([
-          computeVisionStacks(getPlayerEntries(data.matches||[], aId, filters, timeWindow), aId),
-          computeVisionStacks(getPlayerEntries(data.matches||[], bId, filters, timeWindow), bId)
+      computeVisionStacks(getPlayerEntries(data.matches||[], aId, filters, timeWindow), aId),
+      computeVisionStacks(getPlayerEntries(data.matches||[], bId, filters, timeWindow), bId)
         ]);
         const avg = (sum, g)=> g>0 ? (sum/g) : 0;
   const card = createEl('div', { class:'pc-card' });
-  { const t=createEl('div', { class:'pc-card-title', text:'Vision & Stacks 👁️' }); card.appendChild(t); withInfo(t, 'Per-game averages for observers, sentries, dewards and camp stacks. Totals shown below.'); }
+  { const t=createEl('div', { class:'pc-card-title', text:`Vision & Stacks 👁️ — ${nameA||'A'} vs ${nameB||'B'}` }); card.appendChild(t); withInfo(t, 'Per-game averages for observers, sentries, dewards and camp stacks. Totals shown below.'); }
         const wrap = createEl('div', { class:'pc-split' });
   const maxV = Math.max(avg(va.obs,va.games), avg(vb.obs,vb.games), avg(va.sen,va.games), avg(vb.sen,vb.games), avg(va.dewards,va.games), avg(vb.dewards,vb.games), avg(va.stacks,va.games), avg(vb.stacks,vb.games), 1);
   const maxVh = maxV * 1.1;
@@ -1125,7 +1160,7 @@
         wrap.appendChild(row('Dewards/g', va.dewards, vb.dewards));
         wrap.appendChild(row('Stacks/g', va.stacks, vb.stacks));
         card.appendChild(wrap);
-        const totals = createEl('div', { class:'pc-note', text:`Totals — A: obs ${fmt(va.obs)}, sen ${fmt(va.sen)}, dewards ${fmt(va.dewards)}, stacks ${fmt(va.stacks)} | B: obs ${fmt(vb.obs)}, sen ${fmt(vb.sen)}, dewards ${fmt(vb.dewards)}, stacks ${fmt(vb.stacks)}` });
+    const totals = createEl('div', { class:'pc-note', text:`Totals — ${nameA||'A'}: obs ${fmt(va.obs)}, sen ${fmt(va.sen)}, dewards ${fmt(va.dewards)}, stacks ${fmt(va.stacks)} | ${nameB||'B'}: obs ${fmt(vb.obs)}, sen ${fmt(vb.sen)}, dewards ${fmt(vb.dewards)}, stacks ${fmt(vb.stacks)}` });
         card.appendChild(totals);
         fullWidth.appendChild(card);
       })().catch(()=>{});
@@ -1138,7 +1173,7 @@
           let p = p0;
           let md = null;
           try{
-            md = await fetchDetail(m.match_id||m.id);
+            md = await fetchDetail(m.match_id||m.id, injected);
             if(md && Array.isArray(md.players)){
               const found = md.players.find(pp => Number(pp.account_id)===playerId);
               if(found) p = found;
@@ -1206,7 +1241,7 @@
           computeObjectivesParticipation(getPlayerEntries(data.matches||[], bId, filters, timeWindow), bId)
         ]);
         const rows = [];
-        const add = (label, a, b)=> rows.push(barCompare(label, a, b, n=>fmt(n)));
+        const add = (label, a, b)=> rows.push(barCompare(label, a, b, n=>fmt(n), null, nameA, nameB));
         add('Tower participation (±60s)', oa.towersPart, ob.towersPart);
         add('Tower last hits', oa.towersLH, ob.towersLH);
         add('Roshan participation (±60s)', oa.roshPart, ob.roshPart);
