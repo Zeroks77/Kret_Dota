@@ -1,18 +1,25 @@
 {
   "items": [
     {
-      "title": "DreamLeague Season 26",
-      "href": "league/2025/DS26/",
+      "title": "FISSURE Universe Episode 6",
+      "href": "league/2025/FUE6/",
       "group": "league",
-      "time": "2025-11-06T10:52:39Z",
-      "sort": "2025-DS26"
+      "time": "2025-11-06T10:53:18Z",
+      "sort": "2025-FUE6"
     },
     {
-      "title": "August 2025",
-      "href": "2025-August-Report/",
+      "title": "October 2025",
+      "href": "2025-October-Report/",
       "group": "monthly",
-      "time": "2025-09-19T15:26:33Z",
-      "sort": "2025-08"
+      "time": "2025-11-01T03:28:15Z",
+      "sort": "2025-10"
+    },
+    {
+      "title": "December 2025",
+      "href": "2025-December-Report/",
+      "group": "monthly",
+      "time": "2026-01-01T03:42:12Z",
+      "sort": "2025-12"
     },
     {
       "title": "September 2025",
@@ -29,11 +36,11 @@
       "sort": "2025-TI2025"
     },
     {
-      "title": "FISSURE Universe Episode 6",
-      "href": "league/2025/FUE6/",
+      "title": "Clavision DOTA2 Masters 2025: Snow-Ruyi",
+      "href": "league/2025/CDM2025SR/",
       "group": "league",
-      "time": "2025-11-06T10:53:18Z",
-      "sort": "2025-FUE6"
+      "time": "2025-11-06T10:52:19Z",
+      "sort": "2025-CDM2025SR"
     },
     {
       "title": "Esports World Cup 2025",
@@ -50,18 +57,11 @@
       "sort": "2025-PW2025S5"
     },
     {
-      "title": "December 2025",
-      "href": "2025-December-Report/",
-      "group": "monthly",
-      "time": "2026-01-01T03:42:12Z",
-      "sort": "2025-12"
-    },
-    {
-      "title": "Clavision DOTA2 Masters 2025: Snow-Ruyi",
-      "href": "league/2025/CDM2025SR/",
+      "title": "FISSURE PLAYGROUND 2",
+      "href": "league/2025/FP2/",
       "group": "league",
-      "time": "2025-11-06T10:52:19Z",
-      "sort": "2025-CDM2025SR"
+      "time": "2025-11-06T10:53:04Z",
+      "sort": "2025-FP2"
     },
     {
       "title": "November 2025",
@@ -71,18 +71,25 @@
       "sort": "2025-11"
     },
     {
-      "title": "FISSURE PLAYGROUND 2",
-      "href": "league/2025/FP2/",
-      "group": "league",
-      "time": "2025-11-06T10:53:04Z",
-      "sort": "2025-FP2"
+      "title": "January 2026",
+      "href": "2026-January-Report/",
+      "group": "monthly",
+      "time": "2026-02-01T04:03:56Z",
+      "sort": "2026-01"
     },
     {
-      "title": "October 2025",
-      "href": "2025-October-Report/",
+      "title": "DreamLeague Season 26",
+      "href": "league/2025/DS26/",
+      "group": "league",
+      "time": "2025-11-06T10:52:39Z",
+      "sort": "2025-DS26"
+    },
+    {
+      "title": "August 2025",
+      "href": "2025-August-Report/",
       "group": "monthly",
-      "time": "2025-11-01T03:28:15Z",
-      "sort": "2025-10"
+      "time": "2025-09-19T15:26:33Z",
+      "sort": "2025-08"
     }
   ]
 }
