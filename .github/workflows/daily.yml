@@ -26,6 +26,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add -- data docs scripts pipeline.ps1 || true
+          git add --update -- data docs scripts pipeline.ps1 || true
           git commit -m "chore(ci): daily unified pipeline run" || echo "no changes"
           git push
