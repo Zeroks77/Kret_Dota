@@ -1,0 +1,602 @@
+[
+  {
+    "id": 65006,
+    "name": "The International 2013",
+    "slug": "TI2013",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 65005,
+    "name": "The International West Qualifiers",
+    "slug": "TIWQ",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 65004,
+    "name": "The International East Qualifiers",
+    "slug": "TIEQ",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 65001,
+    "name": "The International 2012",
+    "slug": "TI2012",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 19543,
+    "name": "PGL Wallachia 2026 Season 8",
+    "slug": "PW2026S8",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 19520,
+    "name": "BLAST Slam VII China Qualifier",
+    "slug": "BSVCQ",
+    "tier": 1,
+    "series": "BLAST",
+    "status": "discovered"
+  },
+  {
+    "id": 19448,
+    "name": "DreamLeague Season 29 Qualifiers",
+    "slug": "DS29Q",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 19435,
+    "name": "PGL Wallachia 2026 Season 7",
+    "slug": "PW2026S7",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 19422,
+    "name": "ESL One Birmingham 2026",
+    "slug": "EOB2026",
+    "tier": 1,
+    "series": "ESL",
+    "status": "discovered"
+  },
+  {
+    "id": 19269,
+    "name": "DreamLeague Season 28",
+    "slug": "DS28",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 19248,
+    "name": "PGL Wallachia Season #7 AMER Closed Qualifiers",
+    "slug": "PWS7ACQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 19247,
+    "name": "PGL Wallachia Season #7 EEU Closed Qualifiers",
+    "slug": "PWS7ECQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 19246,
+    "name": "PGL Wallachia Season #7 WEU Closed Qualifiers",
+    "slug": "PWS7WCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 19245,
+    "name": "PGL Wallachia Season #7 Asia Closed Qualifiers",
+    "slug": "PWS7ACQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 19148,
+    "name": "BLAST Slam VI China Qualifier",
+    "slug": "BSVCQ",
+    "tier": 1,
+    "series": "BLAST",
+    "status": "discovered"
+  },
+  {
+    "id": 19101,
+    "name": "BLAST SLAM VII",
+    "slug": "BSV",
+    "tier": 1,
+    "series": "BLAST",
+    "status": "discovered"
+  },
+  {
+    "id": 19099,
+    "name": "BLAST SLAM VI",
+    "slug": "BSV",
+    "tier": 1,
+    "series": "BLAST",
+    "status": "discovered"
+  },
+  {
+    "id": 19090,
+    "name": "ESL One Birmingham 2026 Qualifiers",
+    "slug": "EOB2026Q",
+    "tier": 1,
+    "series": "ESL",
+    "status": "discovered"
+  },
+  {
+    "id": 19089,
+    "name": "DreamLeague Season 28 Qualifiers",
+    "slug": "DS28Q",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 18988,
+    "name": "DreamLeague Season 27",
+    "slug": "DS27",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 18920,
+    "name": "PGL Wallachia 2025 Season 6",
+    "slug": "PW2025S6",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 18830,
+    "name": "BLAST Slam V: China Closed Qualifier",
+    "slug": "BSVCCQ",
+    "tier": 1,
+    "series": "BLAST",
+    "status": "discovered"
+  },
+  {
+    "id": 18751,
+    "name": "PGL Wallachia Season #6 AMER Closed Qualifiers",
+    "slug": "PWS6ACQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 18750,
+    "name": "PGL Wallachia Season #6 SEA Closed Qualifiers",
+    "slug": "PWS6SCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 18749,
+    "name": "PGL Wallachia Season #6 CN Closed Qualifiers",
+    "slug": "PWS6CCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 18748,
+    "name": "PGL Wallachia Season #6 WEU Closed Qualifiers",
+    "slug": "PWS6WCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 18747,
+    "name": "PGL Wallachia Season #6 EEU Closed Qualifiers",
+    "slug": "PWS6ECQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 18706,
+    "name": "BLAST Slam IV: China Closed Qualifier",
+    "slug": "BSICCQ",
+    "tier": 1,
+    "series": "BLAST",
+    "status": "discovered"
+  },
+  {
+    "id": 18629,
+    "name": "DreamLeague Season 27 Qualifiers",
+    "slug": "DS27Q",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 18375,
+    "name": "Esports World Cup 2025",
+    "slug": "EWC2025",
+    "tier": 1,
+    "series": "EWC",
+    "status": "tracked"
+  },
+  {
+    "id": 18358,
+    "name": "PGL Wallachia 2025 Season 5",
+    "slug": "PW2025S5",
+    "tier": 1,
+    "series": "PGL",
+    "status": "tracked"
+  },
+  {
+    "id": 18309,
+    "name": "Road To The International 2025 - Regional Qualifiers Western Europe",
+    "slug": "RTTI2025RQWE",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 18308,
+    "name": "Road To The International 2025 - Regional Qualifiers Southeast Asia",
+    "slug": "RTTI2025RQSA",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 18307,
+    "name": "Road To The International 2025 - Regional Qualifiers North America",
+    "slug": "RTTI2025RQNA",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 18306,
+    "name": "Road To The International 2025 - Regional Qualifiers China",
+    "slug": "RTTI2025RQC",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 18305,
+    "name": "Road To The International 2025 - Regional Qualifiers South America",
+    "slug": "RTTI2025RQSA",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 18304,
+    "name": "Road To The International 2025 - Regional Qualifiers Eastern Europe",
+    "slug": "RTTI2025RQEE",
+    "tier": 1,
+    "series": "TI",
+    "status": "discovered"
+  },
+  {
+    "id": 18210,
+    "name": "Esports World Cup 2025 Qualifiers",
+    "slug": "EWC2025Q",
+    "tier": 1,
+    "series": "EWC",
+    "status": "discovered"
+  },
+  {
+    "id": 18111,
+    "name": "DreamLeague Season 26",
+    "slug": "DS26",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "tracked"
+  },
+  {
+    "id": 18058,
+    "name": "PGL Wallachia 2025 Season 4",
+    "slug": "PW2025S4",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17891,
+    "name": "PGL Wallachia 2025 Season 3",
+    "slug": "PW2025S3",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17874,
+    "name": "DreamLeague Season 26 Qualifiers",
+    "slug": "DS26Q",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 17795,
+    "name": "ESL One Raleigh 2025",
+    "slug": "EOR2025",
+    "tier": 1,
+    "series": "ESL",
+    "status": "discovered"
+  },
+  {
+    "id": 17778,
+    "name": "PGL Wallachia Season #4 AMER Closed Qualifiers",
+    "slug": "PWS4ACQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17777,
+    "name": "PGL Wallachia Season #4 CN Closed Qualifiers",
+    "slug": "PWS4CCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17776,
+    "name": "PGL Wallachia Season #4 SEA Closed Qualifiers",
+    "slug": "PWS4SCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17775,
+    "name": "PGL Wallachia Season #4 WEU Closed Qualifiers",
+    "slug": "PWS4WCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17774,
+    "name": "PGL Wallachia Season #4 EEU Closed Qualifiers",
+    "slug": "PWS4ECQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17765,
+    "name": "DreamLeague Season 25 powered by Intel",
+    "slug": "DS25PBI",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 17674,
+    "name": "PGL Wallachia Season #3 EEU Closed Qualifiers",
+    "slug": "PWS3ECQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17673,
+    "name": "PGL Wallachia Season #3 WEU Closed Qualifiers",
+    "slug": "PWS3WCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17672,
+    "name": "PGL Wallachia Season #3 CN Closed Qualifiers",
+    "slug": "PWS3CCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17671,
+    "name": "PGL Wallachia Season #3 SEA Closed Qualifiers",
+    "slug": "PWS3SCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17670,
+    "name": "PGL Wallachia Season #3 SA Closed Qualifiers",
+    "slug": "PWS3SCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17669,
+    "name": "PGL Wallachia Season #3 NA Closed Qualifiers",
+    "slug": "PWS3NCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17629,
+    "name": "ESL One Raleigh 2025 Qualifiers",
+    "slug": "EOR2025Q",
+    "tier": 1,
+    "series": "ESL",
+    "status": "discovered"
+  },
+  {
+    "id": 17628,
+    "name": "DreamLeague Season 25 Qualifiers powered by Intel",
+    "slug": "DS25QPBI",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 17509,
+    "name": "ESL One Bangkok 2024 powered by Intel",
+    "slug": "EOB2024PBI",
+    "tier": 1,
+    "series": "ESL",
+    "status": "discovered"
+  },
+  {
+    "id": 17414,
+    "name": "BLAST SLAM I",
+    "slug": "BSI",
+    "tier": 1,
+    "series": "BLAST",
+    "status": "discovered"
+  },
+  {
+    "id": 17299,
+    "name": "ESL One Bangkok 2024 Qualifiers powered by Intel",
+    "slug": "EOB2024QPBI",
+    "tier": 1,
+    "series": "ESL",
+    "status": "discovered"
+  },
+  {
+    "id": 17272,
+    "name": "DreamLeague Season 24 powered by Intel",
+    "slug": "DS24PBI",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 17135,
+    "name": "DreamLeague Season Qualifiers 24 powered by Intel",
+    "slug": "DSQ24PBI",
+    "tier": 1,
+    "series": "DreamLeague",
+    "status": "discovered"
+  },
+  {
+    "id": 17126,
+    "name": "BetBoom Dacha Belgrade 2024",
+    "slug": "BDB2024",
+    "tier": 1,
+    "series": "BetBoom",
+    "status": "discovered"
+  },
+  {
+    "id": 17122,
+    "name": "BetBoom Dacha Belgrade 2024 - Closed Qualifiers - Americas",
+    "slug": "BDB2024CQA",
+    "tier": 1,
+    "series": "BetBoom",
+    "status": "discovered"
+  },
+  {
+    "id": 17119,
+    "name": "PGL Wallachia 2024 Season 2",
+    "slug": "PW2024S2",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17109,
+    "name": "BetBoom Dacha Belgrade 2024 - Closed Qualifiers - China",
+    "slug": "BDB2024CQC",
+    "tier": 1,
+    "series": "BetBoom",
+    "status": "discovered"
+  },
+  {
+    "id": 17108,
+    "name": "BetBoom Dacha Belgrade 2024 - Closed Qualifiers - SEA",
+    "slug": "BDB2024CQS",
+    "tier": 1,
+    "series": "BetBoom",
+    "status": "discovered"
+  },
+  {
+    "id": 17092,
+    "name": "BetBoom Dacha Belgrade 2024 - Closed Qualifiers - EEU",
+    "slug": "BDB2024CQE",
+    "tier": 1,
+    "series": "BetBoom",
+    "status": "discovered"
+  },
+  {
+    "id": 17091,
+    "name": "BetBoom Dacha Belgrade 2024 - Closed Qualifiers - WEU",
+    "slug": "BDB2024CQW",
+    "tier": 1,
+    "series": "BetBoom",
+    "status": "discovered"
+  },
+  {
+    "id": 17012,
+    "name": "PGL Wallachia Season #2 WEU Closed Qualifiers",
+    "slug": "PWS2WCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17011,
+    "name": "PGL Wallachia Season #2 EEU Closed Qualifiers",
+    "slug": "PWS2ECQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17010,
+    "name": "PGL Wallachia Season #2 CN Closed Qualifiers",
+    "slug": "PWS2CCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17009,
+    "name": "PGL Wallachia Season #2 SEA Closed Qualifiers",
+    "slug": "PWS2SCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17008,
+    "name": "PGL Wallachia Season #2 SA Closed Qualifiers",
+    "slug": "PWS2SCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  },
+  {
+    "id": 17007,
+    "name": "PGL Wallachia Season #2 NA Closed Qualifiers",
+    "slug": "PWS2NCQ",
+    "tier": 1,
+    "series": "PGL",
+    "status": "discovered"
+  }
+]
