@@ -25,7 +25,7 @@
       .dv-draft td.col-pair{ min-width:260px }
       .dv-draft .toolbar{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:8px }
       .dv-draft .seg{ padding:6px 10px; border:1px solid var(--border); background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03)); color:var(--text); border-radius:10px; cursor:pointer; font-size:12px }
-      .dv-draft .seg.active{ outline:2px solid rgba(109,166,255,.5); background:linear-gradient(180deg, rgba(109,166,255,.2), rgba(109,166,255,.08)); border-color:rgba(109,166,255,.45) }
+      .dv-draft .seg.active{ outline:2px solid rgba(200,170,110,.5); background:linear-gradient(180deg, rgba(200,170,110,.2), rgba(200,170,110,.08)); border-color:rgba(200,170,110,.45) }
       .dv-draft .switch{ display:inline-flex; align-items:center; gap:6px; margin-left:8px }
       .dv-draft .field{ display:inline-flex; align-items:center; gap:6px; margin-left:8px }
       .dv-draft .field input{ width:160px; background:transparent; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:5px 8px; font-size:12px }
@@ -35,7 +35,7 @@
       
       .dv-draft .hname{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; max-width:200px }
       .dv-draft .dv-hero{ cursor:pointer; display:inline-block; border-radius:8px; padding:2px 4px; }
-      .dv-draft .dv-hero:hover{ background: rgba(109,166,255,.12); }
+      .dv-draft .dv-hero:hover{ background: rgba(200,170,110,.12); }
     `;
     const el = document.createElement('style'); el.id='dv-draft-style'; el.textContent = css; document.head.appendChild(el);
   }

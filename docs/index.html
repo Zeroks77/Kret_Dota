@@ -5,79 +5,57 @@
 <meta name='viewport' content='width=device-width,initial-scale=1'>
 <title>Kret&#39;s EU Dota League - Reports</title>
 <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
-<link rel='icon' href='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2218%22 fill=%22%23121832%22/%3E%3Ctext x=%2250%25%22 y=%2258%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2256%22 fill=%22%239ec7ff%22%3ED%3C/text%3E%3C/svg%3E'>
+<link rel='stylesheet' href='css/dota-theme.css'>
+<link rel='icon' href='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2218%22 fill=%22%231a2332%22/%3E%3Ctext x=%2250%25%22 y=%2258%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2256%22 fill=%22%23c8aa6e%22%3ED%3C/text%3E%3C/svg%3E'>
 <style>
-:root{--bg:#0b1020;--panel:#121832;--muted:#9aa3b2;--text:#eef1f7;--accent:#6da6ff;--chip:#1a2142;--border:rgba(255,255,255,.08)}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;height:100vh;display:flex}
-.sidebar{width:360px;min-width:280px;max-width:420px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border-right:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:12px}
-.brand h1{font-size:20px;margin:0}
-.sub{color:var(--muted);font-size:13px}
-.filters{display:flex;flex-wrap:wrap;gap:6px}
-.btn{padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#0e1533;color:var(--text);cursor:pointer;font-size:12px}
-.btn.active{outline:2px solid rgba(109,166,255,.6)}
-.search{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);outline:none}
-.list{margin:0;padding:0;list-style:none;overflow:auto;border:1px solid var(--border);border-radius:12px;flex:1;background:rgba(255,255,255,.02)}
-.item a{display:block;padding:10px 12px;color:var(--text);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.06)}
-.item a:hover{background:rgba(255,255,255,.06)}
-.item.active a{background:rgba(109,166,255,.18)}
+/* Index-specific layout */
+body{height:100vh;display:flex;position:relative;z-index:1}
+.sidebar{width:360px;min-width:280px;max-width:420px;background:linear-gradient(180deg,rgba(200,170,110,.03),rgba(255,255,255,.01));border-right:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand h1{font-size:18px;margin:0;color:var(--gold-light)}
+.sub{color:var(--text-muted);font-size:13px}
+.search{width:100%;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-primary);outline:none;font-size:14px;transition:border-color .15s}
+.search:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(200,170,110,.15)}
+.list{margin:0;padding:0;list-style:none;overflow:auto;border:1px solid var(--border);border-radius:var(--radius-lg);flex:1;background:rgba(255,255,255,.015)}
+.item a{display:block;padding:10px 14px;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);transition:background .15s}
+.item a:hover{background:rgba(200,170,110,.06);color:var(--gold-light)}
+.item.active a{background:rgba(200,170,110,.12);border-left:3px solid var(--gold);color:var(--gold-light)}
 .viewer{flex:1;display:flex;flex-direction:column}
-.viewerbar{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.03)}
-.viewerbar .title{font-weight:600}
+.viewerbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:rgba(200,170,110,.02)}
+.viewerbar .title{font-weight:600;color:var(--gold-light)}
 .viewerbar .nav{display:flex;gap:8px}
-.nav .btn{padding:6px 10px}
 iframe{border:0;flex:1;width:100%}
-a{color:var(--accent)}
-.has-hover{position:relative}
-.hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:5;min-width:260px;max-width:420px;padding:10px;border-radius:10px;background:rgba(15,20,40,.96);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 24px rgba(0,0,0,.35)}
-.hovercard .title{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:6px}
-.hovercard a{display:inline-block;margin:2px 6px 2px 0;background:var(--chip);padding:3px 8px;border-radius:999px}
-.has-hover:hover > .hovercard{display:block}
-.has-hover.open > .hovercard{display:block}
-/* Hero gallery inside hovercard */
-.hovercard .heroes{max-width:520px}
-/* Picklists: always white with black text (future-proof if selects are added) */
-select{padding:6px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.25);background:#ffffff;color:#000000}
-select option{background:#ffffff;color:#000000}
-select:disabled{background:#f2f2f2;color:#666;opacity:1}
-/* Loading spinner for sidebar */
-.ix-spinner{display:none;align-items:center;gap:8px;color:var(--muted);font-size:12px}
-.ix-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:bd 1s infinite}
+/* Sidebar tree nodes */
+.node summary{padding:8px 12px;color:var(--gold);font-weight:600;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border-subtle);transition:background .15s}
+.node summary:hover{background:rgba(200,170,110,.04)}
+.node details[open] > summary{border-bottom-color:var(--border)}
+.children{margin:0;padding:0;list-style:none}
+/* Loading spinner */
+.ix-spinner{display:none;align-items:center;gap:8px;color:var(--text-muted);font-size:12px}
+.ix-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:bd 1s infinite}
 .ix-dot:nth-child(2){animation-delay:.15s}.ix-dot:nth-child(3){animation-delay:.3s}
 @keyframes bd{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
-/* Focus visible for keyboard users */
-.btn:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
-.sr-only{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0}
 /* Global loading overlay */
-.ix-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(9,12,24,.85);z-index:99999}
-.ix-box{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--border)}
-.ix-spin{width:32px;height:32px;border:3px solid rgba(158,199,255,.3);border-top-color:var(--accent);border-radius:50%;animation:ixs 1s linear infinite}
-@keyframes ixs{to{transform:rotate(360deg)}}
+.ix-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(13,17,23,.85);z-index:99999}
+.ix-box{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 20px;border-radius:var(--radius-lg);background:var(--bg-card);border:1px solid var(--border-strong);box-shadow:var(--shadow-lg),var(--shadow-gold)}
+.ix-spin{width:36px;height:36px;border:3px solid rgba(200,170,110,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
 </style>
 </head>
 <body>
   <div id="ixOverlay" class="ix-overlay" role="status" aria-live="polite"><div class="ix-box"><div class="ix-spin" aria-hidden="true"></div><div class="sub">Loading…</div></div></div>
   <aside class='sidebar'>
     <div class='brand'>
-      <h1>Reports - Kret&#39;s EU Dota League</h1>
-      <div class='sub'>Pick a run or filter by range.</div>
+      <div class='brand-logo'>K</div>
+      <div>
+        <h1>Kret&#39;s EU Dota League</h1>
+        <div class='sub'>Tournament Analytics Dashboard</div>
+      </div>
     </div>
     <div id='ixSpin' class='ix-spinner'><div class='ix-dot'></div><div class='ix-dot'></div><div class='ix-dot'></div><span>Loading list…</span></div>
-  <!-- Filters removed; Dynamic view is available as a pinned list entry below -->
   <label for='q' class='sr-only'>Search reports by name, date, or range</label>
-  <input id='q' class='search' type='text' placeholder='Search (date/range) ...' aria-label='Search reports by name, date, or range'>
-  <!-- Dynamic view login (shown when locked) -->
-  <div id='dynLogin' class='sub' style='display:none;margin:8px 0;padding:8px;border:1px solid var(--border);border-radius:10px'>
-    <div style='font-weight:600;margin-bottom:6px'>Unlock Dynamic View</div>
-    <div style='display:flex;gap:6px;align-items:center'>
-      <input id='dynKey' class='search' type='password' placeholder='Access key' style='flex:1' aria-label='Dynamic view access key'>
-      <button id='dynUnlock' class='btn'>Unlock</button>
-    </div>
-    <div id='dynMsg' class='sub' style='margin-top:6px;display:none'></div>
-  </div>
+  <input id='q' class='search' type='text' placeholder='Search reports...' aria-label='Search reports by name, date, or range'>
     <ul id='list' class='list tree'>
-  <li class="leaf item" id="li-dynamic" data-range="dynamic" data-time="9223372036854775807" style="display:none"><a href="./dynamic.html" id="a-dynamic">Dynamic view (custom timeframe)</a></li>
-  <li class="leaf item" id="li-last-month" data-range="dynamic" data-time="9223372036854775806"><a href="./user_last_month.html" id="a-last-month">Dynamic – Last Month (exclude current month)</a></li>
+  <li class="leaf item" id="li-dynamic" data-range="dynamic" data-time="9223372036854775807"><a href="./dynamic.html" id="a-dynamic">Dynamic view (custom timeframe)</a></li>
       <li class="node" id="node-monthly"><details open>
         <summary>📅 Monthly Reports</summary>
         <ul class="children" id="tree-monthly"></ul>
@@ -101,10 +79,10 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
 
   <main class='viewer'>
     <div class='viewerbar'>
-      <div class='title' id='viewerTitle'>-</div>
+      <div class='title' id='viewerTitle'>Select a report</div>
       <div class='nav'>
-        <button class='btn' id='prevBtn' title='Previous (ArrowUp)'><- Previous</button>
-        <button class='btn' id='nextBtn' title='Next (ArrowDown)'>Next -></button>
+        <button class='btn' id='prevBtn' title='Previous (ArrowUp)'>&larr; Previous</button>
+        <button class='btn' id='nextBtn' title='Next (ArrowDown)'>Next &rarr;</button>
       </div>
     </div>
     
@@ -113,48 +91,6 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
 
 <script>
 (function(){
-  // Soft gate for showing the Dynamic view link only when a correct key is provided.
-  // Flow: docs/gate.json contains { "hash": "<sha256-of-secret>" } published by GitHub Actions from repo secret DYNAMIC_VIEW_KEY.
-  // Users can unlock either via URL ?key=<secret> or via the login form below the search bar.
-  async function sha256Hex(text){ const enc=new TextEncoder(); const data=enc.encode(text); const buf=await crypto.subtle.digest('SHA-256', data); const arr=Array.from(new Uint8Array(buf)); return arr.map(b=>b.toString(16).padStart(2,'0')).join(''); }
-  function isLocal(){ try{ return location.protocol==='file:' || /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/i.test(String(location.hostname||'')); }catch(_e){ return false; } }
-  function getSp(){ try{ return new URLSearchParams(location.search); }catch(_e){ return new URLSearchParams(); } }
-  function getStoredKey(){ try{ return sessionStorage.getItem('dv_key') || ''; }catch(_e){ return ''; } }
-  function setStoredKey(k){ try{ if(k){ sessionStorage.setItem('dv_key', k); } }catch(_e){} }
-  async function fetchGateHash(){ try{ const res = await fetch('./gate.json', { cache: 'no-store' }); if(!res.ok) return ''; const j = await res.json(); return String((j && j.hash) || ''); }catch(_e){ return ''; } }
-  function showLogin(msg){ const box=document.getElementById('dynLogin'); const m=document.getElementById('dynMsg'); if(box){ box.style.display='block'; } if(m){ if(msg){ m.textContent=String(msg); m.style.display='block'; } else { m.textContent=''; m.style.display='none'; } } }
-  function hideLogin(){ const box=document.getElementById('dynLogin'); if(box){ box.style.display='none'; } const m=document.getElementById('dynMsg'); if(m){ m.textContent=''; m.style.display='none'; } }
-  async function unlockWith(key, want){
-    if(!key) return false;
-    if(isLocal() && key==='123admin') return true;
-    if(!want) return false;
-    const got = (await sha256Hex(String(key))).toLowerCase();
-    return got === String(want).toLowerCase();
-  }
-  async function maybeShowDynamic(){
-    const li = document.getElementById('li-dynamic'); const aDyn=document.getElementById('a-dynamic'); if(!li) return;
-    const want = await fetchGateHash();
-    const sp = getSp(); let key = sp.get('key') || getStoredKey();
-    const ok = await unlockWith(key, want);
-    if(ok){ li.style.display=''; hideLogin(); if(aDyn && key){ try{ const u=new URL(aDyn.getAttribute('href'), location.href); u.searchParams.set('key', key); aDyn.setAttribute('href', u.pathname + u.search); }catch(_e){} } }
-    else { li.style.display='none'; showLogin(); }
-  }
-  // Wire login form
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const btn = document.getElementById('dynUnlock'); const inp = document.getElementById('dynKey');
-    if(btn && inp){
-      btn.addEventListener('click', async ()=>{
-        const key = String(inp.value||''); const want = await fetchGateHash();
-        const ok = await unlockWith(key, want);
-        if(ok){ setStoredKey(key); hideLogin(); const li=document.getElementById('li-dynamic'); if(li){ li.style.display=''; } const a=document.getElementById('a-dynamic'); if(a){ try{ const u=new URL(a.getAttribute('href'), location.href); u.searchParams.set('key', key); a.setAttribute('href', u.pathname + u.search); }catch(_e){} } }
-        else { showLogin('Invalid key.'); }
-      });
-      // Enter key submits
-      inp.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
-    }
-  });
-  // Initial gate check
-  maybeShowDynamic();
   const list = document.getElementById('list');
   let items = Array.from(list.querySelectorAll('.leaf.item'));
   const q = document.getElementById('q');
@@ -256,7 +192,13 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
   ulMonthly.innerHTML=''; ulPatch.innerHTML=''; ulUser.innerHTML=''; ulLeague.innerHTML='';
       function safeDate(x){ const t = Date.parse(x?.time||''); return isFinite(t)?t:0; }
 
-  const monthly = data.items.filter(it=> (it.group||'').toLowerCase()==='monthly');
+  const now = new Date();
+  const curYm = `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,'0')}`;
+  const monthly = data.items.filter(it=> {
+    if((it.group||'').toLowerCase()!=='monthly') return false;
+    const sk = String(it.sort||'').slice(0,7);
+    return sk !== curYm;
+  });
   const patch = data.items.filter(it=> (it.group||'').toLowerCase()==='patch');
   const user = data.items.filter(it=> (it.group||'').toLowerCase()==='user');
   const league = data.items.filter(it=> (it.group||'').toLowerCase()==='league');
@@ -264,7 +206,9 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
       // Helper to normalize hrefs coming from reports.json
       function normHref(h){
         if(!h) return '#';
-        const s = String(h).trim();
+        let s = String(h).trim();
+        s = s.replace(/lock=1\/$/i, '');
+        s = s.replace(/\?$/, '');
         if(/^(https?:)?\/\//i.test(s) || s.startsWith('/') || s.startsWith('./')) return s;
         return './'+s; // ensure relative links are rooted from docs/
       }
@@ -318,16 +262,43 @@ select:disabled{background:#f2f2f2;color:#666;opacity:1}
         li.appendChild(a); ulUser.appendChild(li);
       }
 
-      // Build League Reports (sort newest first by time, then sort key)
-      league.sort((a,b)=> {
-        const dt = safeDate(b) - safeDate(a); if (dt!==0) return dt; return String((b.sort||'')).localeCompare(String(a.sort||''));
-      });
+      // Build League Reports — group by year (newest first), like Monthly.
+      function leagueYearOf(it){
+        const sort = String(it.sort||'');
+        const m1 = sort.match(/^(\d{4})/);
+        if(m1) return m1[1];
+        const t = safeDate(it);
+        if(t) return String(new Date(t).getUTCFullYear());
+        const mt = String(it.title||'').match(/(20\d{2})/);
+        return mt ? mt[1] : 'Unknown';
+      }
+      const byLeagueYear = new Map();
       for(const it of league){
-        const li = document.createElement('li'); li.className='leaf item';
-        li.setAttribute('data-range','league'); li.setAttribute('data-time', String(safeDate(it)));
-        const a = document.createElement('a'); a.href = normHref(it.href||'#');
-        a.textContent = (it.title && !/^\s*$/.test(it.title)) ? it.title : 'League';
-        li.appendChild(a); ulLeague.appendChild(li);
+        const y = leagueYearOf(it);
+        if(!byLeagueYear.has(y)) byLeagueYear.set(y, []);
+        byLeagueYear.get(y).push(it);
+      }
+      const lYears = Array.from(byLeagueYear.keys()).sort((a,b)=>{
+        if(a==='Unknown') return 1; if(b==='Unknown') return -1;
+        return Number(b) - Number(a);
+      });
+      for(const y of lYears){
+        const itemsY = byLeagueYear.get(y).slice().sort((a,b)=>{
+          const dt = safeDate(b) - safeDate(a); if(dt!==0) return dt;
+          return String((b.sort||'')).localeCompare(String(a.sort||''));
+        });
+        const node = document.createElement('li'); node.className='node';
+        const det = document.createElement('details'); det.open = (lYears[0]===y);
+        const sum = document.createElement('summary'); sum.textContent = y;
+        const ul = document.createElement('ul'); ul.className='children';
+        for(const it of itemsY){
+          const li = document.createElement('li'); li.className='leaf item';
+          li.setAttribute('data-range','league'); li.setAttribute('data-time', String(safeDate(it)));
+          const a = document.createElement('a'); a.href = normHref(it.href||'#');
+          a.textContent = (it.title && !/^\s*$/.test(it.title)) ? it.title : 'League';
+          li.appendChild(a); ul.appendChild(li);
+        }
+        det.appendChild(sum); det.appendChild(ul); node.appendChild(det); ulLeague.appendChild(node);
       }
 
       // Refresh clickable leaves and list for navigation
