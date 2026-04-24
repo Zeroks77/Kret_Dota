@@ -1,7 +1,7 @@
 {
-  "updated": 1777020459,
-  "patch": null,
-  "patch_at": 0,
+  "updated": 1777022533,
+  "patch": "7.41",
+  "patch_at": 1774313459,
   "ranges": {
     "30": {
       "total_matches": 40,
@@ -13,8 +13,8 @@
       "avg_kills": 67.4,
       "avg_towers": 8.9,
       "radiant_winrate": 0.55,
-      "from_unix": 1774428459,
-      "to_unix": 1777020459,
+      "from_unix": 1774430533,
+      "to_unix": 1777022533,
       "top_items": [
         {
           "key": "blink",
@@ -230,8 +230,8 @@
       "avg_kills": 67.8,
       "avg_towers": 9.2,
       "radiant_winrate": 0.573,
-      "from_unix": 1771836459,
-      "to_unix": 1777020459,
+      "from_unix": 1771838533,
+      "to_unix": 1777022533,
       "top_items": [
         {
           "key": "blink",
@@ -447,8 +447,8 @@
       "avg_kills": 67.4,
       "avg_towers": 8.9,
       "radiant_winrate": 0.625,
-      "from_unix": 1766652459,
-      "to_unix": 1777020459,
+      "from_unix": 1766654533,
+      "to_unix": 1777022533,
       "top_items": [
         {
           "key": "blink",
@@ -654,6 +654,223 @@
         }
       ]
     },
+    "patch": {
+      "total_matches": 40,
+      "considered_matches": 40,
+      "avg_duration": 2349,
+      "first_blood_time": 96,
+      "first_roshan_time": 1795,
+      "first_tormentor_time": 1557,
+      "avg_kills": 67.4,
+      "avg_towers": 8.9,
+      "radiant_winrate": 0.55,
+      "from_unix": 1774313459,
+      "to_unix": 1777022533,
+      "top_items": [
+        {
+          "key": "blink",
+          "name": "Blink Dagger",
+          "count": 172
+        },
+        {
+          "key": "aghanims_shard",
+          "name": "Aghanim's Shard",
+          "count": 163
+        },
+        {
+          "key": "arcane_boots",
+          "name": "Arcane Boots",
+          "count": 132
+        },
+        {
+          "key": "ultimate_scepter",
+          "name": "Aghanim's Scepter",
+          "count": 121
+        },
+        {
+          "key": "phase_boots",
+          "name": "Phase Boots",
+          "count": 103
+        },
+        {
+          "key": "power_treads",
+          "name": "Power Treads",
+          "count": 101
+        },
+        {
+          "key": "black_king_bar",
+          "name": "Black King Bar",
+          "count": 87
+        },
+        {
+          "key": "pers",
+          "name": "Perseverance",
+          "count": 61
+        },
+        {
+          "key": "yasha",
+          "name": "Yasha",
+          "count": 61
+        },
+        {
+          "key": "sange",
+          "name": "Sange",
+          "count": 45
+        },
+        {
+          "key": "force_staff",
+          "name": "Force Staff",
+          "count": 40
+        },
+        {
+          "key": "kaya",
+          "name": "Kaya",
+          "count": 39
+        },
+        {
+          "key": "mekansm",
+          "name": "Mekansm",
+          "count": 38
+        },
+        {
+          "key": "glimmer_cape",
+          "name": "Glimmer Cape",
+          "count": 37
+        },
+        {
+          "key": "manta",
+          "name": "Manta Style",
+          "count": 32
+        },
+        {
+          "key": "guardian_greaves",
+          "name": "Guardian Greaves",
+          "count": 31
+        },
+        {
+          "key": "basher",
+          "name": "Skull Basher",
+          "count": 30
+        },
+        {
+          "key": "cyclone",
+          "name": "Eul's Scepter of Divinity",
+          "count": 30
+        },
+        {
+          "key": "pipe",
+          "name": "Pipe of Insight",
+          "count": 30
+        },
+        {
+          "key": "aether_lens",
+          "name": "Aether Lens",
+          "count": 27
+        }
+      ],
+      "least_items": [
+        {
+          "key": "aeon_disk",
+          "name": "Aeon Disk",
+          "count": 1
+        },
+        {
+          "key": "crellas_crozier",
+          "name": "Crella's Crozier",
+          "count": 1
+        },
+        {
+          "key": "dagon_4",
+          "name": "Dagon",
+          "count": 1
+        },
+        {
+          "key": "dagon_5",
+          "name": "Dagon",
+          "count": 1
+        },
+        {
+          "key": "orb_of_corrosion",
+          "name": "Orb of Corrosion",
+          "count": 1
+        },
+        {
+          "key": "rapier",
+          "name": "Divine Rapier",
+          "count": 1
+        },
+        {
+          "key": "revenants_brooch",
+          "name": "Revenant's Brooch",
+          "count": 1
+        },
+        {
+          "key": "angels_demise",
+          "name": "Khanda",
+          "count": 2
+        },
+        {
+          "key": "devastator",
+          "name": "Parasma",
+          "count": 2
+        },
+        {
+          "key": "heart",
+          "name": "Heart of Tarrasque",
+          "count": 2
+        },
+        {
+          "key": "helm_of_the_overlord",
+          "name": "Helm of the Overlord",
+          "count": 2
+        },
+        {
+          "key": "travel_boots_2",
+          "name": "Boots of Travel 2",
+          "count": 2
+        },
+        {
+          "key": "boots_of_bearing",
+          "name": "Boots of Bearing",
+          "count": 3
+        },
+        {
+          "key": "dagon",
+          "name": "Dagon",
+          "count": 3
+        },
+        {
+          "key": "dagon_2",
+          "name": "Dagon",
+          "count": 3
+        },
+        {
+          "key": "dagon_3",
+          "name": "Dagon",
+          "count": 3
+        },
+        {
+          "key": "essence_distiller",
+          "name": "Essence Distiller",
+          "count": 3
+        },
+        {
+          "key": "ethereal_blade",
+          "name": "Ethereal Blade",
+          "count": 3
+        },
+        {
+          "key": "gungir",
+          "name": "Gleipnir",
+          "count": 3
+        },
+        {
+          "key": "helm_of_the_dominator",
+          "name": "Helm of the Dominator",
+          "count": 3
+        }
+      ]
+    },
     "all": {
       "total_matches": 285,
       "considered_matches": 285,
@@ -665,7 +882,7 @@
       "avg_towers": 8.7,
       "radiant_winrate": 0.572,
       "from_unix": 0,
-      "to_unix": 1777020459,
+      "to_unix": 1777022533,
       "top_items": [
         {
           "key": "blink",

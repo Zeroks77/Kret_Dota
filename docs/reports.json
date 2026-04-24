@@ -9,10 +9,17 @@
     },
     {
       "title": "March 2026",
-      "href": "dynamic.html?from=1772323200&to=1774998000&tab=highlights&lock=1",
+      "href": "dynamic.html?from=1772323200&to=1775001600&tab=highlights&lock=1",
       "group": "monthly",
-      "time": "2026-03-31T23:00:00Z",
+      "time": "2026-04-01T00:00:00Z",
       "sort": "2026-03"
+    },
+    {
+      "title": "ESL One Birmingham 2026",
+      "href": "league_dynamic.html?slug=EOB2026",
+      "group": "league",
+      "time": "2026-03-22T11:59:56Z",
+      "sort": "2026-EOB2026"
     },
     {
       "title": "PGL Wallachia 2026 Season 7",
@@ -29,32 +36,25 @@
       "sort": "2026-02"
     },
     {
-      "title": "January 2026",
-      "href": "dynamic.html?from=1767225600&to=1769904000&tab=highlights&lock=1",
-      "group": "monthly",
-      "time": "2026-02-01T00:00:00Z",
-      "sort": "2026-01"
-    },
-    {
-      "title": "ESL One Birmingham 2026",
-      "href": "league_dynamic.html?slug=EOB2026",
-      "group": "league",
-      "time": "2026-01-12T08:02:04Z",
-      "sort": "2026-EOB2026"
-    },
-    {
       "title": "DreamLeague Season 28",
       "href": "league_dynamic.html?slug=DS28",
       "group": "league",
-      "time": "2026-01-05T08:02:14Z",
+      "time": "2026-02-16T10:55:43Z",
       "sort": "2026-DS28"
     },
     {
       "title": "BLAST SLAM VI",
       "href": "league_dynamic.html?slug=BSV",
       "group": "league",
-      "time": "2026-01-02T01:57:04Z",
+      "time": "2026-02-03T08:57:34Z",
       "sort": "2026-BSV"
+    },
+    {
+      "title": "January 2026",
+      "href": "dynamic.html?from=1767225600&to=1769904000&tab=highlights&lock=1",
+      "group": "monthly",
+      "time": "2026-02-01T00:00:00Z",
+      "sort": "2026-01"
     },
     {
       "title": "December 2025",
@@ -72,9 +72,9 @@
     },
     {
       "title": "October 2025",
-      "href": "dynamic.html?from=1759276800&to=1761958800&tab=highlights&lock=1",
+      "href": "dynamic.html?from=1759276800&to=1761955200&tab=highlights&lock=1",
       "group": "monthly",
-      "time": "2025-11-01T01:00:00Z",
+      "time": "2025-11-01T00:00:00Z",
       "sort": "2025-10"
     },
     {
@@ -99,6 +99,13 @@
       "sort": "2025-07"
     },
     {
+      "title": "Esports World Cup 2025",
+      "href": "league_dynamic.html?slug=EWC2025",
+      "group": "league",
+      "time": "2025-07-08T09:11:48Z",
+      "sort": "2025-EWC2025"
+    },
+    {
       "title": "PGL Wallachia 2025 Season 5",
       "href": "league_dynamic.html?slug=PW2025S5",
       "group": "league",
@@ -106,18 +113,18 @@
       "sort": "2025-PW2025S5"
     },
     {
-      "title": "Esports World Cup 2025",
-      "href": "league_dynamic.html?slug=EWC2025",
-      "group": "league",
-      "time": "2025-06-03T08:01:27Z",
-      "sort": "2025-EWC2025"
-    },
-    {
       "title": "DreamLeague Season 26",
       "href": "league_dynamic.html?slug=DS26",
       "group": "league",
-      "time": "2025-03-28T08:03:44Z",
+      "time": "2025-05-19T09:55:00Z",
       "sort": "2025-DS26"
+    },
+    {
+      "title": "ESL One Raleigh 2025",
+      "href": "league_dynamic.html?slug=EOR2025",
+      "group": "league",
+      "time": "2025-04-07T16:00:00Z",
+      "sort": "2025-EOR2025"
     },
     {
       "title": "PGL Wallachia 2025 Season 3",
@@ -125,13 +132,6 @@
       "group": "league",
       "time": "2025-03-08T08:00:51Z",
       "sort": "2025-PW2025S3"
-    },
-    {
-      "title": "ESL One Raleigh 2025",
-      "href": "league_dynamic.html?slug=EOR2025",
-      "group": "league",
-      "time": "2025-01-12T06:10:54Z",
-      "sort": "2025-EOR2025"
     }
   ]
 }

@@ -37,7 +37,7 @@
     "slug": "PW2026S8",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19520,
@@ -61,7 +61,7 @@
     "slug": "PW2026S7",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19422,
@@ -69,7 +69,7 @@
     "slug": "EOB2026",
     "tier": 1,
     "series": "ESL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19269,
@@ -77,7 +77,7 @@
     "slug": "DS28",
     "tier": 1,
     "series": "DreamLeague",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19248,
@@ -125,7 +125,7 @@
     "slug": "BSV",
     "tier": 1,
     "series": "BLAST",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19099,
@@ -133,7 +133,7 @@
     "slug": "BSV",
     "tier": 1,
     "series": "BLAST",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19090,
@@ -165,7 +165,7 @@
     "slug": "PW2025S6",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 18830,
@@ -317,7 +317,7 @@
     "slug": "PW2025S4",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17891,
@@ -325,7 +325,7 @@
     "slug": "PW2025S3",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17874,
@@ -341,7 +341,7 @@
     "slug": "EOR2025",
     "tier": 1,
     "series": "ESL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17778,
@@ -445,7 +445,7 @@
     "slug": "EOR2025Q",
     "tier": 1,
     "series": "ESL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17628,

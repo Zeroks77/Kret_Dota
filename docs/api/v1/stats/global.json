@@ -1,10 +1,10 @@
 {
-  "total_matches": 3166,
-  "avg_duration": 2290,
-  "first_blood_time": 137,
-  "first_roshan_time": 1242,
-  "avg_kills": 48.7,
-  "radiant_winrate": 0.548,
+  "total_matches": 1169,
+  "avg_duration": 2447,
+  "first_blood_time": 147,
+  "first_roshan_time": 1235,
+  "avg_kills": 47.8,
+  "radiant_winrate": 0.48,
   "leagues_count": 9,
-  "updated": 1777020458
+  "updated": 1777022531
 }

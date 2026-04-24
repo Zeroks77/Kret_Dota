@@ -1,5 +1,5 @@
 {
-  "updated": 1776770679,
+  "updated": 1777022178,
   "count": 75,
   "leagues": [
     {
@@ -8,6 +8,10 @@
       "slug": "TI2013",
       "tier": 1,
       "series": "TI",
+      "matches_count": 162,
+      "latest_start": 1376278022,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -16,6 +20,10 @@
       "slug": "TIWQ",
       "tier": 1,
       "series": "TI",
+      "matches_count": 39,
+      "latest_start": 1368991640,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -24,6 +32,10 @@
       "slug": "TIEQ",
       "tier": 1,
       "series": "TI",
+      "matches_count": 40,
+      "latest_start": 1369915446,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -32,6 +44,10 @@
       "slug": "TI2012",
       "tier": 1,
       "series": "TI",
+      "matches_count": 154,
+      "latest_start": 1346648774,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -40,6 +56,10 @@
       "slug": "PW2026S8",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 70,
+      "latest_start": 1776767485,
+      "is_completed": false,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -48,6 +68,10 @@
       "slug": "BSVCQ",
       "tier": 1,
       "series": "BLAST",
+      "matches_count": 31,
+      "latest_start": 1775219795,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -56,6 +80,10 @@
       "slug": "DS29Q",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 326,
+      "latest_start": 1776219326,
+      "is_completed": false,
+      "eligible_for_tracking": false,
       "status": "discovered"
     },
     {
@@ -64,6 +92,10 @@
       "slug": "PW2026S7",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 124,
+      "latest_start": 1773606284,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -72,6 +104,10 @@
       "slug": "EOB2026",
       "tier": 1,
       "series": "ESL",
+      "matches_count": 142,
+      "latest_start": 1774812860,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -80,6 +116,10 @@
       "slug": "DS28",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 195,
+      "latest_start": 1772388652,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -88,6 +128,10 @@
       "slug": "PWS7ACQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 32,
+      "latest_start": 1769739238,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -96,6 +140,10 @@
       "slug": "PWS7ECQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 37,
+      "latest_start": 1769709929,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -104,6 +152,10 @@
       "slug": "PWS7WCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 34,
+      "latest_start": 1769709083,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -112,6 +164,10 @@
       "slug": "PWS7ACQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 39,
+      "latest_start": 1769688688,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -120,22 +176,34 @@
       "slug": "BSVCQ",
       "tier": 1,
       "series": "BLAST",
+      "matches_count": 40,
+      "latest_start": 1767625176,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
       "leagueid": 19101,
       "name": "BLAST SLAM VII",
-      "slug": "BSV7",
+      "slug": "BSV",
       "tier": 1,
       "series": "BLAST",
-      "status": "discovered"
+      "matches_count": 0,
+      "latest_start": 0,
+      "is_completed": false,
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 19099,
       "name": "BLAST SLAM VI",
-      "slug": "BSV6",
+      "slug": "BSV",
       "tier": 1,
       "series": "BLAST",
+      "matches_count": 100,
+      "latest_start": 1771185630,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -144,6 +212,10 @@
       "slug": "EOB2026Q",
       "tier": 1,
       "series": "ESL",
+      "matches_count": 387,
+      "latest_start": 1768951549,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -152,6 +224,10 @@
       "slug": "DS28Q",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 379,
+      "latest_start": 1768177539,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -160,6 +236,10 @@
       "slug": "DS27",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 206,
+      "latest_start": 1766341021,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -168,6 +248,10 @@
       "slug": "PW2025S6",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 118,
+      "latest_start": 1763921777,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -176,6 +260,10 @@
       "slug": "BSVCCQ",
       "tier": 1,
       "series": "BLAST",
+      "matches_count": 62,
+      "latest_start": 1761484742,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -184,6 +272,10 @@
       "slug": "PWS6ACQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 38,
+      "latest_start": 1759727406,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -192,6 +284,10 @@
       "slug": "PWS6SCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 37,
+      "latest_start": 1759669955,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -200,6 +296,10 @@
       "slug": "PWS6CCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 13,
+      "latest_start": 1759661886,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -208,6 +308,10 @@
       "slug": "PWS6WCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 33,
+      "latest_start": 1759682951,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -216,6 +320,10 @@
       "slug": "PWS6ECQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 39,
+      "latest_start": 1759687792,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -224,6 +332,10 @@
       "slug": "BSICCQ",
       "tier": 1,
       "series": "BLAST",
+      "matches_count": 59,
+      "latest_start": 1759063559,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -232,6 +344,10 @@
       "slug": "DS27Q",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 432,
+      "latest_start": 1758939134,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -240,6 +356,10 @@
       "slug": "EWC2025",
       "tier": 1,
       "series": "EWC",
+      "matches_count": 89,
+      "latest_start": 1752941276,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -248,6 +368,10 @@
       "slug": "PW2025S5",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 116,
+      "latest_start": 1751208416,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -256,6 +380,10 @@
       "slug": "RTTI2025RQWE",
       "tier": 1,
       "series": "TI",
+      "matches_count": 39,
+      "latest_start": 1750184975,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -264,6 +392,10 @@
       "slug": "RTTI2025RQSA",
       "tier": 1,
       "series": "TI",
+      "matches_count": 43,
+      "latest_start": 1750160414,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -272,6 +404,10 @@
       "slug": "RTTI2025RQNA",
       "tier": 1,
       "series": "TI",
+      "matches_count": 24,
+      "latest_start": 1749773853,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -280,6 +416,10 @@
       "slug": "RTTI2025RQC",
       "tier": 1,
       "series": "TI",
+      "matches_count": 31,
+      "latest_start": 1749732459,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -288,6 +428,10 @@
       "slug": "RTTI2025RQSA",
       "tier": 1,
       "series": "TI",
+      "matches_count": 44,
+      "latest_start": 1749435146,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -296,6 +440,10 @@
       "slug": "RTTI2025RQEE",
       "tier": 1,
       "series": "TI",
+      "matches_count": 44,
+      "latest_start": 1749395340,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -304,6 +452,10 @@
       "slug": "EWC2025Q",
       "tier": 1,
       "series": "EWC",
+      "matches_count": 278,
+      "latest_start": 1749857188,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -312,7 +464,11 @@
       "slug": "DS26",
       "tier": 1,
       "series": "DreamLeague",
-      "status": "discovered"
+      "matches_count": 202,
+      "latest_start": 1748796481,
+      "is_completed": true,
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 18058,
@@ -320,6 +476,10 @@
       "slug": "PW2025S4",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 115,
+      "latest_start": 1745772572,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -328,6 +488,10 @@
       "slug": "PW2025S3",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 112,
+      "latest_start": 1742141715,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -336,6 +500,10 @@
       "slug": "DS26Q",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 427,
+      "latest_start": 1743727176,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -344,6 +512,10 @@
       "slug": "EOR2025",
       "tier": 1,
       "series": "ESL",
+      "matches_count": 90,
+      "latest_start": 1744590121,
+      "is_completed": true,
+      "eligible_for_tracking": false,
       "status": "tracked"
     },
     {
@@ -352,6 +524,10 @@
       "slug": "PWS4ACQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 36,
+      "latest_start": 1739594931,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -360,6 +536,10 @@
       "slug": "PWS4CCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 16,
+      "latest_start": 1739528582,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -368,6 +548,10 @@
       "slug": "PWS4SCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 37,
+      "latest_start": 1739521351,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -376,6 +560,10 @@
       "slug": "PWS4WCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 37,
+      "latest_start": 1739560763,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -384,6 +572,10 @@
       "slug": "PWS4ECQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 39,
+      "latest_start": 1739556910,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -392,6 +584,10 @@
       "slug": "DS25PBI",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 196,
+      "latest_start": 1741104360,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -400,6 +596,10 @@
       "slug": "PWS3ECQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 30,
+      "latest_start": 1736967434,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -408,6 +608,10 @@
       "slug": "PWS3WCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 31,
+      "latest_start": 1736960067,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -416,6 +620,10 @@
       "slug": "PWS3CCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 14,
+      "latest_start": 1736856359,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -424,6 +632,10 @@
       "slug": "PWS3SCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 30,
+      "latest_start": 1736938580,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -432,6 +644,10 @@
       "slug": "PWS3SCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 32,
+      "latest_start": 1736993177,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -440,6 +656,10 @@
       "slug": "PWS3NCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 12,
+      "latest_start": 1736894009,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -448,7 +668,11 @@
       "slug": "EOR2025Q",
       "tier": 1,
       "series": "ESL",
-      "status": "discovered"
+      "matches_count": 465,
+      "latest_start": 1737419472,
+      "is_completed": true,
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17628,
@@ -456,6 +680,10 @@
       "slug": "DS25QPBI",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 454,
+      "latest_start": 1736641202,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -464,6 +692,10 @@
       "slug": "EOB2024PBI",
       "tier": 1,
       "series": "ESL",
+      "matches_count": 88,
+      "latest_start": 1734272820,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -472,6 +704,10 @@
       "slug": "BSI",
       "tier": 1,
       "series": "BLAST",
+      "matches_count": 43,
+      "latest_start": 1733082181,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -480,6 +716,10 @@
       "slug": "EOB2024QPBI",
       "tier": 1,
       "series": "ESL",
+      "matches_count": 493,
+      "latest_start": 1731893827,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -488,6 +728,10 @@
       "slug": "DS24PBI",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 196,
+      "latest_start": 1731265022,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -496,6 +740,10 @@
       "slug": "DSQ24PBI",
       "tier": 1,
       "series": "DreamLeague",
+      "matches_count": 398,
+      "latest_start": 1727737347,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -504,6 +752,10 @@
       "slug": "BDB2024",
       "tier": 1,
       "series": "BetBoom",
+      "matches_count": 95,
+      "latest_start": 1729975863,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -512,6 +764,10 @@
       "slug": "BDB2024CQA",
       "tier": 1,
       "series": "BetBoom",
+      "matches_count": 35,
+      "latest_start": 1727325421,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -520,6 +776,10 @@
       "slug": "PW2024S2",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 121,
+      "latest_start": 1728842496,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -528,6 +788,10 @@
       "slug": "BDB2024CQC",
       "tier": 1,
       "series": "BetBoom",
+      "matches_count": 19,
+      "latest_start": 1727446326,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -536,6 +800,10 @@
       "slug": "BDB2024CQS",
       "tier": 1,
       "series": "BetBoom",
+      "matches_count": 37,
+      "latest_start": 1727277577,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -544,6 +812,10 @@
       "slug": "BDB2024CQE",
       "tier": 1,
       "series": "BetBoom",
+      "matches_count": 32,
+      "latest_start": 1727462482,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -552,6 +824,10 @@
       "slug": "BDB2024CQW",
       "tier": 1,
       "series": "BetBoom",
+      "matches_count": 35,
+      "latest_start": 1727291199,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -560,6 +836,10 @@
       "slug": "PWS2WCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 32,
+      "latest_start": 1723915190,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -568,6 +848,10 @@
       "slug": "PWS2ECQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 38,
+      "latest_start": 1723914818,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -576,6 +860,10 @@
       "slug": "PWS2CCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 13,
+      "latest_start": 1723806280,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -584,6 +872,10 @@
       "slug": "PWS2SCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 32,
+      "latest_start": 1723899329,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -592,6 +884,10 @@
       "slug": "PWS2SCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 35,
+      "latest_start": 1723941180,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -600,6 +896,10 @@
       "slug": "PWS2NCQ",
       "tier": 1,
       "series": "PGL",
+      "matches_count": 15,
+      "latest_start": 1723864157,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     }
   ]
