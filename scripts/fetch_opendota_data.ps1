@@ -6,7 +6,7 @@ param(
   [bool]$PromptForSteamKey = $false,
   [object]$UpdateConstants = $true,
   [object]$FetchMatches    = $true,
-  [object]$DiscoverMatches = $true,     # Discover league matches (Steam-only)
+  [object]$DiscoverMatches = $true,     # Discover league matches (Steam-first, with automatic fallback)
   [object]$UpdateShards    = $true,     # Write/merge simplified records into data/matches/YYYY-MM.json
   [object]$UpdateManifest  = $true,     # Rebuild data/manifest.json from shards
   [object]$RequestParse    = $false,    # Request OpenDota parse for up to -MaxParseRequests matches lacking enriched data
@@ -746,10 +746,27 @@ try{
 if($doConst){ Update-Constants }
 if($doDiscover){
   $ids = @()
-  # Discover sources based on toggles
+  $openDotaIds = @()
+  $teamIds = @()
+  $autoSupplementSteamDiscovery = $DiscoverViaSteam -and (-not $DiscoverViaOpenDota) -and (-not $DiscoverViaTeams)
+
+  # Steam is the primary source, but amateur leagues can lag there.
+  # When no secondary source was explicitly requested, automatically supplement
+  # with OpenDota and fall back to team endpoints if the league endpoint is empty.
   if($DiscoverViaSteam){ $ids += @(Discover-MatchIdsFromSteam) }
-  if($DiscoverViaOpenDota){ $ids += @(Discover-MatchIdsFromOpenDota) }
-  if($DiscoverViaTeams){ $ids += @(Discover-MatchIdsFromTeams) }
+  if($DiscoverViaOpenDota -or $autoSupplementSteamDiscovery){
+    if($autoSupplementSteamDiscovery){ Write-Log 'Auto-supplementing Steam discovery via OpenDota league endpoint' }
+    $openDotaIds = @(Discover-MatchIdsFromOpenDota)
+    $ids += $openDotaIds
+  }
+  if($DiscoverViaTeams){
+    $teamIds = @(Discover-MatchIdsFromTeams)
+    $ids += $teamIds
+  } elseif($autoSupplementSteamDiscovery -and (($openDotaIds | Measure-Object).Count) -eq 0) {
+    Write-Log 'OpenDota supplement returned no candidates; falling back to team endpoints'
+    $teamIds = @(Discover-MatchIdsFromTeams)
+    $ids += $teamIds
+  }
   $ids = $ids | Sort-Object -Unique
   if((($ids | Measure-Object).Count) -gt 0){
     # Ensure we fetch details for any newly discovered IDs

@@ -21,3 +21,5 @@ __pycache__/
 
 # Avoid committing large raw JSON except the whitelisted ones
 # We intentionally allow data/alltime-state.json and docs/data/*.json via workflows
+
+.env
