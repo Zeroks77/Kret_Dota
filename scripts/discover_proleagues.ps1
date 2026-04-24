@@ -18,6 +18,10 @@
   Automatically create league folders + trigger report generation for newly
   discovered Tier 1 leagues.
 
+.PARAMETER RefreshTrackedGroups
+  Refresh already tracked league groups and merge missing qualifier ids without
+  auto-tracking unrelated historical leagues.
+
 .PARAMETER DryRun
   List discovered leagues without creating anything.
 
@@ -36,6 +40,7 @@
 param(
   [int]$MinLeagueId = 17000,
   [switch]$AutoTrack,
+  [switch]$RefreshTrackedGroups,
   [switch]$DryRun,
   [switch]$IncludeTier2,
   [object]$TrackOnlyCompleted = $true,
@@ -308,10 +313,10 @@ if (-not $DryRun) {
   Write-Host ("Saved league tiers to: {0}" -f $tiersFile)
 }
 
-# ---------- 6. Auto-track new leagues ----------
-if ($AutoTrack -and -not $DryRun -and @($newLeagues).Count -gt 0) {
+# ---------- 6. Auto-track / refresh league groups ----------
+if (($AutoTrack -or $RefreshTrackedGroups) -and -not $DryRun) {
   Write-Host ""
-  Write-Host "=== Auto-tracking new leagues (qualifier merge enabled) ==="
+  Write-Host "=== Refreshing league groups (qualifier merge enabled) ==="
 
   $trackPool = @($discovered | Where-Object {
     ($_.tier -eq 1) -or ($IncludeTier2 -and $_.tier -eq 2)
@@ -324,16 +329,25 @@ if ($AutoTrack -and -not $DryRun -and @($newLeagues).Count -gt 0) {
     $byGroup[$gk] += $l
   }
 
+  function Get-TrackedReportMergedLeagueIds([string]$Slug) {
+    if ([string]::IsNullOrWhiteSpace($Slug)) { return @() }
+    $reportPath = Join-Path $dataPath ("league/{0}/report.json" -f $Slug)
+    $report = Read-JsonFile $reportPath
+    if (-not $report -or -not $report.league) { return @() }
+
+    $ids = @()
+    try { $ids += [int]$report.league.id } catch {}
+    try { $ids += @($report.league.merged_league_ids | ForEach-Object { [int]$_ }) } catch {}
+    return @($ids | Where-Object { $_ -gt 0 } | Sort-Object -Unique)
+  }
+
   $groupsNeedingRefresh = @()
   foreach ($kv in $byGroup.GetEnumerator()) {
     $members = @($kv.Value)
-    if (@($members | Where-Object { $_.status -eq 'discovered' -and $_.eligible_for_tracking }).Count -gt 0) {
-      $groupsNeedingRefresh += [pscustomobject]@{ key = $kv.Key; members = $members }
+    if ($RefreshTrackedGroups -and -not $AutoTrack) {
+      $hasTrackedAnchor = @($members | Where-Object { $_.status -eq 'tracked' -or $existingSlugs -contains $_.slug }).Count -gt 0
+      if (-not $hasTrackedAnchor) { continue }
     }
-  }
-
-  foreach ($g in $groupsNeedingRefresh) {
-    $members = @($g.members)
     $trackedNonQualifier = @($members | Where-Object { $_.status -eq 'tracked' -and -not (Test-IsQualifierLeague $_.name) } | Sort-Object leagueid -Descending)
     $discoveredNonQualifier = @($members | Where-Object { $_.status -eq 'discovered' -and -not (Test-IsQualifierLeague $_.name) } | Sort-Object leagueid -Descending)
     $fallback = @($members | Sort-Object leagueid -Descending)
@@ -341,9 +355,32 @@ if ($AutoTrack -and -not $DryRun -and @($newLeagues).Count -gt 0) {
     $primary = $null
     if ($trackedNonQualifier.Count -gt 0) { $primary = $trackedNonQualifier[0] }
     elseif ($discoveredNonQualifier.Count -gt 0) { $primary = $discoveredNonQualifier[0] }
-    else { $primary = $fallback[0] }
+    elseif ($fallback.Count -gt 0) { $primary = $fallback[0] }
 
     $allIds = @($members | ForEach-Object { [int]$_.leagueid } | Sort-Object -Unique)
+    $needsRefresh = (@($members | Where-Object { $_.status -eq 'discovered' -and $_.eligible_for_tracking }).Count -gt 0)
+    if (-not $needsRefresh -and $primary) {
+      $reportIds = @(Get-TrackedReportMergedLeagueIds -Slug ('' + $primary.slug))
+      if ($reportIds.Count -eq 0) {
+        $needsRefresh = $true
+      } elseif (@(Compare-Object -ReferenceObject $allIds -DifferenceObject $reportIds).Count -gt 0) {
+        $needsRefresh = $true
+      }
+    }
+
+    if ($needsRefresh) {
+      $groupsNeedingRefresh += [pscustomobject]@{ key = $kv.Key; members = $members; primary = $primary; allIds = $allIds }
+    }
+  }
+
+  if ($groupsNeedingRefresh.Count -eq 0) {
+    Write-Host "  No league groups require refresh."
+  }
+
+  foreach ($g in $groupsNeedingRefresh) {
+    $members = @($g.members)
+    $primary = $g.primary
+    $allIds = @($g.allIds)
     $extraIds = @($allIds | Where-Object { $_ -ne [int]$primary.leagueid })
 
     Write-Host ("  Generating merged report for group '{0}' via: {1} (id={2}); merged league ids: {3}" -f $g.key, $primary.name, $primary.leagueid, (($allIds -join ', ')))

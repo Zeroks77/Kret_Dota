@@ -15,6 +15,5 @@ if (-not (Test-Path -LiteralPath $pipelinePath)) {
 }
 
 # Keep this wrapper for task compatibility; delegate all logic to the unified pipeline.
-& pwsh -NoProfile -File $pipelinePath -Steps last30,publish,legacy-clean -RangeDays $Range
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& $pipelinePath -Steps @('last30','publish','legacy-clean') -RangeDays $Range
 exit 0

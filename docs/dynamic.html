@@ -1624,8 +1624,9 @@ async function main(){
   })(allMatches);
   function getRangeAnchorNow(){
     const wallNow = Math.floor(Date.now()/1000);
-    // If data is older than 2 days, anchor ranges to latest available data instead of wall clock.
-    if(maxMatchStart > 0 && (wallNow - maxMatchStart) > (2*86400)) return maxMatchStart;
+      // If data is older than 2 days, anchor ranges to latest available data instead of wall clock.
+      // Pad by one day so the viewer does not pin to the start of the latest available day.
+      if(maxMatchStart > 0 && (wallNow - maxMatchStart) > (2*86400)) return Math.min(wallNow, maxMatchStart + 86400);
     return wallNow;
   }
   // Keep a memoized cache of fetched match details to avoid duplicate network hits

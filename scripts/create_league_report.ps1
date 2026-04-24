@@ -52,6 +52,7 @@ $ErrorActionPreference = 'Stop'
 # ---------- Helpers ----------
 function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot/.." | Select-Object -ExpandProperty Path) }
 function Get-DataPath(){ Join-Path (Get-RepoRoot) 'data' }
+function Get-LeagueMatchesCachePath([int]$LeagueId){ Join-Path (Get-DataPath) ("cache/OpenDota/leagues/{0}-matches.json" -f $LeagueId) }
 # Approved verb: New- (create parent directory if missing)
 function New-ParentDirectory([string]$p){ $d=[System.IO.Path]::GetDirectoryName($p); if($d -and -not (Test-Path -LiteralPath $d)){ New-Item -ItemType Directory -Path $d -Force | Out-Null } }
 function Read-JsonFile([string]$p){ if(-not (Test-Path -LiteralPath $p)){ return $null } try{ Get-Content -LiteralPath $p -Raw -Encoding UTF8 | ConvertFrom-Json }catch{ $null } }
@@ -292,11 +293,24 @@ $leagueMatches = $null
 if(-not (Test-Path -LiteralPath $leagueMatchesFile) -or -not $SkipMatchesIfCached){
   $combinedMatches = @()
   foreach ($lid in $leagueIdsToFetch) {
-    Write-Host ("Fetching league matches list for id={0}" -f $lid)
-    try{
-      $part = Invoke-ApiJson -Uri ("https://api.opendota.com/api/leagues/{0}/matches" -f $lid) -TimeoutSec 30
-      if($part){ $combinedMatches += @($part) }
-    }catch{ throw "Failed to fetch league matches for id=${lid}: $($_.Exception.Message)" }
+    $part = $null
+    $cachePath = Get-LeagueMatchesCachePath -LeagueId $lid
+    if ((-not $ForceRefreshLeagues) -and (Test-Path -LiteralPath $cachePath)) {
+      $part = @(Read-JsonFile $cachePath)
+      if (@($part).Count -gt 0) {
+        Write-Host ("Using cached league matches list for id={0}" -f $lid)
+      } else {
+        $part = $null
+      }
+    }
+    if (-not $part) {
+      Write-Host ("Fetching league matches list for id={0}" -f $lid)
+      try{
+        $part = Invoke-ApiJson -Uri ("https://api.opendota.com/api/leagues/{0}/matches" -f $lid) -TimeoutSec 30
+        if($part){ Save-Json -o @($part) -p $cachePath }
+      }catch{ throw "Failed to fetch league matches for id=${lid}: $($_.Exception.Message)" }
+    }
+    if($part){ $combinedMatches += @($part) }
   }
   $leagueMatches = @($combinedMatches | Sort-Object match_id -Unique)
   if($leagueMatches){ Save-Json -o $leagueMatches -p $leagueMatchesFile }

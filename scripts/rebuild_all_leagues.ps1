@@ -9,11 +9,27 @@ $ErrorActionPreference = 'Stop'
 
 function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot/.." | Select-Object -ExpandProperty Path) }
 function Read-JsonFile([string]$p){ if(-not (Test-Path -LiteralPath $p)){ return $null } try{ Get-Content -LiteralPath $p -Raw -Encoding UTF8 | ConvertFrom-Json }catch{ $null } }
+function Resolve-LeagueNameFromTiers([string]$Slug, [object[]]$TierLeagues){
+  foreach($entry in @($TierLeagues)){
+    try{
+      if((''+$entry.slug) -eq $Slug -and -not [string]::IsNullOrWhiteSpace(''+$entry.name)){
+        return ''+$entry.name
+      }
+    }catch{}
+  }
+  return $null
+}
 
 $root = Get-RepoRoot
 $leagueDir = Join-Path $root 'data/league'
 if(-not (Test-Path -LiteralPath $leagueDir)){
   throw "No leagues folder found at: $leagueDir"
+}
+
+$tierLeagues = @()
+$tiersPath = Join-Path $root 'data/league_tiers.json'
+if(Test-Path -LiteralPath $tiersPath){
+  try{ $tierLeagues = @((Read-JsonFile $tiersPath).leagues) }catch{ $tierLeagues = @() }
 }
 
 $dirs = Get-ChildItem -LiteralPath $leagueDir -Directory | Sort-Object Name
@@ -34,6 +50,9 @@ foreach($d in $dirs){
     $docsReport = Join-Path $root ("docs/data/league/$slug/report.json")
     $rep2 = Read-JsonFile $docsReport
     if($rep2 -and $rep2.league -and $rep2.league.name){ $name = ''+$rep2.league.name }
+  }
+  if([string]::IsNullOrWhiteSpace($name) -and @($tierLeagues).Count -gt 0){
+    $name = Resolve-LeagueNameFromTiers -Slug $slug -TierLeagues $tierLeagues
   }
   if([string]::IsNullOrWhiteSpace($name)){
     Write-Host ("[skip] Could not resolve league name for slug '{0}' (missing report.json)." -f $slug) -ForegroundColor Yellow

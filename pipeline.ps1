@@ -266,6 +266,7 @@ if ('discover' -in $Steps) {
 
   $discArgs = @(
     '-NoProfile', '-File', (Join-Path $scriptsDir 'discover_proleagues.ps1'),
+    '-RefreshTrackedGroups',
     '-TrackOnlyCompleted', "$(if($TrackOnlyCompleted){1}else{0})",
     '-CompletedGraceDays', "$CompletedGraceDays"
   )
