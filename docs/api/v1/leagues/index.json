@@ -9,10 +9,10 @@
     "generated": 1776944918,
     "hasAverages": true,
     "endpoints": {
-      "report": "leagues/PW2026S7/report.json",
       "stats": "stats/PW2026S7.json",
-      "matches": "leagues/PW2026S7/matches.json",
-      "wards": "leagues/PW2026S7/wards.json"
+      "wards": "leagues/PW2026S7/wards.json",
+      "report": "leagues/PW2026S7/report.json",
+      "matches": "leagues/PW2026S7/matches.json"
     }
   },
   {
@@ -25,10 +25,10 @@
     "generated": 1776954969,
     "hasAverages": true,
     "endpoints": {
-      "report": "leagues/EOB2026/report.json",
       "stats": "stats/EOB2026.json",
-      "matches": "leagues/EOB2026/matches.json",
-      "wards": "leagues/EOB2026/wards.json"
+      "wards": "leagues/EOB2026/wards.json",
+      "report": "leagues/EOB2026/report.json",
+      "matches": "leagues/EOB2026/matches.json"
     }
   },
   {
@@ -41,10 +41,10 @@
     "generated": 1776953875,
     "hasAverages": true,
     "endpoints": {
-      "report": "leagues/DS28/report.json",
       "stats": "stats/DS28.json",
-      "matches": "leagues/DS28/matches.json",
-      "wards": "leagues/DS28/wards.json"
+      "wards": "leagues/DS28/wards.json",
+      "report": "leagues/DS28/report.json",
+      "matches": "leagues/DS28/matches.json"
     }
   },
   {
@@ -57,10 +57,10 @@
     "generated": 1776953794,
     "hasAverages": true,
     "endpoints": {
-      "report": "leagues/BSV/report.json",
       "stats": "stats/BSV.json",
-      "matches": "leagues/BSV/matches.json",
-      "wards": "leagues/BSV/wards.json"
+      "wards": "leagues/BSV/wards.json",
+      "report": "leagues/BSV/report.json",
+      "matches": "leagues/BSV/matches.json"
     }
   },
   {
@@ -73,10 +73,10 @@
     "generated": 1776944905,
     "hasAverages": true,
     "endpoints": {
-      "report": "leagues/PW2025S5/report.json",
       "stats": "stats/PW2025S5.json",
-      "matches": "leagues/PW2025S5/matches.json",
-      "wards": "leagues/PW2025S5/wards.json"
+      "wards": "leagues/PW2025S5/wards.json",
+      "report": "leagues/PW2025S5/report.json",
+      "matches": "leagues/PW2025S5/matches.json"
     }
   },
   {
@@ -89,10 +89,10 @@
     "generated": 1776956001,
     "hasAverages": true,
     "endpoints": {
-      "report": "leagues/EWC2025/report.json",
       "stats": "stats/EWC2025.json",
-      "matches": "leagues/EWC2025/matches.json",
-      "wards": "leagues/EWC2025/wards.json"
+      "wards": "leagues/EWC2025/wards.json",
+      "report": "leagues/EWC2025/report.json",
+      "matches": "leagues/EWC2025/matches.json"
     }
   },
   {
@@ -105,10 +105,10 @@
     "generated": 1776953838,
     "hasAverages": true,
     "endpoints": {
-      "report": "leagues/DS26/report.json",
       "stats": "stats/DS26.json",
-      "matches": "leagues/DS26/matches.json",
-      "wards": "leagues/DS26/wards.json"
+      "wards": "leagues/DS26/wards.json",
+      "report": "leagues/DS26/report.json",
+      "matches": "leagues/DS26/matches.json"
     }
   },
   {
@@ -121,10 +121,10 @@
     "generated": 1776944893,
     "hasAverages": true,
     "endpoints": {
-      "report": "leagues/PW2025S3/report.json",
       "stats": "stats/PW2025S3.json",
-      "matches": "leagues/PW2025S3/matches.json",
-      "wards": "leagues/PW2025S3/wards.json"
+      "wards": "leagues/PW2025S3/wards.json",
+      "report": "leagues/PW2025S3/report.json",
+      "matches": "leagues/PW2025S3/matches.json"
     }
   },
   {
@@ -137,10 +137,10 @@
     "generated": 1776955971,
     "hasAverages": true,
     "endpoints": {
-      "report": "leagues/EOR2025/report.json",
       "stats": "stats/EOR2025.json",
-      "matches": "leagues/EOR2025/matches.json",
-      "wards": "leagues/EOR2025/wards.json"
+      "wards": "leagues/EOR2025/wards.json",
+      "report": "leagues/EOR2025/report.json",
+      "matches": "leagues/EOR2025/matches.json"
     }
   }
 ]
