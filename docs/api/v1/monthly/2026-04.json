@@ -2671,5 +2671,86 @@
         "team_id": 9965666
       }
     ]
+  },
+  {
+    "match_id": 8780854178,
+    "start_time": 1776796830,
+    "radiant_win": false,
+    "radiant_team_id": 9957170,
+    "dire_team_id": 9872267,
+    "radiant_name": "RICE FIELDS",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 49307231,
+        "hero_id": 72,
+        "is_radiant": true,
+        "personaname": "Falken",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 16,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 99,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 7,
+        "is_radiant": true,
+        "personaname": "Dope",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 468420619,
+        "hero_id": 86,
+        "is_radiant": true,
+        "personaname": "Wasabii",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 1007102823,
+        "hero_id": 38,
+        "is_radiant": false,
+        "personaname": "GreyShark",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 54,
+        "is_radiant": false,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 22611451,
+        "hero_id": 23,
+        "is_radiant": false,
+        "personaname": "LuckDuck",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 79,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 10221447,
+        "hero_id": 27,
+        "is_radiant": false,
+        "personaname": "LazySiege",
+        "team_id": 9872267
+      }
+    ]
   }
 ]

@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "updated": 1777022531,
+  "updated": 1777027370,
   "base_url": "api/v1/",
   "endpoints": {
     "leagues_index": "leagues/index.json",
