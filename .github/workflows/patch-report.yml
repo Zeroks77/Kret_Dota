@@ -1,4 +1,4 @@
-name: Manual patch report wrapper
+name: Manual patch pipeline wrapper
 
 on:
   workflow_dispatch:
@@ -11,15 +11,18 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Generate patch wrapper and update index
+      - name: Run patch step via unified pipeline
         shell: pwsh
+        env:
+          OPENDOTA_API_KEY: ${{ vars.OPENDOTA_API_KEY }}
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
-          ./scripts/create_dynamic_reports.ps1 -GeneratePatch
+          ./pipeline.ps1 -Steps patch,publish,legacy-clean
       - name: Commit and push
         if: ${{ success() }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add -- docs/
-          git commit -m "chore(ci): patch wrapper"
+          git add -- docs data pipeline.ps1 scripts || true
+          git commit -m "chore(ci): patch unified pipeline wrapper" || echo "no changes"
           git push

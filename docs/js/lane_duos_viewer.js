@@ -14,7 +14,7 @@
   .ld-empty{font-size:12px;color:var(--muted,#9aa3b2)}
   .ld-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:-2px 0 4px}
   .ld-toolbar .seg{padding:6px 10px;border:1px solid var(--border,rgba(255,255,255,.12));background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border-radius:10px;cursor:pointer;font-size:12px;color:var(--text,#eef3fb)}
-  .ld-toolbar .seg.active{outline:2px solid rgba(109,166,255,.5);background:linear-gradient(180deg,rgba(109,166,255,.2),rgba(109,166,255,.08));border-color:rgba(109,166,255,.45)}
+  .ld-toolbar .seg.active{outline:2px solid rgba(200,170,110,.5);background:linear-gradient(180deg,rgba(200,170,110,.2),rgba(200,170,110,.08));border-color:rgba(200,170,110,.45)}
   .ld-toolbar .field{display:inline-flex;gap:6px;align-items:center;padding:4px 8px;border:1px solid var(--border,rgba(255,255,255,.12));border-radius:10px}
   .ld-toolbar input[type="number"]{width:70px;background:transparent;color:var(--text);border:1px solid var(--border,rgba(255,255,255,.12));border-radius:8px;padding:4px 6px}
   `; const st=document.createElement('style'); st.id='ld-base-styles'; st.textContent=css; document.head.appendChild(st); }

@@ -1,4 +1,4 @@
-name: Monthly dynamic wrapper (last full month)
+name: Monthly pipeline wrapper
 
 on:
   schedule:
@@ -13,15 +13,18 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Generate last full month wrapper and update index
+      - name: Run monthly step via unified pipeline
         shell: pwsh
+        env:
+          OPENDOTA_API_KEY: ${{ vars.OPENDOTA_API_KEY }}
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
-          ./scripts/create_dynamic_reports.ps1 -GenerateMonthly -LastFullMonth
+          ./pipeline.ps1 -Steps monthly,publish,legacy-clean -LastFullMonth
       - name: Commit and push
         if: ${{ success() }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add -- docs/
-          git commit -m "chore(ci): monthly wrapper (last full month)" || echo "no changes"
+          git add -- docs data pipeline.ps1 scripts || true
+          git commit -m "chore(ci): monthly unified pipeline wrapper" || echo "no changes"
           git push

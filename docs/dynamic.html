@@ -4,127 +4,119 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kret's EU Dota League – Dynamic Viewer</title>
 <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='css/dota-theme.css'>
 <style>
-:root{--bg:#0b1020;--panel:#121832;--muted:#9aa3b2;--text:#eef1f7;--accent:#9ec7ff;--chip:#1a2142;--border:rgba(255,255,255,.08)}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-a{color:var(--accent)}
+/* Page-specific layout */
+body{position:relative;z-index:1}
 .wrapper{max-width:1180px;margin:0 auto;padding:16px}
 .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:12px;overflow:visible}
-.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
-.controls .field{display:flex;flex-direction:column;gap:6px}
-input,button{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)}
-/* Picklists: always white with black text */
-select{padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.25);background:#ffffff;color:#000000}
-select option{background:#ffffff;color:#000000}
-select:disabled{background:#f2f2f2;color:#666;opacity:1}
-/* legacy explicit quick preset styling kept for specificity (redundant but harmless) */
-#quick{background:#ffffff;color:#000000;border-color:rgba(0,0,0,.25)}
-button{cursor:pointer}
+/* Controls panel — refined */
+.controls{padding:14px 16px}
+.controls-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-2px 0 10px}
+.controls-head h2{margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.controls-head .controls-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.controls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 12px;align-items:end}
+.controls-grid .field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.controls-grid .field.field-wide{grid-column:span 2}
+.controls-grid .field > label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);font-weight:600}
+.controls-grid .field input[type="datetime-local"],
+.controls-grid .field select{height:34px;width:100%}
+.controls-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle)}
+.controls-actions .spacer{flex:1 1 auto}
+.controls-actions .btn-primary{background:linear-gradient(180deg,var(--gold),var(--gold-dark));color:#1a1410;border:1px solid var(--gold);font-weight:700;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+.controls-actions .btn-primary:hover{background:linear-gradient(180deg,var(--gold-light),var(--gold));box-shadow:0 0 0 3px var(--gold-glow)}
+.controls-share{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border-subtle);font-size:12px;color:var(--text-muted)}
+.controls-share .share-label{margin-right:4px;letter-spacing:.06em;text-transform:uppercase;font-size:11px;font-weight:600}
+.player-filter-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.player-filter-row select{flex:1 1 auto;min-width:0}
 .grid{display:grid;grid-template-columns:2fr 1fr;gap:12px}
-.table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
-.table th{text-align:left;color:var(--muted);font-weight:600}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--text);font-size:12px}
-.win{color:#7be495} .loss{color:#ff8b8b}
-.logo{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.1);margin-right:6px}
-.heroes{display:flex;gap:8px;flex-wrap:wrap}
-.hero{display:inline-flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;width:64px}
-.hero img{width:64px;height:36px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
-/* Highlights UI */
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-ul.simple{list-style:none;margin:0;padding:0}
-ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.sub{color:var(--muted);font-size:12px}
-.title{font-weight:600;margin-bottom:6px}
-.has-hover{position:relative}
-.has-hover .hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:10000;background:rgba(10,16,34,.96);border:1px solid var(--border);border-radius:10px;padding:8px;min-width:220px;box-shadow:0 8px 20px rgba(0,0,0,.4);pointer-events:auto}
-.has-hover:hover .hovercard{display:block}
-.has-hover.open .hovercard{display:block}
-.ramp-badge{background:#23305f}
+.logo{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid var(--border);margin-right:6px}
+.title{font-weight:600;margin-bottom:6px;color:var(--gold-light)}
+.ramp-badge{background:rgba(200,170,110,.12);color:var(--gold-light)}
+/* Summary cards */
+.summary-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.summary-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px;border:1px solid var(--border-subtle);border-radius:10px;background:rgba(255,255,255,.015)}
+.summary-left{display:flex;align-items:center;gap:8px;min-width:0}
+.summary-name{font-weight:600;color:var(--text-primary);line-height:1.2}
+.summary-right{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.hero-thumb{width:96px;height:54px;object-fit:cover;border-radius:8px;border:1px solid var(--border-subtle);background:var(--bg-card)}
 /* Ward map */
 .wardgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;align-items:start}
-@media (max-width: 980px){.wardgrid{grid-template-columns:1fr}}
-.wardmap{margin:8px 0 0;position:relative;width:100%;aspect-ratio:1/1;background:url('https://www.opendota.com/assets/images/dota2map/dota2map_full.jpg') center/cover no-repeat;border:1px solid var(--border);border-radius:12px}
-.wardmap svg .spot{ transition: opacity .15s ease, fill .15s ease, stroke .15s ease }
-.wardmap svg .spot.hl:not(.longest){ fill: rgba(52,211,153,.14) !important; stroke:#34d399 !important; filter: drop-shadow(0 0 10px rgba(52,211,153,.7)); stroke-width:2.2 !important; opacity:1 !important }
-.wardmap svg .spot.longest.hl{ fill: rgba(255,107,107,.12) !important; stroke:#ff6b6b !important; filter: drop-shadow(0 0 10px rgba(255,107,107,.75)); stroke-width:2.2 !important; opacity:1 !important }
-.wardmap.highlighting svg .spot:not(.hl){ opacity:.25 !important }
-.tabs{display:flex;gap:6px;margin:6px 0 8px}
-.tab{padding:6px 10px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border-radius:10px;color:var(--text);cursor:pointer;font-size:12px}
-.tab.active{outline:2px solid rgba(109,166,255,.5);background:linear-gradient(180deg,rgba(109,166,255,.2),rgba(109,166,255,.08));border-color:rgba(109,166,255,.45)}
-.tab:focus-visible, .btn:focus-visible, button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-.tabpane{margin-top:6px}
-/* Screen-reader only utility */
-.sr-only{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0}
-/* Summary cards */
-.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.summary-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px}
-.summary-card h3{margin:0 0 6px;font-size:15px;color:var(--muted)}
-.summary-card ul{list-style:none;margin:0;padding:0}
-.summary-card li{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.summary-card li:last-child{border-bottom:0}
-.summary-card img{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1)}
-/* Performance cards */
-.perf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-@media (max-width: 720px){.perf-grid{grid-template-columns:1fr}}
-.perf-card{display:flex;align-items:center;justify-content:space-between;padding:10px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025))}
-.perf-left{display:flex;align-items:center;gap:10px}
-.perf-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:radial-gradient(22px 22px at 30% 30%, rgba(158,199,255,.45), rgba(158,199,255,.12));border:1px solid rgba(158,199,255,.25);font-size:16px}
-.perf-meta{display:flex;flex-direction:column;line-height:1.15}
-.perf-label{font-size:12px;color:var(--muted)}
-.perf-player a{color:var(--text)}
-.perf-value{font-weight:700;font-size:18px}
-.perf-actions{display:flex;gap:6px;align-items:center}
-/* Awards layout */
+@media (max-width:980px){.wardgrid{grid-template-columns:1fr}}
+.wardmap{margin:8px 0 0}
+/* Awards */
 .aw-toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:-4px 0 8px}
-.aw-tile{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column;height:100%}
-.aw-tile h3{margin:0 0 6px;font-size:15px;color:var(--muted)}
+.aw-tile{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px;display:flex;flex-direction:column;height:100%}
+.aw-tile h3{margin:0 0 6px;font-size:15px;color:var(--gold)}
 .aw-tile ul.simple{flex:1}
-/* Stacked badge lines */
+/* Stacked badges */
 .stack .row{display:block;margin-top:4px}
 .stack .row .badge{margin-right:6px}
+/* Aegis snatches grouped list */
+.aegis-list{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.aegis-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;column-gap:8px;row-gap:4px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-md);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border-left-width:3px}
+.aegis-row.is-radiant{border-left-color:var(--win,#7be495)}
+.aegis-row.is-dire{border-left-color:var(--loss,#ff8b8b)}
+.aegis-row .aegis-side{font-size:10px;letter-spacing:.04em;text-transform:uppercase}
+.aegis-row.is-radiant .aegis-side{background:var(--radiant-dim,rgba(123,228,149,.12));color:var(--win,#7be495)}
+.aegis-row.is-dire .aegis-side{background:var(--dire-dim,rgba(255,139,139,.12));color:var(--loss,#ff8b8b)}
+.aegis-row .aegis-name{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aegis-row .aegis-name a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--border)}
+.aegis-row .aegis-count{font-weight:700;color:var(--gold,#c8aa6e)}
+.aegis-row .aegis-chips{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:4px}
+.aegis-row .aegis-chip{font-size:11px;padding:2px 6px;text-decoration:none;background:var(--chip);color:var(--text-primary);border-radius:999px;border:1px solid var(--border-subtle,transparent);transition:background .15s,border-color .15s}
+.aegis-row .aegis-chip:hover{background:rgba(200,170,110,.12);border-color:var(--gold-dark,rgba(200,170,110,.5))}
+@media(min-width:720px){.aegis-row{grid-template-columns:auto minmax(0,1fr) auto minmax(0,2fr)}.aegis-row .aegis-chips{grid-column:auto}}
 /* Calendar */
 .cal{margin-top:8px}
 .cal .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .cal .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.cal .dow div{color:var(--muted);font-size:12px;text-align:center}
-.cal .day{min-height:90px;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015))}
-.cal .date{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:4px}
+.cal .dow div{color:var(--text-muted);font-size:12px;text-align:center}
+.cal .day{min-height:90px;border:1px solid var(--border);border-radius:var(--radius-md);padding:8px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015))}
+.cal .date{font-weight:600;color:var(--text-muted);font-size:12px;margin-bottom:4px}
 .cal .matches{display:flex;flex-wrap:wrap;gap:4px}
-.cal .matches a{display:inline-block;background:var(--chip);color:var(--text);border-radius:999px;font-size:11px;padding:2px 6px}
-/* Loading overlay */
-.loading-overlay{position:fixed;inset:0;background:rgba(9,12,24,.75);backdrop-filter:blur(1px);display:none;align-items:center;justify-content:center;z-index:99999}
-.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--border)}
-.spinner{width:36px;height:36px;border:3px solid rgba(158,199,255,.3);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* Small, low-emphasis button */
-.ghost{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 8px;border-radius:8px;cursor:pointer}
-.ghost:hover{background:rgba(255,255,255,.05);color:var(--text)}
-/* Players: streak row (last 15 games) */
+.cal .matches a{display:inline-block;background:var(--chip);color:var(--text-primary);border-radius:999px;font-size:11px;padding:2px 6px}
+/* Ghost button */
+.ghost{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:4px 8px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+.ghost:hover{background:rgba(200,170,110,.06);color:var(--gold-light);border-color:var(--gold-dark)}
+/* Streak */
 .streakRow td{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border-top:1px solid var(--border)}
 .streak{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.streak .tok{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;border-radius:5px;font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,.12);text-decoration:none}
-.streak .tok.win{background:#1f3b2e;color:#7be495;border-color:rgba(123,228,149,.35)}
-.streak .tok.loss{background:#3b1f1f;color:#ff8b8b;border-color:rgba(255,139,139,.35)}
-.streak .label{color:var(--muted);margin-right:6px}
-/* Responsive adjustments */
-@media (max-width: 860px){
+.streak .tok{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;border-radius:5px;font-size:12px;font-weight:700;border:1px solid var(--border-subtle);text-decoration:none}
+.streak .tok.win{background:var(--radiant-dim);color:var(--win);border-color:rgba(123,228,149,.35)}
+.streak .tok.loss{background:var(--dire-dim);color:var(--loss);border-color:rgba(255,139,139,.35)}
+.streak .label{color:var(--text-muted);margin-right:6px}
+/* Average stats section */
+.avg-stats{margin:12px 0}
+.avg-stats h2{font-size:16px;margin:0 0 10px;color:var(--gold)}
+.stat-card__value--small{font-size:18px;line-height:1.2;letter-spacing:0;word-break:break-word}
+.avg-items-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}
+.avg-item-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px 12px}
+.avg-item-card h3{margin:0 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.avg-item-card h3 .sub{font-size:10px;color:var(--text-muted);font-weight:500;text-transform:none;letter-spacing:0;margin-left:4px}
+.avg-item-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.avg-item-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border-subtle);font-size:13px}
+.avg-item-row:last-child{border-bottom:0}
+.avg-item-rank{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--gold-dim);color:var(--gold-light);font-size:11px;font-weight:700;flex:0 0 auto}
+.avg-item-icon{width:24px;height:24px;border-radius:5px;border:1px solid var(--border-subtle);background:#222;object-fit:cover;flex:0 0 auto}
+.avg-item-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-primary)}
+.avg-item-count{flex:0 0 auto}
+/* Responsive */
+@media (max-width:860px){
   .wrapper{padding:10px}
   .header{flex-wrap:wrap;gap:8px}
   .grid{grid-template-columns:1fr}
-  .grid3{grid-template-columns:1fr}
-  .grid2{grid-template-columns:1fr}
+  .grid3,.grid2{grid-template-columns:1fr}
   .summary-grid{grid-template-columns:1fr}
   .controls{flex-direction:column;align-items:stretch}
-  .controls .field{width:100%}
-  .tabs{position:sticky;top:0;z-index:1000;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;background:linear-gradient(180deg,rgba(0,0,0,.15),transparent)}
-  .tab{min-width:92px}
-  /* Make wide tables scrollable on small screens */
-  table.table{display:block;overflow-x:auto;white-space:nowrap}
-  .table th,.table td{padding:6px}
+  .controls-grid{grid-template-columns:1fr}
+  .controls-grid .field.field-wide{grid-column:span 1}
+  .tabs,.dota-tabs{position:sticky;top:0;z-index:1000;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;background:linear-gradient(180deg,rgba(13,17,23,.9),transparent)}
+  .tab,.dota-tab{min-width:92px}
+  table.table,table.dota-table{display:block;overflow-x:auto;white-space:nowrap}
+  .table th,.table td,.dota-table th,.dota-table td{padding:6px}
   .hero{width:56px}
   .hero img{width:56px;height:32px}
 }
@@ -138,83 +130,8 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
 <script defer src="js/url_params.js"></script>
 </head>
 <body>
-<div id="dvLoading" class="loading-overlay" role="status" aria-live="polite" aria-atomic="true"><div class="loading-box"><div class="spinner" aria-hidden="true"></div><div id="dvLoadingText" class="sub">Loading…</div></div></div>
-<!-- Soft lock: require key match before showing content -->
-<div class="wrapper" id="dynGateWrap" role="dialog" aria-modal="true" style="display:none;max-width:560px">
-  <section class="card">
-    <h2 style="margin:0 0 6px">Unlock Dynamic View</h2>
-    <div class="sub" style="margin-bottom:6px">Enter the access key to view this page.</div>
-    <div style="display:flex;gap:6px;align-items:center">
-      <input id="dynKey" type="password" placeholder="Access key" aria-label="Dynamic view access key" style="flex:1;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text)">
-      <button id="dynUnlock" class="ghost">Unlock</button>
-    </div>
-    <div id="dynMsg" class="sub" style="margin-top:6px;display:none"></div>
-  </section>
-  <div class="sub" style="margin-top:8px"><a href="./index.html">Back to index</a></div>
-  <script>
-  (function(){
-    async function sha256Hex(text){ const enc=new TextEncoder(); const data=enc.encode(text); const buf=await crypto.subtle.digest('SHA-256', data); const arr=Array.from(new Uint8Array(buf)); return arr.map(b=>b.toString(16).padStart(2,'0')).join(''); }
-    function isLocal(){ try{ return location.protocol==='file:' || /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/i.test(String(location.hostname||'')); }catch(_e){ return false; } }
-    function getStoredKey(){ try{ return sessionStorage.getItem('dv_key') || ''; }catch(_e){ return ''; } }
-    function setStoredKey(k){ try{ if(k){ sessionStorage.setItem('dv_key', k); } }catch(_e){} }
-  async function fetchGateHash(){ try{ const res = await fetch('./gate.json', { cache: 'no-store' }); if(!res.ok) return ''; const j = await res.json(); return String((j && j.hash) || ''); }catch(_e){ return ''; } }
-    async function unlockWith(key, want){ if(!key) return false; if(isLocal() && key==='123admin') return true; if(!want) return false; const got=(await sha256Hex(String(key))).toLowerCase(); return got===String(want).toLowerCase(); }
-    function showGate(msg){ const w=document.getElementById('dynGateWrap'); if(w) w.style.display='block'; const m=document.getElementById('dynMsg'); if(m){ if(msg){ m.textContent=String(msg); m.style.display='block'; } else { m.textContent=''; m.style.display='none'; } } }
-    function hideGate(){ const w=document.getElementById('dynGateWrap'); if(w) w.style.display='none'; const m=document.getElementById('dynMsg'); if(m){ m.textContent=''; m.style.display='none'; } }
-    function showMain(){ const mc=document.getElementById('mainContent'); if(mc) mc.style.display=''; }
-    function isTrustedMonthlyEmbed(){
-      try{
-        if (window.top === window.self) return false; // must be embedded
-        // First try referrer (may be empty if referrerpolicy=no-referrer)
-        let path = '';
-        let origin = '';
-        if (document.referrer) {
-          const u = new URL(document.referrer);
-          origin = u.origin; path = u.pathname || '';
-        } else {
-          // Fallback: inspect parent location if same-origin access is allowed
-          try {
-            origin = window.parent.location.origin;
-            path = window.parent.location.pathname || '';
-          } catch(_e) { return false; }
-        }
-        if (origin !== location.origin) return false; // same-origin only
-        // Expect path like /.../docs/2025-August-Report/ or .../2025-August-Report/index.html
-        return /\/docs\/[0-9]{4}-[^/]+-Report(?:\/|\/index\.html)?$/i.test(path);
-      }catch(_e){ return false; }
-    }
-    function isSameOriginEmbedded(){
-      try{
-        if (window.top === window.self) return false; // not embedded
-        // Prefer ancestorOrigins when available
-        try{
-          const ao = (window.location && window.location.ancestorOrigins) ? Array.from(window.location.ancestorOrigins) : [];
-          if (ao.length && ao.every(o=> o === location.origin)) return true;
-        }catch(_e){}
-        // Fallback: Accessing parent.location succeeds only if same-origin
-        const o = window.parent.location.origin;
-        return (o === location.origin);
-      }catch(_e){ return false; }
-    }
-    async function initGate(){
-      const sp = new URLSearchParams(location.search);
-  // Bypass gate immediately when embedded in a same-origin wrapper and lock=1 or explicit bypass is set
-  const lock = sp.get('lock');
-  const bypass = sp.get('bypass');
-  if ((lock === '1' || bypass === 'monthly') && isSameOriginEmbedded()) { hideGate(); showMain(); return; }
-      // Otherwise, proceed with hash-based unlocking
-      const want = await fetchGateHash();
-      const key = sp.get('key') || getStoredKey();
-      const ok = await unlockWith(key, want);
-      const btn = document.getElementById('dynUnlock'); const inp = document.getElementById('dynKey');
-      if(ok){ setStoredKey(key); hideGate(); showMain(); }
-      else { showGate(); if(btn && inp){ btn.addEventListener('click', async ()=>{ const k=String(inp.value||''); const ok2 = await unlockWith(k, want); if(ok2){ setStoredKey(k); hideGate(); showMain(); } else { showGate('Invalid key.'); } }); inp.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } }); } }
-    }
-    if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', initGate); } else { initGate(); }
-  })();
-  </script>
-</div>
-<div class="wrapper" id="mainContent" role="main" style="display:none">
+<div id="dvLoading" class="loading-overlay" role="status" aria-live="polite" aria-atomic="true"><div class="loading-box"><div class="loading-spin" aria-hidden="true"></div><div id="dvLoadingText" class="sub">Loading…</div></div></div>
+<div class="wrapper" id="mainContent" role="main">
   <div class="header">
     <h1 id="leagueTitle" style="margin:0;font-size:22px">Dynamic viewer</h1>
     <div class="badge">Client-side</div>
@@ -227,52 +144,62 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
       <!-- Filled by JS -->
     </div>
   </section>
+
+  <!-- Average Stats Section (populated from report.averages) -->
+  <section id="avgStatsSection" class="avg-stats card" style="display:none">
+    <h2>Match Averages</h2>
+    <div class="stat-grid" id="avgStatsGrid"></div>
+    <div class="avg-items-grid" id="avgItemsGrid"></div>
+  </section>
+
   <div class="card controls">
-    <div class="field">
-      <label for="from">From (local)</label>
-      <input type="datetime-local" id="from">
-    </div>
-    <div class="field">
-      <label for="to">To (local)</label>
-      <input type="datetime-local" id="to">
-    </div>
-    <div class="field">
-      <label for="quick">Quick range</label>
-      <select id="quick">
-        <option value="">-- pick --</option>
-        <option value="30">Last 30 days</option>
-        <option value="60">Last 60 days</option>
-        <option value="120">Last 120 days</option>
-        <option value="patch">Last patch</option>
-        <option value="all">All time</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="playerFilter">Player filter</label>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <select id="playerFilter"><option value="">All players</option></select>
+    <div class="controls-head">
+      <h2>Filters</h2>
+      <div class="controls-meta">
+        <span id="rangeMatchBadge" class="badge badge--gold" title="Matches in selected period" style="display:none"></span>
         <span id="playerGamesBadge" class="badge" title="Games for selected player in range" style="display:none"></span>
-        <button id="playerClear" class="ghost" title="Clear player filter" style="display:none">Clear</button>
       </div>
     </div>
-    
-    <div class="field">
-      <label>&nbsp;</label>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-  <button id="apply">Apply</button>
-  <button id="genUserReport" title="Generate a temporary user report under docs/User-Reports">Generate user report</button>
-  <span id="rangeMatchBadge" class="badge" title="Matches in selected period" style="align-self:center;display:none"></span>
+    <div class="controls-grid">
+      <div class="field">
+        <label for="from">From (local)</label>
+        <input type="datetime-local" id="from">
+      </div>
+      <div class="field">
+        <label for="to">To (local)</label>
+        <input type="datetime-local" id="to">
+      </div>
+      <div class="field">
+        <label for="quick">Quick range</label>
+        <select id="quick">
+          <option value="">-- pick --</option>
+          <option value="30">Last 30 days</option>
+          <option value="60">Last 60 days</option>
+          <option value="120">Last 120 days</option>
+          <option value="patch">Last patch</option>
+          <option value="all">All time</option>
+        </select>
+      </div>
+      <div class="field field-wide">
+        <label for="playerFilter">Player filter</label>
+        <div class="player-filter-row">
+          <select id="playerFilter"><option value="">All players</option></select>
+          <button id="playerClear" class="ghost" title="Clear player filter" style="display:none">Clear</button>
+        </div>
       </div>
     </div>
-    <div class="field">
-      <label>Share</label>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <button id="copyLink" class="ghost" title="Copy permalink to this view">Copy link</button>
-        <button id="copyEmbed" class="ghost" title="Copy an embeddable iframe snippet">Copy embed</button>
-        <a id="odLeague" class="ghost" href="#" target="_blank" rel="noopener" title="Open league on OpenDota">OpenDota league</a>
-        <a href="./guide/permalinks.html" class="ghost" target="_blank" rel="noopener" title="Open Permalinks guide">Permalinks help</a>
-        <span id="shareLive" class="sr-only" role="status" aria-live="polite"></span>
-      </div>
+    <div class="controls-actions">
+      <button id="apply" class="btn-primary">Apply</button>
+      <button id="genUserReport" class="ghost" title="Generate a temporary user report under docs/User-Reports">Generate user report</button>
+      <span class="spacer"></span>
+    </div>
+    <div class="controls-share">
+      <span class="share-label">Share</span>
+      <button id="copyLink" class="ghost" title="Copy permalink to this view">Copy link</button>
+      <button id="copyEmbed" class="ghost" title="Copy an embeddable iframe snippet">Copy embed</button>
+      <a id="odLeague" class="ghost" href="#" target="_blank" rel="noopener" title="Open league on OpenDota">OpenDota league</a>
+      <a href="./guide/permalinks.html" class="ghost" target="_blank" rel="noopener" title="Open Permalinks guide">Permalinks help</a>
+      <span id="shareLive" class="sr-only" role="status" aria-live="polite"></span>
     </div>
   </div>
 
@@ -402,7 +329,7 @@ ul.simple li{display:flex;align-items:center;justify-content:space-between;gap:8
   <div id="pane-itemsbought" class="tabpane" style="display:none" role="tabpanel" aria-labelledby="tab-itemsbought" hidden>
     <section class="card">
       <h2 style="margin:0 0 8px;font-size:18px">Items Bought</h2>
-      <div id="ibMount" class="sub">Select a range (Apply) to load item purchases.</div>
+      <div id="ibMount"></div>
     </section>
   </div>
 
@@ -778,36 +705,36 @@ function renderSummary(subsetAgg, heroMap){
   const bestHero = heroPool.slice().sort((a,b)=> b.wr - a.wr || b.picks - a.picks)[0] || null;
   const worstHero = heroPool.slice().sort((a,b)=> a.wr - b.wr || b.picks - a.picks)[0] || null;
 
-  function liPicked(h){ return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.img}' alt='${h.name}'><span class='name'>${h.name}</span></span><span><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.winrate)}</strong></span></span></li>`; }
-  function liBanned(h){ return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.img}' alt='${h.name}'><span class='name'>${h.name}</span></span><span><span class='badge'>Bans: ${h.bans}</span><span class='badge'>Picks: ${h.picks}</span></span></li>`; }
-  function liTopPlayer(p){ return `<li><span class='name'><a href='${p.profile}' target='_blank'>${p.name}</a></span><span><span class='badge'>${p.games} games</span><span class='badge'>WR: <strong>${fmtPct(p.wr)}</strong></span></span></li>`; }
-  function liMostPlayed(p){ return `<li><span class='name'><a href='${p.profile}' target='_blank'>${p.name}</a></span><span><span class='badge'>${p.games} games</span><span class='badge'>WR: <strong>${fmtPct(p.wr)}</strong></span></span></li>`; }
-  function heroRow(h){ return h? `<li><span style='display:flex;align-items:center;gap:8px'><img src='${h.meta.img||''}' alt='${h.meta.name||('#'+h.hid)}'><span class='name'>${h.meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.wr)}</strong></span></span></li>` : `<li><span class='sub'>no data</span></li>`; }
+  function liPicked(h){ return `<li class='summary-item'><span class='summary-left'><img class='hero-thumb' src='${h.img}' alt='${h.name}'><span class='summary-name'>${h.name}</span></span><span class='summary-right'><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.winrate)}</strong></span></span></li>`; }
+  function liBanned(h){ return `<li class='summary-item'><span class='summary-left'><img class='hero-thumb' src='${h.img}' alt='${h.name}'><span class='summary-name'>${h.name}</span></span><span class='summary-right'><span class='badge'>Bans: ${h.bans}</span><span class='badge'>Picks: ${h.picks}</span></span></li>`; }
+  function liTopPlayer(p){ return `<li class='summary-item'><span class='summary-left'><span class='summary-name'><a href='${p.profile}' target='_blank'>${p.name}</a></span></span><span class='summary-right'><span class='badge'>${p.games} games</span><span class='badge'>WR: <strong>${fmtPct(p.wr)}</strong></span></span></li>`; }
+  function liMostPlayed(p){ return `<li class='summary-item'><span class='summary-left'><span class='summary-name'><a href='${p.profile}' target='_blank'>${p.name}</a></span></span><span class='summary-right'><span class='badge'>${p.games} games</span><span class='badge'>WR: <strong>${fmtPct(p.wr)}</strong></span></span></li>`; }
+  function heroRow(h){ return h? `<li class='summary-item'><span class='summary-left'><img class='hero-thumb' src='${h.meta.img||''}' alt='${h.meta.name||('#'+h.hid)}'><span class='summary-name'>${h.meta.name||('#'+h.hid)}</span></span><span class='summary-right'><span class='badge'>Picks: ${h.picks}</span><span class='badge'>WR: <strong>${fmtPct(h.wr)}</strong></span></span></li>` : `<li><span class='sub'>no data</span></li>`; }
 
   grid.innerHTML = `
     <div class='summary-card' id='sum-top-picked'>
       <h3>Top 3 most picked heroes</h3>
-      <ul id='ul-top-picked'>${topPicked.map(liPicked).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+      <ul class='summary-list' id='ul-top-picked'>${topPicked.map(liPicked).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
     </div>
     <div class='summary-card' id='sum-top-banned'>
       <h3>Top 3 most banned heroes</h3>
-      <ul id='ul-top-banned'>${topBanned.map(liBanned).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+      <ul class='summary-list' id='ul-top-banned'>${topBanned.map(liBanned).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
     </div>
     <div class='summary-card'>
       <h3>Top 3 players (WR, > ${minGamesTopPlayer} games)</h3>
-      <ul>${topPlayers.map(liTopPlayer).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+      <ul class='summary-list'>${topPlayers.map(liTopPlayer).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
     </div>
     <div class='summary-card'>
       <h3>Top 3 most played inhouses</h3>
-      <ul>${topPlayed.map(liMostPlayed).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
+      <ul class='summary-list'>${topPlayed.map(liMostPlayed).join('') || `<li><span class='sub'>no data</span></li>`}</ul>
     </div>
     <div class='summary-card'>
       <h3>Highest win rate hero (min ${minHeroGames} games)</h3>
-      <ul>${heroRow(bestHero)}</ul>
+      <ul class='summary-list'>${heroRow(bestHero)}</ul>
     </div>
     <div class='summary-card'>
       <h3>Lowest win rate hero (min ${minHeroGames} games)</h3>
-      <ul>${heroRow(worstHero)}</ul>
+      <ul class='summary-list'>${heroRow(worstHero)}</ul>
     </div>
   `;
   sec.style.display='';
@@ -830,6 +757,369 @@ function __updateHeroesBansFromDetails(banCounts, heroMap){
     // Re-render using updated aggregate. This updates only the visible tables and keeps sorting behavior.
     render(agg, heroMap);
   }catch(_e){}
+}
+
+// ===== Average Stats Renderer =====
+let __dvDynamicStatsPromise = null;
+function loadDynamicStats(){
+  if(__dvDynamicStatsPromise) return __dvDynamicStatsPromise;
+  __dvDynamicStatsPromise = fetch('api/v1/stats/dynamic.json', { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : null)
+    .catch(()=> null);
+  return __dvDynamicStatsPromise;
+}
+
+function renderAvgStatsFromPrecomputed(bucket){
+  const sec = document.getElementById('avgStatsSection');
+  const grid = document.getElementById('avgStatsGrid');
+  if(!sec || !grid || !bucket) return false;
+  function fmtTime(s){ if(!s||s<=0) return '-'; const m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+String(ss).padStart(2,'0'); }
+  const n = Number(bucket.total_matches)||0;
+  const considered = Number(bucket.considered_matches)||0;
+  const radWR = (n>0 && bucket.radiant_winrate!=null)
+    ? Math.round(Number(bucket.radiant_winrate)*100)+'%'
+    : '-';
+  const subCount = considered>0 && considered<n ? `${considered}/${n} games` : '';
+  const items = [
+    { icon: '&#9876;',   value: n,                          label: 'Total Matches',     sub: '' },
+    { icon: '&#9201;',   value: fmtTime(bucket.avg_duration),         label: 'Avg Duration',      sub: subCount },
+    { icon: '&#128168;', value: fmtTime(bucket.first_blood_time),     label: 'First Blood',       sub: subCount },
+    { icon: '&#128163;', value: fmtTime(bucket.first_roshan_time),    label: 'First Roshan',      sub: subCount },
+    { icon: '&#128293;', value: fmtTime(bucket.first_tormentor_time), label: 'First Tormentor',   sub: subCount },
+    { icon: '&#9876;',   value: bucket.avg_kills!=null?bucket.avg_kills:'-',   label: 'Avg Kills/Game',  sub: subCount },
+    { icon: '&#127959;', value: bucket.avg_towers!=null?bucket.avg_towers:'-', label: 'Avg Towers/Game', sub: subCount },
+    { icon: '&#9730;',   value: radWR, label: 'Radiant Win Rate', sub: n>0 ? `${Math.round((Number(bucket.radiant_winrate)||0)*n)} of ${n}` : '' },
+  ];
+  grid.innerHTML = items.map(i =>
+    `<div class="stat-card fade-in">
+      <div class="stat-card__icon">${i.icon}</div>
+      <div class="stat-card__value ${i.valueClass||''}">${i.value}</div>
+      <div class="stat-card__label">${i.label}</div>
+      ${i.sub ? '<div class="stat-card__sub">'+i.sub+'</div>' : ''}
+    </div>`
+  ).join('');
+  const ranking = {
+    top:   Array.isArray(bucket.top_items)   ? bucket.top_items.map(it=> ({ key: it.key, count: Number(it.count)||0 })) : [],
+    least: Array.isArray(bucket.least_items) ? bucket.least_items.map(it=> ({ key: it.key, count: Number(it.count)||0 })) : []
+  };
+  renderItemsRanking(ranking);
+  sec.style.display = '';
+  return true;
+}
+
+async function renderAvgStats(matches){
+  const sec = document.getElementById('avgStatsSection');
+  const grid = document.getElementById('avgStatsGrid');
+  if(!sec || !grid || !matches || !matches.length){ if(sec) sec.style.display='none'; return; }
+
+  // Try precomputed bucket for canned ranges (instant render, no per-match enrichment).
+  try{
+    const quick = document.getElementById('quick');
+    const v = quick && quick.value ? String(quick.value) : '';
+    if(v && (v==='30' || v==='60' || v==='120' || v==='patch' || v==='all')){
+      const dyn = await loadDynamicStats();
+      const bucket = dyn && dyn.ranges ? dyn.ranges[v] : null;
+      if(bucket && Number(bucket.total_matches)>0){
+        if(renderAvgStatsFromPrecomputed(bucket)) return;
+      }
+    }
+  }catch(_e){}
+
+  function fmtTime(s){ if(!s||s<=0) return '-'; const m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+String(ss).padStart(2,'0'); }
+  function sumField(players, key){
+    if(!Array.isArray(players) || !players.length) return null;
+    let sum = 0, seen = false;
+    for(const p of players){
+      const v = Number(p && p[key]);
+      if(isFinite(v)){ sum += v; seen = true; }
+    }
+    return seen ? sum : null;
+  }
+  function firstObjTime(objs, type){
+    if(!Array.isArray(objs) || !objs.length) return 0;
+    const ev = objs.find(o => o && o.type===type && Number(o.time)>0);
+    return ev ? Number(ev.time) : 0;
+  }
+  function hasCoreStats(m){
+    if(Number(m && m.duration)>0) return true;
+    if(Number(m && m.first_blood_time)>0) return true;
+    if(firstObjTime(m && m.objectives, 'CHAT_MESSAGE_ROSHAN_KILL')>0) return true;
+    if(sumField(m && m.players, 'kills')!==null) return true;
+    if(sumField(m && m.players, 'tower_kills')!==null) return true;
+    return false;
+  }
+
+  // Monthly shard rows are intentionally slim; enrich from cached/API details when needed.
+  const needsEnrichment = matches.some(m => !hasCoreStats(m));
+  // Higher cap so larger ranges (e.g. "Last 120 days", "All time") still get averages.
+  // Local cache hits are cheap; only uncached ids hit the API and concurrency is throttled.
+  const enrichLimit = 1000;
+  let details = null;
+  const ids = matches.map(m=> Number(m.match_id||m.matchId||0)).filter(x=>x>0);
+  const _pMap = (typeof pMap === 'function') ? pMap : (window && window.__dvPMap);
+  const _fetchDetail = (typeof fetchMatchDetail === 'function') ? fetchMatchDetail : (window && window.__dvFetchMatchDetail);
+  if(needsEnrichment && matches.length <= enrichLimit && typeof _pMap === 'function' && typeof _fetchDetail === 'function'){
+    try{
+      // Concurrency 6 keeps the UI responsive while quickly draining cached entries.
+      details = await _pMap(ids, 6, id => _fetchDetail(id).catch(()=>null));
+      const usable = Array.isArray(details)
+        ? details.filter(d => d && (
+            Number(d.duration)>0 ||
+            Number(d.first_blood_time)>0 ||
+            firstObjTime(d.objectives, 'CHAT_MESSAGE_ROSHAN_KILL')>0 ||
+            sumField(d.players, 'kills')!==null ||
+            sumField(d.players, 'tower_kills')!==null
+          )).length
+        : 0;
+      // If cached details are all skeleton/empty, force-refresh without cache for this pass.
+      if(usable===0 && ids.length && ids.length<=60){
+        details = await _pMap(ids, 1, id => _fetchDetail(id, { forceRefresh:true }).catch(()=>null));
+      }
+    }catch(_e){ details = null; }
+  }
+
+  let totalDur=0, totalKills=0, fbCount=0, fbSum=0, roshCount=0, roshSum=0, radWins=0, totalTowers=0;
+  let durCount=0, killsCount=0, towersCount=0;
+  let tormSum=0, tormCount=0;
+  const purchaseCounts = new Map();
+  // Hardcoded fallback consumable list (used when item meta isn't loaded yet).
+  const CONSUMABLE_FALLBACK = new Set([
+    'tango','tango_single','flask','enchanted_mango','clarity','faerie_spirit','bottle',
+    'tpscroll','dust','dust_of_appearance','ward_observer','ward_sentry','ward_dispenser',
+    'smoke_of_deceit','cheese','aegis','river_painter','river_painter2','river_painter3',
+    'river_painter4','river_painter5','river_painter6','river_painter7',
+    'branches'
+  ]);
+  function isConsumableItem(key){
+    if(!key) return false;
+    const items = (typeof window!=='undefined' && window.__opendotaItems) || null;
+    const meta = items ? items[key] : null;
+    if(meta){
+      if(meta.qual === 'consumable') return true;
+      if(meta.cons === true) return true;
+    }
+    return CONSUMABLE_FALLBACK.has(key);
+  }
+  // Component items (recipe parts) are excluded from "most/least bought".
+  // Allowlist: standalone-finished items that OpenDota mis-classifies as 'component'.
+  const COMPONENT_ALLOWLIST = new Set([
+    'blink','quelling_blade','wind_lace'
+  ]);
+  function isComponentItem(key){
+    if(!key) return false;
+    if(COMPONENT_ALLOWLIST.has(key)) return false;
+    const items = (typeof window!=='undefined' && window.__opendotaItems) || null;
+    const meta = items ? items[key] : null;
+    if(!meta) return false;
+    const q = String(meta.qual||'').toLowerCase();
+    // 'component' = explicit recipe part. 'secret_shop' = bulk stat-stick (point_booster, mystic_staff,
+    // reaver, demon_edge, ultimate_orb, platemail, hyperstone, vitality/energy booster, …) — also pure
+    // build-up parts. Exclude both from "most bought".
+    return q === 'component' || q === 'secret_shop';
+  }
+  // Cheap items (boots, sticks, branches, etc.) clutter the "Most Bought" list.
+  // Filter out anything below this gold cost; items without known cost fall back to allowlist.
+  const MIN_ITEM_COST = 1000;
+  const CHEAP_ITEM_FALLBACK = new Set([
+    'boots','magic_stick','magic_wand','wind_lace','quelling_blade','infused_raindrop',
+    'orb_of_venom','blight_stone','fluffy_hat','ring_of_protection','stout_shield',
+    'ring_of_regen','sage_mask','ring_of_tarrasque','gauntlets','slippers','mantle',
+    'bracer','wraith_band','null_talisman','circlet','belt_of_strength','robe',
+    'broadsword','chainmail','helm_of_iron_will','cloak','gloves','blades_of_attack',
+    'javelin','quarterstaff','staff_of_wizardry','blitz_knuckles','witch_blade',
+    'orb_of_corrosion','iron_branch','tango','clarity','flask','bottle','tpscroll',
+    'ward_observer','ward_sentry','ward_dispenser','smoke_of_deceit','dust','gem',
+    'enchanted_mango','faerie_fire','tome_of_knowledge','river_painter'
+  ]);
+  function isCheapItem(key){
+    if(!key) return false;
+    const items = (typeof window!=='undefined' && window.__opendotaItems) || null;
+    const meta = items ? items[key] : null;
+    const cost = meta ? Number(meta.cost||0) : 0;
+    if(cost > 0) return cost < MIN_ITEM_COST;
+    return CHEAP_ITEM_FALLBACK.has(key);
+  }
+  const n = matches.length;
+
+  for(let i=0;i<matches.length;i++){
+    const m = matches[i] || {};
+    const d = (details && details[i]) || null;
+    const src = d || m;
+
+    const dur = Number(src.duration || m.duration || 0);
+    if(dur>0){ totalDur += dur; durCount++; }
+
+    let kills = sumField(src.players, 'kills');
+    if(kills===null){
+      const rs = Number(m.radiant_score), ds = Number(m.dire_score);
+      if(isFinite(rs) && isFinite(ds)){ kills = rs + ds; }
+    }
+    if(kills!==null){ totalKills += kills; killsCount++; }
+
+    let towers = Number(src.tower_kills);
+    if(!isFinite(towers)) towers = sumField(src.players, 'tower_kills');
+    if(towers===null || !isFinite(towers)) towers = sumField(m.players, 'tower_kills');
+    if(towers!==null && isFinite(towers)){ totalTowers += towers; towersCount++; }
+
+    const fb = Number(src.first_blood_time || m.first_blood_time || firstObjTime(src.objectives, 'CHAT_MESSAGE_FIRSTBLOOD') || 0);
+    if(fb>0){ fbSum += fb; fbCount++; }
+
+    const rosh = firstObjTime(src.objectives, 'CHAT_MESSAGE_ROSHAN_KILL') || firstObjTime(m.objectives, 'CHAT_MESSAGE_ROSHAN_KILL');
+    if(rosh>0){ roshSum += rosh; roshCount++; }
+
+    // First tormentor: derive from objectives via flexible matching, take earliest event in the match.
+    let tormFirst = 0;
+    const tormScan = (objs)=>{
+      if(!Array.isArray(objs)) return 0;
+      let earliest = 0;
+      for(const ev of objs){
+        if(!ev) continue;
+        const t = String(ev.type||'');
+        const sec = Number(ev.time);
+        if(!(sec>0)) continue;
+        const hay = (t + '|' + String(ev.key||'') + '|' + String(ev.unit||'') + '|' + String(ev.subtype||'')).toLowerCase();
+        if(/tormentor|miniboss/.test(hay)){
+          if(!earliest || sec<earliest) earliest = sec;
+        }
+      }
+      return earliest;
+    };
+    tormFirst = tormScan(src.objectives) || tormScan(m.objectives);
+    if(tormFirst>0){ tormSum += tormFirst; tormCount++; }
+
+    // Aggregate purchases for "Most Bought Item" (excluding consumables).
+    const players = Array.isArray(src.players) && src.players.length ? src.players
+                  : (Array.isArray(m.players) ? m.players : []);
+    for(const p of players){
+      if(!p) continue;
+      const log = Array.isArray(p.purchase_log) ? p.purchase_log : null;
+      if(log && log.length){
+        for(const ev of log){
+          const key = String((ev && (ev.key||ev.item)) || '').toLowerCase();
+          if(!key || isConsumableItem(key) || isComponentItem(key) || isCheapItem(key)) continue;
+          purchaseCounts.set(key, (purchaseCounts.get(key)||0)+1);
+        }
+      } else if(p.purchase && typeof p.purchase==='object'){
+        // Fallback to summarized purchase map
+        for(const k of Object.keys(p.purchase)){
+          const key = String(k||'').toLowerCase();
+          const cnt = Number(p.purchase[k])||0;
+          if(!key || cnt<=0 || isConsumableItem(key) || isComponentItem(key) || isCheapItem(key)) continue;
+          purchaseCounts.set(key, (purchaseCounts.get(key)||0)+cnt);
+        }
+      }
+    }
+
+    if(src.radiant_win===true || m.radiant_win===true) radWins++;
+  }
+
+  const avgDur = durCount>0? Math.round(totalDur/durCount) : 0;
+  const avgFB = fbCount>0? Math.round(fbSum/fbCount) : 0;
+  const avgRosh = roshCount>0? Math.round(roshSum/roshCount) : 0;
+  const avgTorm = tormCount>0? Math.round(tormSum/tormCount) : 0;
+  const avgKills = killsCount>0? (totalKills/killsCount).toFixed(1) : '-';
+  const avgTowers = towersCount>0? (totalTowers/towersCount).toFixed(1) : '-';
+  const radWR = n>0? (radWins/n*100).toFixed(1)+'%' : '-';
+
+  // Pick top 3 / least 3 most bought non-consumable items.
+  function buildItemRanking(map){
+    const arr = [];
+    for(const [k,v] of map){ if(v>0) arr.push({key:k, count:v}); }
+    arr.sort((a,b)=> b.count - a.count || a.key.localeCompare(b.key));
+    const top = arr.slice(0,3);
+    const least = arr.slice().sort((a,b)=> a.count - b.count || a.key.localeCompare(b.key)).slice(0,3);
+    return { top, least, total: arr.length };
+  }
+  const ranking = buildItemRanking(purchaseCounts);
+
+  const items = [
+    { icon: '&#9876;', value: n, label: 'Total Matches', sub: '' },
+    { icon: '&#9201;', value: fmtTime(avgDur), label: 'Avg Duration', sub: durCount>0 && durCount<n ? `${durCount}/${n} games` : '' },
+    { icon: '&#128168;', value: fmtTime(avgFB), label: 'First Blood', sub: fbCount+'/'+n+' games' },
+    { icon: '&#128163;', value: fmtTime(avgRosh), label: 'First Roshan', sub: roshCount+'/'+n+' games' },
+    { icon: '&#128293;', value: fmtTime(avgTorm), label: 'First Tormentor', sub: tormCount+'/'+n+' games' },
+    { icon: '&#9876;', value: avgKills, label: 'Avg Kills/Game', sub: killsCount>0 ? `${killsCount}/${n} games` : '' },
+    { icon: '&#127959;', value: avgTowers, label: 'Avg Towers/Game', sub: towersCount>0 ? `${towersCount}/${n} games` : '' },
+    { icon: '&#9730;', value: radWR, label: 'Radiant Win Rate', sub: radWins+' of '+n },
+  ];
+
+  grid.innerHTML = items.map(i =>
+    `<div class="stat-card fade-in">
+      <div class="stat-card__icon">${i.icon}</div>
+      <div class="stat-card__value ${i.valueClass||''}">${i.value}</div>
+      <div class="stat-card__label">${i.label}</div>
+      ${i.sub ? '<div class="stat-card__sub">'+i.sub+'</div>' : ''}
+    </div>`
+  ).join('');
+  renderItemsRanking(ranking);
+  sec.style.display = '';
+}
+
+function renderItemsRanking(ranking){
+  const mount = document.getElementById('avgItemsGrid');
+  if(!mount) return;
+  // Same cheap-item filter as live aggregation (precomputed buckets may include them).
+  const _MIN_COST = 1000;
+  const _CHEAP = new Set([
+    'boots','magic_stick','magic_wand','wind_lace','quelling_blade','infused_raindrop',
+    'orb_of_venom','blight_stone','fluffy_hat','ring_of_protection','stout_shield',
+    'ring_of_regen','sage_mask','ring_of_tarrasque','gauntlets','slippers','mantle',
+    'bracer','wraith_band','null_talisman','circlet','belt_of_strength','robe',
+    'broadsword','chainmail','helm_of_iron_will','cloak','gloves','blades_of_attack',
+    'javelin','quarterstaff','staff_of_wizardry','blitz_knuckles','witch_blade',
+    'orb_of_corrosion','iron_branch','tango','clarity','flask','bottle','tpscroll',
+    'ward_observer','ward_sentry','ward_dispenser','smoke_of_deceit','dust','gem',
+    'enchanted_mango','faerie_fire','tome_of_knowledge'
+  ]);
+  function _isCheap(k){
+    if(!k) return true;
+    const key = String(k).toLowerCase();
+    if(key.startsWith('river_painter')) return true;
+    const items = (typeof window!=='undefined' && window.__opendotaItems) || null;
+    const meta = items ? items[key] : null;
+    // Drop recipe components (qual=component) and bulk stat-sticks (qual=secret_shop) — Point Booster, Mystic Staff, Reaver, …
+    if(meta){
+      const q = String(meta.qual||'').toLowerCase();
+      if(q === 'component' || q === 'secret_shop') return true;
+    }
+    const cost = meta ? Number(meta.cost||0) : 0;
+    if(cost > 0) return cost < _MIN_COST;
+    return _CHEAP.has(key);
+  }
+  function _filter(arr){ return (Array.isArray(arr)? arr : []).filter(it => !_isCheap(it && it.key)); }
+  function itemNameOf(key){
+    const meta = (typeof window!=='undefined' && window.__opendotaItems) ? window.__opendotaItems[key] : null;
+    let name = (meta && meta.dname) ? meta.dname : String(key||'').replace(/_/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
+    const k = String(key||'').toLowerCase();
+    if(k === 'dagon') name += ' (Level 1)';
+    else { const m = k.match(/^dagon_([2-5])$/); if(m) name = (name.replace(/\s*\(Level\s*\d+\)\s*$/i,'')) + ' (Level ' + m[1] + ')'; }
+    return name;
+  }
+  function iconUrl(key){ return `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/items/${encodeURIComponent(key)}_lg.png`; }
+  function rowHtml(arr, emptyLabel){
+    if(!arr || !arr.length) return `<li class="ib-empty">${emptyLabel}</li>`;
+    return arr.map((it,idx)=> `
+      <li class="avg-item-row">
+        <span class="avg-item-rank">${idx+1}</span>
+        <img class="avg-item-icon" src="${iconUrl(it.key)}" alt="" onerror="this.style.visibility='hidden'">
+        <span class="avg-item-name" title="${it.key}">${itemNameOf(it.key)}</span>
+        <span class="badge avg-item-count">×${it.count}</span>
+      </li>`).join('');
+  }
+  const top = _filter((ranking && ranking.top) || []).slice(0,3);
+  // For "least bought", also re-sort ascending after filtering to keep top 3 lowest.
+  const leastFiltered = _filter((ranking && ranking.least) || []);
+  leastFiltered.sort((a,b)=> (Number(a.count)||0) - (Number(b.count)||0));
+  const least = leastFiltered.slice(0,3);
+  mount.innerHTML = `
+    <div class="avg-item-card">
+      <h3>Most Bought <span class="sub">(non-consumables)</span></h3>
+      <ul class="avg-item-list">${rowHtml(top,'no purchase data')}</ul>
+    </div>
+    <div class="avg-item-card">
+      <h3>Least Bought <span class="sub">(among purchased)</span></h3>
+      <ul class="avg-item-list">${rowHtml(least,'no purchase data')}</ul>
+    </div>`;
 }
 
 function renderHighlights(high, heroMap, mapConf, label){
@@ -934,6 +1224,47 @@ function renderHighlights(high, heroMap, mapConf, label){
       const prefix = singular ? `<span>${singular}:</span>` : '';
       return `<li>${prefix}<span class='badge'>${team}</span><span>${person}${hero}</span>${countBadge}${timeBadge}</li>`;
     }).join('') + '</ul>';
+  }
+  // Compact grouped renderer for aegis snatches: one row per player (per side),
+  // listing all individual snatch times as clickable chips. Avoids the long flat list.
+  function aegisGroupedHtml(arr){
+    if(!Array.isArray(arr) || !arr.length) return `<div class='sub'>no aegis snatches</div>`;
+    // Group by player+side; preserve hero (use first seen)
+    const groups = new Map(); // key -> { team, name, profile, hero, events: [] }
+    for(const ev of arr){
+      const p = ev && ev.player; if(!p) continue;
+      const aid = Number(p.account_id||0);
+      const team = String(ev.team||'');
+      const key = `${team}|${aid||p.name||Math.random()}`;
+      let g = groups.get(key);
+      if(!g){ g = { team, name: p.name||'Unknown', profile: p.profile||'', hero: p.hero||'', events: [] }; groups.set(key, g); }
+      if(!g.hero && p.hero) g.hero = p.hero;
+      g.events.push(ev);
+    }
+    const list = Array.from(groups.values()).map(g=>{
+      const total = g.events.reduce((acc, ev)=> acc + Math.max(1, Number(ev.count||1)), 0);
+      g.events.sort((a,b)=> Number(b.time||0) - Number(a.time||0));
+      return Object.assign(g, { total });
+    }).sort((a,b)=> b.total - a.total || String(a.name).localeCompare(String(b.name)));
+    const sideClass = (t)=> String(t).toLowerCase()==='radiant' ? 'is-radiant' : (String(t).toLowerCase()==='dire' ? 'is-dire' : '');
+    const rows = list.map(g=>{
+      const person = g.profile ? `<a href='${esc(g.profile)}' target='_blank' rel='noopener'>${esc(g.name)}</a>` : esc(g.name);
+      const heroTxt = g.hero ? `<span class='sub' style='margin-left:4px'>(${esc(g.hero)})</span>` : '';
+      const chips = g.events.map(ev=>{
+        const hasTime = isFinite(Number(ev.time));
+        const sec = hasTime ? Number(ev.time) : 0;
+        const lbl = hasTime ? `${Math.floor(sec/60)}m ${sec%60}s` : 'n/a';
+        const mid = String(ev.match_id||'');
+        return `<a class='badge aegis-chip' target='_blank' rel='noopener' href='${OD_MATCH_URL(mid)}' title='Match ${mid}'>${lbl}</a>`;
+      }).join('');
+      return `<div class='aegis-row ${sideClass(g.team)}'>
+        <span class='badge aegis-side'>${esc(g.team||'?')}</span>
+        <span class='aegis-name'>${person}${heroTxt}</span>
+        <span class='badge aegis-count' title='Total snatches'>×${g.total}</span>
+        <span class='aegis-chips'>${chips}</span>
+      </div>`;
+    }).join('');
+    return `<div class='aegis-list'>${rows}</div>`;
   }
   // Roshan kills grouped by side
   function roshKillsBySide(events){
@@ -1049,7 +1380,7 @@ function renderHighlights(high, heroMap, mapConf, label){
       </div>
       <div>
         <h3>Aegis snatches</h3>
-        ${objectiveList(high.aegisSnatch||[], '')}
+        ${aegisGroupedHtml(high.aegisSnatch||[])}
       </div>
     </div>
     <div class="grid3" style="margin-top:8px">
@@ -1075,7 +1406,6 @@ function renderHighlights(high, heroMap, mapConf, label){
         <h3>Gems bought</h3>
         <ul class="simple">${simpleCountList(high.gemTop, 'gems')}</ul>
       </div>
-      <div class='sub'>Details jetzt im Tab: Items Bought</div>
     </div>
     <div class='sub' style='margin-top:10px'>Lane Duos jetzt im Tab "Lane Duos" interaktiv verfügbar.</div>
     <div class="grid2" style="margin-top:8px">
@@ -1204,28 +1534,62 @@ async function main(){
   const BRANCH = (__sp_local.get('branch') || 'main');
   const relDocsBase = 'data';
   const relRepoBase = '../data';
+  const relApiBase = 'api/v1';
   const rawDocsBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/docs/data`;
   const rawRepoBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/data`;
+  const rawApiBase = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/docs/api/v1`;
 
   let manifest = null;
   let relBase = relDocsBase;
   let rawBase = rawDocsBase;
+  let baseKind = 'docs'; // docs | repo | api
 
-  const manDocs = await loadJsonWithFallback(`${relDocsBase}/manifest.json`, `${rawDocsBase}/manifest.json`).catch(()=>null);
-  const manRepo = await loadJsonWithFallback(`${relRepoBase}/manifest.json`, `${rawRepoBase}/manifest.json`).catch(()=>null);
-  const docsUpdated = Number(manDocs && manDocs.updated) || 0;
-  const repoUpdated = Number(manRepo && manRepo.updated) || 0;
-  if(manRepo && (!manDocs || repoUpdated > docsUpdated)){
-    manifest = manRepo; relBase = relRepoBase; rawBase = rawRepoBase;
-  } else {
-    manifest = manDocs; relBase = relDocsBase; rawBase = rawDocsBase;
+  // Probe local availability first to avoid repeated 404 noise on setups that only serve /docs.
+  const manDocsLocal = await loadJson(`${relDocsBase}/manifest.json`).catch(()=>null);
+  const manRepoLocal = await loadJson(`${relRepoBase}/manifest.json`).catch(()=>null);
+  const manApiLocal  = await loadJson(`${relApiBase}/manifest.json`).catch(()=>null);
+  const hasLocalDocsData = !!manDocsLocal;
+  const hasLocalRepoData = !!manRepoLocal;
+  const hasLocalApiData  = !!manApiLocal;
+
+  const manDocsRaw = await loadJson(`${rawDocsBase}/manifest.json`).catch(()=>null);
+  const manRepoRaw = await loadJson(`${rawRepoBase}/manifest.json`).catch(()=>null);
+  const manApiRaw  = await loadJson(`${rawApiBase}/manifest.json`).catch(()=>null);
+
+  const srcDocs = manDocsLocal || manDocsRaw;
+  const srcRepo = manRepoLocal || manRepoRaw;
+  const srcApi  = manApiLocal  || manApiRaw;
+
+  const docsUpdated = Number(srcDocs && srcDocs.updated) || 0;
+  const repoUpdated = Number(srcRepo && srcRepo.updated) || 0;
+  const apiUpdated  = Number(srcApi && srcApi.updated) || 0;
+  const best = [
+    { kind:'repo', manifest:srcRepo, rel:relRepoBase, raw:rawRepoBase, updated:repoUpdated, local:hasLocalRepoData },
+    { kind:'api',  manifest:srcApi,  rel:relApiBase,  raw:rawApiBase,  updated:apiUpdated,  local:hasLocalApiData  },
+    { kind:'docs', manifest:srcDocs, rel:relDocsBase, raw:rawDocsBase, updated:docsUpdated, local:hasLocalDocsData },
+  ].filter(x => !!x.manifest).sort((a,b)=> {
+    if((b.local?1:0)!==(a.local?1:0)) return (b.local?1:0)-(a.local?1:0);
+    return (b.updated - a.updated);
+  });
+  if(best.length){
+    manifest = best[0].manifest;
+    relBase = best[0].rel;
+    rawBase = best[0].raw;
+    baseKind = best[0].kind;
   }
 
+  const heroesPathRel = (baseKind==='api') ? `${relBase}/constants/heroes.json` : `${relBase}/heroes.json`;
+  const heroesPathRaw = (baseKind==='api') ? `${rawBase}/constants/heroes.json` : `${rawBase}/heroes.json`;
+  const mapsPathRel = (baseKind==='api') ? `${relBase}/meta/maps.json` : `${relBase}/maps.json`;
+  const mapsPathRaw = (baseKind==='api') ? `${rawBase}/meta/maps.json` : `${rawBase}/maps.json`;
+  const patchPathRel = (baseKind==='api') ? `${relBase}/constants/patch.json` : `${relBase}/constants/patch.json`;
+  const patchPathRaw = (baseKind==='api') ? `${rawBase}/constants/patch.json` : `${rawBase}/constants/patch.json`;
+
   const [heroesRaw, info, mapConf, patchRaw] = await Promise.all([
-    loadJsonWithFallback(`${relBase}/heroes.json`, `${rawBase}/heroes.json`),
-    loadJsonWithFallback(`${relBase}/info.json`, `${rawBase}/info.json`).catch(()=>({})),
-    loadJsonWithFallback(`${relBase}/maps.json`, `${rawBase}/maps.json`).catch(()=>null),
-    loadJsonWithFallback(`${relBase}/constants/patch.json`, `${rawBase}/constants/patch.json`).catch(()=>null)
+    loadJsonWithFallback(heroesPathRel, heroesPathRaw),
+    loadJsonWithFallback(`${relRepoBase}/info.json`, `${rawRepoBase}/info.json`).catch(()=>({})),
+    loadJsonWithFallback(mapsPathRel, mapsPathRaw).catch(()=>null),
+    loadJsonWithFallback(patchPathRel, patchPathRaw).catch(()=>null)
   ]);
   // Hard-lock to Kret's league (18438), ignoring URL/info overrides
   let __leagueIdTarget = 18438;
@@ -1245,10 +1609,25 @@ async function main(){
     }
   }catch(_e){}
   // Fetch all month shards listed in manifest
-  const months = (manifest && Array.isArray(manifest.months)) ? manifest.months : [];
-  const files = months.map(m => ({rel: `${relBase}/${m.file}`, raw: `${rawBase}/${m.file}`}));
+  const months = (baseKind==='api')
+    ? ((manifest && Array.isArray(manifest.monthly)) ? manifest.monthly : [])
+    : ((manifest && Array.isArray(manifest.months)) ? manifest.months : []);
+  const files = (baseKind==='api')
+    ? months.map(m => ({ rel: `${relBase}/monthly/${m}.json`, raw: `${rawBase}/monthly/${m}.json` }))
+    : months.map(m => ({ rel: `${relBase}/${m.file}`, raw: `${rawBase}/${m.file}` }));
   const shards = await Promise.all(files.map(p => loadJsonWithFallback(p.rel, p.raw).catch(()=>[])));
   let allMatches = shards.flat();
+  const maxMatchStart = (function(ms){
+    let m = 0;
+    try{ for(const x of (ms||[])){ const t = Number(x && x.start_time || 0); if(t>m) m=t; } }catch(_e){}
+    return m;
+  })(allMatches);
+  function getRangeAnchorNow(){
+    const wallNow = Math.floor(Date.now()/1000);
+    // If data is older than 2 days, anchor ranges to latest available data instead of wall clock.
+    if(maxMatchStart > 0 && (wallNow - maxMatchStart) > (2*86400)) return maxMatchStart;
+    return wallNow;
+  }
   // Keep a memoized cache of fetched match details to avoid duplicate network hits
   const __detailCache = new Map();
   // Build hero map with absolute images and friendly names
@@ -1327,20 +1706,73 @@ async function main(){
     // Fallback unknown
     return '';
   }
-  async function fetchMatchDetail(id){
-    try{ const key = Number(id)||0; if(key>0 && __detailCache.has(key)) return __detailCache.get(key); }catch(_e){}
-    const rel = `${relBase}/cache/OpenDota/matches/${id}.json`;
-    const raw = `${rawBase}/cache/OpenDota/matches/${id}.json`;
+  async function fetchMatchDetail(id, opts){
+    const forceRefresh = !!(opts && opts.forceRefresh);
+    const hasStatSignals = (obj)=>{
+      try{
+        if(!obj) return false;
+        if(Number(obj.duration)>0) return true;
+        if(Number(obj.first_blood_time)>0) return true;
+        if(Array.isArray(obj.objectives) && obj.objectives.some(o=> o && Number(o.time)>0 && (o.type==='CHAT_MESSAGE_ROSHAN_KILL' || o.type==='CHAT_MESSAGE_FIRSTBLOOD'))) return true;
+        if(Array.isArray(obj.players) && obj.players.some(p=> p && (Number.isFinite(Number(p.kills)) || Number.isFinite(Number(p.tower_kills))))) return true;
+      }catch(_e){}
+      return false;
+    };
+    try{
+      const key = Number(id)||0;
+      if(!forceRefresh && key>0 && __detailCache.has(key)){
+        const cached = __detailCache.get(key);
+        if(cached && !cached.__dv_stub && hasStatSignals(cached)) return cached;
+      }
+    }catch(_e){}
     const IS_GHPAGES = (typeof location !== 'undefined' && /\.github\.io$/i.test(String(location.hostname||'')));
     const isFile = (typeof location !== 'undefined' && location.protocol === 'file:');
     const tryLoad = async (url)=>{ const v = await loadJson(url); return v||null; };
+    async function loadOpenDotaMatchWithRetry(matchId, maxAttempts){
+      const attempts = Number(maxAttempts)||4;
+      for(let i=0;i<attempts;i++){
+        try{
+          const r = await fetch(`https://api.opendota.com/api/matches/${matchId}`, { cache:'no-store' });
+          if(r.ok) return await r.json();
+          if(r.status===429 || (r.status>=500 && r.status<600)){
+            const wait = Math.min(3000, 400 * Math.pow(2,i));
+            await new Promise(res=> setTimeout(res, wait));
+            continue;
+          }
+          return null;
+        }catch(_e){
+          const wait = Math.min(3000, 400 * Math.pow(2,i));
+          await new Promise(res=> setTimeout(res, wait));
+        }
+      }
+      return null;
+    }
+    // Try both selected base and explicit repo/docs cache roots; details may only exist in one of them.
+    // NOTE: match cache exists only under data/, never under api/v1 — never probe an api base for /cache/.
+    const relRepo = `${relRepoBase}/cache/OpenDota/matches/${id}.json`;
+    const relDocs = `${relDocsBase}/cache/OpenDota/matches/${id}.json`;
+    const baseIsApi = (baseKind === 'api');
+    const relSel  = baseIsApi ? null : `${relBase}/cache/OpenDota/matches/${id}.json`;
+    const rawRepo = `${rawRepoBase}/cache/OpenDota/matches/${id}.json`;
+    const rawDocs = `${rawDocsBase}/cache/OpenDota/matches/${id}.json`;
+    const rawSel  = baseIsApi ? null : `${rawBase}/cache/OpenDota/matches/${id}.json`;
+    const uniq = (arr)=> Array.from(new Set(arr.filter(Boolean)));
+    const localCandidates = uniq([
+      (baseKind==='repo' && hasLocalRepoData) ? relSel : null,
+      (baseKind==='docs' && hasLocalDocsData) ? relSel : null,
+      (baseKind==='api' && hasLocalApiData) ? relSel : null,
+      hasLocalRepoData ? relRepo : null,
+      hasLocalDocsData ? relDocs : null,
+    ]);
+    const remoteCandidates = uniq([rawSel, rawRepo, rawDocs]);
     let md = null;
-    // Try cached paths first (skip rel on file://)
-    if(!isFile){
-      if(IS_GHPAGES){ md = await tryLoad(raw); if(!md) md = await tryLoad(rel); }
-      else { md = await tryLoad(rel); if(!md) md = await tryLoad(raw); }
-    } else {
-      md = await tryLoad(raw); if(!md) md = await tryLoad(rel);
+    // Try cached paths first (skip local file fetches on file://).
+    const candidates = isFile
+      ? remoteCandidates
+      : (IS_GHPAGES ? uniq([...remoteCandidates, ...localCandidates]) : uniq([...localCandidates, ...remoteCandidates]));
+    for(const url of candidates){
+      md = await tryLoad(url);
+      if(md) break;
     }
     // Assess completeness to decide whether to attempt API enrichment (not rejection)
     const isPartial = (obj)=>{
@@ -1377,7 +1809,7 @@ async function main(){
     // If partial or missing, try to enrich with live API
     if(isPartial(md)){
       __partialCount++;
-      const api = await loadJson(`https://api.opendota.com/api/matches/${id}`);
+      const api = await loadOpenDotaMatchWithRetry(id, 4);
       if(api){ md = mergeDetails(md, api); } else {
         // No API; keep whatever we have (even if partial) to salvage any usable stats
       }
@@ -1411,6 +1843,7 @@ async function main(){
             dire_name: src.dire_name,
             players: [...rPlayers, ...dPlayers],
             objectives: [],
+            __dv_stub: 1,
           };
         }
       }catch(_e){}
@@ -1430,7 +1863,7 @@ async function main(){
         // Avoid file:// CORS; only call API when running over http(s)
         const isHttp = typeof location!=='undefined' && /^https?:/i.test(location.protocol||'');
         if(isHttp){
-          const apiFresh = await loadJson(`https://api.opendota.com/api/matches/${id}`);
+          const apiFresh = await loadOpenDotaMatchWithRetry(id, 3);
           if(apiFresh && Array.isArray(apiFresh.players) && apiFresh.players.length>0){
             // Prefer fresh if it has parsed data or stacks present
             const ok = (apiFresh.od_data && apiFresh.od_data.has_parsed===true) || !apiFresh.players.every(p=> p==null || p.camps_stacked===undefined);
@@ -1440,14 +1873,19 @@ async function main(){
       }
     }catch(_e){}
     // Final guard: if still missing, return a benign stub so downstream logic can skip gracefully
-    if(!md) { md = { match_id:Number(id)||0, players:[], objectives:[] }; }
-    try{ const key = Number(id)||0; if(key>0) __detailCache.set(key, md); }catch(_e){}
+    if(!md) { md = { match_id:Number(id)||0, players:[], objectives:[], __dv_stub:1 }; }
+    try{
+      const key = Number(id)||0;
+      if(key>0 && !md.__dv_stub){ __detailCache.set(key, md); }
+    }catch(_e){}
     return md;
   }
   async function pMap(items, limit, worker){
     const ret=new Array(items.length); let i=0; let active=0; let rej; const errors=[];
     return await new Promise((resolve, reject)=>{ rej=reject; function next(){ if(i>=items.length && active===0){ resolve(ret); return; } while(active<limit && i<items.length){ const idx=i++; active++; Promise.resolve(worker(items[idx], idx)).then(v=>{ ret[idx]=v; active--; next(); }).catch(e=>{ errors.push(e); ret[idx]=null; active--; next(); }); } } next(); });
   }
+  // Expose helpers needed by top-level renderers (e.g. renderAvgStats lives outside main()).
+  try{ window.__dvFetchMatchDetail = fetchMatchDetail; window.__dvPMap = pMap; }catch(_e){}
   function computeHighlightsFromDetails(details, heroMap){
     // Structures similar to server-side script
     const tag2id = mapHeroTag(heroMap);
@@ -1930,7 +2368,7 @@ async function main(){
       const teamsList = Array.from(teamMap.values());
       const playersList = Array.from(playerMap.values());
   // Mount a single instance; Ward Viewer manages its own Basis/filters
-      window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:false, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, objectivesUrl:'data/map_locations.json', extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } }); if (paneW) paneW.setAttribute('aria-busy','false');
+      window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:false, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, objectivesUrl:`${relRepoBase}/map_locations.json`, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } }); if (paneW) paneW.setAttribute('aria-busy','false');
       // Initialize ward subtabs (Spots/Players/Trend) once
       if(!window.__wardSubTabsBooted){
         try{
@@ -2218,9 +2656,9 @@ async function main(){
             // Build SVG
             const W = 780, H = 160, P = 22; // padding
             const n = Math.max(1, series.length);
-            const xmax = n-1, ymax = 360;
-            const sx = (i)=> P + (i/xmax) * (W-2*P);
-            const sy = (v)=> H - P - (v/ymax)*(H-2*P);
+            const xmax = Math.max(1, n-1), ymax = 360;
+            const sx = (i)=> P + ((n>1 ? i/xmax : 0.5)) * (W-2*P);
+            const sy = (v)=> H - P - ((Number.isFinite(v)? v : 0)/ymax)*(H-2*P);
             const line = (vals)=> vals.map((p,i)=> `${sx(i)},${sy(p)}`).join(' ');
             const avgPts  = line(series.map(s=>s.avg));
             const medPts  = line(series.map(s=>s.med));
@@ -2231,7 +2669,7 @@ async function main(){
             const xStart = series[0] ? fmtD(series[0].s) : '';
             const xEnd = series[n-1] ? fmtD(series[n-1].e) : '';
             const tFirst = series[0]? series[0].s : 0; const tLast = series[n-1]? series[n-1].e : 0;
-            const patchLines = (function(){ try{ const arr = (window.__dvPatches||[]).filter(p=> p.ts>=tFirst && p.ts<=tLast); return arr.map(p=>({ x: P + ((p.ts - tFirst)/(tLast - tFirst)) * (W-2*P), label: p.name })); }catch(_e){ return []; } })();
+            const patchLines = (function(){ try{ const arr = (window.__dvPatches||[]).filter(p=> p.ts>=tFirst && p.ts<=tLast); const span = Math.max(1, tLast - tFirst); return arr.map(p=>({ x: P + ((p.ts - tFirst)/span) * (W-2*P), label: p.name })); }catch(_e){ return []; } })();
             // Build table rows for quick inspection
             const rows = series.map(s=>`<tr><td data-sort='${s.s}'>${fmtD(s.s)}</td><td data-sort='${s.avg}'>${fmtMMSS(s.avg)}</td><td data-sort='${s.med}'>${fmtMMSS(s.med)}</td><td data-sort='${s.samples}'>${s.samples}</td><td data-sort='${s.avgS}'>${fmtMMSS(s.avgS)}</td><td data-sort='${s.medS}'>${fmtMMSS(s.medS)}</td><td data-sort='${s.samplesS}'>${s.samplesS}</td></tr>`).join('');
             mount.innerHTML = controlsHtml() + miniLegend() + `
@@ -2319,7 +2757,11 @@ async function main(){
     const ul = document.getElementById('ul-top-banned');
     if(ul && high && high.banCounts){
       const arr = Array.from(high.banCounts.entries()).map(([hid,cnt])=>({hid:Number(hid), bans:Number(cnt)})).sort((a,b)=> b.bans-a.bans).slice(0,3);
-  const html = arr.map(h=>{ const meta = heroMap[String(h.hid)]||{}; return `<li><span style='display:flex;align-items:center;gap:8px'><img src='${meta.img||''}' alt='${meta.name||('#'+h.hid)}'><span class='name'>${meta.name||('#'+h.hid)}</span></span><span><span class='badge'>Bans: ${h.bans}</span></span></li>`; }).join('');
+      const html = arr.map(h=>{
+        const meta = heroMap[String(h.hid)]||{};
+        const nm = meta.name||('#'+h.hid);
+        return `<li class='summary-item'><span class='summary-left'><img class='hero-thumb' src='${meta.img||''}' alt='${nm}'><span class='summary-name'>${nm}</span></span><span class='summary-right'><span class='badge'>Bans: ${h.bans}</span></span></li>`;
+      }).join('');
       ul.innerHTML = html || `<li><span class='sub'>no data</span></li>`;
       // Also reflect bans in the Heroes table by overlaying onto aggregate
       try{ __updateHeroesBansFromDetails(high.banCounts, heroMap); }catch(_e){}
@@ -2338,16 +2780,18 @@ async function main(){
       const ids = Array.from(new Set(subset.map(m=> Number(m.match_id||m.matchId||0)).filter(x=>x>0)));
       if(!ids.length) return [];
       const details = await pMap(ids, 6, id=> fetchMatchDetail(id));
-      const ok = new Set();
       let anyLeagueId = false;
+      const wrongLeague = new Set();
       for(const d of details){
         const lid2 = d ? Number(d.leagueid||0) : 0;
         if(lid2>0) anyLeagueId = true;
-        if(d && lid2===L){ ok.add(Number(d.match_id||0)); }
+        // Keep unknown matches (no leagueid) to avoid dropping fresh current-month games.
+        // Exclude only matches that are explicitly known to belong to a different league.
+        if(d && lid2>0 && lid2!==L){ wrongLeague.add(Number(d.match_id||0)); }
       }
       // If we couldn't determine league ids at all (no cache + API blocked), do NOT wipe the view.
-      if(!anyLeagueId || ok.size===0){ return subset; }
-      return subset.filter(m => ok.has(Number(m.match_id||m.matchId||0)));
+      if(!anyLeagueId){ return subset; }
+      return subset.filter(m => !wrongLeague.has(Number(m.match_id||m.matchId||0)));
     }catch(_e){ return subset; }
   }
 
@@ -2482,6 +2926,7 @@ async function main(){
   const agg = aggregate(statsSubset, playerNames, teamNames);
   try{ window.__dvAgg = agg; }catch(_e){}
   renderSummary(agg, heroes);
+  await renderAvgStats(statsSubset);
     render(agg, heroes);
   // Compute highlights live for this arbitrary range
   const label = `Period: ${new Date(f*1000).toISOString().slice(0,10)} to ${new Date(t*1000).toISOString().slice(0,10)} (UTC)`;
@@ -2562,7 +3007,7 @@ async function main(){
   }catch(_e){}
   quick.addEventListener('change', async ()=>{
     const v=quick.value;
-    const now = Math.floor(Date.now()/1000);
+    const now = getRangeAnchorNow();
     let fromUnix=0;
     if(v==='30') fromUnix = now - 30*86400; else if(v==='60') fromUnix = now - 60*86400; else if(v==='120') fromUnix = now - 120*86400; else if(v==='patch'){
       try{ const patch=await fetch('https://api.opendota.com/api/constants/patch',{cache:'force-cache'}).then(r=>r.json());
@@ -2576,7 +3021,7 @@ async function main(){
   });
 
   // Initialize inputs to last 30 days
-  const now = Math.floor(Date.now()/1000);
+  const now = getRangeAnchorNow();
   // URL params support: ?range=30|60|120|patch|all or ?from=...&to=... (epoch or YYYY-MM-DD)
   (function initFromUrl(){
     // Canonicalize aliases first (URL > session > localStorage > defaults)

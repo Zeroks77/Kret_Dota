@@ -5,7 +5,7 @@
   .dvduo-wrapper{display:flex;flex-direction:column;gap:10px}
   .dvduo-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .dvduo-toolbar .seg{padding:6px 10px;border:1px solid var(--border,rgba(255,255,255,.12));background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border-radius:10px;color:var(--text,#eef3fb);font-size:12px;cursor:pointer}
-  .dvduo-toolbar .seg.active{outline:2px solid rgba(109,166,255,.5);background:linear-gradient(180deg,rgba(109,166,255,.2),rgba(109,166,255,.08));border-color:rgba(109,166,255,.45)}
+  .dvduo-toolbar .seg.active{outline:2px solid rgba(200,170,110,.5);background:linear-gradient(180deg,rgba(200,170,110,.2),rgba(200,170,110,.08));border-color:rgba(200,170,110,.45)}
   .dvduo-list{list-style:none;margin:0;padding:0}
   .dvduo-list li{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
   .dvduo-list li:last-child{border-bottom:0}

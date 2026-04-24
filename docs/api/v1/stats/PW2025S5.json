@@ -1,0 +1,19 @@
+{
+  "total_matches": 116,
+  "avg_duration": 2423,
+  "longest_game": {
+    "match_id": 8345524901,
+    "duration": 4337
+  },
+  "shortest_game": {
+    "match_id": 8343581768,
+    "duration": 1367
+  },
+  "first_blood_time": 152,
+  "first_roshan_time": 1232,
+  "avg_kills": 49.6,
+  "avg_tower_kills": 10.7,
+  "radiant_winrate": 0.5,
+  "comeback_rate": 0.0,
+  "stomp_rate": 0.009
+}

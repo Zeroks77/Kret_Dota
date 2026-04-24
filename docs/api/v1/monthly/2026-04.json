@@ -1,0 +1,2675 @@
+[
+  {
+    "match_id": 8753509183,
+    "start_time": 1775067090,
+    "radiant_win": false,
+    "radiant_team_id": 9917402,
+    "dire_team_id": 9965666,
+    "radiant_name": "Boyfriends",
+    "dire_name": "OG Monke",
+    "players": [
+      {
+        "account_id": 80887279,
+        "hero_id": 106,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 306113467,
+        "hero_id": 54,
+        "is_radiant": true,
+        "personaname": "YergiBoii-PMA",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 27,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 424906165,
+        "hero_id": 86,
+        "is_radiant": true,
+        "personaname": "Чуд0вий",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 137,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 882318891,
+        "hero_id": 68,
+        "is_radiant": false,
+        "personaname": "Iroha",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 20,
+        "is_radiant": false,
+        "personaname": "the chosen one",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 71,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 140456750,
+        "hero_id": 84,
+        "is_radiant": false,
+        "personaname": "lirpaaa",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 15,
+        "is_radiant": false,
+        "personaname": "kikill23",
+        "team_id": 9965666
+      }
+    ]
+  },
+  {
+    "match_id": 8753581555,
+    "start_time": 1775070698,
+    "radiant_win": true,
+    "radiant_team_id": 9957170,
+    "dire_team_id": 9895446,
+    "radiant_name": "RICE FIELDS",
+    "dire_name": "lado",
+    "players": [
+      {
+        "account_id": 90144558,
+        "hero_id": 108,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 28,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 89,
+        "is_radiant": true,
+        "personaname": "kikill23",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 882318891,
+        "hero_id": 86,
+        "is_radiant": true,
+        "personaname": "Iroha",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 63,
+        "is_radiant": true,
+        "personaname": "Dope",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 7,
+        "is_radiant": false,
+        "personaname": "the chosen one",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 1804070588,
+        "hero_id": 114,
+        "is_radiant": false,
+        "personaname": "pain demands to be felt",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 424906165,
+        "hero_id": 16,
+        "is_radiant": false,
+        "personaname": "Чуд0вий",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 140456750,
+        "hero_id": 37,
+        "is_radiant": false,
+        "personaname": "lirpaaa",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 126,
+        "is_radiant": false,
+        "personaname": "Laruksha",
+        "team_id": 9895446
+      }
+    ]
+  },
+  {
+    "match_id": 8756417642,
+    "start_time": 1775247624,
+    "radiant_win": true,
+    "radiant_team_id": 9895446,
+    "dire_team_id": 1757501,
+    "radiant_name": "lado",
+    "dire_name": "Water Seven",
+    "players": [
+      {
+        "account_id": 1804070588,
+        "hero_id": 94,
+        "is_radiant": true,
+        "personaname": "pain demands to be felt",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 86,
+        "is_radiant": true,
+        "personaname": "the chosen one",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 108,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 61,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 30,
+        "is_radiant": true,
+        "personaname": "lubblobba",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 882318891,
+        "hero_id": 75,
+        "is_radiant": false,
+        "personaname": "Iroha",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 79,
+        "is_radiant": false,
+        "personaname": "Oliver",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 306113467,
+        "hero_id": 1,
+        "is_radiant": false,
+        "personaname": "YergiBoii-PMA",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 263359064,
+        "hero_id": 53,
+        "is_radiant": false,
+        "personaname": "TGM",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 69,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 1757501
+      }
+    ]
+  },
+  {
+    "match_id": 8756500688,
+    "start_time": 1775252056,
+    "radiant_win": true,
+    "radiant_team_id": 9895446,
+    "dire_team_id": 9872267,
+    "radiant_name": "lado",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 882318891,
+        "hero_id": 47,
+        "is_radiant": true,
+        "personaname": "Iroha",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 263359064,
+        "hero_id": 40,
+        "is_radiant": true,
+        "personaname": "TGM",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 20,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 1804070588,
+        "hero_id": 106,
+        "is_radiant": true,
+        "personaname": "pain demands to be felt",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 992361072,
+        "hero_id": 42,
+        "is_radiant": true,
+        "personaname": "Grunt",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 101,
+        "is_radiant": false,
+        "personaname": "pandashano",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 82,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 72,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 104,
+        "is_radiant": false,
+        "personaname": "Laruksha",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 68,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8756573488,
+    "start_time": 1775257231,
+    "radiant_win": true,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 9872267,
+    "radiant_name": "Ken",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 882318891,
+        "hero_id": 27,
+        "is_radiant": true,
+        "personaname": "Iroha",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 94,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 992361072,
+        "hero_id": 42,
+        "is_radiant": true,
+        "personaname": "Grunt",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 263359064,
+        "hero_id": 25,
+        "is_radiant": true,
+        "personaname": "TGM",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 306113467,
+        "hero_id": 155,
+        "is_radiant": true,
+        "personaname": "YergiBoii-PMA",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 74,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 101,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 63,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 135,
+        "is_radiant": false,
+        "personaname": "Laruksha",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 31,
+        "is_radiant": false,
+        "personaname": "lubblobba",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8762119338,
+    "start_time": 1775584958,
+    "radiant_win": true,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 9872267,
+    "radiant_name": "Ken",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 90144558,
+        "hero_id": 2,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 15,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 86,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 40,
+        "is_radiant": true,
+        "personaname": "the chosen one",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 50,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 69,
+        "is_radiant": false,
+        "personaname": "Zero",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 67,
+        "is_radiant": false,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 13,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 882318891,
+        "hero_id": 121,
+        "is_radiant": false,
+        "personaname": "Iroha",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 31,
+        "is_radiant": false,
+        "personaname": "lubblobba",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8763389198,
+    "start_time": 1775671901,
+    "radiant_win": false,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 9917402,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "Boyfriends",
+    "players": [
+      {
+        "account_id": 882318891,
+        "hero_id": 108,
+        "is_radiant": true,
+        "personaname": "Iroha",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 48,
+        "is_radiant": true,
+        "personaname": "TheSaw",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 119,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 23,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 74638143,
+        "hero_id": 66,
+        "is_radiant": true,
+        "personaname": "Javokhir Sindarov",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 74,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 7,
+        "is_radiant": false,
+        "personaname": "the chosen one",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 73,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 96,
+        "is_radiant": false,
+        "personaname": "kikill23",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 85,
+        "is_radiant": false,
+        "personaname": "Oliver",
+        "team_id": 9917402
+      }
+    ]
+  },
+  {
+    "match_id": 8763464093,
+    "start_time": 1775675591,
+    "radiant_win": true,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 9917402,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "Boyfriends",
+    "players": [
+      {
+        "account_id": 188889560,
+        "hero_id": 40,
+        "is_radiant": true,
+        "personaname": "the chosen one",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 29,
+        "is_radiant": true,
+        "personaname": "TheSaw",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 32,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 120,
+        "is_radiant": true,
+        "personaname": "Dope",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 50,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 57,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 135,
+        "is_radiant": false,
+        "personaname": "pandashano",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 97,
+        "is_radiant": false,
+        "personaname": "kikill23",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 34,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 74638143,
+        "hero_id": 111,
+        "is_radiant": false,
+        "personaname": "Javokhir Sindarov",
+        "team_id": 9917402
+      }
+    ]
+  },
+  {
+    "match_id": 8764665511,
+    "start_time": 1775758579,
+    "radiant_win": false,
+    "radiant_team_id": 10001607,
+    "dire_team_id": 9201807,
+    "radiant_name": "The RATS",
+    "dire_name": "Risky Runes",
+    "players": [
+      {
+        "account_id": 882318891,
+        "hero_id": 88,
+        "is_radiant": true,
+        "personaname": "Iroha",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 135,
+        "is_radiant": true,
+        "personaname": "TheSaw",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 60174913,
+        "hero_id": 26,
+        "is_radiant": true,
+        "personaname": "CrzChaos",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 97,
+        "is_radiant": true,
+        "personaname": "kikill23",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 350889953,
+        "hero_id": 32,
+        "is_radiant": true,
+        "personaname": "m.",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 27,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 297477613,
+        "hero_id": 12,
+        "is_radiant": false,
+        "personaname": "abo",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 29,
+        "is_radiant": false,
+        "personaname": "Michael",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 16,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 87867116,
+        "hero_id": 5,
+        "is_radiant": false,
+        "personaname": "Double, double toil and trouble",
+        "team_id": 9201807
+      }
+    ]
+  },
+  {
+    "match_id": 8764743990,
+    "start_time": 1775762551,
+    "radiant_win": true,
+    "radiant_team_id": 9201807,
+    "dire_team_id": 10102326,
+    "radiant_name": "Risky Runes",
+    "dire_name": "Ken",
+    "players": [
+      {
+        "account_id": 87867116,
+        "hero_id": 110,
+        "is_radiant": true,
+        "personaname": "Double, double toil and trouble",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 120,
+        "is_radiant": true,
+        "personaname": "Zero",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 1007102823,
+        "hero_id": 38,
+        "is_radiant": true,
+        "personaname": "GreyShark",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 41,
+        "is_radiant": true,
+        "personaname": "kikill23",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 37,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 79,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 36,
+        "is_radiant": false,
+        "personaname": "TheSaw",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 350889953,
+        "hero_id": 67,
+        "is_radiant": false,
+        "personaname": "m.",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 126,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 83,
+        "is_radiant": false,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      }
+    ]
+  },
+  {
+    "match_id": 8765793065,
+    "start_time": 1775837142,
+    "radiant_win": true,
+    "radiant_team_id": 9201807,
+    "dire_team_id": 9872267,
+    "radiant_name": "Risky Runes",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 131722511,
+        "hero_id": 85,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 2,
+        "is_radiant": true,
+        "personaname": "kikill23",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 49307231,
+        "hero_id": 63,
+        "is_radiant": true,
+        "personaname": "Falken",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 82480923,
+        "hero_id": 35,
+        "is_radiant": true,
+        "personaname": "Tapas",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 87867116,
+        "hero_id": 84,
+        "is_radiant": true,
+        "personaname": "Double, double toil and trouble",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 54,
+        "is_radiant": false,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1007102823,
+        "hero_id": 110,
+        "is_radiant": false,
+        "personaname": "GreyShark",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 120,
+        "is_radiant": false,
+        "personaname": "Laruksha",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 39,
+        "is_radiant": false,
+        "personaname": "lubblobba",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8765927969,
+    "start_time": 1775842608,
+    "radiant_win": false,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 9201807,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "Risky Runes",
+    "players": [
+      {
+        "account_id": 199761310,
+        "hero_id": 13,
+        "is_radiant": true,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 58,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 100,
+        "is_radiant": true,
+        "personaname": "Zero",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 49307231,
+        "hero_id": 73,
+        "is_radiant": true,
+        "personaname": "Falken",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 65,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 135,
+        "is_radiant": false,
+        "personaname": "the chosen one",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 123,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 297477613,
+        "hero_id": 41,
+        "is_radiant": false,
+        "personaname": "abo",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 87867116,
+        "hero_id": 26,
+        "is_radiant": false,
+        "personaname": "Double, double toil and trouble",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 1804070588,
+        "hero_id": 79,
+        "is_radiant": false,
+        "personaname": "pain demands to be felt",
+        "team_id": 9201807
+      }
+    ]
+  },
+  {
+    "match_id": 8765928917,
+    "start_time": 1775842673,
+    "radiant_win": false,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 9929906,
+    "radiant_name": "Ken",
+    "dire_name": "politically correct sexual deviants",
+    "players": [
+      {
+        "account_id": 131722511,
+        "hero_id": 94,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 108,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 33,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 31,
+        "is_radiant": true,
+        "personaname": "lubblobba",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 97,
+        "is_radiant": true,
+        "personaname": "kikill23",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 882318891,
+        "hero_id": 8,
+        "is_radiant": false,
+        "personaname": "Iroha",
+        "team_id": 9929906
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 16,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9929906
+      },
+      {
+        "account_id": 1007102823,
+        "hero_id": 38,
+        "is_radiant": false,
+        "personaname": "GreyShark",
+        "team_id": 9929906
+      },
+      {
+        "account_id": 74638143,
+        "hero_id": 101,
+        "is_radiant": false,
+        "personaname": "Javokhir Sindarov",
+        "team_id": 9929906
+      },
+      {
+        "account_id": 1127238076,
+        "hero_id": 103,
+        "is_radiant": false,
+        "personaname": "Virvacus",
+        "team_id": 9929906
+      }
+    ]
+  },
+  {
+    "match_id": 8766029701,
+    "start_time": 1775847001,
+    "radiant_win": false,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 9917402,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "Boyfriends",
+    "players": [
+      {
+        "account_id": 199761310,
+        "hero_id": 120,
+        "is_radiant": true,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 138,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 69,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 82480923,
+        "hero_id": 50,
+        "is_radiant": true,
+        "personaname": "Tapas",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 74638143,
+        "hero_id": 86,
+        "is_radiant": true,
+        "personaname": "Javokhir Sindarov",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 106,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 1007102823,
+        "hero_id": 136,
+        "is_radiant": false,
+        "personaname": "GreyShark",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 112,
+        "is_radiant": false,
+        "personaname": "pandashano",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 70,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 1127238076,
+        "hero_id": 103,
+        "is_radiant": false,
+        "personaname": "Virvacus",
+        "team_id": 9917402
+      }
+    ]
+  },
+  {
+    "match_id": 8766098328,
+    "start_time": 1775850177,
+    "radiant_win": false,
+    "radiant_team_id": 9965666,
+    "dire_team_id": 7891134,
+    "radiant_name": "OG Monke",
+    "dire_name": "Ape Monkey Squad",
+    "players": [
+      {
+        "account_id": 188889560,
+        "hero_id": 86,
+        "is_radiant": true,
+        "personaname": "the chosen one",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 48,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 23,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 129,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 1127238076,
+        "hero_id": 51,
+        "is_radiant": true,
+        "personaname": "Virvacus",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 38,
+        "is_radiant": false,
+        "personaname": "pandashano",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 199761310,
+        "hero_id": 52,
+        "is_radiant": false,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 74638143,
+        "hero_id": 75,
+        "is_radiant": false,
+        "personaname": "Javokhir Sindarov",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 82480923,
+        "hero_id": 84,
+        "is_radiant": false,
+        "personaname": "Tapas",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 70,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 7891134
+      }
+    ]
+  },
+  {
+    "match_id": 8767538657,
+    "start_time": 1775931140,
+    "radiant_win": true,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 9201807,
+    "radiant_name": "Ken",
+    "dire_name": "Risky Runes",
+    "players": [
+      {
+        "account_id": 199761310,
+        "hero_id": 13,
+        "is_radiant": true,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 84,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 48,
+        "is_radiant": true,
+        "personaname": "Dark Forest",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 69,
+        "is_radiant": true,
+        "personaname": "TheSaw",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 50,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 39,
+        "is_radiant": false,
+        "personaname": "pandashano",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 468420619,
+        "hero_id": 98,
+        "is_radiant": false,
+        "personaname": "Wasabii",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 42,
+        "is_radiant": false,
+        "personaname": "kikill23",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 87867116,
+        "hero_id": 75,
+        "is_radiant": false,
+        "personaname": "Double, double toil and trouble",
+        "team_id": 9201807
+      },
+      {
+        "account_id": 74638143,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "Javokhir Sindarov",
+        "team_id": 9201807
+      }
+    ]
+  },
+  {
+    "match_id": 8767632745,
+    "start_time": 1775935693,
+    "radiant_win": false,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 9895446,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "lado",
+    "players": [
+      {
+        "account_id": 90144558,
+        "hero_id": 128,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 145,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 40,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 199761310,
+        "hero_id": 52,
+        "is_radiant": true,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 74638143,
+        "hero_id": 129,
+        "is_radiant": true,
+        "personaname": "Javokhir Sindarov",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 54,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 1804070588,
+        "hero_id": 110,
+        "is_radiant": false,
+        "personaname": "pain demands to be felt",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "kikill23",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 126,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 55,
+        "is_radiant": false,
+        "personaname": "the chosen one",
+        "team_id": 9895446
+      }
+    ]
+  },
+  {
+    "match_id": 8767733052,
+    "start_time": 1775939923,
+    "radiant_win": false,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 9895446,
+    "radiant_name": "Ken",
+    "dire_name": "lado",
+    "players": [
+      {
+        "account_id": 199761310,
+        "hero_id": 120,
+        "is_radiant": true,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 40,
+        "is_radiant": true,
+        "personaname": "the chosen one",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 78,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 70,
+        "is_radiant": true,
+        "personaname": "Dark Forest",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 27,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 1804070588,
+        "hero_id": 16,
+        "is_radiant": false,
+        "personaname": "pain demands to be felt",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 97,
+        "is_radiant": false,
+        "personaname": "kikill23",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 15,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 297477613,
+        "hero_id": 8,
+        "is_radiant": false,
+        "personaname": "abo",
+        "team_id": 9895446
+      },
+      {
+        "account_id": 74638143,
+        "hero_id": 30,
+        "is_radiant": false,
+        "personaname": "Javokhir Sindarov",
+        "team_id": 9895446
+      }
+    ]
+  },
+  {
+    "match_id": 8768987976,
+    "start_time": 1776010595,
+    "radiant_win": true,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 7891134,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "Ape Monkey Squad",
+    "players": [
+      {
+        "account_id": 57839727,
+        "hero_id": 75,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1007102823,
+        "hero_id": 93,
+        "is_radiant": true,
+        "personaname": "GreyShark",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 131,
+        "is_radiant": true,
+        "personaname": "the chosen one",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 229756357,
+        "hero_id": 104,
+        "is_radiant": true,
+        "personaname": "3L|)|_|N42!",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 47,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 70,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 199761310,
+        "hero_id": 74,
+        "is_radiant": false,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "kikill23",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 29,
+        "is_radiant": false,
+        "personaname": "Zero",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 74638143,
+        "hero_id": 50,
+        "is_radiant": false,
+        "personaname": "Javokhir Sindarov",
+        "team_id": 7891134
+      }
+    ]
+  },
+  {
+    "match_id": 8769074885,
+    "start_time": 1776014281,
+    "radiant_win": false,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 9917402,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "Boyfriends",
+    "players": [
+      {
+        "account_id": 245528343,
+        "hero_id": 54,
+        "is_radiant": true,
+        "personaname": "MaybeNextTime-",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 129,
+        "is_radiant": true,
+        "personaname": "Zero",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 229756357,
+        "hero_id": 128,
+        "is_radiant": true,
+        "personaname": "3L|)|_|N42!",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 66,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 288448614,
+        "hero_id": 16,
+        "is_radiant": true,
+        "personaname": "Iceman-",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 203670863,
+        "hero_id": 71,
+        "is_radiant": false,
+        "personaname": "GreaseMonkey",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 114,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 40,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 262007292,
+        "hero_id": 123,
+        "is_radiant": false,
+        "personaname": "✪︎_DArK AcE ™",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 106,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      }
+    ]
+  },
+  {
+    "match_id": 8769165325,
+    "start_time": 1776018382,
+    "radiant_win": false,
+    "radiant_team_id": 7891134,
+    "dire_team_id": 9872267,
+    "radiant_name": "Ape Monkey Squad",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 199761310,
+        "hero_id": 120,
+        "is_radiant": true,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 1007102823,
+        "hero_id": 94,
+        "is_radiant": true,
+        "personaname": "GreyShark",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 99,
+        "is_radiant": true,
+        "personaname": "Dark Forest",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 112,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 229756357,
+        "hero_id": 100,
+        "is_radiant": true,
+        "personaname": "3L|)|_|N42!",
+        "team_id": 7891134
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 49,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 297477613,
+        "hero_id": 46,
+        "is_radiant": false,
+        "personaname": "abo",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 36,
+        "is_radiant": false,
+        "personaname": "TheSaw",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 37,
+        "is_radiant": false,
+        "personaname": "Zero",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 262007292,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "✪︎_DArK AcE ™",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8770452559,
+    "start_time": 1776103961,
+    "radiant_win": true,
+    "radiant_team_id": 3762664,
+    "dire_team_id": 1757501,
+    "radiant_name": "Non Deficere",
+    "dire_name": "Water Seven",
+    "players": [
+      {
+        "account_id": 245528343,
+        "hero_id": 27,
+        "is_radiant": true,
+        "personaname": "MaybeNextTime-",
+        "team_id": 3762664
+      },
+      {
+        "account_id": 229756357,
+        "hero_id": 104,
+        "is_radiant": true,
+        "personaname": "3L|)|_|N42!",
+        "team_id": 3762664
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 109,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 3762664
+      },
+      {
+        "account_id": 82480923,
+        "hero_id": 35,
+        "is_radiant": true,
+        "personaname": "Tapas",
+        "team_id": 3762664
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 84,
+        "is_radiant": true,
+        "personaname": "lubblobba",
+        "team_id": 3762664
+      },
+      {
+        "account_id": 49307231,
+        "hero_id": 70,
+        "is_radiant": false,
+        "personaname": "Falken",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 97,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 306113467,
+        "hero_id": 64,
+        "is_radiant": false,
+        "personaname": "YergiBoii-PMA",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 262007292,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "✪︎_DArK AcE ™",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 288448614,
+        "hero_id": 100,
+        "is_radiant": false,
+        "personaname": "Iceman-",
+        "team_id": 1757501
+      }
+    ]
+  },
+  {
+    "match_id": 8770527711,
+    "start_time": 1776107670,
+    "radiant_win": false,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 9872267,
+    "radiant_name": "Ken",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 1007102823,
+        "hero_id": 135,
+        "is_radiant": true,
+        "personaname": "GreyShark",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 40,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 288448614,
+        "hero_id": 39,
+        "is_radiant": true,
+        "personaname": "Iceman-",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 49307231,
+        "hero_id": 138,
+        "is_radiant": true,
+        "personaname": "Falken",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 29,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 350889953,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "m.",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 297477613,
+        "hero_id": 114,
+        "is_radiant": false,
+        "personaname": "abo",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 229756357,
+        "hero_id": 104,
+        "is_radiant": false,
+        "personaname": "3L|)|_|N42!",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 31,
+        "is_radiant": false,
+        "personaname": "lubblobba",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 262007292,
+        "hero_id": 123,
+        "is_radiant": false,
+        "personaname": "✪︎_DArK AcE ™",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8771625511,
+    "start_time": 1776185537,
+    "radiant_win": true,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 9917402,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "Boyfriends",
+    "players": [
+      {
+        "account_id": 1007102823,
+        "hero_id": 46,
+        "is_radiant": true,
+        "personaname": "GreyShark",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 135,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 9,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 31903773,
+        "hero_id": 49,
+        "is_radiant": true,
+        "personaname": "No more...",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 88,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 114,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 79,
+        "is_radiant": false,
+        "personaname": "Zero",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 101,
+        "is_radiant": false,
+        "personaname": "pandashano",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 14,
+        "is_radiant": false,
+        "personaname": "TheSaw",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 39,
+        "is_radiant": false,
+        "personaname": "lubblobba",
+        "team_id": 9917402
+      }
+    ]
+  },
+  {
+    "match_id": 8771726817,
+    "start_time": 1776190263,
+    "radiant_win": true,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 1757501,
+    "radiant_name": "Ken",
+    "dire_name": "Water Seven",
+    "players": [
+      {
+        "account_id": 129698658,
+        "hero_id": 27,
+        "is_radiant": true,
+        "personaname": "Dark Forest",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 992361072,
+        "hero_id": 29,
+        "is_radiant": true,
+        "personaname": "Grunt",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 5,
+        "is_radiant": true,
+        "personaname": "lubblobba",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 263359064,
+        "hero_id": 39,
+        "is_radiant": true,
+        "personaname": "TGM",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 6,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 37,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 123,
+        "is_radiant": false,
+        "personaname": "pandashano",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 1007102823,
+        "hero_id": 93,
+        "is_radiant": false,
+        "personaname": "GreyShark",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 135,
+        "is_radiant": false,
+        "personaname": "TheSaw",
+        "team_id": 1757501
+      },
+      {
+        "account_id": 199761310,
+        "hero_id": 120,
+        "is_radiant": false,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 1757501
+      }
+    ]
+  },
+  {
+    "match_id": 8774133973,
+    "start_time": 1776363685,
+    "radiant_win": true,
+    "radiant_team_id": 9957170,
+    "dire_team_id": 9917402,
+    "radiant_name": "RICE FIELDS",
+    "dire_name": "Boyfriends",
+    "players": [
+      {
+        "account_id": 179289652,
+        "hero_id": 75,
+        "is_radiant": true,
+        "personaname": "Dope",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 120,
+        "is_radiant": true,
+        "personaname": "Seto Kaiba",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 344807238,
+        "hero_id": 67,
+        "is_radiant": true,
+        "personaname": "Hybrid",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 31,
+        "is_radiant": true,
+        "personaname": "lubblobba",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 29,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 72,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 105,
+        "is_radiant": false,
+        "personaname": "Zero",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 229756357,
+        "hero_id": 104,
+        "is_radiant": false,
+        "personaname": "3L|)|_|N42!",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 82480923,
+        "hero_id": 35,
+        "is_radiant": false,
+        "personaname": "Tapas",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 14,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      }
+    ]
+  },
+  {
+    "match_id": 8774215204,
+    "start_time": 1776367761,
+    "radiant_win": true,
+    "radiant_team_id": 9965666,
+    "dire_team_id": 10102326,
+    "radiant_name": "OG Monke",
+    "dire_name": "Ken",
+    "players": [
+      {
+        "account_id": 188889560,
+        "hero_id": 14,
+        "is_radiant": true,
+        "personaname": "the chosen one",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 43,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 229756357,
+        "hero_id": 104,
+        "is_radiant": true,
+        "personaname": "3L|)|_|N42!",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 87,
+        "is_radiant": true,
+        "personaname": "lubblobba",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 344807238,
+        "hero_id": 54,
+        "is_radiant": true,
+        "personaname": "Hybrid",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 107,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 129,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 94,
+        "is_radiant": false,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 106,
+        "is_radiant": false,
+        "personaname": "Seto Kaiba",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 10102326
+      }
+    ]
+  },
+  {
+    "match_id": 8774266130,
+    "start_time": 1776370882,
+    "radiant_win": false,
+    "radiant_team_id": 9917402,
+    "dire_team_id": 9872267,
+    "radiant_name": "Boyfriends",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 179289652,
+        "hero_id": 70,
+        "is_radiant": true,
+        "personaname": "Dope",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 101,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 229756357,
+        "hero_id": 104,
+        "is_radiant": true,
+        "personaname": "3L|)|_|N42!",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 80,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 131,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 29,
+        "is_radiant": false,
+        "personaname": "Seto Kaiba",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 297477613,
+        "hero_id": 46,
+        "is_radiant": false,
+        "personaname": "abo",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 16,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "the chosen one",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 26,
+        "is_radiant": false,
+        "personaname": "lubblobba",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8775365004,
+    "start_time": 1776449216,
+    "radiant_win": true,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 9724751,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "Stylish Slayers",
+    "players": [
+      {
+        "account_id": 117542304,
+        "hero_id": 49,
+        "is_radiant": true,
+        "personaname": "Seto Kaiba",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 199761310,
+        "hero_id": 39,
+        "is_radiant": true,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 66,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 97,
+        "is_radiant": true,
+        "personaname": "kikill23",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 137,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 29,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9724751
+      },
+      {
+        "account_id": 468420619,
+        "hero_id": 26,
+        "is_radiant": false,
+        "personaname": "Wasabii",
+        "team_id": 9724751
+      },
+      {
+        "account_id": 31903773,
+        "hero_id": 14,
+        "is_radiant": false,
+        "personaname": "No more...",
+        "team_id": 9724751
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 34,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9724751
+      },
+      {
+        "account_id": 297477613,
+        "hero_id": 46,
+        "is_radiant": false,
+        "personaname": "abo",
+        "team_id": 9724751
+      }
+    ]
+  },
+  {
+    "match_id": 8775476839,
+    "start_time": 1776454719,
+    "radiant_win": false,
+    "radiant_team_id": 9957170,
+    "dire_team_id": 9917402,
+    "radiant_name": "RICE FIELDS",
+    "dire_name": "Boyfriends",
+    "players": [
+      {
+        "account_id": 199761310,
+        "hero_id": 126,
+        "is_radiant": true,
+        "personaname": "Sexy E-girl 123 <3",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 129,
+        "is_radiant": true,
+        "personaname": "Dope",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 97,
+        "is_radiant": true,
+        "personaname": "kikill23",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 344807238,
+        "hero_id": 94,
+        "is_radiant": true,
+        "personaname": "Hybrid",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 882318891,
+        "hero_id": 20,
+        "is_radiant": true,
+        "personaname": "Iroha",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 54,
+        "is_radiant": false,
+        "personaname": "Laruksha",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "Seto Kaiba",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 108,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 106,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 27,
+        "is_radiant": false,
+        "personaname": "Oliver",
+        "team_id": 9917402
+      }
+    ]
+  },
+  {
+    "match_id": 8775551387,
+    "start_time": 1776458956,
+    "radiant_win": true,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 9957170,
+    "radiant_name": "Ken",
+    "dire_name": "RICE FIELDS",
+    "players": [
+      {
+        "account_id": 131722511,
+        "hero_id": 42,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 135,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 59,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 31,
+        "is_radiant": true,
+        "personaname": "lubblobba",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 84,
+        "is_radiant": true,
+        "personaname": "the chosen one",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "Seto Kaiba",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 23,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 882318891,
+        "hero_id": 91,
+        "is_radiant": false,
+        "personaname": "Iroha",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 49,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 387026803,
+        "hero_id": 16,
+        "is_radiant": false,
+        "personaname": "Jedleo",
+        "team_id": 9957170
+      }
+    ]
+  },
+  {
+    "match_id": 8776843723,
+    "start_time": 1776538051,
+    "radiant_win": true,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 2923293,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "BESTBUKKAKEBOYS",
+    "players": [
+      {
+        "account_id": 57839727,
+        "hero_id": 54,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 78,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 468420619,
+        "hero_id": 121,
+        "is_radiant": true,
+        "personaname": "Wasabii",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 311379182,
+        "hero_id": 65,
+        "is_radiant": true,
+        "personaname": "Gwyn",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 69,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 131,
+        "is_radiant": false,
+        "personaname": "pandashano",
+        "team_id": 2923293
+      },
+      {
+        "account_id": 79832406,
+        "hero_id": 88,
+        "is_radiant": false,
+        "personaname": "FOMO SAPIENS",
+        "team_id": 2923293
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 38,
+        "is_radiant": false,
+        "personaname": "Zero",
+        "team_id": 2923293
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 102,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 2923293
+      },
+      {
+        "account_id": 225873537,
+        "hero_id": 23,
+        "is_radiant": false,
+        "personaname": "Tactical Feed",
+        "team_id": 2923293
+      }
+    ]
+  },
+  {
+    "match_id": 8778377158,
+    "start_time": 1776624457,
+    "radiant_win": false,
+    "radiant_team_id": 9872267,
+    "dire_team_id": 9965666,
+    "radiant_name": "Zelenskyy's Boys",
+    "dire_name": "OG Monke",
+    "players": [
+      {
+        "account_id": 57839727,
+        "hero_id": 67,
+        "is_radiant": true,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 100,
+        "is_radiant": true,
+        "personaname": "Zero",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 137,
+        "is_radiant": true,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 31903773,
+        "hero_id": 17,
+        "is_radiant": true,
+        "personaname": "No more...",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 9,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 53,
+        "is_radiant": false,
+        "personaname": "the chosen one",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 135,
+        "is_radiant": false,
+        "personaname": "Laruksha",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 170682343,
+        "hero_id": 16,
+        "is_radiant": false,
+        "personaname": "Luzian",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 82480923,
+        "hero_id": 94,
+        "is_radiant": false,
+        "personaname": "Tapas",
+        "team_id": 9965666
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 27,
+        "is_radiant": false,
+        "personaname": "pollo",
+        "team_id": 9965666
+      }
+    ]
+  }
+]

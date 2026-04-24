@@ -20,9 +20,9 @@
     .wv-wardmap.enhanced.highlighting svg .spot:not(.hl){opacity:.28}
   .wv-wardmap svg .spot.pinned{stroke:#fbbf24 !important; fill:rgba(251,191,36,.18) !important; stroke-width:2 !important}
   .wv-wardmap svg .pindot{fill:#fbbf24; opacity:.95}
-  .wv-wardmap svg .spot.selected{ stroke:#9ec7ff !important; fill:rgba(158,199,255,.16) !important; stroke-width:2.2 !important; filter:drop-shadow(0 0 10px rgba(158,199,255,.55)) }
+  .wv-wardmap svg .spot.selected{ stroke:#e8d5a3 !important; fill:rgba(200,170,110,.16) !important; stroke-width:2.2 !important; filter:drop-shadow(0 0 10px rgba(200,170,110,.55)) }
   /* focus visibility for keyboard users */
-  .wv-wardmap svg .spot:focus{ outline:none; stroke:#9ec7ff !important; stroke-width:2.4 !important; filter:drop-shadow(0 0 8px rgba(158,199,255,.6)); }
+  .wv-wardmap svg .spot:focus{ outline:none; stroke:#e8d5a3 !important; stroke-width:2.4 !important; filter:drop-shadow(0 0 8px rgba(200,170,110,.6)); }
   /* tooltip */
   .wv-tooltip{position:absolute;pointer-events:none;z-index:5;min-width:150px;max-width:240px;background:rgba(15,23,42,.95);color:#e5ecf8;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 8px;box-shadow:0 6px 18px rgba(0,0,0,.35);transform:translate(-50%, -110%);opacity:0;transition:opacity .12s}
   .wv-tooltip.show{opacity:1}
@@ -68,7 +68,7 @@
   .wv-list{max-height:210px;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));padding:6px}
   .wv-list .item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 8px;border-radius:8px;cursor:pointer;color:var(--text);font-size:12px}
   .wv-list .item:hover{background:rgba(255,255,255,.06)}
-  .wv-list .item.active{outline:2px solid rgba(109,166,255,.5);background:linear-gradient(180deg,rgba(109,166,255,.2),rgba(109,166,255,.08))}
+  .wv-list .item.active{outline:2px solid rgba(200,170,110,.5);background:linear-gradient(180deg,rgba(200,170,110,.2),rgba(200,170,110,.08))}
   .wv-list .search{display:flex;gap:6px;margin:0 0 6px}
   .wv-list .search input{width:100%;padding:5px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:var(--text)}
   .wv-title{font-weight:600;margin:0 0 6px;font-size:14px;letter-spacing:.2px}

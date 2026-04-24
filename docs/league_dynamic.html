@@ -6,57 +6,38 @@
   <title>League Dynamic Viewer</title>
   <base href="./">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/dota-theme.css">
   <style>
-    :root {
-      --bg: #0b1020;
-      --panel: #121832;
-      --muted: #9aa3b2;
-      --text: #eef1f7;
-      --accent: #9ec7ff;
-      --chip: #1a2142;
-      --border: rgba(255,255,255,.08);
-    }
-    * { box-sizing: border-box }
-    body {
-      margin: 0;
-      background: radial-gradient(1200px 600px at 10% -10%, #172045, transparent 60%), var(--bg);
-      color: var(--text);
-      font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-    }
-    a { color: var(--accent); text-decoration: none }
-    .wrapper { max-width: 1180px; margin: 0 auto; padding: 16px }
+    /* Page-specific layout */
+    body{position:relative;z-index:1}
+    .wrapper{max-width:1180px;margin:0 auto;padding:16px}
     .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-    .sub{color:var(--muted);font-size:12px}
-    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--chip);color:var(--text);font-size:12px}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:12px;overflow:visible}
-    .tabs{display:flex;gap:6px;margin:6px 0 8px}
-    .tab{padding:6px 10px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border-radius:10px;color:var(--text);cursor:pointer;font-size:12px}
-    .tab.active{outline:2px solid rgba(109,166,255,.5);background:linear-gradient(180deg,rgba(109,166,255,.2),rgba(109,166,255,.08));border-color:rgba(109,166,255,.45)}
-    .table{width:100%;border-collapse:collapse}
-    .table th,.table td{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px;text-align:left}
+    .title{font-weight:600;margin-bottom:6px;color:var(--gold-light)}
     .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .summary-card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:12px;padding:10px}
-    .perf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-    .perf-card{display:flex;align-items:center;justify-content:space-between;padding:10px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025))}
-    .perf-left{display:flex;align-items:center;gap:10px}
-    .perf-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:radial-gradient(22px 22px at 30% 30%, rgba(158,199,255,.45), rgba(158,199,255,.12));border:1px solid rgba(158,199,255,.25);font-size:16px}
-  /* Mini avatar used in popovers (match dynamic viewer) */
-  .logo{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.1);margin-right:6px}
-  /* Hover popover helpers (match dynamic viewer) */
-  .has-hover{position:relative}
-  .has-hover .hovercard{display:none;position:absolute;left:0;top:100%;margin-top:6px;z-index:10000;background:rgba(10,16,34,.96);border:1px solid var(--border);border-radius:10px;padding:8px;min-width:220px;box-shadow:0 8px 20px rgba(0,0,0,.4);pointer-events:auto}
-  .has-hover:hover .hovercard{display:block}
-  .has-hover.open .hovercard{display:block}
+    .logo{width:18px;height:18px;border-radius:50%;object-fit:cover;border:1px solid var(--border);margin-right:6px}
+    /* Ghost button */
+    .ghost{background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:4px 8px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+    .ghost:hover{background:rgba(200,170,110,.06);color:var(--gold-light);border-color:var(--gold-dark)}
+    /* Awards */
+    .aw-toolbar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:-4px 0 8px}
+    .aw-tile{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px;display:flex;flex-direction:column;height:100%}
+    .aw-tile h3{margin:0 0 6px;font-size:15px;color:var(--gold)}
+    .aw-tile ul.simple{flex:1}
+    .ramp-badge{background:rgba(200,170,110,.12);color:var(--gold-light)}
     /* Calendar */
     .cal{margin-top:8px}
     .cal .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
     .cal .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-    .cal .dow div{color:var(--muted);font-size:12px;text-align:center}
-    .cal .day{min-height:90px;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015))}
-    .cal .date{font-weight:600;color:var(--muted);font-size:12px;margin-bottom:4px}
+    .cal .dow div{color:var(--text-muted);font-size:12px;text-align:center}
+    .cal .day{min-height:90px;border:1px solid var(--border);border-radius:var(--radius-md);padding:8px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015))}
+    .cal .date{font-weight:600;color:var(--text-muted);font-size:12px;margin-bottom:4px}
     .cal .matches{display:flex;flex-wrap:wrap;gap:4px}
-    .cal .matches a{display:inline-block;background:var(--chip);color:var(--text);border-radius:999px;font-size:11px;padding:2px 6px}
+    .cal .matches a{display:inline-block;background:var(--chip);color:var(--text-primary);border-radius:999px;font-size:11px;padding:2px 6px}
+    /* Avg stats */
+    .avg-stats{margin:12px 0}
+    .avg-stats h2{font-size:16px;margin:0 0 10px;color:var(--gold)}
+    /* Responsive */
+    @media(max-width:860px){.wrapper{padding:10px}.grid2{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -81,6 +62,31 @@
       <button class="tab" data-tab="wards">Wards</button>
       <button class="tab" data-tab="calendar">Calendar</button>
     </div>
+
+    <!-- Stage filter (Main Event vs. Qualifier per region) -->
+    <section id="stageBarSection" class="card" style="display:none;margin-top:12px;padding:10px 12px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <strong style="font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#cbd5e1">Stage</strong>
+        <div id="stageBar" class="stage-bar" role="tablist" aria-label="Stage filter" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+      <div id="stageBanner" class="sub" style="display:none;margin-top:8px;padding:6px 10px;border-left:3px solid #fbbf24;background:rgba(251,191,36,.08);border-radius:4px;font-size:12px"></div>
+    </section>
+    <style>
+      .stage-bar .stage-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;transition:background .15s,border-color .15s,color .15s}
+      .stage-bar .stage-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+      .stage-bar .stage-btn.active{background:rgba(251,191,36,.18);border-color:#fbbf24;color:#fbbf24}
+      .stage-bar .stage-btn .stage-count{margin-left:6px;opacity:.7;font-weight:400;font-size:11px}
+      .stage-bar .stage-btn[data-kind='qualifier']{border-left:3px solid #6db0ff}
+      .stage-bar .stage-btn[data-kind='qualifier'].active{border-left-color:#fbbf24}
+      .stage-bar .stage-btn[data-kind='main']{border-left:3px solid #34d399}
+      .stage-bar .stage-btn[data-kind='main'].active{border-left-color:#fbbf24}
+    </style>
+
+    <!-- Average Stats (from report.averages) -->
+    <section id="avgStatsSection" class="avg-stats card" style="display:none;margin-top:12px">
+      <h2>Match Averages</h2>
+      <div class="stat-grid" id="avgStatsGrid"></div>
+    </section>
 
     <div id="pane-highlights" class="tabpane active" role="tabpanel" aria-labelledby="tab-highlights">
       <div id="highlightsCard" class="card" style="margin-top:12px;display:none">
@@ -235,6 +241,9 @@
   <script src="js/draft_viewer.js"></script>
   <script src="js/url_params.js"></script>
   <script>
+    console.log('[league_dynamic] script load build=2026-04-23T20:00 (wards-early-def)');
+    window.addEventListener('error', e => console.error('[GLOBAL ERROR]', e.message, e.filename+':'+e.lineno, e.error));
+    window.addEventListener('unhandledrejection', e => console.error('[UNHANDLED REJECTION]', e.reason));
     const OD_PLAYER_URL = id => `https://www.opendota.com/players/${id}`;
     const OD_MATCH_URL = id => `https://www.opendota.com/matches/${id}`;
     function fmtPct(x) { return (x * 100).toFixed(1) + '%'; }
@@ -479,16 +488,14 @@
       try {
         const bases = (typeof relBases !== 'undefined' && Array.isArray(relBases) && relBases.length)
           ? relBases
-          : (function(){
+          : (Array.isArray(window.__lvRelBases) && window.__lvRelBases.length ? window.__lvRelBases
+            : (function(){
               // Fallback: guess from current path
               const arr = [];
-              // If we are under /docs/, data lives at data/
-              arr.push('data');
-              // Also try ../data for non-docs hosting
-              arr.push('../data');
+              if (IS_GHPAGES) arr.push('data'); else arr.push('../data');
               if (relBase) arr.unshift(relBase);
               return Array.from(new Set(arr));
-            })();
+            })());
         const relCandidates = bases.map(b => `${b}/cache/OpenDota/matches/${id}.json`);
         const rawCandidates = [
           `${rawBase}/cache/OpenDota/matches/${id}.json`,
@@ -621,6 +628,212 @@
         });
       }
       return out;
+    }
+
+    // ===== Average Stats Renderer =====
+    function renderAvgStats(report) {
+      const sec = document.getElementById('avgStatsSection');
+      const grid = document.getElementById('avgStatsGrid');
+      if (!sec || !grid) return;
+      const avg = report && report.averages;
+      if (!avg) { sec.style.display = 'none'; return; }
+
+      function fmtTime(s) { if (!s || s <= 0) return '-'; const m = Math.floor(s / 60), ss = Math.floor(s % 60); return m + ':' + String(ss).padStart(2, '0'); }
+
+      const items = [
+        { icon: '&#9876;', value: avg.total_matches || 0, label: 'Total Matches' },
+        { icon: '&#9201;', value: fmtTime(avg.avg_duration), label: 'Avg Duration' },
+        { icon: '&#128168;', value: fmtTime(avg.first_blood_time), label: 'Avg First Blood' },
+        { icon: '&#128163;', value: fmtTime(avg.first_roshan_time), label: 'Avg First Roshan' },
+        { icon: '&#9876;', value: avg.avg_kills || '-', label: 'Avg Kills/Game' },
+        { icon: '&#127959;', value: avg.avg_tower_kills || '-', label: 'Avg Towers/Game' },
+        { icon: '&#9730;', value: avg.radiant_winrate != null ? (avg.radiant_winrate * 100).toFixed(1) + '%' : '-', label: 'Radiant Win Rate' },
+      ];
+      if (avg.comeback_rate != null) items.push({ icon: '&#128293;', value: (avg.comeback_rate * 100).toFixed(1) + '%', label: 'Comeback Rate' });
+      if (avg.stomp_rate != null) items.push({ icon: '&#9889;', value: (avg.stomp_rate * 100).toFixed(1) + '%', label: 'Stomp Rate' });
+
+      grid.innerHTML = items.map(i =>
+        `<div class="stat-card fade-in">
+          <div class="stat-card__icon">${i.icon}</div>
+          <div class="stat-card__value">${i.value}</div>
+          <div class="stat-card__label">${i.label}</div>
+        </div>`
+      ).join('');
+      sec.style.display = '';
+    }
+
+    // ---------- Stage filter (Main Event vs. Qualifier per region) ----------
+    function __lvBuildStageInfo(report, matches) {
+      const mainId = (report && report.league && Number(report.league.id)) || 0;
+      const mainName = (report && report.league && report.league.name) || 'Main Event';
+      const quals = (report && report.league && Array.isArray(report.league.qualifiers)) ? report.league.qualifiers : [];
+      const matchStages = (report && report.league && report.league.match_stages) || null; // { matchId(str): 'main' | 'qual:REGION' }
+
+      // Map leagueid -> { kind, region } as fallback when match_stages is missing (older reports)
+      const stageById = new Map();
+      stageById.set(mainId, { kind: 'main', region: '' });
+      for (const q of quals) {
+        if (!q || !q.id) continue;
+        stageById.set(Number(q.id), { kind: 'qualifier', region: String(q.region || 'OTHER').toUpperCase() });
+      }
+
+      // Resolve stage key per match (prefer precomputed match_stages)
+      function stageKeyForMatch(m) {
+        if (!m) return null;
+        const mid = String(m.match_id || '');
+        if (matchStages && matchStages[mid]) return String(matchStages[mid]);
+        const lid = Number(m.leagueid) || 0;
+        const info = stageById.get(lid);
+        if (!info) return null;
+        return info.kind === 'main' ? 'main' : `qual:${info.region || 'OTHER'}`;
+      }
+
+      // Tally stage counts and bind stage key onto each match for fast filtering
+      const counts = new Map();
+      const taggedMatches = [];
+      for (const m of (matches || [])) {
+        const key = stageKeyForMatch(m);
+        if (!key) continue;
+        m.__stageKey = key;
+        taggedMatches.push(m);
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+
+      const total = taggedMatches.length;
+      const stages = [{ key: 'all', kind: 'all', label: 'Alle', count: total, predicate: () => true }];
+      const mainCount = counts.get('main') || 0;
+      if (mainCount > 0) {
+        stages.push({ key: 'main', kind: 'main', label: 'Main Event', count: mainCount,
+          predicate: (m) => m && m.__stageKey === 'main' });
+      }
+      const regionLabels = { WEU: 'Qualifier WEU', EEU: 'Qualifier EEU', EU: 'Qualifier EU',
+        NA: 'Qualifier NA', SA: 'Qualifier SA', SEA: 'Qualifier SEA', CN: 'Qualifier CN',
+        AMER: 'Qualifier Americas', ASIA: 'Qualifier Asia', AFRICA: 'Qualifier Africa', OTHER: 'Qualifier' };
+      const regionOrder = ['WEU','EEU','EU','NA','SA','SEA','CN','AFRICA','AMER','ASIA','OTHER'];
+      const seenRegions = new Set();
+      for (const region of regionOrder) {
+        const key = `qual:${region}`;
+        const cnt = counts.get(key) || 0;
+        if (!cnt) continue;
+        seenRegions.add(region);
+        stages.push({ key, kind: 'qualifier', region, label: regionLabels[region] || `Qualifier ${region}`, count: cnt,
+          predicate: (m) => m && m.__stageKey === key });
+      }
+      // Catch any unexpected qualifier regions not in the standard order
+      for (const [key, cnt] of counts.entries()) {
+        if (!key.startsWith('qual:') || !cnt) continue;
+        const region = key.slice(5);
+        if (seenRegions.has(region)) continue;
+        stages.push({ key, kind: 'qualifier', region, label: `Qualifier ${region}`, count: cnt,
+          predicate: (m) => m && m.__stageKey === key });
+      }
+
+      const qualifierMatches = stages.filter(s => s.kind === 'qualifier').reduce((a, s) => a + s.count, 0);
+      return { stages, hasQualifierMatches: qualifierMatches > 0, mainName, mainId };
+    }
+
+    function __lvRecomputeAverages(matches) {
+      const out = { total_matches: 0, avg_duration: 0, avg_kills: 0, avg_tower_kills: null,
+        first_blood_time: null, first_roshan_time: null, radiant_winrate: null,
+        comeback_rate: null, stomp_rate: null };
+      if (!Array.isArray(matches) || !matches.length) return out;
+      let durSum = 0, durN = 0, killSum = 0, killN = 0, radWins = 0, radN = 0;
+      for (const m of matches) {
+        if (!m) continue;
+        const d = Number(m.duration) || 0; if (d > 0) { durSum += d; durN++; }
+        const rs = Number(m.radiant_score) || 0, ds = Number(m.dire_score) || 0;
+        if (rs + ds > 0) { killSum += (rs + ds); killN++; }
+        if (typeof m.radiant_win === 'boolean') { radN++; if (m.radiant_win) radWins++; }
+      }
+      out.total_matches = matches.length;
+      if (durN) out.avg_duration = Math.round(durSum / durN);
+      if (killN) out.avg_kills = Math.round((killSum / killN) * 10) / 10;
+      if (radN) out.radiant_winrate = Math.round((radWins / radN) * 1000) / 1000;
+      return out;
+    }
+
+    function __lvRenderStageBar(report, matches) {
+      const sec = document.getElementById('stageBarSection');
+      const bar = document.getElementById('stageBar');
+      if (!sec || !bar) return;
+      const info = __lvBuildStageInfo(report, matches);
+      // Hide bar if no qualifier matches actually present
+      if (!info.hasQualifierMatches || info.stages.length <= 2) { sec.style.display = 'none'; return; }
+      // Persist stages and original report on window for re-renders
+      window.__lvStages = info.stages;
+      window.__lvReport = report;
+      window.__lvMatches = matches;
+      window.__lvStageFilter = window.__lvStageFilter || 'all';
+      bar.innerHTML = info.stages.map(s =>
+        `<button type="button" class="stage-btn${s.key === window.__lvStageFilter ? ' active' : ''}" data-stage="${s.key}" data-kind="${s.kind}">${s.label}<span class="stage-count">${s.count}</span></button>`
+      ).join('');
+      bar.querySelectorAll('.stage-btn').forEach(btn => {
+        btn.addEventListener('click', () => __lvApplyStage(btn.getAttribute('data-stage')));
+      });
+      sec.style.display = '';
+      __lvUpdateStageBanner();
+    }
+
+    function __lvUpdateStageBanner() {
+      const banner = document.getElementById('stageBanner');
+      if (!banner) return;
+      const key = window.__lvStageFilter || 'all';
+      if (key === 'all') { banner.style.display = 'none'; banner.textContent = ''; return; }
+      const stage = (window.__lvStages || []).find(s => s.key === key);
+      const label = stage ? stage.label : key;
+      banner.style.display = '';
+      banner.innerHTML = `Stage-Filter aktiv: <strong>${label}</strong>. <span style="opacity:.8">Match Averages werden client-seitig neu berechnet. Andere Tabs (Players, Heroes, Awards, Wards, Items Bought, Draft, Teams, Placement, Calendar) zeigen weiterhin die <em>Gesamt-Aggregate</em> der Liga.</span>`;
+    }
+
+    function __lvApplyStage(key) {
+      window.__lvStageFilter = key || 'all';
+      const stages = window.__lvStages || [];
+      const stage = stages.find(s => s.key === window.__lvStageFilter) || stages[0];
+      // Toggle active class
+      document.querySelectorAll('#stageBar .stage-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-stage') === window.__lvStageFilter);
+      });
+      // Recompute Match Averages
+      const matches = Array.isArray(window.__lvMatches) ? window.__lvMatches : [];
+      const filtered = stage && stage.predicate ? matches.filter(stage.predicate) : matches;
+      if (window.__lvStageFilter === 'all') {
+        // Restore precomputed averages from report
+        renderAvgStats(window.__lvReport || {});
+      } else {
+        const recomputed = __lvRecomputeAverages(filtered);
+        renderAvgStats({ averages: recomputed });
+      }
+      __lvUpdateStageBanner();
+      // Notify any future subscribers
+      try { window.dispatchEvent(new CustomEvent('lv:stage-change', { detail: { key: window.__lvStageFilter, matches: filtered } })); } catch(_e){}
+    }
+
+    function renderDataQuality(report) {
+      const sec = document.getElementById('dataQualitySection');
+      const grid = document.getElementById('dataQualityGrid');
+      if (!sec || !grid) return;
+      const dq = report && report.data_quality;
+      if (!dq) { sec.style.display = 'none'; return; }
+
+      const coverage = Number(dq.coverage || 0);
+      const coveragePct = `${(coverage * 100).toFixed(1)}%`;
+      const missing = Number(dq.missing_matches || 0);
+      const statusLabel = missing === 0 ? 'Complete' : 'Partial';
+
+      const cards = [
+        { title: 'Coverage', value: coveragePct, sub: `${dq.detailed_matches || 0}/${dq.expected_matches || 0} matches` },
+        { title: 'Missing Match Details', value: missing, sub: missing === 0 ? 'No gaps detected' : 'Validation recommended before publish' },
+        { title: 'Status', value: statusLabel, sub: statusLabel === 'Complete' ? 'Ready for publication' : 'Some data is still missing' }
+      ];
+
+      grid.innerHTML = cards.map(c => `
+        <div class="summary-card fade-in">
+          <h3>${c.title}</h3>
+          <div class="stat-card__value">${c.value}</div>
+          <div class="sub">${c.sub}</div>
+        </div>
+      `).join('');
+      sec.style.display = '';
     }
 
     function renderHighlights(high) {
@@ -766,6 +979,9 @@
         // ensure ids and ARIA linkage
   tabs.forEach(btn=>{ const name = btn.getAttribute('data-tab'); if(!btn.id) btn.id = `tab-${name}`; btn.setAttribute('role','tab'); btn.setAttribute('aria-selected', btn.classList.contains('active')?'true':'false'); btn.setAttribute('tabindex','0'); const pane = document.getElementById(`pane-${name}`); if(pane){ pane.setAttribute('role','tabpanel'); pane.setAttribute('aria-labelledby', btn.id); if(!btn.classList.contains('active')) pane.setAttribute('hidden',''); }});
         function showTab(name) {
+          console.log('[showTab]', name, 'ensureWards?', typeof window.__ensureWards);
+          // Remember the requested tab so we can re-mount once data finishes loading
+          try { window.__lvPendingTab = name; } catch(_e){}
           const order = ['highlights','players','heroes','compare','draft','teams','placement','awards','itemsbought','wards','calendar'];
           order.forEach(id => { const pane = document.getElementById('pane-' + id); const active = (id === name); if (pane) { pane.style.display = active ? '' : 'none'; if(active) pane.removeAttribute('hidden'); else pane.setAttribute('hidden',''); pane.setAttribute('aria-busy','false'); }});
           tabs.forEach(b => { const active = (b.getAttribute('data-tab') === name); b.classList.toggle('active', active); b.setAttribute('aria-selected', active?'true':'false'); b.setAttribute('tabindex','0'); });
@@ -776,14 +992,24 @@
             url.searchParams.set('tab', name || 'highlights');
             history.replaceState(null, '', url);
           } catch(_e){}
-          // Lazy-mount heavy tabs when opened
-          if (name === 'compare' && window.__ensureCompare) window.__ensureCompare();
-          if (name === 'draft' && window.__ensureDraft) window.__ensureDraft();
-          if (name === 'itemsbought' && window.__ensureItems) window.__ensureItems();
-          if (name === 'wards' && window.__ensureWards) window.__ensureWards();
-          if (name === 'awards' && window.__ensureAwards) window.__ensureAwards();
-          if (name === 'placement' && window.__ensurePlacement) window.__ensurePlacement();
-          if (name === 'calendar' && window.__ensureCalendar) window.__ensureCalendar();
+          // Lazy-mount heavy tabs when opened. If the ensure function isn't ready yet
+          // (main() still loading data), poll briefly until it appears so the user's
+          // click eventually mounts.
+          const ensureMap = {
+            highlights: '__ensureHighlights', compare: '__ensureCompare', draft: '__ensureDraft',
+            itemsbought: '__ensureItems', wards: '__ensureWards', awards: '__ensureAwards',
+            placement: '__ensurePlacement', calendar: '__ensureCalendar'
+          };
+          const ensureKey = ensureMap[name];
+          if (ensureKey) {
+            const tryMount = (attempt) => {
+              const fn = window[ensureKey];
+              if (typeof fn === 'function') { try { fn(); } catch(e){ console.warn('[showTab] mount threw', e); } return; }
+              if (attempt > 100) { console.warn('[showTab] gave up waiting for', ensureKey); return; }
+              setTimeout(() => tryMount(attempt + 1), 100);
+            };
+            tryMount(0);
+          }
           try{ const activeBtn = tabs.find(b=> b.getAttribute('data-tab')===name); if(activeBtn) activeBtn.focus(); }catch(_e){}
         }
         tabs.forEach(b => b.addEventListener('click', () => showTab(b.getAttribute('data-tab'))));
@@ -830,16 +1056,21 @@
     const leaguePath = (sp.get('leaguePath') || '').replace(/^\/+/, '').replace(/\/+$/, '');
     const relBases = [
       ...(leaguePath ? [leaguePath] : []),
-      // Prefer docs/data when running under GH Pages; otherwise prefer ../data when browsing repo locally
-      ...(IS_GHPAGES ? ['data','../data'] : ['../data','data'])
+      // On GH Pages only docs/ is served, so files live alongside as 'data'.
+      // Locally we serve the workspace root, so '../data' is correct.
+      ...(IS_GHPAGES ? ['data'] : ['../data'])
     ];
+    try { window.__lvRelBases = relBases; } catch(_e){}
     const fromBases = (p) => relBases.map(b => `${b}/${p}`);
     // Parallelize all initial JSON loads
     function pref(relArr, rawArr){ return PREFER_RAW ? [...rawArr, ...relArr] : [...relArr, ...rawArr]; }
   const [matchesRaw, heroesRaw, mapConfRaw, report, proPlayers, patchRaw] = await Promise.all([
-      // League-specific files primarily live under docs/data/league/<slug>/ ...
+      // League-specific files: prefer published API surface (always under docs/api/v1) which
+      // works both on GH Pages and any local HTTP server serving docs/. Then fall back to
+      // historical layouts (docs/data, ../data, leaguePath override) and finally raw GitHub.
       loadFirst(pref(
         [
+          `api/v1/leagues/${slug}/matches.json`,
           ...fromBases(`league/${slug}/matches.json`),
           // extra fallbacks for historical layouts
           ...fromBases(`chunks/league/${slug}/matches.json`)
@@ -851,17 +1082,18 @@
           `${rawDocsBase}/chunks/league/${slug}/matches.json`
         ]
       )),
-      // Core constants exist in both data/ and docs/data/
+      // Core constants exist in both data/ and docs/api/v1/constants/
       loadFirst(pref(
-        fromBases(`heroes.json`),
+        ['api/v1/constants/heroes.json', ...fromBases(`heroes.json`)],
         [`${rawBase}/heroes.json`, `${rawDocsBase}/heroes.json`]
       )),
       loadFirst(pref(
-        fromBases(`maps.json`),
+        ['api/v1/meta/maps.json', ...fromBases(`maps.json`)],
         [`${rawBase}/maps.json`, `${rawDocsBase}/maps.json`]
       )),
       loadFirst(pref(
         [
+          `api/v1/leagues/${slug}/report.json`,
           ...fromBases(`league/${slug}/report.json`),
           // extra fallbacks for historical layouts
           ...fromBases(`chunks/league/${slug}/report.json`)
@@ -874,12 +1106,20 @@
         ]
       )),
       loadFirst(pref(
-        fromBases(`cache/OpenDota/proPlayers.json`),
-        [`${rawBase}/cache/OpenDota/proPlayers.json`, `${rawDocsBase}/cache/OpenDota/proPlayers.json`]
+        [
+          'api/v1/meta/proPlayers.json',
+          ...fromBases(`proPlayers.json`),
+          ...fromBases(`cache/OpenDota/proPlayers.json`)
+        ],
+        [
+          `${rawDocsBase}/proPlayers.json`,
+          `${rawBase}/cache/OpenDota/proPlayers.json`,
+          `${rawDocsBase}/cache/OpenDota/proPlayers.json`
+        ]
       )),
       // Patches constants for Trend markers
       loadFirst(pref(
-        fromBases(`constants/patch.json`),
+        ['api/v1/constants/patch.json', ...fromBases(`constants/patch.json`)],
         [`${rawBase}/constants/patch.json`, `${rawDocsBase}/constants/patch.json`]
       ))
     ]);
@@ -901,6 +1141,13 @@
         const hdr = document.getElementById('headerSub');
         if (hdr) {
           let txt = `${matches.length} matches · ${isFinite(min) ? fmt(min) : '?'} to ${isFinite(max) ? fmt(max) : '?'} (UTC)`;
+          try {
+            const q = (report && report.league && Array.isArray(report.league.qualifiers)) ? report.league.qualifiers : [];
+            if (q.length) {
+              const names = q.map(x => (x && x.name) ? String(x.name).trim() : '').filter(Boolean);
+              if (names.length) txt += ` · includes qualifiers: ${names.join(', ')}`;
+            }
+          } catch(_e) {}
           // Optional build info (generated_at and commit)
           try {
             const genAt = (report && report.meta && (report.meta.generated_at || report.meta.generatedAt)) || (report && (report.generated_at || report.generatedAt));
@@ -964,8 +1211,11 @@
 
   const agg = aggregate(matches, playerNames, teamNames);
   render(agg, heroes);
+      // Render average stats from report.averages if available
+      renderAvgStats(report);
+      // Stage filter (Main Event vs. Qualifier per region)
+      try { __lvRenderStageBar(report, matches); } catch(_e) { /* non-fatal */ }
       enableSorting();
-      // Start fetching details in background with higher concurrency
       const ids = matches.map(m => m.match_id).filter(Boolean);
       const conc = Math.min(8, Math.max(4, (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 4));
       // Caching: try hydrate details from localStorage first
@@ -973,25 +1223,33 @@
       const cacheMetaKey = `lv_details_meta_${slug}`;
       function computeFingerprint(ms){ try{ const ids = (ms||[]).map(m=>m.match_id).filter(Boolean).sort().join(','); return String(ids).slice(-100); }catch(_e){ return 'na'; } }
       const expectedFp = computeFingerprint(matches);
-      let cachedDetails = null;
-      try {
-        const meta = JSON.parse(localStorage.getItem(cacheMetaKey) || 'null');
-        if (meta && meta.fp === expectedFp) {
-          const raw = localStorage.getItem(cacheKey);
-          if (raw) cachedDetails = JSON.parse(raw);
-        }
-      } catch(_e){}
-      const detailsPromise = (async ()=>{
-        if (Array.isArray(cachedDetails) && cachedDetails.length){ return cachedDetails; }
-        const arr = await pMap(ids, conc, id => fetchMatchDetail(id, relBase, rawBase));
-        const cleaned = (arr || []).filter(Boolean);
-        try { localStorage.setItem(cacheKey, JSON.stringify(cleaned)); localStorage.setItem(cacheMetaKey, JSON.stringify({ fp: expectedFp, ts: Date.now(), count: cleaned.length })); } catch(_e){}
-        return cleaned;
-      })();
+      let __detailsPromise = null;
+      let __detailsProcessed = false;
+      let __detailsCache = null, __resolver = null, __teamResolver = null, __highCache = null;
+
+      function getDetailsPromise(){
+        if (__detailsPromise) return __detailsPromise;
+        __detailsPromise = (async ()=>{
+          let cachedDetails = null;
+          try {
+            const meta = JSON.parse(localStorage.getItem(cacheMetaKey) || 'null');
+            if (meta && meta.fp === expectedFp) {
+              const raw = localStorage.getItem(cacheKey);
+              if (raw) cachedDetails = JSON.parse(raw);
+            }
+          } catch(_e){}
+          if (Array.isArray(cachedDetails) && cachedDetails.length){ return cachedDetails; }
+          const arr = await pMap(ids, conc, id => fetchMatchDetail(id, relBase, rawBase));
+          const cleaned = (arr || []).filter(Boolean);
+          try { localStorage.setItem(cacheKey, JSON.stringify(cleaned)); localStorage.setItem(cacheMetaKey, JSON.stringify({ fp: expectedFp, ts: Date.now(), count: cleaned.length })); } catch(_e){}
+          return cleaned;
+        })();
+
+        __detailsPromise.then(details => {
+          if (__detailsProcessed) return;
+          __detailsProcessed = true;
 
       // Once details are ready, enhance names/teams and render Highlights immediately
-  let __detailsCache = null, __resolver = null, __teamResolver = null, __highCache = null;
-      detailsPromise.then(details => {
         __detailsCache = details;
         // Build names from details and overlay into playerNames with pro priority
         const namesFromDetails = {};
@@ -1077,7 +1335,18 @@
         // Compute and render Highlights now
         __highCache = computeHighlightsFromDetails(details, __resolver, __teamResolver);
         renderHighlights(__highCache);
-      }).catch(e => console.warn('Details processing failed', e));
+        }).catch(e => console.warn('Details processing failed', e));
+
+        return __detailsPromise;
+      }
+
+      // Lazy alias used by the showTab safety net.
+      window.__ensureHighlights = () => { try { getDetailsPromise(); } catch (_e) {} };
+      // Kick off match-detail loading immediately so any non-Wards tab populates without
+      // requiring the user to switch tabs first. Wards uses precomputed report data and
+      // does not depend on this promise. Since docs/data is now published locally, these
+      // fetches are fast (file:// or relative HTTP) and no longer need to wait for tab focus.
+      try { getDetailsPromise(); } catch (_e) {}
 
       // Lazy mount helpers for heavy tabs
   let mountedDraft = false, mountedLaneDuos = false, mountedItems = false, mountedWards = false, mountedAwards = false, mountedPlacement = false, mountedCompare = false, mountedCalendar = false;
@@ -1092,7 +1361,7 @@
           }
         } catch(e){ console.warn('DraftViewer precomputed mount failed, falling back', e); }
         // Fallback to client-side computation when precompute not available
-        detailsPromise.then(details => {
+        getDetailsPromise().then(details => {
           try { if (window.DraftViewer) { const draftData = window.DraftViewer.compute(details); window.DraftViewer.mount(document.getElementById('draftMount'), { data: draftData, heroes, persistKey: `lv_draft_${slug}`, nameResolver: (__resolver || ((aid)=> (playerNames[String(aid)] || `Player ${aid}`))) }); } }
           catch(e){ console.warn('DraftViewer mount failed', e); }
         });
@@ -1112,7 +1381,7 @@
               } else { mountEl.textContent = 'Player compare component not available.'; }
             };
             try{
-              const details = await detailsPromise;
+              const details = await getDetailsPromise();
               const mf = detailsToMatches(details, matches);
               run(mf.length? mf : matches, details);
             } catch(_e){ run(matches, null); }
@@ -1125,7 +1394,7 @@
       window.__ensureAwards = () => {
         if (mountedAwards) return; mountedAwards = true;
         const root = document.getElementById('awardsBody'); if (root) root.textContent = 'Computing awards…';
-        detailsPromise.then(details => {
+        getDetailsPromise().then(details => {
           try{
             const resolver = __resolver || ((aid)=> (playerNames[String(aid)] || `Player ${aid}`));
             const aw = computeAwardsFromDetails(details, resolver);
@@ -1173,7 +1442,7 @@
       };
       window.__ensureItems = () => {
         if (mountedItems) return; mountedItems = true;
-        detailsPromise.then(details => {
+        getDetailsPromise().then(details => {
             try {
             const ib = document.getElementById('ibMount'); if (!ib) return;
             // Role heuristic via GPM
@@ -1215,6 +1484,56 @@
             window.ItemsBoughtViewer.mount(ib, { data: { items, meta, playerNames } });
           } catch(e){ console.warn('ItemsBoughtViewer mount failed', e); }
         });
+      };
+
+      // Wards: define EARLY (right after Items) so a tab click during async loading
+      // can mount as soon as report data exists, even if later code in main() throws.
+      window.__ensureWards = () => {
+        console.log('[Wards] __ensureWards called', { hasReport: !!report, hasViewer: !!window.WardViewer, mountedWards });
+        const stdHost = document.getElementById('dvWardStd');
+        if (!stdHost) { console.warn('[Wards] #dvWardStd missing'); return; }
+        if (!report) { console.warn('[Wards] report not loaded yet'); stdHost.textContent = 'Waiting for league data…'; return; }
+        if (!window.WardViewer || typeof window.WardViewer.mount !== 'function') {
+          console.warn('[Wards] WardViewer global not available – js/ward_viewer.js failed to load');
+          stdHost.textContent = 'Ward viewer script failed to load.';
+          return;
+        }
+        const looksUnmounted = !stdHost.querySelector('.wv-wardgrid');
+        if (mountedWards && !looksUnmounted) { console.log('[Wards] already mounted, skip'); return; }
+        mountedWards = true;
+        stdHost.textContent = 'Loading ward data…';
+        const pre = (((report || {}).highlights || {}).wards || {}).viewer || null;
+        if (pre && Array.isArray(pre.spots) && pre.spots.length) {
+          try {
+            window.WardViewer.mount(stdHost, {
+              mapConf,
+              data: { spots: pre.spots || [], sentries: pre.sentries || [], teams: pre.teams || [], players: pre.players || [] },
+              options: { modeDefault: 'best', showExtras: false, showLongest: false, ignorePersistedPlayer: true, ignorePersistedCluster: true, extras: { wardPlayers: {}, wardLongest: [] } }
+            });
+            return;
+          } catch (err) { console.error('[Wards] precomputed mount failed', err); mountedWards = false; stdHost.textContent = 'Ward viewer failed: ' + (err && err.message ? err.message : err); return; }
+        }
+        (async ()=>{
+          try{
+            const raw = await loadFirst(pref(
+              [ `api/v1/leagues/${slug}/wards.json`, ...fromBases(`league/${slug}/ward_summary.json`), ...fromBases(`chunks/league/${slug}/ward_summary.json`) ],
+              [ `${rawBase}/league/${slug}/ward_summary.json`, `${rawDocsBase}/league/${slug}/ward_summary.json`, `${rawBase}/chunks/league/${slug}/ward_summary.json`, `${rawDocsBase}/chunks/league/${slug}/ward_summary.json` ]
+            ));
+            const summary = (raw && raw.viewer && Array.isArray(raw.viewer.spots)) ? raw.viewer : raw;
+            if (summary && (Array.isArray(summary.spots) && summary.spots.length)){
+              try{
+                window.WardViewer && window.WardViewer.mount(stdHost, { mapConf, data: { spots: summary.spots||[], sentries: summary.sentries||[], teams: summary.teams||[], players: summary.players||[] }, options: { modeDefault: 'best', showExtras: false, showLongest: false, ignorePersistedPlayer: true, ignorePersistedCluster: true, extras: { wardPlayers: {}, wardLongest: [] } } });
+                if (stdHost) stdHost.removeAttribute('aria-busy');
+                return;
+              }catch(e){ console.warn('Precomputed WardViewer mount failed, falling back to details', e); }
+            }
+          }catch(e){ console.warn('Precomputed ward summary load failed', e); }
+          if (typeof __mountWardsWith === 'function') {
+            getDetailsPromise().then(__mountWardsWith).catch(err => { console.warn('Ward details failed', err); if (stdHost) stdHost.textContent = 'Failed to load ward stats.'; });
+          } else {
+            if (stdHost) stdHost.textContent = 'Failed to load ward stats.';
+          }
+        })();
       };
       
       
@@ -1450,44 +1769,7 @@
             }
           } catch(_e){}
   }
-  window.__ensureWards = () => {
-        if (mountedWards) return; mountedWards = true;
-        const stdHost = document.getElementById('dvWardStd');
-        if (stdHost) stdHost.textContent = 'Loading ward data…';
-        // Try precomputed summary first: docs/data/league/<slug>/ward_summary.json (with raw fallbacks)
-        (async ()=>{
-          try{
-            const summary = await loadFirst(pref(
-              [
-                ...fromBases(`league/${slug}/ward_summary.json`),
-                ...fromBases(`chunks/league/${slug}/ward_summary.json`)
-              ],
-              [
-                `${rawBase}/league/${slug}/ward_summary.json`,
-                `${rawDocsBase}/league/${slug}/ward_summary.json`,
-                `${rawBase}/chunks/league/${slug}/ward_summary.json`,
-                `${rawDocsBase}/chunks/league/${slug}/ward_summary.json`
-              ]
-            ));
-            if (summary && (Array.isArray(summary.spots) && summary.spots.length)){
-              try{
-                window.WardViewer && window.WardViewer.mount(stdHost, { mapConf, data: { spots: summary.spots||[], sentries: summary.sentries||[], teams: summary.teams||[], players: summary.players||[] }, options: { modeDefault: 'best', showExtras: false, showLongest: false, ignorePersistedPlayer: true, ignorePersistedCluster: true, extras: { wardPlayers: {}, wardLongest: [] } } });
-                if (stdHost) stdHost.removeAttribute('aria-busy');
-                // Defer details-based computation for Players/Trend until user navigates or until later
-                return; // Skip immediate details mount when precomputed is present
-              }catch(e){ console.warn('Precomputed WardViewer mount failed, falling back to details', e); }
-            }
-          }catch(e){ console.warn('Precomputed ward summary load failed', e); }
-          // Fallback: compute from details
-          detailsPromise.then(__mountWardsWith).catch(err => {
-            console.warn('Ward details failed', err);
-            if (stdHost) stdHost.textContent = 'Failed to load ward stats.';
-          });
-        })();
-      };
-
-      // Proactively mount Wards in the background so it doesn't stay on "Preparing…" if the tab is opened later
-      try { if (window.__ensureWards) setTimeout(() => { try{ window.__ensureWards(); } catch(_e){} }, 0); } catch(_e) {}
+  // (Original window.__ensureWards definition removed — now defined earlier right after __ensureItems.)
 
       // If this minimal page has no main tab bar, show and mount the Wards pane automatically
       try {
@@ -1500,6 +1782,33 @@
       } catch(_e){}
     // Proactively mount Placement once data is ready (cheap) so it never stays empty due to early clicks
     try { if (window.__ensurePlacement) setTimeout(() => { try{ window.__ensurePlacement(); } catch(_e){} }, 0); } catch(_e) {}
+    // Proactively mount Wards if it is the active tab (data may not have been ready when user clicked)
+    try { setTimeout(() => { try {
+      const activeWards = document.getElementById('tab-wards')?.classList.contains('active');
+      if (activeWards && window.__ensureWards) window.__ensureWards();
+    } catch(_e){} }, 0); } catch(_e){}
+    // Generic safety net: re-run the lazy mount for whichever main tab is currently active.
+    // Mounts are idempotent (mountedXxx flags), so calling them again is harmless.
+    try { setTimeout(() => { try {
+      const map = {
+        highlights: window.__ensureHighlights,
+        compare: window.__ensureCompare,
+        draft: window.__ensureDraft,
+        itemsbought: window.__ensureItems,
+        wards: window.__ensureWards,
+        awards: window.__ensureAwards,
+        placement: window.__ensurePlacement,
+        calendar: window.__ensureCalendar
+      };
+      // Prefer the tab the user last requested (covers race: clicked before __ensure* existed)
+      const pending = window.__lvPendingTab;
+      const activeBtn = document.querySelector('#mainTabs .tab.active, #mainTabs button.tab[aria-selected="true"]');
+      const activeName = activeBtn ? activeBtn.getAttribute('data-tab') : null;
+      const name = pending || activeName;
+      console.log('[safety-net] mount', { pending, activeName, name, hasFn: !!(name && map[name]) });
+      if (!name) return;
+      const fn = map[name]; if (typeof fn === 'function') fn();
+    } catch(_e){} }, 0); } catch(_e){}
 
 
       // Placement tab mounting from report.json
@@ -1605,8 +1914,9 @@
         const urlTab = ((window.UrlParams && UrlParams.getCanonical) ? UrlParams.getCanonical() : new URLSearchParams(location.search)).get('tab');
         const last = localStorage.getItem('lv_tab');
         const initial = urlTab || last;
+        console.log('[init-tab]', { urlTab, last, initial, hasShowTab: !!window.__lvShowTab });
         if (initial && window.__lvShowTab) { window.__lvShowTab(initial); }
-      } catch (_e) {}
+      } catch (_e) { console.warn('[init-tab] failed', _e); }
 
       // Wire cache clear button
       try {

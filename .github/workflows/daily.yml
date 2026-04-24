@@ -1,4 +1,4 @@
-name: Daily data fetch (OpenDota cache)
+name: Daily pipeline run
 
 on:
   schedule:
@@ -13,29 +13,19 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch OpenDota data (Steam-only, league-only, shards + parse with retries)
+      - name: Run unified pipeline
         shell: pwsh
         working-directory: ${{ github.workspace }}
         env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
-          .\scripts\fetch_opendota_data.ps1 -Mode full -DelayMs 1000 -HttpTimeoutSec 30 -DiscoverViaSteam:$true -DiscoverViaOpenDota:$false -DiscoverViaTeams:$false -ForceRefetch:$false -RequestParse:$true -MaxParseRequests 999999 -ParseAttemptsPerMatch 3 -ParseDelaySec 15 -LeagueOnly:$true -ReportParseStatus:$true
-      - name: Cleanup old user reports (auto-prune)
-        shell: pwsh
-        run: |
-          ./scripts/create_user_report.ps1 -Cleanup -PersistDays 5
+          .\pipeline.ps1 -Steps fetch,discover,leagues,wards,publish,cleanup,legacy-clean -DiscoverViaSteam -RequestParse -MaxParseRequests 999999 -UserPersistDays 5
       - name: Commit and push
         if: ${{ success() }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add -- data/cache/OpenDota/constants/*.json || true
-          git add -- data/cache/OpenDota/matches/*.json || true
-          git add -- data/matches/*.json || true
-          git add -- data/manifest.json || true
-          git add -- data/allgames_parsed.json || true
-          git add -- data/heroes.json || true
-          git add -- docs/User-Reports || true
-          git add -- docs/reports.json || true
-          git commit -m "chore(ci): daily OpenDota fetch (Steam-only full check, forced refetch, shards + parse attempts) + cleanup" || echo "no changes"
+          git add --update -- data docs scripts pipeline.ps1 || true
+          git commit -m "chore(ci): daily unified pipeline run" || echo "no changes"
           git push

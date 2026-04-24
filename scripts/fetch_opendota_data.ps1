@@ -49,26 +49,9 @@ $ErrorActionPreference = 'Stop'
 # Ensure TLS 1.2 to avoid handshake glitches
 try{ [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 }catch{}
 
-
-function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot\.." | Select-Object -ExpandProperty Path) }
-function Get-DataPath(){ Join-Path (Get-RepoRoot) 'data' }
-function Ensure-Dir([string]$path){ $dir=[System.IO.Path]::GetDirectoryName($path); if($dir -and -not (Test-Path -LiteralPath $dir)){ New-Item -ItemType Directory -Path $dir -Force | Out-Null } }
-function Read-JsonFile([string]$path){ if(-not (Test-Path -LiteralPath $path)){ return $null } try{ Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json } catch { $null } }
-function Save-Json([object]$obj,[string]$path){
-  Ensure-Dir $path
-  try{
-    $sw = [System.Diagnostics.Stopwatch]::StartNew()
-    $json = ($obj | ConvertTo-Json -Depth 100 -Compress)
-    $sw.Stop(); $ser = $sw.ElapsedMilliseconds
-    $sw.Restart()
-    Set-Content -LiteralPath $path -Encoding UTF8 -NoNewline -Value $json
-    $sw.Stop(); $wr = $sw.ElapsedMilliseconds
-    Write-Log ("Save-Json: serialized in {0} ms, wrote in {1} ms -> {2}" -f $ser, $wr, $path)
-  } catch {
-    Write-Warning ("Save-Json failed for {0}: {1}" -f $path, (Format-HttpError $_))
-    throw
-  }
-}
+# Load shared helpers (provides Get-RepoRoot, Get-DataPath, Save-Json, Read-JsonFile, Invoke-OpenDotaApi, Initialize-ApiKeys, etc.)
+. "$PSScriptRoot/lib/common.ps1"
+Initialize-ApiKeys
 
 function Get-LeagueId(){ $info = Read-JsonFile (Join-Path (Get-DataPath) 'info.json'); try { return [int]$info.league_id } catch { return 0 } }
 
@@ -89,14 +72,38 @@ function Get-MatchLeagueId($md){
 function Invoke-Json([string]$Method,[string]$Uri){
   $backoff = 600
   for($i=1; $i -le $MaxRetries; $i++){
+    $handler = $null
+    $client = $null
+    $request = $null
+    $response = $null
     try {
-  return Invoke-RestMethod -Method $Method -Uri $Uri -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-dota-fetcher/1.0' } -TimeoutSec $HttpTimeoutSec -ErrorAction Stop
+      $handler = [System.Net.Http.HttpClientHandler]::new()
+      $client = [System.Net.Http.HttpClient]::new($handler)
+      $client.Timeout = [TimeSpan]::FromSeconds($HttpTimeoutSec)
+      $httpMethod = [System.Net.Http.HttpMethod]::new($Method)
+      $request = [System.Net.Http.HttpRequestMessage]::new($httpMethod, $Uri)
+      $request.Headers.Accept.Add([System.Net.Http.Headers.MediaTypeWithQualityHeaderValue]::new('application/json'))
+      $request.Headers.UserAgent.ParseAdd('kret-dota-fetcher/1.0')
+      $response = $client.SendAsync($request).GetAwaiter().GetResult()
+      if(-not $response.IsSuccessStatusCode){
+        $status = [int]$response.StatusCode
+        $reason = '' + $response.ReasonPhrase
+        throw ("HTTP {0} ({1})" -f $status, $reason)
+      }
+      $payload = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+      if([string]::IsNullOrWhiteSpace($payload)){ return $null }
+      return ($payload | ConvertFrom-Json)
     } catch {
       $logUri = Sanitize-Uri $Uri
       Write-Warning ("HTTP {0} {1} failed (attempt {2}/{3}): {4}" -f $Method, $logUri, $i, $MaxRetries, (Format-HttpError $_))
       if ($i -ge $MaxRetries) { throw }
       Start-Sleep -Milliseconds $backoff
       $backoff = [Math]::Min($backoff*2, 5000)
+    } finally {
+      if($response){ try{ $response.Dispose() } catch {} }
+      if($request){ try{ $request.Dispose() } catch {} }
+      if($client){ try{ $client.Dispose() } catch {} }
+      if($handler){ try{ $handler.Dispose() } catch {} }
     }
   }
 }
@@ -599,7 +606,7 @@ function Test-Parsed($md){
       if($p.obs_left_log -and $p.obs_left_log.Count -gt 0){ return $true }
       if($p.killed -and $p.killed.PSObject.Properties.Count -gt 0){ return $true }
       if($p.multi_kills -and $p.multi_kills.PSObject.Properties.Count -gt 0){ return $true }
-      if($p.camps_stacked -ne $null){ return $true }
+      if($null -ne $p.camps_stacked){ return $true }
     } }catch{}
     return $false
   } catch { return $false }
@@ -666,7 +673,7 @@ function Request-Parse-ForMissing(){
         if(-not $hasPlayers){ $reasons += 'no players' }
         if(-not $hasObjectives){ $reasons += 'no objectives' }
         if(-not $hasUsage){ $reasons += 'no usage logs' }
-  $flag = $null; try{ if($md.od_data -and $md.od_data.has_parsed -ne $null){ $flag = [string]$md.od_data.has_parsed } }catch{}
+  $flag = $null; try{ if($md.od_data -and $null -ne $md.od_data.has_parsed){ $flag = [string]$md.od_data.has_parsed } }catch{}
   # PowerShell 5.1 does not support C# null-coalescing; emulate explicitly without using that operator text
   $flagDisplay = if($null -eq $flag -or [string]::IsNullOrWhiteSpace($flag)){ 'n/a' } else { $flag }
   Write-Log ("Needs parse: match={0}, heuristic_parsed={1}, od_data.has_parsed={2}, reasons=[{3}]" -f $mid, $parsedHeuristic, $flagDisplay, ($reasons -join ', '))
