@@ -3,7 +3,7 @@ param(
   [int]$MaxRetries = 3,
   [int]$HttpTimeoutSec = 30,
   [string]$SteamApiKey,
-  [bool]$PromptForSteamKey = $false,
+  [object]$PromptForSteamKey = $false,
   [object]$UpdateConstants = $true,
   [object]$FetchMatches    = $true,
   [object]$DiscoverMatches = $true,     # Discover league matches (Steam-first, with automatic fallback)
@@ -16,11 +16,11 @@ param(
   [int]$TeamDiscoveryRecentMonths = 2,  # Limit team discovery to the most recent N month shards
   [int]$TeamDiscoveryMaxTeams = 24,     # Cap number of teams to query via team endpoints
   [object]$SanitizeCache   = $false,    # Rewrite cached files to drop image fields that trigger false positives
-  [bool]$DiscoverViaSteam = $true,
-  [bool]$DiscoverViaOpenDota = $false,
-  [bool]$DiscoverViaTeams = $false,
-  [bool]$ForceRefetch = $false,
-  [bool]$SkipFinalEnsure = $false,      # If true, skip the expensive final ensure pass across all cached matches
+  [object]$DiscoverViaSteam = $true,
+  [object]$DiscoverViaOpenDota = $false,
+  [object]$DiscoverViaTeams = $false,
+  [object]$ForceRefetch = $false,
+  [object]$SkipFinalEnsure = $false,    # If true, skip the expensive final ensure pass across all cached matches
   [int]$ParseBudgetSec = 180,           # Hard cap on total seconds spent issuing parse requests
   [object]$LeagueOnly = $true,          # Enforce league-only behavior for sharding/backfill (bash/CLI-friendly)
   [object]$ReportParseStatus = $false,  # If truthy, audit cached matches for parse status and write a summary
@@ -728,7 +728,13 @@ $doManifest = To-Bool $UpdateManifest $false
 $doParseReq = To-Bool $RequestParse $false
 $doSanitize = To-Bool $SanitizeCache $false
 $doReport   = To-Bool $ReportParseStatus $false
-# Normalize LeagueOnly to a boolean early (tolerate strings like 'true'/'false' or 1/0)
+$PromptForSteamKey = To-Bool $PromptForSteamKey $false
+$DiscoverViaSteam = To-Bool $DiscoverViaSteam $true
+$DiscoverViaOpenDota = To-Bool $DiscoverViaOpenDota $false
+$DiscoverViaTeams = To-Bool $DiscoverViaTeams $false
+$ForceRefetch = To-Bool $ForceRefetch $false
+$SkipFinalEnsure = To-Bool $SkipFinalEnsure $false
+# Normalize shell-friendly boolean inputs early (tolerate strings like 'true'/'false' or 1/0)
 $LeagueOnly = To-Bool $LeagueOnly $true
 
 switch($Mode){
