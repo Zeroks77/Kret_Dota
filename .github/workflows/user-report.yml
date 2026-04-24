@@ -52,9 +52,12 @@ jobs:
           if([string]::IsNullOrWhiteSpace("${{ steps.parse.outputs.account }}")) { throw 'Missing account' }
       - name: Generate report
         shell: pwsh
+        env:
+          OPENDOTA_API_KEY: ${{ vars.OPENDOTA_API_KEY }}
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
           $ErrorActionPreference='Stop'
-          ./scripts/create_user_report.ps1 -Name "${{ steps.parse.outputs.name }}" -AccountId ${{ steps.parse.outputs.account }} -RangeDays ${{ steps.parse.outputs.ranged }}
+          ./pipeline.ps1 -Steps user,cleanup -UserName "${{ steps.parse.outputs.name }}" -UserAccountId ${{ steps.parse.outputs.account }} -UserRangeDays ${{ steps.parse.outputs.ranged }} -UserPersistDays 5
       - name: Commit and push with rebase + retry
         shell: pwsh
         run: |

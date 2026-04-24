@@ -25,7 +25,11 @@ function Get-MatchIdList([string]$slug, [string]$path){
   $ids = @()
   $pathsToTry = @()
   if($path -and (Test-Path $path)){
-    $pathsToTry += $path
+    if(Test-Path -LiteralPath $path -PathType Container){
+      $pathsToTry += (Join-Path -Path $path -ChildPath 'matches.json')
+    } else {
+      $pathsToTry += $path
+    }
   }
   if($slug){
     $pathsToTry += @(
@@ -228,8 +232,18 @@ if($OutCsvDir -and -not (Test-Path $OutCsvDir)) { New-Item -ItemType Directory -
 # If league provided and no explicit OutJson/Csv passed, write next to league folder
 if((($LeagueSlug -and -not [string]::IsNullOrWhiteSpace($LeagueSlug)) -or ($LeaguePath -and -not [string]::IsNullOrWhiteSpace($LeaguePath))) -and -not $PSBoundParameters.ContainsKey('OutJson') -and -not $PSBoundParameters.ContainsKey('OutCsv')){
   $slug = $LeagueSlug
-  if(-not $slug -and $LeaguePath){ $slug = Split-Path -Leaf $LeaguePath }
-  $targetDir = if($LeaguePath){ $LeaguePath } else { Join-Path 'docs/data/league' $slug }
+  if(-not $slug -and $LeaguePath){
+    if(Test-Path -LiteralPath $LeaguePath -PathType Container){
+      $slug = Split-Path -Leaf $LeaguePath
+    } else {
+      $slug = Split-Path -Leaf (Split-Path -Parent $LeaguePath)
+    }
+  }
+  $targetDir = if($LeaguePath){
+    if(Test-Path -LiteralPath $LeaguePath -PathType Container){ $LeaguePath } else { Split-Path -Parent $LeaguePath }
+  } else {
+    Join-Path 'docs/data/league' $slug
+  }
   if(-not (Test-Path $targetDir)){ New-Item -ItemType Directory -Force -Path $targetDir | Out-Null }
   $OutJson = Join-Path $targetDir 'ward_summary.json'
   $OutCsv = Join-Path $targetDir 'ward_summary.csv'

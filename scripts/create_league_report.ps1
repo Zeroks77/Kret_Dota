@@ -1,5 +1,6 @@
 param(
   [Parameter(Mandatory=$true)][string]$LeagueName,
+  [string]$IncludeLeagueIds = '', # Comma-separated extra league ids to merge (e.g. qualifiers)
   # Default docs root relative to this script (../docs)
   [string]$DocsRoot = "$PSScriptRoot/../docs",
   [int]$MaxPerMinute = 54,      # 10% safety under 60
@@ -57,6 +58,65 @@ function Read-JsonFile([string]$p){ if(-not (Test-Path -LiteralPath $p)){ return
 function Save-Json([object]$o,[string]$p){ New-ParentDirectory $p; ($o | ConvertTo-Json -Depth 50) | Set-Content -LiteralPath $p -Encoding UTF8 }
 function HtmlEncode([string]$s){ if($null -eq $s){ return '' } try{ return [System.Net.WebUtility]::HtmlEncode($s) }catch{ return ($s -replace '&','&amp;' -replace '<','&lt;' -replace '>','&gt;') } }
 function Log([string]$m){ if($VerboseLog){ Write-Host $m } }
+function Invoke-ApiJsonCurl([string]$Uri,[int]$TimeoutSec=30){
+  $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
+  if(-not $curl){ throw 'curl.exe not available for fallback fetch' }
+  $tmp = [System.IO.Path]::GetTempFileName()
+  try{
+    $args = @('-sS','-L','--max-time',"$TimeoutSec",'-H','Accept: application/json','-H','User-Agent: kret-league-fetcher/1.0','-o',$tmp,'-w','%{http_code}',$Uri)
+    $code = & $curl.Source @args
+    $status = 0
+    try{ $status = [int](''+$code).Trim() }catch{}
+    if($status -lt 200 -or $status -ge 300){ throw ("HTTP {0} via curl" -f $status) }
+    $payload = Get-Content -LiteralPath $tmp -Raw -Encoding UTF8
+    if([string]::IsNullOrWhiteSpace($payload)){ return $null }
+    return ($payload | ConvertFrom-Json)
+  } finally {
+    try{ Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue }catch{}
+  }
+}
+function Invoke-ApiJson([string]$Uri,[int]$TimeoutSec=30,[int]$Retries=3,[int]$InitialBackoffMs=750){
+  $attempt = 0
+  $backoff = [Math]::Max(100, $InitialBackoffMs)
+  while($true){
+    $attempt++
+    $handler = $null
+    $client = $null
+    $request = $null
+    $response = $null
+    try{
+      $handler = [System.Net.Http.HttpClientHandler]::new()
+      $client = [System.Net.Http.HttpClient]::new($handler)
+      $client.Timeout = [TimeSpan]::FromSeconds($TimeoutSec)
+      $request = [System.Net.Http.HttpRequestMessage]::new([System.Net.Http.HttpMethod]::Get, $Uri)
+      $request.Headers.Accept.Add([System.Net.Http.Headers.MediaTypeWithQualityHeaderValue]::new('application/json'))
+      $request.Headers.UserAgent.ParseAdd('kret-league-fetcher/1.0')
+      $response = $client.SendAsync($request).GetAwaiter().GetResult()
+      if(-not $response.IsSuccessStatusCode){
+        $status = [int]$response.StatusCode
+        $reason = '' + $response.ReasonPhrase
+        throw ("HTTP {0} ({1})" -f $status, $reason)
+      }
+      $payload = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+      if([string]::IsNullOrWhiteSpace($payload)){ return $null }
+      return ($payload | ConvertFrom-Json)
+    } catch {
+      $msg = ''
+      try{ $msg = '' + $_.Exception.Message }catch{}
+      if($msg -match 'op_Addition|TimeSpan|Retry-After'){
+        try{ return (Invoke-ApiJsonCurl -Uri $Uri -TimeoutSec $TimeoutSec) }catch{}
+      }
+      if($attempt -ge $Retries){ throw }
+      Start-Sleep -Milliseconds $backoff
+      $backoff = [Math]::Min(8000, [int]($backoff * 2))
+    } finally {
+      if($response){ try{ $response.Dispose() } catch {} }
+      if($request){ try{ $request.Dispose() } catch {} }
+      if($client){ try{ $client.Dispose() } catch {} }
+      if($handler){ try{ $handler.Dispose() } catch {} }
+    }
+  }
+}
 
 # ---------- Player alias normalization (extendable) ----------
 # Map variant -> canonical. Add more as needed.
@@ -87,7 +147,7 @@ if(-not $needFetchLeagues){
 if($needFetchLeagues){
   Write-Host 'Fetching leagues list from OpenDota...'
   try{
-    $leagues = Invoke-RestMethod -Method GET -Uri 'https://api.opendota.com/api/leagues' -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-league-fetcher/1.0' } -TimeoutSec 30
+    $leagues = Invoke-ApiJson -Uri 'https://api.opendota.com/api/leagues' -TimeoutSec 30
     if($leagues){ Save-Json -o $leagues -p $leagueCache }
   }catch{ throw "Failed to fetch leagues list: $($_.Exception.Message)" }
 }else{ $leagues = Read-JsonFile $leagueCache }
@@ -101,7 +161,7 @@ if(-not $needFetchPro){ try{ $age=(Get-Date) - (Get-Item -LiteralPath $proPlayer
 if($needFetchPro){
   Write-Host 'Fetching pro players list from OpenDota...'
   try{
-    $proPlayers = Invoke-RestMethod -Method GET -Uri 'https://api.opendota.com/api/proPlayers' -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-league-fetcher/1.0' } -TimeoutSec 30
+    $proPlayers = Invoke-ApiJson -Uri 'https://api.opendota.com/api/proPlayers' -TimeoutSec 30
     if($proPlayers){ Save-Json -o $proPlayers -p $proPlayersCache }
   }catch{ Write-Warning ("Failed to fetch pro players: {0}" -f $_.Exception.Message); $proPlayers = @() }
 } else { $proPlayers = Read-JsonFile $proPlayersCache }
@@ -154,6 +214,52 @@ $leagueId = [int]$league.leagueid
 $leagueNameResolved = ''+$league.name
 Write-Host ("Resolved league: {0} (id={1})" -f $leagueNameResolved, $leagueId)
 
+$leagueIdsToFetch = @($leagueId)
+if (-not [string]::IsNullOrWhiteSpace($IncludeLeagueIds)) {
+  $parsed = @($IncludeLeagueIds -split '[,;\s]+' | Where-Object { $_ -match '^\d+$' } | ForEach-Object { [int]$_ })
+  if ($parsed.Count -gt 0) {
+    $leagueIdsToFetch += $parsed
+    $leagueIdsToFetch = @($leagueIdsToFetch | Sort-Object -Unique)
+  }
+}
+if ($leagueIdsToFetch.Count -gt 1) {
+  Write-Host ("Merging additional league ids into report: {0}" -f (($leagueIdsToFetch | Where-Object { $_ -ne $leagueId }) -join ', '))
+}
+
+function Test-IsQualifierLeague([string]$name){
+  if([string]::IsNullOrWhiteSpace($name)){ return $false }
+  return ($name -match '(?i)\bqualifier(s)?\b|\bclosed qualifiers?\b|\bopen qualifiers?\b|\bregional qualifiers?\b|\broad to the international\b')
+}
+
+$leagueNameById = @{}
+foreach($lg in $leagues){
+  try{ $lid=[int]$lg.leagueid; if($lid -gt 0 -and -not $leagueNameById.ContainsKey($lid)){ $leagueNameById[$lid] = ''+$lg.name } }catch{}
+}
+$extraLeagueIds = @($leagueIdsToFetch | Where-Object { $_ -ne $leagueId })
+function Get-QualifierRegion([string]$name){
+  if([string]::IsNullOrWhiteSpace($name)){ return 'OTHER' }
+  $n = $name.ToLowerInvariant()
+  # Long forms first (more specific)
+  if($n -match '\bwestern\s+europe\b|\bweu\b'){ return 'WEU' }
+  if($n -match '\beastern\s+europe\b|\beeu\b'){ return 'EEU' }
+  if($n -match '\bsoutheast\s+asia\b|\bsea\b'){ return 'SEA' }
+  if($n -match '\bsouth\s+america\b|\bsa\s+(open|closed)|\bsa\b'){ return 'SA' }
+  if($n -match '\bnorth\s+america\b|\bna\s+(open|closed)|\bna\b'){ return 'NA' }
+  if($n -match '\bchina\b|\bcn\s+(open|closed)|\bcn\b'){ return 'CN' }
+  if($n -match '\bamericas?\b|\bamer\b'){ return 'AMER' }
+  if($n -match '\beu\b|\beurope\b'){ return 'EU' }
+  if($n -match '\basia\b'){ return 'ASIA' }
+  return 'OTHER'
+}
+$qualifierLeagues = @()
+foreach($lid in $extraLeagueIds){
+  $lname = if($leagueNameById.ContainsKey([int]$lid)){ ''+$leagueNameById[[int]$lid] } else { "League $lid" }
+  if(Test-IsQualifierLeague $lname){
+    $region = Get-QualifierRegion $lname
+    $qualifierLeagues += [ordered]@{ id = [int]$lid; name = $lname; region = $region }
+  }
+}
+
 # ---------- Slug generation ----------
 function Get-LeagueSlug([string]$n){
   if([string]::IsNullOrWhiteSpace($n)){ return 'league' }
@@ -184,11 +290,16 @@ if(-not (Test-Path -LiteralPath $leagueDataDir)){ New-Item -ItemType Directory -
 $leagueMatchesFile = Join-Path $leagueDataDir 'matches.json'
 $leagueMatches = $null
 if(-not (Test-Path -LiteralPath $leagueMatchesFile) -or -not $SkipMatchesIfCached){
-  Write-Host ("Fetching league matches list for id={0}" -f $leagueId)
-  try{
-    $leagueMatches = Invoke-RestMethod -Method GET -Uri ("https://api.opendota.com/api/leagues/{0}/matches" -f $leagueId) -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-league-fetcher/1.0' } -TimeoutSec 30
-    if($leagueMatches){ Save-Json -o $leagueMatches -p $leagueMatchesFile }
-  }catch{ throw "Failed to fetch league matches: $($_.Exception.Message)" }
+  $combinedMatches = @()
+  foreach ($lid in $leagueIdsToFetch) {
+    Write-Host ("Fetching league matches list for id={0}" -f $lid)
+    try{
+      $part = Invoke-ApiJson -Uri ("https://api.opendota.com/api/leagues/{0}/matches" -f $lid) -TimeoutSec 30
+      if($part){ $combinedMatches += @($part) }
+    }catch{ throw "Failed to fetch league matches for id=${lid}: $($_.Exception.Message)" }
+  }
+  $leagueMatches = @($combinedMatches | Sort-Object match_id -Unique)
+  if($leagueMatches){ Save-Json -o $leagueMatches -p $leagueMatchesFile }
 }else{ $leagueMatches = Read-JsonFile $leagueMatchesFile }
 if(-not $leagueMatches){ throw 'No matches for league' }
 
@@ -196,7 +307,7 @@ if(-not $leagueMatches){ throw 'No matches for league' }
 $matchDetailsCacheDir = Join-Path (Get-DataPath) 'cache/OpenDota/matches'
 if(-not (Test-Path -LiteralPath $matchDetailsCacheDir)){ New-Item -ItemType Directory -Path $matchDetailsCacheDir -Force | Out-Null }
 
-$perMinuteWindow = @()
+$perMinuteWindow = @() # unix seconds of recent requests
 $newFetchesDay = 0
 $maxNew = $MaxPerDay
 $delayMs = [int][Math]::Ceiling(60000 / [Math]::Max(1,$MaxPerMinute))
@@ -210,19 +321,19 @@ foreach($mid in $allIds){
   if(Test-Path -LiteralPath $target){ continue }
   if($newFetchesDay -ge $maxNew){ Write-Warning "Daily fetch cap reached (MaxPerDay=$MaxPerDay)"; break }
   # Rate limiting: purge timestamps older than 60s
-  $now=(Get-Date)
-  $perMinuteWindow = $perMinuteWindow | Where-Object { ($now - $_).TotalSeconds -lt 60 }
+  $nowSec = [int64][DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+  $perMinuteWindow = @($perMinuteWindow | Where-Object { ($nowSec - [int64]$_) -lt 60 })
   if((@($perMinuteWindow)).Count -ge $MaxPerMinute){
     $sleepMs = [Math]::Max(50, $delayMs)
     Start-Sleep -Milliseconds $sleepMs
-    $now=(Get-Date)
-    $perMinuteWindow = $perMinuteWindow | Where-Object { ($now - $_).TotalSeconds -lt 60 }
+    $nowSec = [int64][DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+    $perMinuteWindow = @($perMinuteWindow | Where-Object { ($nowSec - [int64]$_) -lt 60 })
   if((@($perMinuteWindow)).Count -ge $MaxPerMinute){ continue }
   }
   try{
     Write-Host ("Fetching match {0}" -f $mid)
-    $obj = Invoke-RestMethod -Method GET -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid) -Headers @{ 'Accept'='application/json'; 'User-Agent'='kret-league-fetcher/1.0' } -TimeoutSec 30
-    if($obj){ ($obj | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $target -Encoding UTF8; $newFetchesDay++; $perMinuteWindow += (Get-Date) }
+    $obj = Invoke-ApiJson -Uri ("https://api.opendota.com/api/matches/{0}" -f $mid) -TimeoutSec 30
+    if($obj){ ($obj | ConvertTo-Json -Depth 100) | Set-Content -LiteralPath $target -Encoding UTF8; $newFetchesDay++; $perMinuteWindow += [int64][DateTimeOffset]::UtcNow.ToUnixTimeSeconds() }
   }catch{ Write-Warning ("Failed to fetch match {0}: {1}" -f $mid, $_.Exception.Message) }
   Start-Sleep -Milliseconds $delayMs
 }
@@ -247,6 +358,22 @@ foreach($mid in $allIds){
   }
 }
 if((@($detailed)).Count -eq 0){ Write-Warning 'No detailed match data loaded for aggregation.' }
+
+$loadedIds = @{}
+foreach($m in $detailed){
+  try {
+    $mid = [int64]$m.match_id
+    if($mid -gt 0){ $loadedIds[$mid] = $true }
+  } catch {}
+}
+$missingDetailIds = @($allIds | Where-Object { -not $loadedIds.ContainsKey([int64]$_) })
+$dataQuality = [ordered]@{
+  expected_matches = @($allIds).Count
+  detailed_matches = @($detailed).Count
+  missing_matches = @($missingDetailIds).Count
+  coverage = if (@($allIds).Count -gt 0) { [Math]::Round(([double]@($detailed).Count / [double]@($allIds).Count), 4) } else { 1.0 }
+  missing_match_ids = @($missingDetailIds | Select-Object -First 100)
+}
 
 # ---------- Aggregation helpers ----------
 function New-PairKey([int]$a,[int]$b){ if($a -le $b){ return "$a-$b" } else { return "$b-$a" } }
@@ -297,8 +424,8 @@ foreach($m in $detailed){
   $matchDurations[$mid] = $duration
   $radTeam = 0; try{ $radTeam=[int]$m.radiant_team_id }catch{}
   $direTeam = 0; try{ $direTeam=[int]$m.dire_team_id }catch{}
-  $radName = if($m.radiant_name){ [string]$m.radiant_name } else { 'Radiant' }
-  $direName = if($m.dire_name){ [string]$m.dire_name } else { 'Dire' }
+  $radName = if($m.PSObject.Properties['radiant_name'] -and $m.radiant_name){ [string]$m.radiant_name } else { 'Radiant' }
+  $direName = if($m.PSObject.Properties['dire_name'] -and $m.dire_name){ [string]$m.dire_name } else { 'Dire' }
   foreach($t in @(@{id=$radTeam;name=$radName;win=$radWin}, @{id=$direTeam;name=$direName;win=(-not $radWin)})){
     if($t.id -gt 0){
       if(-not $teamStats.ContainsKey($t.id)){ $teamStats[$t.id] = [ordered]@{ team_id=$t.id; name=$t.name; games=0; wins=0; losses=0 } }
@@ -312,7 +439,6 @@ foreach($m in $detailed){
     $aid = 0; try{ $aid=[int64]$p.account_id }catch{}
     $hid = 0; try{ $hid=[int]$p.hero_id }catch{}
     $isRad = $false; try{ $isRad = [bool]$p.isRadiant }catch{}
-    $lane = $null; try{ $lane = [int]$p.lane }catch{}
   $rawName = if($p.personaname){ [string]$p.personaname } elseif($aid -gt 0){ "Player $aid" } else { 'Unknown' }
   if($aid -gt 0 -and $proPlayerIndex.ContainsKey($aid)){ $rawName = $proPlayerIndex[$aid] }
   $name = Convert-PlayerName $rawName
@@ -793,11 +919,169 @@ foreach($aid in $playerTeamCount.Keys){
   }
 }
 
+# ---------- Compute average stats ----------
+$avgStats = [ordered]@{
+  total_matches    = @($detailed).Count
+  avg_duration     = 0
+  longest_game     = $null
+  shortest_game    = $null
+  first_blood_time = 0
+  first_roshan_time = 0
+  avg_kills        = 0
+  avg_tower_kills  = 0
+  radiant_winrate  = 0
+  comeback_rate    = 0
+  stomp_rate       = 0
+}
+
+$fbTimes       = @()
+$roshTimes     = @()
+$durations     = @()
+$totalKills    = @()
+$towerKills    = @()
+$radWins       = 0
+$fbWinnerLost  = 0
+$stomps        = 0 # games < 25 min
+
+foreach ($md in $detailed) {
+  $dur = 0; try { $dur = [int]$md.duration } catch {}
+  if ($dur -gt 0) { $durations += $dur }
+
+  # First blood time
+  $fbt = $null; try { $fbt = $md.first_blood_time } catch {}
+  if ($null -ne $fbt -and [int]$fbt -gt 0) { $fbTimes += [int]$fbt }
+
+  # First Roshan from objectives
+  $objs = @(); try { $objs = @($md.objectives) } catch {}
+  $firstRosh = $null
+  foreach ($obj in $objs) {
+    $otype = '' + $obj.type
+    if ($otype -match '(?i)roshan_kill|CHAT_MESSAGE_ROSHAN_KILL') {
+      $rt = 0; try { $rt = [int]$obj.time } catch {}
+      if ($rt -gt 0 -and ($null -eq $firstRosh -or $rt -lt $firstRosh)) { $firstRosh = $rt }
+    }
+  }
+  if ($null -ne $firstRosh) { $roshTimes += $firstRosh }
+
+  # Total kills per game
+  $gKills = 0
+  foreach ($pl in @($md.players)) {
+    $k = 0; try { $k = [int]$pl.kills } catch {}
+    $gKills += $k
+  }
+  $totalKills += $gKills
+
+  # Tower kills (sum across players; the match object itself has no tower_kills field)
+  $tw = 0
+  foreach ($pl in @($md.players)) {
+    $ptk = 0; try { $ptk = [int]$pl.tower_kills } catch {}
+    if ($ptk -gt 0) { $tw += $ptk }
+  }
+  $towerKills += $tw
+
+  # Radiant winrate + comeback tracking
+  $rw = $false; try { $rw = [bool]$md.radiant_win } catch {}
+  if ($rw) { $radWins++ }
+
+  # Comeback: team that got first blood lost
+  if ($null -ne $fbt -and [int]$fbt -gt 0) {
+    # First blood team from objectives or approximate
+    $fbTeamRad = $null
+    foreach ($obj in $objs) {
+      if (('' + $obj.type) -match '(?i)first_blood') {
+        $fbSlot = -1; try { $fbSlot = [int]$obj.slot } catch {}
+        try { $fbSlot = [int]$obj.player_slot } catch {}
+        if ($fbSlot -ge 0) { $fbTeamRad = ($fbSlot -lt 128) }
+        break
+      }
+    }
+    if ($null -ne $fbTeamRad) {
+      $fbTeamWon = ($fbTeamRad -and $rw) -or ((-not $fbTeamRad) -and (-not $rw))
+      if (-not $fbTeamWon) { $fbWinnerLost++ }
+    }
+  }
+
+  # Stomp detection (< 25 min)
+  if ($dur -gt 0 -and $dur -lt 1500) { $stomps++ }
+}
+
+$matchCount = @($detailed).Count
+if ($matchCount -gt 0) {
+  if (@($durations).Count -gt 0)    { $avgStats.avg_duration     = [int]([Math]::Round(($durations | Measure-Object -Average).Average)) }
+  if (@($fbTimes).Count -gt 0)      { $avgStats.first_blood_time = [int]([Math]::Round(($fbTimes | Measure-Object -Average).Average)) }
+  if (@($roshTimes).Count -gt 0)    { $avgStats.first_roshan_time = [int]([Math]::Round(($roshTimes | Measure-Object -Average).Average)) }
+  if (@($totalKills).Count -gt 0)   { $avgStats.avg_kills        = [Math]::Round(($totalKills | Measure-Object -Average).Average, 1) }
+  if (@($towerKills).Count -gt 0)   { $avgStats.avg_tower_kills  = [Math]::Round(($towerKills | Measure-Object -Average).Average, 1) }
+  $avgStats.radiant_winrate = [Math]::Round([double]$radWins / $matchCount, 3)
+  $avgStats.comeback_rate   = [Math]::Round([double]$fbWinnerLost / $matchCount, 3)
+  $avgStats.stomp_rate      = [Math]::Round([double]$stomps / $matchCount, 3)
+}
+
+# Longest and shortest games
+if (@($detailed).Count -gt 0) {
+  $sorted = $detailed | Sort-Object { try { [int]$_.duration } catch { 0 } }
+  $shortM = $sorted | Select-Object -First 1
+  $longM  = $sorted | Select-Object -Last 1
+  $avgStats.longest_game  = [ordered]@{ match_id = [int64]$longM.match_id;  duration = [int]$longM.duration }
+  $avgStats.shortest_game = [ordered]@{ match_id = [int64]$shortM.match_id; duration = [int]$shortM.duration }
+}
+
+Write-Host ("Avg stats: duration={0}s, FB={1}s, Rosh={2}s, kills/game={3}, rad_wr={4}" -f $avgStats.avg_duration, $avgStats.first_blood_time, $avgStats.first_roshan_time, $avgStats.avg_kills, $avgStats.radiant_winrate)
+
+# ---------- Build per-match stage map ----------
+# Maps match_id (string) -> 'main' | 'qual:<REGION>'
+# For qualifier leagues that already have an explicit region (from the league name), we use that region directly.
+# For generic qualifier leagues (region=OTHER) we fall back to the OpenDota server region of each cached match,
+# mapped to a continental region so that DS28-style mixed qualifier leagues can still be split.
+function ConvertTo-StageRegionFromServerId([int]$rid){
+  switch ($rid) {
+    1 { 'NA' } 2 { 'NA' }
+    3 { 'WEU' } 9 { 'WEU' }
+    8 { 'EEU' }
+    5 { 'SEA' } 6 { 'SEA' } 7 { 'SEA' } 16 { 'SEA' } 19 { 'SEA' }
+    10 { 'SA' } 14 { 'SA' } 15 { 'SA' } 38 { 'SA' }
+    11 { 'AFRICA' }
+    12 { 'CN' } 13 { 'CN' } 17 { 'CN' } 18 { 'CN' } 20 { 'CN' } 25 { 'CN' } 37 { 'CN' }
+    default { 'OTHER' }
+  }
+}
+$qualLeagueRegion = @{}
+foreach($q in $qualifierLeagues){ $qualLeagueRegion[[int]$q.id] = ''+$q.region }
+$matchRegionFromDetail = @{}
+foreach($m in $detailed){
+  try{ $mid = [int64]$m.match_id; $rid = 0; try{ $rid = [int]$m.region }catch{}; if($mid -gt 0 -and $rid -gt 0){ $matchRegionFromDetail[$mid] = (ConvertTo-StageRegionFromServerId $rid) } }catch{}
+}
+$matchStages = [ordered]@{}
+foreach($m in $leagueMatches){
+  try{
+    $mid = [int64]$m.match_id
+    $lid = [int]$m.leagueid
+    if($mid -le 0){ continue }
+    $stageKey = 'main'
+    if($lid -eq $leagueId){
+      $stageKey = 'main'
+    } elseif($qualLeagueRegion.ContainsKey($lid)) {
+      $r = ''+$qualLeagueRegion[$lid]
+      if([string]::IsNullOrWhiteSpace($r) -or $r -eq 'OTHER'){
+        if($matchRegionFromDetail.ContainsKey($mid)){ $r = ''+$matchRegionFromDetail[$mid] } else { $r = 'OTHER' }
+      }
+      $stageKey = "qual:$r"
+    } else {
+      $stageKey = 'main'
+    }
+    $matchStages[[string]$mid] = $stageKey
+  }catch{}
+}
+
+# Longest and shortest games (moved below match_stages so block stays grouped at end)
+
 # Aggregate object
 $report = [ordered]@{
-  league = @{ id=$leagueId; name=$leagueNameResolved; slug=$slug; from=$fromUnix; to=$toUnix };
+  league = @{ id=$leagueId; name=$leagueNameResolved; slug=$slug; from=$fromUnix; to=$toUnix; merged_league_ids=@($leagueIdsToFetch); qualifiers=@($qualifierLeagues); match_stages=$matchStages };
   generated = [int][DateTimeOffset]::UtcNow.ToUnixTimeSeconds();
   playerTeams = @($playerTeams);
+  data_quality = $dataQuality;
+  averages = $avgStats;
   highlights = [ordered]@{
   duos = @{ offlane= @($duosOffArr); safelane= @($duosSafeArr) };
   draft = @{ contest=@($draftContest); firstPicks=@($draftFirst); openingPairs=@($draftPairs); topBans=@($draftTopBans); totalMatches=[int]$draftMatches; captains=@($captArr); charts=@{ topPicked=@($chartTopPicked); topBanned=@($chartTopBanned) } };
@@ -822,54 +1106,9 @@ $reportFile = Join-Path $leagueDataDir 'report.json'
 Save-Json -o $report -p $reportFile
 Write-Host ("Wrote aggregated report JSON: {0}" -f $reportFile)
 
-# Also publish a copy under docs/data so GitHub Pages (serving only /docs) can fetch it
-try {
-  $publicLeagueDataDir = Join-Path $docs ("data/league/"+$slug)
-  if(-not (Test-Path -LiteralPath $publicLeagueDataDir)) { New-Item -ItemType Directory -Path $publicLeagueDataDir -Force | Out-Null }
-  Copy-Item -LiteralPath $reportFile -Destination (Join-Path $publicLeagueDataDir 'report.json') -Force
-  if(Test-Path -LiteralPath $leagueMatchesFile){ Copy-Item -LiteralPath $leagueMatchesFile -Destination (Join-Path $publicLeagueDataDir 'matches.json') -Force }
-  # Ensure shared data files are published under docs/data for the viewers
-  $dataSrcDir = Join-Path (Join-Path $PSScriptRoot '..') 'data'
-  $dataDestDir = Join-Path $docs 'data'
-  if(-not (Test-Path -LiteralPath $dataDestDir)) { New-Item -ItemType Directory -Path $dataDestDir -Force | Out-Null }
-  foreach($fn in 'heroes.json','maps.json','manifest.json','info.json'){
-    try{
-      $srcFile = Join-Path $dataSrcDir $fn
-      if(Test-Path -LiteralPath $srcFile){ Copy-Item -LiteralPath $srcFile -Destination (Join-Path $dataDestDir $fn) -Force }
-    }catch{ Write-Warning ("Failed to publish {0}: {1}" -f $fn, $_.Exception.Message) }
-  }
-  # Publish monthly shards if present (data/matches/*.json) to docs/data/matches
-  try{
-    $matchesSrcDir = Join-Path $dataSrcDir 'matches'
-    if(Test-Path -LiteralPath $matchesSrcDir){
-      $matchesDestDir = Join-Path $dataDestDir 'matches'
-      if(-not (Test-Path -LiteralPath $matchesDestDir)) { New-Item -ItemType Directory -Path $matchesDestDir -Force | Out-Null }
-      Get-ChildItem -LiteralPath $matchesSrcDir -Filter '*.json' | ForEach-Object {
-        Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $matchesDestDir $_.Name) -Force
-      }
-    }
-  }catch{ Write-Warning ("Failed to publish monthly shards: {0}" -f $_.Exception.Message) }
-  # Publish constants (heroes/patch) into docs/data/constants for any viewer
-  $constSrcDir = Join-Path (Join-Path $PSScriptRoot '..') 'data\cache\OpenDota\constants'
-  if(Test-Path -LiteralPath $constSrcDir){
-    $constOutDir = Join-Path $docs 'data/constants'
-    if(-not (Test-Path -LiteralPath $constOutDir)){ New-Item -ItemType Directory -Path $constOutDir -Force | Out-Null }
-    foreach($fn in 'heroes.json','patch.json'){
-      $srcFile = Join-Path $constSrcDir $fn
-      if(Test-Path -LiteralPath $srcFile){ Copy-Item -LiteralPath $srcFile -Destination (Join-Path $constOutDir $fn) -Force }
-    }
-  }
-  # Publish pro players list for league viewer lookups
-  try{
-    $proSrc = Join-Path (Join-Path $PSScriptRoot '..') 'data\cache\OpenDota\proPlayers.json'
-    if(Test-Path -LiteralPath $proSrc){
-      $ppOutDir = Join-Path $docs 'data/cache/OpenDota'
-      if(-not (Test-Path -LiteralPath $ppOutDir)){ New-Item -ItemType Directory -Path $ppOutDir -Force | Out-Null }
-      Copy-Item -LiteralPath $proSrc -Destination (Join-Path $ppOutDir 'proPlayers.json') -Force
-    }
-  }catch{ Write-Warning ("Failed to publish proPlayers.json: {0}" -f $_.Exception.Message) }
-  Write-Host ("Published league data into docs: {0}" -f $publicLeagueDataDir)
-} catch { Write-Warning ("Failed to publish league data into docs: {0}" -f $_.Exception.Message) }
+# Note: We no longer copy data into docs/data. The league_dynamic.html viewer
+# loads league files from docs/api/v1/leagues/<slug>/ (published by
+# scripts/publish_api.ps1). Keeping docs/ data-free per repo convention.
 
 # ---------- Write wrapper ----------
 # (docs root already resolved above)
@@ -879,8 +1118,7 @@ if(-not (Test-Path -LiteralPath $folder)){ New-Item -ItemType Directory -Path $f
 # Decide which dynamic file to embed
 $dynamicFile = if($UseDynamicFallback){ 'dynamic.html' } else { 'league_dynamic.html' }
 $title = "League Report - $leagueNameResolved"
-$query = "?from=$fromUnix`&to=$toUnix`&tab=highlights`&lock=1`&league=$slug`&leaguePath=data"
-if($UseDynamicFallback){ $query += "`&bypass=monthly" }
+$query = "?from=$fromUnix`&to=$toUnix`&tab=highlights`&league=$slug"
 $html = @"
 <!doctype html>
 <html lang='en'>

@@ -6,6 +6,9 @@ Thumbs.db
 # PowerShell / temp
 *.ps1.tmp
 *.log
+.env
+.env.*
+!.env.example
 
 # Node or other caches (just in case)
 node_modules/

@@ -1,6 +1,7 @@
 param(
   [switch]$GenerateMonthly,
   [switch]$LastFullMonth,
+  [switch]$AllowCurrentMonth,
   [int]$Year,
   [int]$Month,
   [switch]$GeneratePatch,
@@ -188,7 +189,7 @@ function Write-Dynamic-Wrapper([string]$outDir,[string]$title,[string]$query){
   <div class='bar'>
     <div>$(ConvertTo-HtmlEncoded $title)</div>
   </div>
-  <iframe src="../dynamic.html$query`&bypass=monthly" loading="eager" referrerpolicy="no-referrer"></iframe>
+  <iframe src="../dynamic.html$query" loading="eager" referrerpolicy="no-referrer"></iframe>
   <script>
     (function(){
       function bust(){
@@ -258,6 +259,11 @@ $rootDocs = Resolve-Path $DocsRoot | Select-Object -ExpandProperty Path
 
 if($GenerateMonthly){
   $ym = if($LastFullMonth){ Get-LastFullMonth } else { @{ Year = if($Year){$Year}else{ (Get-Date).ToUniversalTime().Year }; Month = if($Month){$Month}else{ (Get-Date).ToUniversalTime().Month } } }
+  $nowUtc = (Get-Date).ToUniversalTime()
+  if(-not $LastFullMonth -and -not $AllowCurrentMonth -and $ym.Year -eq $nowUtc.Year -and $ym.Month -eq $nowUtc.Month){
+    Write-Warning "Skipping monthly wrapper for current month ($($ym.Year)-$($ym.Month.ToString('00'))) because month is not complete yet. Use -LastFullMonth or -AllowCurrentMonth to override."
+    return
+  }
   $r = Get-Month-Range -y $ym.Year -m $ym.Month
   $monthName = Get-MonthName $ym.Month
   $folderName = "{0}-{1}-Report" -f $ym.Year, $monthName
@@ -265,7 +271,7 @@ if($GenerateMonthly){
   # Determine patch version at the end of this month; use major (e.g., 7.39)
   $patchVer = Get-Patch-Version-AtUnix -unix $r.ToUnix
   $major = if($patchVer){ ($patchVer -replace '^(\d+\.\d+).*','$1') } else { Get-CurrentMajorPatchTag }
-  $query = ("?from=$($r.FromUnix)" + "`&to=$($r.ToUnix)" + "`&tab=highlights" + "`&lock=1")
+  $query = ("?from=$($r.FromUnix)" + "`&to=$($r.ToUnix)" + "`&tab=highlights")
   # Append league filter if available from data/info.json
   try{
     $dataPath = Get-DataPath
@@ -289,7 +295,7 @@ if($GeneratePatch){
   $displayVer = if($ver){ $ver } else { 'Latest Patch' }
   $folderName = if($ver){ "Patch - $ver - Report" } else { "Patch - Latest - Report" }
   $outDir = Join-Path $rootDocs $folderName
-  $query = ("?from=$startUnix" + "`&to=$nowUnix" + "`&tab=highlights" + "`&lock=1")
+  $query = ("?from=$startUnix" + "`&to=$nowUnix" + "`&tab=highlights")
   try{
     $dataPath = Get-DataPath
     $info = Read-JsonFile (Join-Path $dataPath 'info.json')

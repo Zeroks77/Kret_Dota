@@ -130,7 +130,7 @@ $stamp = $now.ToString('yyyyMMdd-HHmmss')
 $folder = "User-Reports/$stamp-$slug"
 $outDir = Join-Path $docs $folder
 $title = "User Report - $Name - " + $now.ToString('yyyy-MM-dd')
-$query = ("?from=$fromUnix" + "`&to=$toUnix" + "`&tab=highlights" + "`&lock=1" + "`&aid=$AccountId" + "`&uonly=1")
+$query = ("?from=$fromUnix" + "`&to=$toUnix" + "`&tab=highlights" + "`&aid=$AccountId" + "`&uonly=1")
 Write-Wrapper -outDir $outDir -title $title -query $query
 Update-ReportsJson -docsRoot $docs -title $title -href ("{0}/" -f $folder) -group 'user' -when $now -sortKey $now.ToString('yyyy-MM-ddTHH:mm:ssZ')
 Write-Host "Created user report: $title -> $folder"
