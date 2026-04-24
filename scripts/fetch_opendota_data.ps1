@@ -148,6 +148,95 @@ function To-Bool($v, [bool]$default){
   } catch { return $default }
 }
 
+$script:UnavailableMatchRetryHours = 72
+$script:UnavailableMatchRegistry = $null
+
+function Get-HttpStatusCode($err){
+  try{ if($err.Exception.Response -and $err.Exception.Response.StatusCode){ return [int]$err.Exception.Response.StatusCode } }catch{}
+  try{
+    $msg = ''
+    try{ $msg = [string]$err.Exception.Message }catch{}
+    $m = [regex]::Match($msg, '(?i)\bHTTP\s+(\d{3})\b')
+    if($m.Success){ return [int]$m.Groups[1].Value }
+  } catch {}
+  return 0
+}
+
+function Get-UnavailableMatchesPath(){
+  return (Join-Path (Get-DataPath) 'cache/OpenDota/unavailable_matches.json')
+}
+
+function Get-UnavailableMatchRegistry(){
+  if($null -ne $script:UnavailableMatchRegistry){ return $script:UnavailableMatchRegistry }
+  $registry = @{}
+  $path = Get-UnavailableMatchesPath
+  if(Test-Path -LiteralPath $path){
+    try{
+      $obj = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json
+      if($obj -and $obj.PSObject){
+        foreach($prop in @($obj.PSObject.Properties)){
+          if($null -ne $prop.Value){ $registry["$($prop.Name)"] = $prop.Value }
+        }
+      }
+    } catch {}
+  }
+  $script:UnavailableMatchRegistry = $registry
+  return $script:UnavailableMatchRegistry
+}
+
+function Save-UnavailableMatchRegistry(){
+  $registry = Get-UnavailableMatchRegistry
+  $obj = [ordered]@{}
+  foreach($key in @($registry.Keys | Sort-Object)){
+    $obj["$key"] = $registry[$key]
+  }
+  Save-Json -obj $obj -path (Get-UnavailableMatchesPath)
+}
+
+function Get-UnavailableMatchNextRetry([int64]$matchId){
+  $registry = Get-UnavailableMatchRegistry
+  $entry = $registry["$matchId"]
+  if(-not $entry){ return $null }
+  try{
+    $raw = $entry.next_retry_utc
+    if($null -eq $raw){ return $null }
+    if($raw -is [DateTimeOffset]){ return $raw.UtcDateTime }
+    if($raw -is [datetime]){ return $raw.ToUniversalTime() }
+    $text = '' + $raw
+    if([string]::IsNullOrWhiteSpace($text)){ return $null }
+    return ([DateTimeOffset]::Parse($text, [System.Globalization.CultureInfo]::InvariantCulture)).UtcDateTime
+  } catch { return $null }
+}
+
+function Should-SkipUnavailableMatch([int64]$matchId, [bool]$IgnoreCooldown = $false){
+  if($IgnoreCooldown){ return $false }
+  $nextRetry = Get-UnavailableMatchNextRetry -matchId $matchId
+  if($null -eq $nextRetry){ return $false }
+  return ($nextRetry -gt (Get-Date).ToUniversalTime())
+}
+
+function Register-UnavailableMatch([int64]$matchId, [int]$statusCode){
+  if($statusCode -ne 404){ return $null }
+  $now = (Get-Date).ToUniversalTime()
+  $nextRetry = $now.AddHours($script:UnavailableMatchRetryHours)
+  $registry = Get-UnavailableMatchRegistry
+  $registry["$matchId"] = [ordered]@{
+    status = $statusCode
+    last_seen_utc = $now.ToString('o')
+    next_retry_utc = $nextRetry.ToString('o')
+  }
+  Save-UnavailableMatchRegistry
+  return $nextRetry
+}
+
+function Clear-UnavailableMatch([int64]$matchId){
+  $registry = Get-UnavailableMatchRegistry
+  if($registry.ContainsKey("$matchId")){
+    $registry.Remove("$matchId")
+    Save-UnavailableMatchRegistry
+  }
+}
+
 function Update-Constants(){
   $data = Get-DataPath
   $constDir = Join-Path $data 'cache/OpenDota/constants'
@@ -278,6 +367,11 @@ function Fetch-MissingMatches(){
     $i++
     $outFile = Join-Path $cacheDir ("{0}.json" -f $id)
     if(Test-Path -LiteralPath $outFile){ continue }
+    if(Should-SkipUnavailableMatch -matchId ([int64]$id)){
+      $nextRetry = Get-UnavailableMatchNextRetry -matchId ([int64]$id)
+      Write-Log ("[{0}/{1}] Skipping match {2}; OpenDota returned 404 recently (retry after {3})" -f $i, $ids.Count, $id, $nextRetry.ToString('u'))
+      continue
+    }
     Write-Log ("[{0}/{1}] Fetching match {2}" -f $i, $ids.Count, $id)
     try {
     $uri = ("https://api.opendota.com/api/matches/{0}" -f $id)
@@ -290,11 +384,18 @@ function Fetch-MissingMatches(){
       $obj = Sanitize-MatchObject $obj
       $tm.Stop(); Write-Log ("Sanitize done for {0} in {1} ms" -f $id, $tm.ElapsedMilliseconds)
       Save-Json -obj $obj -path $outFile
+      Clear-UnavailableMatch -matchId ([int64]$id)
       try{ $sz = (Get-Item -LiteralPath $outFile).Length }catch{ $sz = 0 }
       Write-Log ("Saved cache for {0} ({1} bytes)" -f $id, $sz)
     }
     } catch {
-    Write-Warning ("Failed to fetch match {0} (uri={1}): {2}" -f $id, (Sanitize-Uri $uri), (Format-HttpError $_))
+    $statusCode = Get-HttpStatusCode $_
+    if($statusCode -eq 404){
+      $nextRetry = Register-UnavailableMatch -matchId ([int64]$id) -statusCode $statusCode
+      Write-Log ("Match {0} is not available from OpenDota yet (404); retry after {1}" -f $id, $nextRetry.ToString('u'))
+    } else {
+      Write-Warning ("Failed to fetch match {0} (uri={1}): {2}" -f $id, (Sanitize-Uri $uri), (Format-HttpError $_))
+    }
     }
     Write-Log ("Throttle: sleeping {0} ms after match fetch" -f $DelayMs)
     Start-Sleep -Milliseconds $DelayMs
@@ -321,11 +422,20 @@ function Refetch-SpecificMatches([int64[]]$ids){
         $tm.Stop(); Write-Log ("Sanitize done for {0} in {1} ms" -f $mid, $tm.ElapsedMilliseconds)
         $outPath = (Join-Path $cacheDir ("{0}.json" -f $mid))
         Save-Json -obj $obj -path $outPath
+        Clear-UnavailableMatch -matchId $mid
         try{ $sz = (Get-Item -LiteralPath $outPath).Length }catch{ $sz = 0 }
         Write-Log ("Saved cache for {0} ({1} bytes)" -f $mid, $sz)
         if($doShards){ try{ [void](Ensure-Record-InShard $obj) } catch {} }
       }
-    } catch { Write-Warning ("Refetch failed for {0} (uri={1}): {2}" -f $mid, (Sanitize-Uri $uri), (Format-HttpError $_)) }
+    } catch {
+      $statusCode = Get-HttpStatusCode $_
+      if($statusCode -eq 404){
+        $nextRetry = Register-UnavailableMatch -matchId $mid -statusCode $statusCode
+        Write-Log ("Match {0} is not available from OpenDota yet (404); retry after {1}" -f $mid, $nextRetry.ToString('u'))
+      } else {
+        Write-Warning ("Refetch failed for {0} (uri={1}): {2}" -f $mid, (Sanitize-Uri $uri), (Format-HttpError $_))
+      }
+    }
     Write-Log ("Throttle: sleeping {0} ms after refetch" -f $DelayMs)
     Start-Sleep -Milliseconds $DelayMs
   }
@@ -400,7 +510,7 @@ function Discover-MatchIdsFromOpenDota(){
         }
       } catch {}
     }
-    $arr = $ids.ToArray() | Sort-Object -Unique
+    $arr = @($ids.ToArray() | Sort-Object -Unique)
     Write-Log ("OpenDota discovery returned {0} candidates (cutoff={1})" -f $arr.Count, $cut)
     return $arr
   } catch {
@@ -791,6 +901,11 @@ if($doDiscover){
     if((($toFetch | Measure-Object).Count) -gt 0){
       Write-Log ("Newly discovered needing fetch: {0}" -f (($toFetch | Measure-Object).Count))
       foreach($mid in ($toFetch | Sort-Object)){
+        if(Should-SkipUnavailableMatch -matchId $mid -IgnoreCooldown $ForceRefetch){
+          $nextRetry = Get-UnavailableMatchNextRetry -matchId $mid
+          Write-Log ("Skipping discovered match {0}; OpenDota returned 404 recently (retry after {1})" -f $mid, $nextRetry.ToString('u'))
+          continue
+        }
         try{
           Write-Log ("Fetching discovered match {0}" -f $mid)
           $uri = ("https://api.opendota.com/api/matches/{0}" -f $mid)
@@ -804,11 +919,20 @@ if($doDiscover){
             $tm.Stop(); Write-Log ("Sanitize done for {0} in {1} ms" -f $mid, $tm.ElapsedMilliseconds)
             $outPath = (Join-Path $cacheDir ("{0}.json" -f $mid))
             Save-Json -obj $obj -path $outPath
+            Clear-UnavailableMatch -matchId $mid
             try{ $sz = (Get-Item -LiteralPath $outPath).Length }catch{ $sz = 0 }
             Write-Log ("Saved cache for {0} ({1} bytes)" -f $mid, $sz)
             if($doShards){ try{ [void](Ensure-Record-InShard $obj) } catch {} }
           }
-        } catch { Write-Warning ("Fetch failed for {0} (uri={1}): {2}" -f $mid, (Sanitize-Uri $uri), (Format-HttpError $_)) }
+        } catch {
+          $statusCode = Get-HttpStatusCode $_
+          if($statusCode -eq 404){
+            $nextRetry = Register-UnavailableMatch -matchId $mid -statusCode $statusCode
+            Write-Log ("Discovered match {0} is not available from OpenDota yet (404); retry after {1}" -f $mid, $nextRetry.ToString('u'))
+          } else {
+            Write-Warning ("Fetch failed for {0} (uri={1}): {2}" -f $mid, (Sanitize-Uri $uri), (Format-HttpError $_))
+          }
+        }
         Write-Log ("Throttle: sleeping {0} ms after match fetch" -f $DelayMs)
         Start-Sleep -Milliseconds $DelayMs
       }

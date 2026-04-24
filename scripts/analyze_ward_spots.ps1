@@ -64,6 +64,36 @@ function Median([object[]]$arr){
   else { return [int]([math]::Floor( ( [int]$s[$n/2 - 1] + [int]$s[$n/2] ) / 2 )) }
 }
 
+function Get-TeamId($data, [string]$side){
+  $prop = if($side -eq 'Radiant'){ 'radiant_team_id' } else { 'dire_team_id' }
+  $teamProp = if($side -eq 'Radiant'){ 'radiant_team' } else { 'dire_team' }
+
+  try{
+    if($data -and $data.PSObject.Properties[$prop]){
+      $raw = $data.$prop | ForEach-Object { $_ } | Select-Object -First 1
+      if($null -ne $raw -and ('' + $raw) -ne ''){ return [int]$raw }
+    }
+  } catch {}
+
+  try{
+    if($data -and $data.PSObject.Properties[$teamProp]){
+      $team = $data.$teamProp
+      if($team -and $team.PSObject){
+        if($team.PSObject.Properties['team_id']){
+          $raw = $team.team_id | ForEach-Object { $_ } | Select-Object -First 1
+          if($null -ne $raw -and ('' + $raw) -ne ''){ return [int]$raw }
+        }
+        if($team.PSObject.Properties['id']){
+          $raw = $team.id | ForEach-Object { $_ } | Select-Object -First 1
+          if($null -ne $raw -and ('' + $raw) -ne ''){ return [int]$raw }
+        }
+      }
+    }
+  } catch {}
+
+  return 0
+}
+
 $tw = Get-TimeWindowBounds $TimeWindow
 
 # Build target list of match files
@@ -102,8 +132,8 @@ foreach($file in $files){
     $filesRead++
   $dur = [int]($data.duration | ForEach-Object { $_ } | Select-Object -First 1)
     if(-not $dur){ $dur = 0 }
-    $rid = [int]($data.radiant_team_id | ForEach-Object { $_ } | Select-Object -First 1)
-    $did = [int]($data.dire_team_id | ForEach-Object { $_ } | Select-Object -First 1)
+    $rid = Get-TeamId -data $data -side 'Radiant'
+    $did = Get-TeamId -data $data -side 'Dire'
     foreach($p in ($data.players)){ if(-not $p){ continue }
       $isRad = $false
       if($p.PSObject.Properties['isRadiant']){ $isRad = [bool]$p.isRadiant }
