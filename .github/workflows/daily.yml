@@ -17,7 +17,7 @@ jobs:
         shell: pwsh
         working-directory: ${{ github.workspace }}
         env:
-          OPENDOTA_API_KEY: ${{ vars.OPENDOTA_API_KEY }}
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
           STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
         run: |
           .\pipeline.ps1 -Steps fetch,discover,leagues,wards,publish,cleanup,legacy-clean -DiscoverViaSteam -RequestParse -MaxParseRequests 999999 -UserPersistDays 5
