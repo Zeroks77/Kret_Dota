@@ -1,0 +1,146 @@
+[
+  {
+    "slug": "PW2026S7",
+    "id": 19435,
+    "name": "PGL Wallachia 2026 Season 7",
+    "from": 1772870432,
+    "to": 1773620684,
+    "matches": 124,
+    "generated": 1776944918,
+    "hasAverages": true,
+    "endpoints": {
+      "report": "leagues/PW2026S7/report.json",
+      "stats": "stats/PW2026S7.json",
+      "matches": "leagues/PW2026S7/matches.json",
+      "wards": "leagues/PW2026S7/wards.json"
+    }
+  },
+  {
+    "slug": "EOB2026",
+    "id": 19422,
+    "name": "ESL One Birmingham 2026",
+    "from": 1768204924,
+    "to": 1774827260,
+    "matches": 410,
+    "generated": 1776954969,
+    "hasAverages": true,
+    "endpoints": {
+      "report": "leagues/EOB2026/report.json",
+      "stats": "stats/EOB2026.json",
+      "matches": "leagues/EOB2026/matches.json",
+      "wards": "leagues/EOB2026/wards.json"
+    }
+  },
+  {
+    "slug": "DS28",
+    "id": 19269,
+    "name": "DreamLeague Season 28",
+    "from": 1767600134,
+    "to": 1772403052,
+    "matches": 475,
+    "generated": 1776953875,
+    "hasAverages": true,
+    "endpoints": {
+      "report": "leagues/DS28/report.json",
+      "stats": "stats/DS28.json",
+      "matches": "leagues/DS28/matches.json",
+      "wards": "leagues/DS28/wards.json"
+    }
+  },
+  {
+    "slug": "BSV",
+    "id": 19099,
+    "name": "BLAST SLAM VI",
+    "from": 1767319024,
+    "to": 1771200030,
+    "matches": 176,
+    "generated": 1776953794,
+    "hasAverages": true,
+    "endpoints": {
+      "report": "leagues/BSV/report.json",
+      "stats": "stats/BSV.json",
+      "matches": "leagues/BSV/matches.json",
+      "wards": "leagues/BSV/wards.json"
+    }
+  },
+  {
+    "slug": "PW2025S5",
+    "id": 18358,
+    "name": "PGL Wallachia 2025 Season 5",
+    "from": 1750489249,
+    "to": 1751222816,
+    "matches": 116,
+    "generated": 1776944905,
+    "hasAverages": true,
+    "endpoints": {
+      "report": "leagues/PW2025S5/report.json",
+      "stats": "stats/PW2025S5.json",
+      "matches": "leagues/PW2025S5/matches.json",
+      "wards": "leagues/PW2025S5/wards.json"
+    }
+  },
+  {
+    "slug": "EWC2025",
+    "id": 18375,
+    "name": "Esports World Cup 2025",
+    "from": 1748937687,
+    "to": 1752955676,
+    "matches": 317,
+    "generated": 1776956001,
+    "hasAverages": true,
+    "endpoints": {
+      "report": "leagues/EWC2025/report.json",
+      "stats": "stats/EWC2025.json",
+      "matches": "leagues/EWC2025/matches.json",
+      "wards": "leagues/EWC2025/wards.json"
+    }
+  },
+  {
+    "slug": "DS26",
+    "id": 18111,
+    "name": "DreamLeague Season 26",
+    "from": 1743149024,
+    "to": 1748810881,
+    "matches": 514,
+    "generated": 1776953838,
+    "hasAverages": true,
+    "endpoints": {
+      "report": "leagues/DS26/report.json",
+      "stats": "stats/DS26.json",
+      "matches": "leagues/DS26/matches.json",
+      "wards": "leagues/DS26/wards.json"
+    }
+  },
+  {
+    "slug": "PW2025S3",
+    "id": 17891,
+    "name": "PGL Wallachia 2025 Season 3",
+    "from": 1741420851,
+    "to": 1742156115,
+    "matches": 111,
+    "generated": 1776944893,
+    "hasAverages": true,
+    "endpoints": {
+      "report": "leagues/PW2025S3/report.json",
+      "stats": "stats/PW2025S3.json",
+      "matches": "leagues/PW2025S3/matches.json",
+      "wards": "leagues/PW2025S3/wards.json"
+    }
+  },
+  {
+    "slug": "EOR2025",
+    "id": 17795,
+    "name": "ESL One Raleigh 2025",
+    "from": 1736662254,
+    "to": 1744604521,
+    "matches": 452,
+    "generated": 1776955971,
+    "hasAverages": true,
+    "endpoints": {
+      "report": "leagues/EOR2025/report.json",
+      "stats": "stats/EOR2025.json",
+      "matches": "leagues/EOR2025/matches.json",
+      "wards": "leagues/EOR2025/wards.json"
+    }
+  }
+]

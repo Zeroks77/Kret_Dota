@@ -1,0 +1,42 @@
+{
+  "version": "v1",
+  "updated": 1776956033,
+  "base_url": "api/v1/",
+  "endpoints": {
+    "leagues_index": "leagues/index.json",
+    "league_report": "leagues/{slug}/report.json",
+    "league_matches": "leagues/{slug}/matches.json",
+    "league_wards": "leagues/{slug}/wards.json",
+    "monthly_index": "monthly/index.json",
+    "monthly_data": "monthly/{month}.json",
+    "stats_global": "stats/global.json",
+    "stats_league": "stats/{slug}.json",
+    "constants_heroes": "constants/heroes.json",
+    "constants_patches": "constants/patch.json",
+    "meta_reports": "meta/reports.json",
+    "meta_maps": "meta/maps.json"
+  },
+  "leagues": [
+    "PW2026S7",
+    "EOB2026",
+    "DS28",
+    "BSV",
+    "PW2025S5",
+    "EWC2025",
+    "DS26",
+    "PW2025S3",
+    "EOR2025"
+  ],
+  "monthly": [
+    "2026-04",
+    "2026-03",
+    "2026-02",
+    "2026-01",
+    "2025-12",
+    "2025-11",
+    "2025-10",
+    "2025-09",
+    "2025-08",
+    "2025-07"
+  ]
+}
