@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "updated": 1777039272,
+  "updated": 1777810417,
   "base_url": "api/v1/",
   "endpoints": {
     "leagues_index": "leagues/index.json",
@@ -17,19 +17,22 @@
     "meta_maps": "meta/maps.json"
   },
   "leagues": [
+    "PW2026S8",
     "EOB2026",
     "PW2026S7",
     "DS28",
     "BSV",
-    "PW2025S5",
+    "PW2025S6",
     "EWC2025",
+    "PW2025S5",
     "DS26",
     "PW2025S4",
     "EOR2025",
-    "EOR2025Q",
-    "PW2025S3"
+    "PW2025S3",
+    "EOR2025Q"
   ],
   "monthly": [
+    "2026-05",
     "2026-04",
     "2026-03",
     "2026-02",

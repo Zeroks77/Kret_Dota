@@ -1,7 +1,12 @@
 [
   {
+    "month": "2026-05",
+    "count": 2,
+    "endpoint": "monthly/2026-05.json"
+  },
+  {
     "month": "2026-04",
-    "count": 34,
+    "count": 40,
     "endpoint": "monthly/2026-04.json"
   },
   {

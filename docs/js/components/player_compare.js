@@ -25,6 +25,7 @@
   const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${BRANCH}`;
   const rawBaseData = `${RAW_BASE}/data`;
   const rawDocsBaseData = `${RAW_BASE}/docs/data`;
+  let injected = null;
   function ensureStyles(){
     if(document.getElementById('pc-styles')) return;
     const css = `
@@ -474,7 +475,8 @@
     if (!playerId) return null;
     const entries = getPlayerEntries(matches, playerId, filters, timeWindow);
     let g=0, wins=0, k=0, d=0, a=0, gpm=0, xpm=0, lh=0, dn=0, hdmg=0, tdmg=0;
-    for(const {match:m, player:p0} of entries){
+    for(const {match:m0, player:p0} of entries){
+      let m = m0;
       let p = p0;
       // If basic fields are missing, pull detailed file
       const needsDetail = !(p && (Number.isFinite(p.kills) || Number.isFinite(p.gold_per_min) || Number.isFinite(p.xp_per_min)));
@@ -527,7 +529,7 @@
   function mount(container, options){
     ensureStyles();
     // optional injected details/fetcher from host
-    const injected = (function(){
+    injected = (function(){
       const obj = {};
       try{
         if (options && Array.isArray(options.details)){

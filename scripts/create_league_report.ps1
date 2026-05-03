@@ -49,6 +49,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+. "$PSScriptRoot/lib/common.ps1"
+
 # ---------- Helpers ----------
 function Get-RepoRoot(){ (Resolve-Path "$PSScriptRoot/.." | Select-Object -ExpandProperty Path) }
 function Get-DataPath(){ Join-Path (Get-RepoRoot) 'data' }
@@ -316,6 +318,16 @@ if(-not (Test-Path -LiteralPath $leagueMatchesFile) -or -not $SkipMatchesIfCache
   if($leagueMatches){ Save-Json -o $leagueMatches -p $leagueMatchesFile }
 }else{ $leagueMatches = Read-JsonFile $leagueMatchesFile }
 if(-not $leagueMatches){ throw 'No matches for league' }
+
+$minDuration = Get-MinimumMatchDurationSeconds
+$leagueMatchesBeforeFilter = @($leagueMatches)
+$leagueMatches = @($leagueMatchesBeforeFilter | Where-Object { Test-MatchHasMinimumDuration $_ -MinimumSeconds $minDuration } | Sort-Object match_id -Unique)
+$filteredShortMatches = @($leagueMatchesBeforeFilter).Count - @($leagueMatches).Count
+if($filteredShortMatches -gt 0){
+  Write-Host ("Filtered {0} short matches (< {1}s) from league match list." -f $filteredShortMatches, $minDuration)
+  Save-Json -o $leagueMatches -p $leagueMatchesFile
+}
+if(-not $leagueMatches){ throw ("No matches for league after filtering sub-{0}s games" -f $minDuration) }
 
 # ---------- Fetch individual match details with rate limiting ----------
 $matchDetailsCacheDir = Join-Path (Get-DataPath) 'cache/OpenDota/matches'

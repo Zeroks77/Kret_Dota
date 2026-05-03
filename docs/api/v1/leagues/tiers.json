@@ -45,7 +45,7 @@
     "slug": "BSVCQ",
     "tier": 1,
     "series": "BLAST",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19448,
@@ -85,7 +85,7 @@
     "slug": "PWS7ACQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19247,
@@ -93,7 +93,7 @@
     "slug": "PWS7ECQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19246,
@@ -101,7 +101,7 @@
     "slug": "PWS7WCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19245,
@@ -109,7 +109,7 @@
     "slug": "PWS7ACQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19148,
@@ -117,7 +117,7 @@
     "slug": "BSVCQ",
     "tier": 1,
     "series": "BLAST",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19101,
@@ -141,7 +141,7 @@
     "slug": "EOB2026Q",
     "tier": 1,
     "series": "ESL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 19089,
@@ -149,7 +149,7 @@
     "slug": "DS28Q",
     "tier": 1,
     "series": "DreamLeague",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 18988,
@@ -181,7 +181,7 @@
     "slug": "PWS6ACQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 18750,
@@ -189,7 +189,7 @@
     "slug": "PWS6SCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 18749,
@@ -197,7 +197,7 @@
     "slug": "PWS6CCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 18748,
@@ -205,7 +205,7 @@
     "slug": "PWS6WCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 18747,
@@ -213,7 +213,7 @@
     "slug": "PWS6ECQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 18706,
@@ -301,7 +301,7 @@
     "slug": "EWC2025Q",
     "tier": 1,
     "series": "EWC",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 18111,
@@ -333,7 +333,7 @@
     "slug": "DS26Q",
     "tier": 1,
     "series": "DreamLeague",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17795,
@@ -349,7 +349,7 @@
     "slug": "PWS4ACQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17777,
@@ -357,7 +357,7 @@
     "slug": "PWS4CCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17776,
@@ -365,7 +365,7 @@
     "slug": "PWS4SCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17775,
@@ -373,7 +373,7 @@
     "slug": "PWS4WCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17774,
@@ -381,7 +381,7 @@
     "slug": "PWS4ECQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17765,
@@ -397,7 +397,7 @@
     "slug": "PWS3ECQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17673,
@@ -405,7 +405,7 @@
     "slug": "PWS3WCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17672,
@@ -413,7 +413,7 @@
     "slug": "PWS3CCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17671,
@@ -421,7 +421,7 @@
     "slug": "PWS3SCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17670,
@@ -429,7 +429,7 @@
     "slug": "PWS3SCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17669,
@@ -437,7 +437,7 @@
     "slug": "PWS3NCQ",
     "tier": 1,
     "series": "PGL",
-    "status": "discovered"
+    "status": "tracked"
   },
   {
     "id": 17629,

@@ -56,6 +56,36 @@ function Save-JsonCompact([object]$o, [string]$p) {
     Set-Content -LiteralPath $p -Encoding UTF8
 }
 
+# ---------- Match validation ----------
+$script:MinimumMatchDurationSeconds = 60
+
+function Get-MinimumMatchDurationSeconds {
+  return [int]$script:MinimumMatchDurationSeconds
+}
+
+function Get-MatchDurationSeconds($Match) {
+  if ($null -eq $Match) { return $null }
+  try {
+    $duration = $Match.duration
+    if ($null -eq $duration) { return $null }
+    $text = ('' + $duration).Trim()
+    if ([string]::IsNullOrWhiteSpace($text)) { return $null }
+    return [int]$text
+  } catch {
+    return $null
+  }
+}
+
+function Test-MatchHasMinimumDuration(
+  $Match,
+  [int]$MinimumSeconds = 0
+) {
+  if ($MinimumSeconds -le 0) { $MinimumSeconds = Get-MinimumMatchDurationSeconds }
+  $duration = Get-MatchDurationSeconds $Match
+  if ($null -eq $duration) { return $true }
+  return ($duration -ge $MinimumSeconds)
+}
+
 # ---------- HTML encoding ----------
 function HtmlEncode([string]$s) {
   if ($null -eq $s) { return '' }

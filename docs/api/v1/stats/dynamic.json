@@ -1,123 +1,128 @@
 {
-  "updated": 1777027371,
-  "patch": "7.41",
-  "patch_at": 1774313459,
+  "updated": 1777810417,
+  "patch": null,
+  "patch_at": 0,
   "ranges": {
     "30": {
-      "total_matches": 41,
-      "considered_matches": 41,
-      "avg_duration": 2374,
-      "first_blood_time": 96,
-      "first_roshan_time": 1801,
-      "first_tormentor_time": 1562,
-      "avg_kills": 67.6,
-      "avg_towers": 9.0,
-      "radiant_winrate": 0.537,
-      "from_unix": 1774435371,
-      "to_unix": 1777027371,
+      "total_matches": 40,
+      "considered_matches": 40,
+      "avg_duration": 2451,
+      "first_blood_time": 97,
+      "first_roshan_time": 1846,
+      "first_tormentor_time": 1550,
+      "avg_kills": 65.0,
+      "avg_towers": 8.7,
+      "radiant_winrate": 0.525,
+      "from_unix": 1775218417,
+      "to_unix": 1777810417,
       "top_items": [
         {
           "key": "blink",
           "name": "Blink Dagger",
-          "count": 180
+          "count": 166
         },
         {
           "key": "aghanims_shard",
           "name": "Aghanim's Shard",
-          "count": 171
-        },
-        {
-          "key": "arcane_boots",
-          "name": "Arcane Boots",
-          "count": 136
+          "count": 161
         },
         {
           "key": "ultimate_scepter",
           "name": "Aghanim's Scepter",
-          "count": 126
+          "count": 120
+        },
+        {
+          "key": "arcane_boots",
+          "name": "Arcane Boots",
+          "count": 117
         },
         {
           "key": "phase_boots",
           "name": "Phase Boots",
-          "count": 106
-        },
-        {
-          "key": "power_treads",
-          "name": "Power Treads",
-          "count": 103
+          "count": 96
         },
         {
           "key": "black_king_bar",
           "name": "Black King Bar",
-          "count": 91
+          "count": 95
         },
         {
-          "key": "yasha",
-          "name": "Yasha",
-          "count": 66
+          "key": "power_treads",
+          "name": "Power Treads",
+          "count": 95
         },
         {
           "key": "pers",
           "name": "Perseverance",
-          "count": 63
+          "count": 64
+        },
+        {
+          "key": "yasha",
+          "name": "Yasha",
+          "count": 56
         },
         {
           "key": "sange",
           "name": "Sange",
-          "count": 49
+          "count": 48
         },
         {
           "key": "force_staff",
           "name": "Force Staff",
-          "count": 42
-        },
-        {
-          "key": "kaya",
-          "name": "Kaya",
-          "count": 39
-        },
-        {
-          "key": "mekansm",
-          "name": "Mekansm",
-          "count": 39
-        },
-        {
-          "key": "glimmer_cape",
-          "name": "Glimmer Cape",
-          "count": 38
+          "count": 43
         },
         {
           "key": "cyclone",
           "name": "Eul's Scepter of Divinity",
-          "count": 34
+          "count": 38
+        },
+        {
+          "key": "glimmer_cape",
+          "name": "Glimmer Cape",
+          "count": 37
         },
         {
           "key": "manta",
           "name": "Manta Style",
-          "count": 34
+          "count": 33
         },
         {
-          "key": "guardian_greaves",
-          "name": "Guardian Greaves",
-          "count": 32
+          "key": "mekansm",
+          "name": "Mekansm",
+          "count": 33
+        },
+        {
+          "key": "kaya",
+          "name": "Kaya",
+          "count": 30
         },
         {
           "key": "basher",
           "name": "Skull Basher",
-          "count": 31
+          "count": 29
+        },
+        {
+          "key": "guardian_greaves",
+          "name": "Guardian Greaves",
+          "count": 28
         },
         {
           "key": "pipe",
           "name": "Pipe of Insight",
-          "count": 30
+          "count": 26
         },
         {
           "key": "aether_lens",
           "name": "Aether Lens",
-          "count": 29
+          "count": 25
         }
       ],
       "least_items": [
+        {
+          "key": "angels_demise",
+          "name": "Khanda",
+          "count": 1
+        },
         {
           "key": "crellas_crozier",
           "name": "Crella's Crozier",
@@ -134,8 +139,8 @@
           "count": 1
         },
         {
-          "key": "orb_of_corrosion",
-          "name": "Orb of Corrosion",
+          "key": "hydras_breath",
+          "name": "Hydra's Breath",
           "count": 1
         },
         {
@@ -149,23 +154,18 @@
           "count": 1
         },
         {
-          "key": "aeon_disk",
-          "name": "Aeon Disk",
-          "count": 2
+          "key": "specialists_array",
+          "name": "Specialist's Array",
+          "count": 1
         },
         {
-          "key": "angels_demise",
-          "name": "Khanda",
-          "count": 2
+          "key": "travel_boots_2",
+          "name": "Boots of Travel 2",
+          "count": 1
         },
         {
           "key": "devastator",
           "name": "Parasma",
-          "count": 2
-        },
-        {
-          "key": "heart",
-          "name": "Heart of Tarrasque",
           "count": 2
         },
         {
@@ -174,8 +174,8 @@
           "count": 2
         },
         {
-          "key": "boots_of_bearing",
-          "name": "Boots of Bearing",
+          "key": "aeon_disk",
+          "name": "Aeon Disk",
           "count": 3
         },
         {
@@ -194,18 +194,8 @@
           "count": 3
         },
         {
-          "key": "essence_distiller",
-          "name": "Essence Distiller",
-          "count": 3
-        },
-        {
           "key": "ethereal_blade",
           "name": "Ethereal Blade",
-          "count": 3
-        },
-        {
-          "key": "gungir",
-          "name": "Gleipnir",
           "count": 3
         },
         {
@@ -214,54 +204,64 @@
           "count": 3
         },
         {
-          "key": "hydras_breath",
-          "name": "Hydra's Breath",
+          "key": "meteor_hammer",
+          "name": "Meteor Hammer",
           "count": 3
+        },
+        {
+          "key": "bloodthorn",
+          "name": "Bloodthorn",
+          "count": 4
+        },
+        {
+          "key": "boots_of_bearing",
+          "name": "Boots of Bearing",
+          "count": 4
         }
       ]
     },
     "60": {
       "total_matches": 76,
       "considered_matches": 76,
-      "avg_duration": 2465,
-      "first_blood_time": 92,
-      "first_roshan_time": 1788,
-      "first_tormentor_time": 1457,
-      "avg_kills": 67.9,
-      "avg_towers": 9.2,
-      "radiant_winrate": 0.566,
-      "from_unix": 1771843371,
-      "to_unix": 1777027371,
+      "avg_duration": 2480,
+      "first_blood_time": 88,
+      "first_roshan_time": 1816,
+      "first_tormentor_time": 1494,
+      "avg_kills": 66.2,
+      "avg_towers": 8.8,
+      "radiant_winrate": 0.579,
+      "from_unix": 1772626417,
+      "to_unix": 1777810417,
       "top_items": [
         {
           "key": "blink",
           "name": "Blink Dagger",
-          "count": 334
+          "count": 313
         },
         {
           "key": "aghanims_shard",
           "name": "Aghanim's Shard",
-          "count": 300
+          "count": 297
         },
         {
           "key": "ultimate_scepter",
           "name": "Aghanim's Scepter",
-          "count": 249
+          "count": 243
         },
         {
           "key": "arcane_boots",
           "name": "Arcane Boots",
-          "count": 235
+          "count": 221
         },
         {
           "key": "power_treads",
           "name": "Power Treads",
-          "count": 196
+          "count": 185
         },
         {
           "key": "black_king_bar",
           "name": "Black King Bar",
-          "count": 189
+          "count": 179
         },
         {
           "key": "phase_boots",
@@ -269,75 +269,80 @@
           "count": 170
         },
         {
-          "key": "yasha",
-          "name": "Yasha",
-          "count": 117
-        },
-        {
           "key": "pers",
           "name": "Perseverance",
-          "count": 106
+          "count": 114
+        },
+        {
+          "key": "yasha",
+          "name": "Yasha",
+          "count": 112
         },
         {
           "key": "force_staff",
           "name": "Force Staff",
-          "count": 103
+          "count": 101
         },
         {
           "key": "sange",
           "name": "Sange",
-          "count": 87
+          "count": 88
         },
         {
           "key": "manta",
           "name": "Manta Style",
-          "count": 75
-        },
-        {
-          "key": "glimmer_cape",
-          "name": "Glimmer Cape",
-          "count": 72
-        },
-        {
-          "key": "kaya",
-          "name": "Kaya",
-          "count": 71
+          "count": 69
         },
         {
           "key": "cyclone",
           "name": "Eul's Scepter of Divinity",
-          "count": 69
+          "count": 68
+        },
+        {
+          "key": "glimmer_cape",
+          "name": "Glimmer Cape",
+          "count": 68
+        },
+        {
+          "key": "kaya",
+          "name": "Kaya",
+          "count": 67
         },
         {
           "key": "mekansm",
           "name": "Mekansm",
-          "count": 62
+          "count": 60
         },
         {
           "key": "pipe",
           "name": "Pipe of Insight",
-          "count": 59
+          "count": 55
         },
         {
-          "key": "lesser_crit",
-          "name": "Crystalys",
-          "count": 55
+          "key": "basher",
+          "name": "Skull Basher",
+          "count": 51
         },
         {
           "key": "guardian_greaves",
           "name": "Guardian Greaves",
-          "count": 54
+          "count": 51
         },
         {
-          "key": "blade_mail",
-          "name": "Blade Mail",
-          "count": 52
+          "key": "lesser_crit",
+          "name": "Crystalys",
+          "count": 50
         }
       ],
       "least_items": [
         {
           "key": "crellas_crozier",
           "name": "Crella's Crozier",
+          "count": 1
+        },
+        {
+          "key": "heavens_halberd",
+          "name": "Heaven's Halberd",
           "count": 1
         },
         {
@@ -356,8 +361,8 @@
           "count": 2
         },
         {
-          "key": "heavens_halberd",
-          "name": "Heaven's Halberd",
+          "key": "devastator",
+          "name": "Parasma",
           "count": 2
         },
         {
@@ -386,11 +391,6 @@
           "count": 3
         },
         {
-          "key": "heart",
-          "name": "Heart of Tarrasque",
-          "count": 3
-        },
-        {
           "key": "helm_of_the_dominator",
           "name": "Helm of the Dominator",
           "count": 3
@@ -401,154 +401,154 @@
           "count": 3
         },
         {
-          "key": "meteor_hammer",
-          "name": "Meteor Hammer",
-          "count": 4
-        },
-        {
           "key": "specialists_array",
           "name": "Specialist's Array",
           "count": 4
         },
         {
-          "key": "devastator",
-          "name": "Parasma",
+          "key": "aeon_disk",
+          "name": "Aeon Disk",
+          "count": 5
+        },
+        {
+          "key": "eternal_shroud",
+          "name": "Eternal Shroud",
+          "count": 5
+        },
+        {
+          "key": "gungir",
+          "name": "Gleipnir",
+          "count": 5
+        },
+        {
+          "key": "heart",
+          "name": "Heart of Tarrasque",
+          "count": 5
+        },
+        {
+          "key": "meteor_hammer",
+          "name": "Meteor Hammer",
           "count": 5
         },
         {
           "key": "travel_boots_2",
           "name": "Boots of Travel 2",
           "count": 5
-        },
-        {
-          "key": "aeon_disk",
-          "name": "Aeon Disk",
-          "count": 6
-        },
-        {
-          "key": "dagon_3",
-          "name": "Dagon",
-          "count": 6
-        },
-        {
-          "key": "eternal_shroud",
-          "name": "Eternal Shroud",
-          "count": 6
         }
       ]
     },
     "120": {
-      "total_matches": 145,
-      "considered_matches": 145,
-      "avg_duration": 2422,
-      "first_blood_time": 96,
-      "first_roshan_time": 1804,
-      "first_tormentor_time": 1444,
-      "avg_kills": 67.4,
-      "avg_towers": 9.0,
-      "radiant_winrate": 0.621,
-      "from_unix": 1766659371,
-      "to_unix": 1777027371,
+      "total_matches": 129,
+      "considered_matches": 129,
+      "avg_duration": 2457,
+      "first_blood_time": 97,
+      "first_roshan_time": 1808,
+      "first_tormentor_time": 1459,
+      "avg_kills": 66.4,
+      "avg_towers": 8.8,
+      "radiant_winrate": 0.612,
+      "from_unix": 1767442417,
+      "to_unix": 1777810417,
       "top_items": [
         {
           "key": "blink",
           "name": "Blink Dagger",
-          "count": 623
+          "count": 530
         },
         {
           "key": "aghanims_shard",
           "name": "Aghanim's Shard",
-          "count": 559
-        },
-        {
-          "key": "arcane_boots",
-          "name": "Arcane Boots",
-          "count": 444
+          "count": 495
         },
         {
           "key": "ultimate_scepter",
           "name": "Aghanim's Scepter",
-          "count": 437
+          "count": 399
+        },
+        {
+          "key": "arcane_boots",
+          "name": "Arcane Boots",
+          "count": 385
         },
         {
           "key": "power_treads",
           "name": "Power Treads",
-          "count": 419
+          "count": 349
         },
         {
           "key": "black_king_bar",
           "name": "Black King Bar",
-          "count": 343
+          "count": 315
         },
         {
           "key": "phase_boots",
           "name": "Phase Boots",
-          "count": 287
+          "count": 260
         },
         {
           "key": "yasha",
           "name": "Yasha",
-          "count": 228
-        },
-        {
-          "key": "force_staff",
-          "name": "Force Staff",
-          "count": 211
+          "count": 194
         },
         {
           "key": "pers",
           "name": "Perseverance",
-          "count": 196
+          "count": 188
+        },
+        {
+          "key": "force_staff",
+          "name": "Force Staff",
+          "count": 177
         },
         {
           "key": "cyclone",
           "name": "Eul's Scepter of Divinity",
-          "count": 177
+          "count": 150
         },
         {
           "key": "sange",
           "name": "Sange",
-          "count": 160
-        },
-        {
-          "key": "manta",
-          "name": "Manta Style",
-          "count": 156
+          "count": 141
         },
         {
           "key": "glimmer_cape",
           "name": "Glimmer Cape",
-          "count": 150
+          "count": 132
+        },
+        {
+          "key": "manta",
+          "name": "Manta Style",
+          "count": 130
         },
         {
           "key": "kaya",
           "name": "Kaya",
-          "count": 145
-        },
-        {
-          "key": "dragon_lance",
-          "name": "Dragon Lance",
-          "count": 111
+          "count": 122
         },
         {
           "key": "mekansm",
           "name": "Mekansm",
-          "count": 106
+          "count": 97
         },
         {
           "key": "pipe",
           "name": "Pipe of Insight",
-          "count": 105
+          "count": 95
         },
         {
           "key": "veil_of_discord",
           "name": "Veil of Discord",
-          "count": 102
+          "count": 87
         },
         {
-          "key": "lesser_crit",
-          "name": "Crystalys",
-          "count": 97
+          "key": "dragon_lance",
+          "name": "Dragon Lance",
+          "count": 86
+        },
+        {
+          "key": "guardian_greaves",
+          "name": "Guardian Greaves",
+          "count": 85
         }
       ],
       "least_items": [
@@ -578,6 +578,11 @@
           "count": 3
         },
         {
+          "key": "helm_of_the_dominator",
+          "name": "Helm of the Dominator",
+          "count": 3
+        },
+        {
           "key": "hydras_breath",
           "name": "Hydra's Breath",
           "count": 3
@@ -593,6 +598,11 @@
           "count": 4
         },
         {
+          "key": "angels_demise",
+          "name": "Khanda",
+          "count": 5
+        },
+        {
           "key": "heavens_halberd",
           "name": "Heaven's Halberd",
           "count": 5
@@ -603,14 +613,9 @@
           "count": 5
         },
         {
-          "key": "helm_of_the_dominator",
-          "name": "Helm of the Dominator",
+          "key": "meteor_hammer",
+          "name": "Meteor Hammer",
           "count": 6
-        },
-        {
-          "key": "angels_demise",
-          "name": "Khanda",
-          "count": 7
         },
         {
           "key": "dagon_5",
@@ -618,13 +623,8 @@
           "count": 7
         },
         {
-          "key": "meteor_hammer",
-          "name": "Meteor Hammer",
-          "count": 7
-        },
-        {
-          "key": "heart",
-          "name": "Heart of Tarrasque",
+          "key": "wind_waker",
+          "name": "Wind Waker",
           "count": 8
         },
         {
@@ -633,331 +633,114 @@
           "count": 9
         },
         {
+          "key": "heart",
+          "name": "Heart of Tarrasque",
+          "count": 9
+        },
+        {
           "key": "aeon_disk",
           "name": "Aeon Disk",
-          "count": 10
-        },
-        {
-          "key": "consecrated_wraps",
-          "name": "Consecrated Wraps",
-          "count": 10
-        },
-        {
-          "key": "wind_waker",
-          "name": "Wind Waker",
-          "count": 10
+          "count": 11
         },
         {
           "key": "bloodstone",
           "name": "Bloodstone",
-          "count": 13
-        }
-      ]
-    },
-    "patch": {
-      "total_matches": 41,
-      "considered_matches": 41,
-      "avg_duration": 2374,
-      "first_blood_time": 96,
-      "first_roshan_time": 1801,
-      "first_tormentor_time": 1562,
-      "avg_kills": 67.6,
-      "avg_towers": 9.0,
-      "radiant_winrate": 0.537,
-      "from_unix": 1774313459,
-      "to_unix": 1777027371,
-      "top_items": [
-        {
-          "key": "blink",
-          "name": "Blink Dagger",
-          "count": 180
-        },
-        {
-          "key": "aghanims_shard",
-          "name": "Aghanim's Shard",
-          "count": 171
-        },
-        {
-          "key": "arcane_boots",
-          "name": "Arcane Boots",
-          "count": 136
-        },
-        {
-          "key": "ultimate_scepter",
-          "name": "Aghanim's Scepter",
-          "count": 126
-        },
-        {
-          "key": "phase_boots",
-          "name": "Phase Boots",
-          "count": 106
-        },
-        {
-          "key": "power_treads",
-          "name": "Power Treads",
-          "count": 103
-        },
-        {
-          "key": "black_king_bar",
-          "name": "Black King Bar",
-          "count": 91
-        },
-        {
-          "key": "yasha",
-          "name": "Yasha",
-          "count": 66
-        },
-        {
-          "key": "pers",
-          "name": "Perseverance",
-          "count": 63
-        },
-        {
-          "key": "sange",
-          "name": "Sange",
-          "count": 49
-        },
-        {
-          "key": "force_staff",
-          "name": "Force Staff",
-          "count": 42
-        },
-        {
-          "key": "kaya",
-          "name": "Kaya",
-          "count": 39
-        },
-        {
-          "key": "mekansm",
-          "name": "Mekansm",
-          "count": 39
-        },
-        {
-          "key": "glimmer_cape",
-          "name": "Glimmer Cape",
-          "count": 38
-        },
-        {
-          "key": "cyclone",
-          "name": "Eul's Scepter of Divinity",
-          "count": 34
-        },
-        {
-          "key": "manta",
-          "name": "Manta Style",
-          "count": 34
-        },
-        {
-          "key": "guardian_greaves",
-          "name": "Guardian Greaves",
-          "count": 32
-        },
-        {
-          "key": "basher",
-          "name": "Skull Basher",
-          "count": 31
-        },
-        {
-          "key": "pipe",
-          "name": "Pipe of Insight",
-          "count": 30
-        },
-        {
-          "key": "aether_lens",
-          "name": "Aether Lens",
-          "count": 29
-        }
-      ],
-      "least_items": [
-        {
-          "key": "crellas_crozier",
-          "name": "Crella's Crozier",
-          "count": 1
-        },
-        {
-          "key": "dagon_4",
-          "name": "Dagon",
-          "count": 1
-        },
-        {
-          "key": "dagon_5",
-          "name": "Dagon",
-          "count": 1
-        },
-        {
-          "key": "orb_of_corrosion",
-          "name": "Orb of Corrosion",
-          "count": 1
-        },
-        {
-          "key": "rapier",
-          "name": "Divine Rapier",
-          "count": 1
-        },
-        {
-          "key": "revenants_brooch",
-          "name": "Revenant's Brooch",
-          "count": 1
-        },
-        {
-          "key": "aeon_disk",
-          "name": "Aeon Disk",
-          "count": 2
-        },
-        {
-          "key": "angels_demise",
-          "name": "Khanda",
-          "count": 2
+          "count": 11
         },
         {
           "key": "devastator",
           "name": "Parasma",
-          "count": 2
-        },
-        {
-          "key": "heart",
-          "name": "Heart of Tarrasque",
-          "count": 2
-        },
-        {
-          "key": "helm_of_the_overlord",
-          "name": "Helm of the Overlord",
-          "count": 2
-        },
-        {
-          "key": "boots_of_bearing",
-          "name": "Boots of Bearing",
-          "count": 3
-        },
-        {
-          "key": "dagon",
-          "name": "Dagon",
-          "count": 3
-        },
-        {
-          "key": "dagon_2",
-          "name": "Dagon",
-          "count": 3
-        },
-        {
-          "key": "dagon_3",
-          "name": "Dagon",
-          "count": 3
-        },
-        {
-          "key": "essence_distiller",
-          "name": "Essence Distiller",
-          "count": 3
-        },
-        {
-          "key": "ethereal_blade",
-          "name": "Ethereal Blade",
-          "count": 3
-        },
-        {
-          "key": "gungir",
-          "name": "Gleipnir",
-          "count": 3
-        },
-        {
-          "key": "helm_of_the_dominator",
-          "name": "Helm of the Dominator",
-          "count": 3
-        },
-        {
-          "key": "hydras_breath",
-          "name": "Hydra's Breath",
-          "count": 3
+          "count": 11
         }
       ]
     },
     "all": {
-      "total_matches": 286,
-      "considered_matches": 286,
-      "avg_duration": 2425,
+      "total_matches": 294,
+      "considered_matches": 294,
+      "avg_duration": 2431,
       "first_blood_time": 97,
-      "first_roshan_time": 1759,
-      "first_tormentor_time": 1431,
-      "avg_kills": 65.1,
-      "avg_towers": 8.7,
-      "radiant_winrate": 0.57,
+      "first_roshan_time": 1765,
+      "first_tormentor_time": 1435,
+      "avg_kills": 64.8,
+      "avg_towers": 8.6,
+      "radiant_winrate": 0.568,
       "from_unix": 0,
-      "to_unix": 1777027371,
+      "to_unix": 1777810417,
       "top_items": [
         {
           "key": "blink",
           "name": "Blink Dagger",
-          "count": 1183
+          "count": 1202
         },
         {
           "key": "aghanims_shard",
           "name": "Aghanim's Shard",
-          "count": 1016
+          "count": 1042
         },
         {
           "key": "arcane_boots",
           "name": "Arcane Boots",
-          "count": 855
+          "count": 867
         },
         {
           "key": "ultimate_scepter",
           "name": "Aghanim's Scepter",
-          "count": 818
+          "count": 839
         },
         {
           "key": "power_treads",
           "name": "Power Treads",
-          "count": 804
+          "count": 816
         },
         {
           "key": "black_king_bar",
           "name": "Black King Bar",
-          "count": 737
+          "count": 755
         },
         {
           "key": "phase_boots",
           "name": "Phase Boots",
-          "count": 555
+          "count": 568
         },
         {
           "key": "force_staff",
           "name": "Force Staff",
-          "count": 425
+          "count": 433
         },
         {
           "key": "yasha",
           "name": "Yasha",
-          "count": 419
+          "count": 423
         },
         {
           "key": "sange",
           "name": "Sange",
-          "count": 333
+          "count": 341
         },
         {
           "key": "cyclone",
           "name": "Eul's Scepter of Divinity",
-          "count": 319
+          "count": 326
         },
         {
           "key": "pers",
           "name": "Perseverance",
-          "count": 308
+          "count": 324
         },
         {
           "key": "glimmer_cape",
           "name": "Glimmer Cape",
-          "count": 302
+          "count": 307
         },
         {
           "key": "kaya",
           "name": "Kaya",
-          "count": 279
+          "count": 284
         },
         {
           "key": "manta",
           "name": "Manta Style",
-          "count": 279
+          "count": 280
         },
         {
           "key": "cornucopia",
@@ -967,22 +750,22 @@
         {
           "key": "dragon_lance",
           "name": "Dragon Lance",
-          "count": 230
+          "count": 231
         },
         {
           "key": "aether_lens",
           "name": "Aether Lens",
-          "count": 215
+          "count": 217
         },
         {
           "key": "lesser_crit",
           "name": "Crystalys",
-          "count": 207
+          "count": 208
         },
         {
           "key": "blade_mail",
           "name": "Blade Mail",
-          "count": 194
+          "count": 198
         }
       ],
       "least_items": [
@@ -1032,19 +815,19 @@
           "count": 9
         },
         {
-          "key": "consecrated_wraps",
-          "name": "Consecrated Wraps",
-          "count": 10
+          "key": "rapier",
+          "name": "Divine Rapier",
+          "count": 11
         },
         {
           "key": "meteor_hammer",
           "name": "Meteor Hammer",
-          "count": 11
+          "count": 12
         },
         {
-          "key": "rapier",
-          "name": "Divine Rapier",
-          "count": 11
+          "key": "consecrated_wraps",
+          "name": "Consecrated Wraps",
+          "count": 14
         },
         {
           "key": "dagon_5",
@@ -1057,14 +840,14 @@
           "count": 16
         },
         {
-          "key": "heart",
-          "name": "Heart of Tarrasque",
-          "count": 16
-        },
-        {
           "key": "heavens_halberd",
           "name": "Heaven's Halberd",
           "count": 16
+        },
+        {
+          "key": "heart",
+          "name": "Heart of Tarrasque",
+          "count": 18
         },
         {
           "key": "wind_waker",
@@ -1084,7 +867,7 @@
         {
           "key": "boots_of_bearing",
           "name": "Boots of Bearing",
-          "count": 24
+          "count": 25
         }
       ]
     }

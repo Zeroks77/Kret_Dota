@@ -2368,8 +2368,9 @@ async function main(){
       const sentries = Array.from(senCountBy.keys()).map(k=>{ const [x,y]=k.split(',').map(Number); return { spot:k, x, y, count:senCountBy.get(k)||0, bySide:senBySide.get(k)||{Radiant:{count:0}, Dire:{count:0}}, byTeam:senByTeam.get(k)||{}, samples:senSamplesBy.get(k)||[] }; });
       const teamsList = Array.from(teamMap.values());
       const playersList = Array.from(playerMap.values());
-  // Mount a single instance; Ward Viewer manages its own Basis/filters
-      window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:false, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, objectivesUrl:`${relRepoBase}/map_locations.json`, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } }); if (paneW) paneW.setAttribute('aria-busy','false');
+    // Mount a single instance; Ward Viewer manages its own Basis/filters
+      const wardMapLocationsUrl = hasLocalRepoData ? `${relRepoBase}/map_locations.json` : `${rawRepoBase}/map_locations.json`;
+      window.WardViewer.mount(stdHost, { mapConf, data:{ spots, sentries, teams:teamsList, players:playersList }, options:{ modeDefault:'best', showExtras:false, showLongest:false, ignorePersistedPlayer:true, ignorePersistedCluster:true, objectivesUrl:wardMapLocationsUrl, extras:{ wardPlayers: high.wardPlayers||{}, wardLongest: [] } } }); if (paneW) paneW.setAttribute('aria-busy','false');
       // Initialize ward subtabs (Spots/Players/Trend) once
       if(!window.__wardSubTabsBooted){
         try{

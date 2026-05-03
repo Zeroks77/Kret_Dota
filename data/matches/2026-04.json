@@ -2752,5 +2752,491 @@
         "team_id": 9872267
       }
     ]
+  },
+  {
+    "match_id": 8786081997,
+    "start_time": 1777140287,
+    "radiant_win": true,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 9872267,
+    "radiant_name": "Ken",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 345410403,
+        "hero_id": 69,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 182287626,
+        "hero_id": 85,
+        "is_radiant": true,
+        "personaname": "Hate",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 73,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 136,
+        "is_radiant": true,
+        "personaname": "TheSaw",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 92,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 99,
+        "is_radiant": false,
+        "personaname": "Seto Kaiba",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 74,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 123,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 145,
+        "is_radiant": false,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 31,
+        "is_radiant": false,
+        "personaname": "lubblobba",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8786106878,
+    "start_time": 1777141314,
+    "radiant_win": false,
+    "radiant_team_id": 10102326,
+    "dire_team_id": 9872267,
+    "radiant_name": "Ken",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 80887279,
+        "hero_id": 73,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 37336344,
+        "hero_id": 35,
+        "is_radiant": true,
+        "personaname": "TheSaw",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 182287626,
+        "hero_id": 136,
+        "is_radiant": true,
+        "personaname": "Hate",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 69,
+        "is_radiant": true,
+        "personaname": "Laruksha",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 85,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10102326
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 31,
+        "is_radiant": false,
+        "personaname": "lubblobba",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 74,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 145,
+        "is_radiant": false,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 123,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 99,
+        "is_radiant": false,
+        "personaname": "Seto Kaiba",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8786195434,
+    "start_time": 1777145480,
+    "radiant_win": true,
+    "radiant_team_id": 10101714,
+    "dire_team_id": 10020172,
+    "radiant_name": "No Buyback Boys",
+    "dire_name": "Topless Todgers",
+    "players": [
+      {
+        "account_id": 182287626,
+        "hero_id": 96,
+        "is_radiant": true,
+        "personaname": "Hate",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 114,
+        "is_radiant": true,
+        "personaname": "Zero",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 31903773,
+        "hero_id": 123,
+        "is_radiant": true,
+        "personaname": "No more...",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 64,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 94,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 47,
+        "is_radiant": false,
+        "personaname": "Seto Kaiba",
+        "team_id": 10020172
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 85,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 10020172
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 15,
+        "is_radiant": false,
+        "personaname": "Laruksha",
+        "team_id": 10020172
+      },
+      {
+        "account_id": 992361072,
+        "hero_id": 77,
+        "is_radiant": false,
+        "personaname": "Grunt",
+        "team_id": 10020172
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 20,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 10020172
+      }
+    ]
+  },
+  {
+    "match_id": 8786197316,
+    "start_time": 1777145577,
+    "radiant_win": false,
+    "radiant_team_id": 10101714,
+    "dire_team_id": 9917402,
+    "radiant_name": "No Buyback Boys",
+    "dire_name": "Boyfriends",
+    "players": [
+      {
+        "account_id": 80887279,
+        "hero_id": 43,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 183063377,
+        "hero_id": 100,
+        "is_radiant": true,
+        "personaname": "Zero",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 182287626,
+        "hero_id": 2,
+        "is_radiant": true,
+        "personaname": "Hate",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 31903773,
+        "hero_id": 4,
+        "is_radiant": true,
+        "personaname": "No more...",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 123,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10101714
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 9,
+        "is_radiant": false,
+        "personaname": "Seto Kaiba",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 86,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 345410403,
+        "hero_id": 120,
+        "is_radiant": false,
+        "personaname": "Laruksha",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 21,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 992361072,
+        "hero_id": 54,
+        "is_radiant": false,
+        "personaname": "Grunt",
+        "team_id": 9917402
+      }
+    ]
+  },
+  {
+    "match_id": 8791401108,
+    "start_time": 1777490899,
+    "radiant_win": true,
+    "radiant_team_id": 9957170,
+    "dire_team_id": 9872267,
+    "radiant_name": "RICE FIELDS",
+    "dire_name": "Zelenskyy's Boys",
+    "players": [
+      {
+        "account_id": 90144558,
+        "hero_id": 2,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 20,
+        "is_radiant": true,
+        "personaname": "lubblobba",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 80887279,
+        "hero_id": 42,
+        "is_radiant": true,
+        "personaname": "pollo",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 71,
+        "is_radiant": true,
+        "personaname": "Dope",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 311379182,
+        "hero_id": 101,
+        "is_radiant": true,
+        "personaname": "Gwyn",
+        "team_id": 9957170
+      },
+      {
+        "account_id": 117542304,
+        "hero_id": 120,
+        "is_radiant": false,
+        "personaname": "Seto Kaiba",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 123,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 57839727,
+        "hero_id": 114,
+        "is_radiant": false,
+        "personaname": "Michael",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 14,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9872267
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 135,
+        "is_radiant": false,
+        "personaname": "Oliver",
+        "team_id": 9872267
+      }
+    ]
+  },
+  {
+    "match_id": 8791473440,
+    "start_time": 1777495661,
+    "radiant_win": true,
+    "radiant_team_id": 10001607,
+    "dire_team_id": 9917402,
+    "radiant_name": "The RATS",
+    "dire_name": "Boyfriends",
+    "players": [
+      {
+        "account_id": 117542304,
+        "hero_id": 43,
+        "is_radiant": true,
+        "personaname": "Seto Kaiba",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 90144558,
+        "hero_id": 99,
+        "is_radiant": true,
+        "personaname": "pandashano",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 188889560,
+        "hero_id": 15,
+        "is_radiant": true,
+        "personaname": "the chosen one",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 885953647,
+        "hero_id": 107,
+        "is_radiant": true,
+        "personaname": "kikill23",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 131722511,
+        "hero_id": 27,
+        "is_radiant": true,
+        "personaname": "Oliver",
+        "team_id": 10001607
+      },
+      {
+        "account_id": 1002536896,
+        "hero_id": 80,
+        "is_radiant": false,
+        "personaname": "jarjeer",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 129698658,
+        "hero_id": 19,
+        "is_radiant": false,
+        "personaname": "Dark Forest",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 170682343,
+        "hero_id": 69,
+        "is_radiant": false,
+        "personaname": "Luzian",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 104645869,
+        "hero_id": 26,
+        "is_radiant": false,
+        "personaname": "lubblobba",
+        "team_id": 9917402
+      },
+      {
+        "account_id": 179289652,
+        "hero_id": 75,
+        "is_radiant": false,
+        "personaname": "Dope",
+        "team_id": 9917402
+      }
+    ]
   }
 ]

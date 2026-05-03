@@ -589,6 +589,7 @@ function To-ShardRecord($md){
       $mLeague = Get-MatchLeagueId $md
       if($mLeague -ne $targetLeague){ return $null }
     }
+    if(-not (Test-MatchHasMinimumDuration $md)){ return $null }
     $rec = [ordered]@{}
     $rec.match_id = [int64]$md.match_id
     $rec.start_time = [int]$md.start_time
@@ -644,25 +645,32 @@ function Purge-Shards-NonLeague(){
       $arr = Get-Content -LiteralPath $file -Raw -Encoding UTF8 | ConvertFrom-Json
       $arr = @($arr)
       $keep = New-Object System.Collections.Generic.List[object]
-      $dropped = 0
+      $droppedMissing = 0
+      $droppedNonLeague = 0
+      $droppedShort = 0
       foreach($r in $arr){
         try{
           $mid = [int64]$r.match_id
           $mf = Join-Path $cacheDir ("{0}.json" -f $mid)
           if(-not (Test-Path -LiteralPath $mf)){
             # Without a cached match, we cannot determine league reliably under LeagueOnly; drop it
-            $dropped++
+            $droppedMissing++
             continue
           }
           $md = Get-Content -LiteralPath $mf -Raw -Encoding UTF8 | ConvertFrom-Json
+          if(-not (Test-MatchHasMinimumDuration $md)){
+            $droppedShort++
+            continue
+          }
           $mLeague = Get-MatchLeagueId $md
-          if($mLeague -eq $targetLeague){ $keep.Add($r) | Out-Null } else { $dropped++ }
-        } catch { $dropped++ }
+          if($mLeague -eq $targetLeague){ $keep.Add($r) | Out-Null } else { $droppedNonLeague++ }
+        } catch { $droppedMissing++ }
       }
+      $dropped = $droppedMissing + $droppedNonLeague + $droppedShort
       if($dropped -gt 0){
         $newArr = $keep.ToArray()
         Save-Json -obj $newArr -path $file
-        Write-Log ("Purged {0} non-league records from shard: {1}" -f $dropped, [System.IO.Path]::GetFileName($file))
+        Write-Log ("Purged {0} stale records from shard: {1} (missing-cache={2}, non-league={3}, short={4})" -f $dropped, [System.IO.Path]::GetFileName($file), $droppedMissing, $droppedNonLeague, $droppedShort)
       }
     } catch {}
   }

@@ -1,5 +1,5 @@
 {
-  "updated": 1777026962,
+  "updated": 1777809728,
   "count": 75,
   "leagues": [
     {
@@ -56,8 +56,8 @@
       "slug": "PW2026S8",
       "tier": 1,
       "series": "PGL",
-      "matches_count": 70,
-      "latest_start": 1776767485,
+      "matches_count": 119,
+      "latest_start": 1777212661,
       "is_completed": false,
       "eligible_for_tracking": false,
       "status": "tracked"
@@ -71,8 +71,8 @@
       "matches_count": 31,
       "latest_start": 1775219795,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 19448,
@@ -82,8 +82,8 @@
       "series": "DreamLeague",
       "matches_count": 326,
       "latest_start": 1776219326,
-      "is_completed": false,
-      "eligible_for_tracking": false,
+      "is_completed": true,
+      "eligible_for_tracking": true,
       "status": "discovered"
     },
     {
@@ -131,8 +131,8 @@
       "matches_count": 32,
       "latest_start": 1769739238,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 19247,
@@ -143,8 +143,8 @@
       "matches_count": 37,
       "latest_start": 1769709929,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 19246,
@@ -155,8 +155,8 @@
       "matches_count": 34,
       "latest_start": 1769709083,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 19245,
@@ -167,8 +167,8 @@
       "matches_count": 39,
       "latest_start": 1769688688,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 19148,
@@ -179,8 +179,8 @@
       "matches_count": 40,
       "latest_start": 1767625176,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 19101,
@@ -215,8 +215,8 @@
       "matches_count": 387,
       "latest_start": 1768951549,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 19089,
@@ -227,8 +227,8 @@
       "matches_count": 379,
       "latest_start": 1768177539,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 18988,
@@ -275,8 +275,8 @@
       "matches_count": 38,
       "latest_start": 1759727406,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 18750,
@@ -287,8 +287,8 @@
       "matches_count": 37,
       "latest_start": 1759669955,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 18749,
@@ -299,8 +299,8 @@
       "matches_count": 13,
       "latest_start": 1759661886,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 18748,
@@ -311,8 +311,8 @@
       "matches_count": 33,
       "latest_start": 1759682951,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 18747,
@@ -323,8 +323,8 @@
       "matches_count": 39,
       "latest_start": 1759687792,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 18706,
@@ -455,8 +455,8 @@
       "matches_count": 278,
       "latest_start": 1749857188,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 18111,
@@ -503,8 +503,8 @@
       "matches_count": 427,
       "latest_start": 1743727176,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17795,
@@ -527,8 +527,8 @@
       "matches_count": 36,
       "latest_start": 1739594931,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17777,
@@ -539,8 +539,8 @@
       "matches_count": 16,
       "latest_start": 1739528582,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17776,
@@ -551,8 +551,8 @@
       "matches_count": 37,
       "latest_start": 1739521351,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17775,
@@ -563,8 +563,8 @@
       "matches_count": 37,
       "latest_start": 1739560763,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17774,
@@ -575,8 +575,8 @@
       "matches_count": 39,
       "latest_start": 1739556910,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17765,
@@ -599,8 +599,8 @@
       "matches_count": 30,
       "latest_start": 1736967434,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17673,
@@ -611,8 +611,8 @@
       "matches_count": 31,
       "latest_start": 1736960067,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17672,
@@ -623,8 +623,8 @@
       "matches_count": 14,
       "latest_start": 1736856359,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17671,
@@ -635,8 +635,8 @@
       "matches_count": 30,
       "latest_start": 1736938580,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17670,
@@ -647,8 +647,8 @@
       "matches_count": 32,
       "latest_start": 1736993177,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17669,
@@ -659,8 +659,8 @@
       "matches_count": 12,
       "latest_start": 1736894009,
       "is_completed": true,
-      "eligible_for_tracking": true,
-      "status": "discovered"
+      "eligible_for_tracking": false,
+      "status": "tracked"
     },
     {
       "leagueid": 17629,
