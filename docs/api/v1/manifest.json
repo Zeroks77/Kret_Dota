@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "updated": 1777810417,
+  "updated": 1777874192,
   "base_url": "api/v1/",
   "endpoints": {
     "leagues_index": "leagues/index.json",
@@ -18,10 +18,10 @@
   },
   "leagues": [
     "PW2026S8",
+    "BSV",
     "EOB2026",
     "PW2026S7",
     "DS28",
-    "BSV",
     "PW2025S6",
     "EWC2025",
     "PW2025S5",
