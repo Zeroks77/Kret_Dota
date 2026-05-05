@@ -1,5 +1,5 @@
 {
-  "updated": 1777874192,
+  "updated": 1777962457,
   "patch": "7.41",
   "patch_at": 1774313459,
   "ranges": {
@@ -13,8 +13,8 @@
       "avg_kills": 61.7,
       "avg_towers": 8.2,
       "radiant_winrate": 0.462,
-      "from_unix": 1775282192,
-      "to_unix": 1777874192,
+      "from_unix": 1775370457,
+      "to_unix": 1777962457,
       "top_items": [
         {
           "key": "blink",
@@ -230,8 +230,8 @@
       "avg_kills": 64.5,
       "avg_towers": 8.6,
       "radiant_winrate": 0.566,
-      "from_unix": 1772690192,
-      "to_unix": 1777874192,
+      "from_unix": 1772778457,
+      "to_unix": 1777962457,
       "top_items": [
         {
           "key": "blink",
@@ -438,117 +438,117 @@
       ]
     },
     "120": {
-      "total_matches": 126,
-      "considered_matches": 126,
-      "avg_duration": 2477,
-      "first_blood_time": 98,
-      "first_roshan_time": 1805,
-      "first_tormentor_time": 1460,
-      "avg_kills": 66.3,
+      "total_matches": 124,
+      "considered_matches": 124,
+      "avg_duration": 2468,
+      "first_blood_time": 99,
+      "first_roshan_time": 1808,
+      "first_tormentor_time": 1459,
+      "avg_kills": 66.1,
       "avg_towers": 8.7,
-      "radiant_winrate": 0.595,
-      "from_unix": 1767506192,
-      "to_unix": 1777874192,
+      "radiant_winrate": 0.589,
+      "from_unix": 1767594457,
+      "to_unix": 1777962457,
       "top_items": [
         {
           "key": "blink",
           "name": "Blink Dagger",
-          "count": 514
+          "count": 506
         },
         {
           "key": "aghanims_shard",
           "name": "Aghanim's Shard",
-          "count": 482
+          "count": 476
         },
         {
           "key": "ultimate_scepter",
           "name": "Aghanim's Scepter",
-          "count": 396
+          "count": 389
         },
         {
           "key": "arcane_boots",
           "name": "Arcane Boots",
-          "count": 376
+          "count": 371
         },
         {
           "key": "power_treads",
           "name": "Power Treads",
-          "count": 335
+          "count": 331
         },
         {
           "key": "black_king_bar",
           "name": "Black King Bar",
-          "count": 309
+          "count": 303
         },
         {
           "key": "phase_boots",
           "name": "Phase Boots",
-          "count": 254
+          "count": 249
         },
         {
           "key": "yasha",
           "name": "Yasha",
-          "count": 190
+          "count": 188
         },
         {
           "key": "pers",
           "name": "Perseverance",
-          "count": 186
+          "count": 183
         },
         {
           "key": "force_staff",
           "name": "Force Staff",
-          "count": 171
+          "count": 167
         },
         {
           "key": "cyclone",
           "name": "Eul's Scepter of Divinity",
-          "count": 143
+          "count": 138
         },
         {
           "key": "sange",
           "name": "Sange",
-          "count": 139
+          "count": 136
         },
         {
           "key": "glimmer_cape",
           "name": "Glimmer Cape",
-          "count": 130
+          "count": 128
         },
         {
           "key": "manta",
           "name": "Manta Style",
-          "count": 125
+          "count": 123
         },
         {
           "key": "kaya",
           "name": "Kaya",
-          "count": 117
+          "count": 115
         },
         {
           "key": "mekansm",
           "name": "Mekansm",
-          "count": 95
+          "count": 93
         },
         {
           "key": "pipe",
           "name": "Pipe of Insight",
-          "count": 93
+          "count": 91
         },
         {
           "key": "veil_of_discord",
           "name": "Veil of Discord",
-          "count": 86
-        },
-        {
-          "key": "guardian_greaves",
-          "name": "Guardian Greaves",
-          "count": 84
+          "count": 85
         },
         {
           "key": "shivas_guard",
           "name": "Shiva's Guard",
-          "count": 84
+          "count": 83
+        },
+        {
+          "key": "guardian_greaves",
+          "name": "Guardian Greaves",
+          "count": 82
         }
       ],
       "least_items": [
@@ -588,6 +588,11 @@
           "count": 3
         },
         {
+          "key": "heavens_halberd",
+          "name": "Heaven's Halberd",
+          "count": 4
+        },
+        {
           "key": "rapier",
           "name": "Divine Rapier",
           "count": 4
@@ -603,19 +608,14 @@
           "count": 5
         },
         {
-          "key": "heavens_halberd",
-          "name": "Heaven's Halberd",
+          "key": "dagon_5",
+          "name": "Dagon",
           "count": 5
         },
         {
           "key": "travel_boots_2",
           "name": "Boots of Travel 2",
           "count": 5
-        },
-        {
-          "key": "dagon_5",
-          "name": "Dagon",
-          "count": 6
         },
         {
           "key": "meteor_hammer",
@@ -625,7 +625,7 @@
         {
           "key": "dagon_4",
           "name": "Dagon",
-          "count": 8
+          "count": 7
         },
         {
           "key": "wind_waker",
@@ -640,16 +640,16 @@
         {
           "key": "aeon_disk",
           "name": "Aeon Disk",
-          "count": 11
-        },
-        {
-          "key": "bloodstone",
-          "name": "Bloodstone",
-          "count": 11
+          "count": 10
         },
         {
           "key": "devastator",
           "name": "Parasma",
+          "count": 10
+        },
+        {
+          "key": "bloodstone",
+          "name": "Bloodstone",
           "count": 11
         }
       ]
@@ -665,7 +665,7 @@
       "avg_towers": 8.2,
       "radiant_winrate": 0.51,
       "from_unix": 1774313459,
-      "to_unix": 1777874192,
+      "to_unix": 1777962457,
       "top_items": [
         {
           "key": "aghanims_shard",
@@ -882,7 +882,7 @@
       "avg_towers": 8.6,
       "radiant_winrate": 0.564,
       "from_unix": 0,
-      "to_unix": 1777874192,
+      "to_unix": 1777962457,
       "top_items": [
         {
           "key": "blink",

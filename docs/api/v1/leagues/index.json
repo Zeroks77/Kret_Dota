@@ -6,29 +6,13 @@
     "from": 1776495608,
     "to": 1777227061,
     "matches": 119,
-    "generated": 1777873971,
+    "generated": 1777962233,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/PW2026S8/wards.json",
-      "stats": "stats/PW2026S8.json",
       "matches": "leagues/PW2026S8/matches.json",
-      "report": "leagues/PW2026S8/report.json"
-    }
-  },
-  {
-    "slug": "BSV",
-    "id": 19101,
-    "name": "BLAST SLAM VII",
-    "from": 1774841677,
-    "to": 1775234195,
-    "matches": 31,
-    "generated": 1777873745,
-    "hasAverages": true,
-    "endpoints": {
-      "wards": "leagues/BSV/wards.json",
-      "stats": "stats/BSV.json",
-      "matches": "leagues/BSV/matches.json",
-      "report": "leagues/BSV/report.json"
+      "report": "leagues/PW2026S8/report.json",
+      "stats": "stats/PW2026S8.json"
     }
   },
   {
@@ -38,13 +22,13 @@
     "from": 1774180796,
     "to": 1774827260,
     "matches": 142,
-    "generated": 1777873809,
+    "generated": 1777962076,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/EOB2026/wards.json",
-      "stats": "stats/EOB2026.json",
       "matches": "leagues/EOB2026/matches.json",
-      "report": "leagues/EOB2026/report.json"
+      "report": "leagues/EOB2026/report.json",
+      "stats": "stats/EOB2026.json"
     }
   },
   {
@@ -54,13 +38,13 @@
     "from": 1772870432,
     "to": 1773620684,
     "matches": 124,
-    "generated": 1777873954,
+    "generated": 1777962217,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/PW2026S7/wards.json",
-      "stats": "stats/PW2026S7.json",
       "matches": "leagues/PW2026S7/matches.json",
-      "report": "leagues/PW2026S7/report.json"
+      "report": "leagues/PW2026S7/report.json",
+      "stats": "stats/PW2026S7.json"
     }
   },
   {
@@ -70,13 +54,29 @@
     "from": 1771239343,
     "to": 1772403052,
     "matches": 195,
-    "generated": 1777873792,
+    "generated": 1777962059,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/DS28/wards.json",
-      "stats": "stats/DS28.json",
       "matches": "leagues/DS28/matches.json",
-      "report": "leagues/DS28/report.json"
+      "report": "leagues/DS28/report.json",
+      "stats": "stats/DS28.json"
+    }
+  },
+  {
+    "slug": "BSV",
+    "id": 19099,
+    "name": "BLAST SLAM VI",
+    "from": 1770109054,
+    "to": 1771200030,
+    "matches": 100,
+    "generated": 1777962016,
+    "hasAverages": true,
+    "endpoints": {
+      "wards": "leagues/BSV/wards.json",
+      "matches": "leagues/BSV/matches.json",
+      "report": "leagues/BSV/report.json",
+      "stats": "stats/BSV.json"
     }
   },
   {
@@ -86,13 +86,13 @@
     "from": 1763193634,
     "to": 1763936177,
     "matches": 118,
-    "generated": 1777873939,
+    "generated": 1777962202,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/PW2025S6/wards.json",
-      "stats": "stats/PW2025S6.json",
       "matches": "leagues/PW2025S6/matches.json",
-      "report": "leagues/PW2025S6/report.json"
+      "report": "leagues/PW2025S6/report.json",
+      "stats": "stats/PW2025S6.json"
     }
   },
   {
@@ -102,13 +102,13 @@
     "from": 1751965908,
     "to": 1752955676,
     "matches": 89,
-    "generated": 1777873877,
+    "generated": 1777962141,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/EWC2025/wards.json",
-      "stats": "stats/EWC2025.json",
       "matches": "leagues/EWC2025/matches.json",
-      "report": "leagues/EWC2025/report.json"
+      "report": "leagues/EWC2025/report.json",
+      "stats": "stats/EWC2025.json"
     }
   },
   {
@@ -118,13 +118,13 @@
     "from": 1750489249,
     "to": 1751222816,
     "matches": 116,
-    "generated": 1777873923,
+    "generated": 1777962187,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/PW2025S5/wards.json",
-      "stats": "stats/PW2025S5.json",
       "matches": "leagues/PW2025S5/matches.json",
-      "report": "leagues/PW2025S5/report.json"
+      "report": "leagues/PW2025S5/report.json",
+      "stats": "stats/PW2025S5.json"
     }
   },
   {
@@ -134,13 +134,13 @@
     "from": 1747648500,
     "to": 1748810881,
     "matches": 202,
-    "generated": 1777873770,
+    "generated": 1777962038,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/DS26/wards.json",
-      "stats": "stats/DS26.json",
       "matches": "leagues/DS26/matches.json",
-      "report": "leagues/DS26/report.json"
+      "report": "leagues/DS26/report.json",
+      "stats": "stats/DS26.json"
     }
   },
   {
@@ -150,13 +150,13 @@
     "from": 1745046084,
     "to": 1745786972,
     "matches": 115,
-    "generated": 1777873907,
+    "generated": 1777962171,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/PW2025S4/wards.json",
-      "stats": "stats/PW2025S4.json",
       "matches": "leagues/PW2025S4/matches.json",
-      "report": "leagues/PW2025S4/report.json"
+      "report": "leagues/PW2025S4/report.json",
+      "stats": "stats/PW2025S4.json"
     }
   },
   {
@@ -166,13 +166,13 @@
     "from": 1744041600,
     "to": 1744604521,
     "matches": 90,
-    "generated": 1777873824,
+    "generated": 1777962089,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/EOR2025/wards.json",
-      "stats": "stats/EOR2025.json",
       "matches": "leagues/EOR2025/matches.json",
-      "report": "leagues/EOR2025/report.json"
+      "report": "leagues/EOR2025/report.json",
+      "stats": "stats/EOR2025.json"
     }
   },
   {
@@ -182,13 +182,13 @@
     "from": 1741420851,
     "to": 1742156115,
     "matches": 111,
-    "generated": 1777873891,
+    "generated": 1777962156,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/PW2025S3/wards.json",
-      "stats": "stats/PW2025S3.json",
       "matches": "leagues/PW2025S3/matches.json",
-      "report": "leagues/PW2025S3/report.json"
+      "report": "leagues/PW2025S3/report.json",
+      "stats": "stats/PW2025S3.json"
     }
   },
   {
@@ -198,13 +198,13 @@
     "from": 1736662254,
     "to": 1737433872,
     "matches": 362,
-    "generated": 1777873863,
+    "generated": 1777962128,
     "hasAverages": true,
     "endpoints": {
       "wards": "leagues/EOR2025Q/wards.json",
-      "stats": "stats/EOR2025Q.json",
       "matches": "leagues/EOR2025Q/matches.json",
-      "report": "leagues/EOR2025Q/report.json"
+      "report": "leagues/EOR2025Q/report.json",
+      "stats": "stats/EOR2025Q.json"
     }
   }
 ]
