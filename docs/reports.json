@@ -29,6 +29,13 @@
       "sort": "2026-03"
     },
     {
+      "title": "BLAST SLAM VII",
+      "href": "league_dynamic.html?slug=BSV",
+      "group": "league",
+      "time": "2026-03-30T03:34:37Z",
+      "sort": "2026-BSV"
+    },
+    {
       "title": "ESL One Birmingham 2026",
       "href": "league_dynamic.html?slug=EOB2026",
       "group": "league",
@@ -55,13 +62,6 @@
       "group": "league",
       "time": "2026-02-16T10:55:43Z",
       "sort": "2026-DS28"
-    },
-    {
-      "title": "BLAST SLAM VI",
-      "href": "league_dynamic.html?slug=BSV",
-      "group": "league",
-      "time": "2026-02-03T08:57:34Z",
-      "sort": "2026-BSV"
     },
     {
       "title": "January 2026",
