@@ -1,5 +1,5 @@
 {
-  "updated": 1778047815,
+  "updated": 1778133775,
   "count": 75,
   "leagues": [
     {
@@ -58,7 +58,7 @@
       "series": "PGL",
       "matches_count": 119,
       "latest_start": 1777212661,
-      "is_completed": false,
+      "is_completed": true,
       "eligible_for_tracking": false,
       "status": "tracked"
     },

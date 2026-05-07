@@ -1,5 +1,5 @@
 {
-  "updated": 1778048778,
+  "updated": 1778134662,
   "patch": "7.41",
   "patch_at": 1774313459,
   "ranges": {
@@ -13,8 +13,8 @@
       "avg_kills": 61.7,
       "avg_towers": 8.2,
       "radiant_winrate": 0.462,
-      "from_unix": 1775456778,
-      "to_unix": 1778048778,
+      "from_unix": 1775542662,
+      "to_unix": 1778134662,
       "top_items": [
         {
           "key": "blink",
@@ -221,52 +221,52 @@
       ]
     },
     "60": {
-      "total_matches": 72,
-      "considered_matches": 72,
-      "avg_duration": 2475,
+      "total_matches": 71,
+      "considered_matches": 71,
+      "avg_duration": 2477,
       "first_blood_time": 88,
-      "first_roshan_time": 1814,
-      "first_tormentor_time": 1509,
-      "avg_kills": 65.9,
+      "first_roshan_time": 1816,
+      "first_tormentor_time": 1515,
+      "avg_kills": 65.8,
       "avg_towers": 8.8,
-      "radiant_winrate": 0.556,
-      "from_unix": 1772864778,
-      "to_unix": 1778048778,
+      "radiant_winrate": 0.549,
+      "from_unix": 1772950662,
+      "to_unix": 1778134662,
       "top_items": [
         {
           "key": "blink",
           "name": "Blink Dagger",
-          "count": 290
+          "count": 286
         },
         {
           "key": "aghanims_shard",
           "name": "Aghanim's Shard",
-          "count": 285
+          "count": 283
         },
         {
           "key": "ultimate_scepter",
           "name": "Aghanim's Scepter",
-          "count": 228
+          "count": 225
         },
         {
           "key": "arcane_boots",
           "name": "Arcane Boots",
-          "count": 209
+          "count": 204
         },
         {
           "key": "power_treads",
           "name": "Power Treads",
-          "count": 173
-        },
-        {
-          "key": "black_king_bar",
-          "name": "Black King Bar",
-          "count": 164
+          "count": 171
         },
         {
           "key": "phase_boots",
           "name": "Phase Boots",
-          "count": 161
+          "count": 160
+        },
+        {
+          "key": "black_king_bar",
+          "name": "Black King Bar",
+          "count": 159
         },
         {
           "key": "yasha",
@@ -281,12 +281,12 @@
         {
           "key": "force_staff",
           "name": "Force Staff",
-          "count": 97
+          "count": 96
         },
         {
           "key": "sange",
           "name": "Sange",
-          "count": 86
+          "count": 83
         },
         {
           "key": "manta",
@@ -296,17 +296,17 @@
         {
           "key": "glimmer_cape",
           "name": "Glimmer Cape",
-          "count": 65
+          "count": 63
         },
         {
           "key": "kaya",
           "name": "Kaya",
-          "count": 63
+          "count": 61
         },
         {
           "key": "cyclone",
           "name": "Eul's Scepter of Divinity",
-          "count": 61
+          "count": 58
         },
         {
           "key": "mekansm",
@@ -329,9 +329,9 @@
           "count": 48
         },
         {
-          "key": "travel_boots",
-          "name": "Boots of Travel",
-          "count": 45
+          "key": "lesser_crit",
+          "name": "Crystalys",
+          "count": 44
         }
       ],
       "least_items": [
@@ -447,8 +447,8 @@
       "avg_kills": 66.1,
       "avg_towers": 8.7,
       "radiant_winrate": 0.589,
-      "from_unix": 1767680778,
-      "to_unix": 1778048778,
+      "from_unix": 1767766662,
+      "to_unix": 1778134662,
       "top_items": [
         {
           "key": "blink",
@@ -665,7 +665,7 @@
       "avg_towers": 8.2,
       "radiant_winrate": 0.51,
       "from_unix": 1774313459,
-      "to_unix": 1778048778,
+      "to_unix": 1778134662,
       "top_items": [
         {
           "key": "aghanims_shard",
@@ -882,7 +882,7 @@
       "avg_towers": 8.6,
       "radiant_winrate": 0.564,
       "from_unix": 0,
-      "to_unix": 1778048778,
+      "to_unix": 1778134662,
       "top_items": [
         {
           "key": "blink",
